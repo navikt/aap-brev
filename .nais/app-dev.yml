@@ -12,6 +12,13 @@ spec:
     disableAutoScaling: true
     max: 1
     min: 1
+  accessPolicy:
+    inbound:
+      rules:
+        - application: aap-saksbehandling
+    outbound:
+      external:
+        - host: 948n95rd.api.sanity.io
   resources:
     limits:
       cpu: 1000m
@@ -33,3 +40,5 @@ spec:
     path: /actuator/metrics
   secureLogs:
     enabled: true
+  envFrom:
+    - secret: kelvin-env-local

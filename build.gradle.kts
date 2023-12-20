@@ -7,10 +7,6 @@ plugins {
 val ktorVersion = "2.3.7"
 
 dependencies {
-    implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
@@ -18,6 +14,12 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0")
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.1")
     implementation("ch.qos.logback:logback-classic:1.4.14")
