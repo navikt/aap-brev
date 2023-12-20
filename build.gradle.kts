@@ -30,7 +30,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("innsending.AppKt")
+    mainClass.set("brev.AppKt")
 }
 
 repositories {
