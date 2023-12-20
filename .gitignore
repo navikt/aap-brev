@@ -1,6 +1,8 @@
 # Idea project files
 *.iml
 .idea/
+.idea
+.idea/*
 !.idea/codeStyles/
 .run
 
@@ -15,6 +17,9 @@ src/generated
 # OS specific
 .DS_Store
 .devcontainer
+
+# nvim
+*.db
 
 # Ignore Gradle project-specific cache directory
 .gradle
