@@ -9,7 +9,7 @@ import io.ktor.http.*
 import java.nio.charset.Charset
 import java.net.URLEncoder
 
-internal const val VERSION = "v2023-19-12"
+internal const val VERSION = "2023-01-03"
 internal const val DATASET = "production"
 internal const val PERSPECTIVE = "published"
 
