@@ -19,6 +19,8 @@ spec:
     outbound:
       external:
         - host: 948n95rd.api.sanity.io
+  ingresses:
+    - https://aap-brev.intern.dev.nav.no
   resources:
     limits:
       cpu: 1000m
