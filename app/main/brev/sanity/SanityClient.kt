@@ -19,11 +19,11 @@ class SanityClient(
 ) {
     suspend fun brevmal(id: String): Result<Map<String, Any>> =
         query(encode(GROQ.FIRST_BREVMAL_BY_ID + "&${GROQ.ID}=$id")) // &$ID=$id
-            .map { it.result }
+            .map { it.result ?: it.error ?: emptyMap() }
 
     suspend fun brevmaler(): Result<Map<String, Any>> =
         query(encode(GROQ.ALLE_BREVMALER))
-            .map { it.result }
+            .map { it.result ?: it.error ?: emptyMap()}
 
     /** Queries lower than 11kB */
     private suspend fun query(query: String): Result<Response> =
@@ -41,7 +41,8 @@ class SanityClient(
 data class Response(
     // val ms: String,
     // val query: String,
-    val result: Map<String, Any>,
+    val result: Map<String, Any>?,
+    val error: Map<String, Any>?,
 )
 
 private fun encode(str: String): String = URLEncoder.encode(str, Charset.forName("UTF-8"))

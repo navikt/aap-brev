@@ -52,7 +52,7 @@ private class Sanity : AutoCloseable {
         }
         routing {
             get("/$VERSION/data/query/$DATASET") {
-                call.respond(Response(mapOf("result" to "nice")))
+                call.respond(Response(mapOf("result" to "nice"), null))
             }
         }
     }
