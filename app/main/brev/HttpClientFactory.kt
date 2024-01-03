@@ -16,7 +16,7 @@ private val secureLog = LoggerFactory.getLogger("secureLog")
 object HttpClientFactory {
     fun create() = HttpClient(CIO) {
         install(Logging) {
-            level = LogLevel.ALL
+            level = LogLevel.BODY
             logger = object : Logger {
                 override fun log(message: String) = secureLog.info(message)
             }
