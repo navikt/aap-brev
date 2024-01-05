@@ -31,7 +31,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("brev.AppKt")
+    mainClass.set("AppKt")
 }
 
 repositories {
