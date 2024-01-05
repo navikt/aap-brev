@@ -16,10 +16,22 @@
         </triggeringPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
+    <appender name="pretty" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%cyan(%d{HH:mm:ss.SSS}) %gray([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
 
     <logger name="secureLog" level="TRACE" additivity="false">
         <appender-ref ref="secureLog"/>
     </logger>
+
+    <!--
+    <logger name="pretty" level="TRACE" additivity="false">
+        <appender-ref ref="pretty"/>
+    </logger>
+    -->
 
     <root level="INFO">
         <appender-ref ref="json"/>

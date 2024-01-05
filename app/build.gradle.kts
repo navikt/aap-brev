@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
     id("io.ktor.plugin") version "2.3.7"
     application
 }
@@ -13,15 +14,15 @@ dependencies {
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0")
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.1")
+
     implementation("ch.qos.logback:logback-classic:1.4.14")
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.4")
 
