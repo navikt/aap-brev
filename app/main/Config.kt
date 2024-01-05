@@ -1,5 +1,3 @@
-package brev
-
 private fun getEnvVar(envar: String) = System.getenv(envar) ?: error("missing envvar $envar")
 
 data class Config(

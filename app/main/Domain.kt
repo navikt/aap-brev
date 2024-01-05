@@ -1,5 +1,3 @@
-package brev
-
 internal object Domain {
     fun from(brev: SanityModel.Brevmal): Brevmal = Brevmal.from(brev)
 

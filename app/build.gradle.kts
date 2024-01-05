@@ -48,7 +48,19 @@ tasks {
     }
 }
 
+kotlin {
+    sourceSets {
+        named("main") {
+            kotlin.srcDir("main")
+            resources.srcDir("main")
+        }
+        named("test") {
+            kotlin.srcDir("test")
+            resources.srcDir("test")
+        }
+    }
+}
+
 kotlin.sourceSets["main"].kotlin.srcDirs("main")
 kotlin.sourceSets["test"].kotlin.srcDirs("test")
-sourceSets["main"].resources.srcDirs("main")
-sourceSets["test"].resources.srcDirs("test")
+sourceSets["main"].resources.srcDirs("res")
