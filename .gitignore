@@ -20,6 +20,7 @@ src/generated
 
 # nvim
 *.db
+buildk.toml
 
 # Ignore Gradle project-specific cache directory
 .gradle
