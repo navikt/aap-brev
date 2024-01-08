@@ -7,12 +7,14 @@ import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
-import io.ktor.server.response.respond
+import io.ktor.http.*
+import io.ktor.server.response.*
 import io.ktor.http.HttpStatusCode
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.UUID
 
 val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 val PUBLIC_LOGGER: Logger = LoggerFactory.getLogger("brev")
@@ -27,6 +29,7 @@ fun main() {
 fun Application.server(config: Config = Config()) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     val sanity = SanityClient(config.sanity)
+    val postgres = Hikari.init(config.postgres)
 
     install(MicrometerMetrics) { registry = prometheus }
 
@@ -38,6 +41,24 @@ fun Application.server(config: Config = Config()) {
     }
 
     routing {
+        route("/draft") {
+            post{
+                val id = UUID.randomUUID()
+                val raw = call.receive<ByteArray>()
+                DraftRepo.insert(id, raw)
+                call.respond(HttpStatusCode.Created, id)
+            }
+            get("/id") {
+                DraftRepo.selectById(UUID.fromString(call.parameters["id"] ?: error("id required")))
+                    ?.let { call.respond(HttpStatusCode.OK, it) }
+                    ?: call.respond(HttpStatusCode.NotFound)
+            }
+            get("/all") {
+                DraftRepo.selectAll()
+                    .let { call.respond(HttpStatusCode.OK, it) }
+            }
+        }
+
         route("/brev") {
             get("/{id}") {
                 val id = requireNotNull(call.parameters["id"]) { "parameter 'id' mangler." }

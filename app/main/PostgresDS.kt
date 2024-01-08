@@ -8,10 +8,30 @@ import java.sql.ResultSet
 import java.util.*
 import javax.sql.DataSource
 
-private val logger = LoggerFactory.getLogger("App")
-
 internal object Hikari {
-    fun createAndMigrate(config: PostgresConfig): DataSource =
+    private lateinit var datasource: DataSource
+
+    fun init(config: PostgresConfig) {
+        datasource = createAndMigrate(config)
+    }
+
+    fun <T> transaction(block: (Connection) -> T): T {
+        return datasource.connection.use { connection ->
+            try {
+                connection.autoCommit = false
+                val result = block(connection)
+                connection.commit()
+                result
+            } catch (e: Throwable) {
+                connection.rollback()
+                throw e
+            } finally {
+                connection.autoCommit = true
+            }
+        }
+    }
+
+    private fun createAndMigrate(config: PostgresConfig): DataSource =
         HikariDataSource(
             HikariConfig().apply {
                 jdbcUrl = config.url
@@ -27,52 +47,11 @@ internal object Hikari {
             }
         ).apply {
             Flyway.configure()
-                .cleanDisabled(setCleanDisabled(config.cluster))
-                .cleanOnValidationError(setCleanOnValidationError(config.cluster))
                 .dataSource(this)
+                .locations("classpath")
                 .load()
                 .migrate()
         }
-
-    private fun setCleanDisabled(environment: String) = isProd(environment)
-    private fun setCleanOnValidationError(environment: String) = !isProd(environment)
-
-    private fun isProd(environment: String): Boolean {
-        if (environment != "prod-gcp") {
-            logger.error("Flyway.cleanDisabled er satt til false. Husk å skru av i prod")
-            logger.error("Flyway.cleanOnValidationError er satt til true. Husk å skru av i prod")
-        }
-        return environment == "prod-gcp"
-    }
 }
 
-fun <T : Any> ResultSet.map(block: (ResultSet) -> T): List<T> =
-    sequence {
-        while (next()) yield(block(this@map))
-    }.toList()
 
-fun <T> DataSource.transaction(block: (Connection) -> T): T {
-    return this.connection.use { connection ->
-        try {
-            connection.autoCommit = false
-            val result = block(connection)
-            connection.commit()
-            result
-        } catch (e: Throwable) {
-            connection.rollback()
-            throw e
-        } finally {
-            connection.autoCommit = true
-        }
-    }
-}
-
-fun ResultSet.getUUID(columnLabel: String): UUID = UUID.fromString(this.getString(columnLabel))
-
-fun PreparedStatement.setNullableObject(index: Int, obj: Any?, type: Int) {
-    if (obj != null) {
-        this.setObject(index, obj)
-    } else {
-        this.setNull(index, type)
-    }
-}
