@@ -2,24 +2,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import kotlin.test.assertNotNull
 
 class SanityTest {
 
     private val jackson = jacksonObjectMapper()
-
-    @Test
-    fun loggers() {
-        val pretty: Logger = LoggerFactory.getLogger("pretty")
-        val secure: Logger = LoggerFactory.getLogger("secureLog")
-        val root: Logger = LoggerFactory.getLogger("whatever")
-
-        pretty.info("pretty")
-        secure.info("secure")
-        root.info("root")
-    }
 
     @Test
     fun test_brevmaloversikt_serializer() {

@@ -1,20 +1,20 @@
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.routing.*
-import io.ktor.server.response.*
 import io.ktor.server.request.*
-import io.ktor.http.HttpStatusCode
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.UUID
+import java.util.*
 
 val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 val PUBLIC_LOGGER: Logger = LoggerFactory.getLogger("brev")
@@ -42,23 +42,45 @@ fun Application.server(config: Config = Config()) {
     }
 
     routing {
-        route("/draft") {
-            post{
-                val id = UUID.randomUUID()
-                val raw = call.receive<ByteArray>()
-                DraftRepo.insert(id, raw)
+        route("/draft/{id}") {
+            post {
+                val id = call.parameters["id"]
+                    ?.let(UUID::fromString)
+                    ?: UUID.randomUUID()
+
+                DraftRepo.insert(
+                    id = id,
+                    raw = call.receive()
+                )
+
                 call.respond(HttpStatusCode.Created, id)
             }
 
-            get("/id") {
-                val id = UUID.fromString(call.parameters["id"] ?: error("id required"))
+            put("/{id}") {
+                val id = call.parameters["id"]
+                    ?.let(UUID::fromString)
+                    ?: return@put call.respond(HttpStatusCode.BadRequest)
+
+                DraftRepo.update(
+                    id = id,
+                    raw = call.receive()
+                )
+
+                call.respond(HttpStatusCode.OK)
+            }
+
+            get("/{id}") {
+                val id = call.parameters["id"]
+                    ?.let(UUID::fromString)
+                    ?: return@get call.respond(HttpStatusCode.BadRequest)
+
                 DraftRepo.selectById(id)
-                    ?.let { call.respond(HttpStatusCode.OK, it) }
+                    ?.let { call.respond(it.raw) }
                     ?: call.respond(HttpStatusCode.NotFound)
             }
 
             get("/all") {
-                call.respond(DraftRepo.selectAll())
+                call.respond(DraftRepo.selectAll().map { it.raw })
             }
         }
 

@@ -26,7 +26,6 @@ dependencies {
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.4")
 
     implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.flywaydb:flyway-core:10.4.1")
     implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
     runtimeOnly("org.postgresql:postgresql:42.7.1")
 
@@ -53,19 +52,7 @@ tasks {
     }
 }
 
-kotlin {
-    sourceSets {
-        named("main") {
-            kotlin.srcDir("main")
-            resources.srcDir("main")
-        }
-        named("test") {
-            kotlin.srcDir("test")
-            resources.srcDir("test")
-        }
-    }
-}
-
 kotlin.sourceSets["main"].kotlin.srcDirs("main")
 kotlin.sourceSets["test"].kotlin.srcDirs("test")
 sourceSets["main"].resources.srcDirs("res")
+

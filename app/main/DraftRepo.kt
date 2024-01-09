@@ -2,18 +2,27 @@ import java.sql.Timestamp
 import java.sql.ResultSet
 import java.util.UUID
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 object DraftRepo {
 
     fun insert(id: UUID, raw: ByteArray) = 
         Hikari.transaction { con ->
-        val query = "INSERT INTO draft (id, raw, created, updated) VALUES (?, ?, ?, ?)"
+            val query = "INSERT INTO draft (id, raw, created, updated) VALUES (?, ?, ?, ?)"
             con.prepareStatement(query).apply {
                 setObject(1, id)
                 setObject(2, raw)
                 setObject(3, Timestamp.valueOf(LocalDateTime.now()))
                 setObject(4, Timestamp.valueOf(LocalDateTime.now()))
+            }.execute()
+        }
+
+    fun update(id: UUID, raw: ByteArray) =
+        Hikari.transaction { con ->
+            val query = "UPDATE draft SET raw = ?, updated = ? WHERE id = ?"
+            con.prepareStatement(query).apply {
+                setObject(1, raw)
+                setObject(2, Timestamp.valueOf(LocalDateTime.now()))
+                setObject(3, id)
             }.execute()
         }
 
@@ -84,6 +93,4 @@ data class Draft(
         result = 31 * result + updated.hashCode()
         return result
     }
-
 }
-
