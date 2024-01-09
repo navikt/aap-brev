@@ -1,7 +1,0 @@
-CREATE TABLE draft (
-    id UUID PRIMARY KEY,
-    created TIMESTAMP NOT NULL,
-    updated TIMESTAMP NOT NULL,
-    raw BYTEA NOT NULL,
-)
-

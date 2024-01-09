@@ -32,6 +32,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("com.h2database:h2:2.2.224")
 }
 
 application {

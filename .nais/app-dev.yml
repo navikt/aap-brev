@@ -19,6 +19,11 @@ spec:
     outbound:
       external:
         - host: 948n95rd.api.sanity.io
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_14
+        databases:
+          - name: brev
   ingresses:
     - https://aap-brev.intern.dev.nav.no
   resources:

@@ -1,11 +1,7 @@
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
-import org.slf4j.LoggerFactory
 import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.ResultSet
-import java.util.*
 import javax.sql.DataSource
 
 internal object Hikari {
@@ -48,7 +44,7 @@ internal object Hikari {
         ).apply {
             Flyway.configure()
                 .dataSource(this)
-                .locations("classpath")
+                .locations("")
                 .load()
                 .migrate()
         }
