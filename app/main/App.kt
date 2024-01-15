@@ -42,11 +42,9 @@ fun Application.server(config: Config = Config()) {
     }
 
     routing {
-        route("/draft/{id}") {
-            post {
-                val id = call.parameters["id"]
-                    ?.let(UUID::fromString)
-                    ?: UUID.randomUUID()
+        route("/draft") {
+            post("/{id}") {
+                val id = call.parameters["id"]?.let(UUID::fromString) ?: UUID.randomUUID()
 
                 DraftRepo.insert(
                     id = id,
@@ -57,8 +55,7 @@ fun Application.server(config: Config = Config()) {
             }
 
             put("/{id}") {
-                val id = call.parameters["id"]
-                    ?.let(UUID::fromString)
+                val id = call.parameters["id"]?.let(UUID::fromString)
                     ?: return@put call.respond(HttpStatusCode.BadRequest)
 
                 DraftRepo.update(
@@ -70,12 +67,10 @@ fun Application.server(config: Config = Config()) {
             }
 
             get("/{id}") {
-                val id = call.parameters["id"]
-                    ?.let(UUID::fromString)
+                val id = call.parameters["id"]?.let(UUID::fromString)
                     ?: return@get call.respond(HttpStatusCode.BadRequest)
 
-                DraftRepo.selectById(id)
-                    ?.let { call.respond(it.raw) }
+                DraftRepo.selectById(id)?.let { call.respond(it.raw) }
                     ?: call.respond(HttpStatusCode.NotFound)
             }
 
