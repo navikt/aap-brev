@@ -8,6 +8,7 @@ internal object Hikari {
     private lateinit var datasource: DataSource
 
     fun init(config: PostgresConfig) {
+        SECURE_LOGGER.info("Initializing Hikari")
         datasource = createAndMigrate(config)
     }
 

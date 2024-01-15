@@ -7,11 +7,6 @@ metadata:
     team: aap
 spec:
   image: {{image}}
-  replicas:
-    cpuThresholdPercentage: 90
-    disableAutoScaling: true
-    max: 1
-    min: 1
   accessPolicy:
     inbound:
       rules:
@@ -19,19 +14,26 @@ spec:
     outbound:
       external:
         - host: 948n95rd.api.sanity.io
+  envFrom:
+    - secret: kelvin-env-local
+  ingresses: 
+    - https://aap-brev.intern.dev.nav.no
   gcp:
     sqlInstances:
       - type: POSTGRES_14
         databases:
           - name: brev
-  ingresses:
-    - https://aap-brev.intern.dev.nav.no
   resources:
     limits:
       cpu: 1000m
     requests:
       cpu: 500m
       memory: 512Mi
+  replicas:
+    cpuThresholdPercentage: 90
+    disableAutoScaling: true
+    max: 1
+    min: 1
   liveness:
     path: /actuator/live
     initialDelay: 3
@@ -47,5 +49,3 @@ spec:
     path: /actuator/metrics
   secureLogs:
     enabled: true
-  envFrom:
-    - secret: kelvin-env-local
