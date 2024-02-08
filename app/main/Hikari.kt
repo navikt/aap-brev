@@ -11,21 +11,25 @@ internal object Hikari {
         datasource = createAndMigrate(config)
     }
 
-    fun <T> transaction(block: (Connection) -> T): T {
-        return datasource.connection.use { connection ->
-            try {
-                connection.autoCommit = false
-                val result = block(connection)
-                connection.commit()
-                result
-            } catch (e: Throwable) {
-                connection.rollback()
-                throw e
-            } finally {
-                connection.autoCommit = true
-            }
+    fun <T> transaction(nested: Connection? = null, block: (Connection) -> T): T {
+        return when (nested) {
+            null -> datasource.connection.use { inTransaction(it, block) }
+            else -> inTransaction(nested, block)
         }
     }
+
+    private fun <T> inTransaction(connection: Connection, block: (Connection) -> T) =
+        try {
+            connection.autoCommit = false
+            val result = block(connection)
+            connection.commit()
+            result
+        } catch (e: Throwable) {
+            connection.rollback()
+            throw e
+        } finally {
+            connection.autoCommit = true
+        }
 
     private fun createAndMigrate(config: PostgresConfig): DataSource =
         HikariDataSource(

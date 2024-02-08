@@ -1,3 +1,4 @@
+import java.sql.Connection
 import java.sql.Timestamp
 import java.sql.ResultSet
 import java.util.UUID
@@ -5,8 +6,8 @@ import java.time.LocalDateTime
 
 object DraftRepo {
 
-    fun insert(id: UUID, raw: ByteArray) = 
-        Hikari.transaction { con ->
+    fun insert(id: UUID, raw: ByteArray, nested: Connection? = null) =
+        Hikari.transaction(nested) { con ->
             val query = "INSERT INTO draft (id, raw, created, updated) VALUES (?, ?, ?, ?)"
             con.prepareStatement(query).apply {
                 setObject(1, id)
@@ -16,8 +17,8 @@ object DraftRepo {
             }.execute()
         }
 
-    fun update(id: UUID, raw: ByteArray) =
-        Hikari.transaction { con ->
+    fun update(id: UUID, raw: ByteArray, nested: Connection? = null) =
+        Hikari.transaction(nested) { con ->
             val query = "UPDATE draft SET raw = ?, updated = ? WHERE id = ?"
             con.prepareStatement(query).apply {
                 setObject(1, raw)
@@ -26,15 +27,15 @@ object DraftRepo {
             }.execute()
         }
 
-    fun selectAll(): List<Draft> =
-        Hikari.transaction { con ->
+    fun selectAll(nested: Connection? = null): List<Draft> =
+        Hikari.transaction(nested) { con ->
             con.prepareStatement("SELECT * FROM draft")
                 .executeQuery()
                 .map(Draft::fromResultSet)
         }
 
-    fun selectById(id: UUID): Draft? =
-        Hikari.transaction { con ->
+    fun selectById(id: UUID, nested: Connection? = null): Draft? =
+        Hikari.transaction(nested) { con ->
             con.prepareStatement("SELECT * FROM draft where id = ?")
                 .apply { setObject(1, id)}
                 .executeQuery()
@@ -42,8 +43,8 @@ object DraftRepo {
                 .singleOrNull()
         }
 
-    fun delete(id: UUID) =
-        Hikari.transaction { con ->
+    fun delete(id: UUID, nested: Connection? = null) =
+        Hikari.transaction(nested) { con ->
             con.prepareStatement("DELETE FROM draft WHERE id = ?")
                 .apply { setObject(1, id) }
                 .execute()
