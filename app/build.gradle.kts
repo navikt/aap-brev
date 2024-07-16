@@ -27,7 +27,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
-    runtimeOnly("org.postgresql:postgresql:42.7.1")
+    runtimeOnly("org.postgresql:postgresql:42.7.2")
 
     testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
