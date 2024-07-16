@@ -6,11 +6,9 @@ metadata:
   labels:
     team: aap
 spec:
+  ttl: 1h # Fjern denne om appen tas i bruk igjen
   image: {{image}}
   accessPolicy:
-    inbound:
-      rules:
-        - application: aap-saksbehandling
     outbound:
       external:
         - host: 948n95rd.api.sanity.io
