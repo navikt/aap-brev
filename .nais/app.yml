@@ -1,0 +1,84 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: brev
+  namespace: aap
+  labels:
+    team: aap
+    sub: brev
+spec:
+  image: {{image}}
+  # Setter utrullingsstrategi til Recreate for test. Settes til default før prodsetting
+  #  strategy:
+  #    type: Recreate
+  ingresses:
+    - "https://aap-brev.intern.dev.nav.no"
+  replicas:
+    cpuThresholdPercentage: 90
+    disableAutoScaling: true
+    max: 1
+    min: 1
+  resources:
+    limits:
+      memory: 1024Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: "java"
+#  gcp:
+#    sqlInstances:
+#      - type: POSTGRES_16
+#        tier: db-f1-micro
+#        databases:
+#          - name: brev
+  liveness:
+    path: /actuator/live
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  readiness:
+    path: /actuator/ready
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  prometheus:
+    enabled: true
+    path: /actuator/metrics
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
+  secureLogs:
+    enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: behandlingsflyt
+    outbound:
+      external:
+        - host: pdl-api.dev-fss-pub.nais.io
+        - host: pensjon-popp-q2.dev-fss-pub.nais.io
+      rules:
+        - application: tilgang
+        - application: behandlingsflyt
+
+  env:
+    - name: INTEGRASJON_TILGANG_URL
+      value: http://tilgang
+    - name: INTEGRASJON_TILGANG_SCOPE
+      value: api://dev-gcp.aap.tilgang/.default
+    - name: INTEGRASJON_TILGANG_AZP
+      value: dev-gcp:aap:tilgang
+    - name: INTEGRASJON_BEHANDLINGSFLYT_URL
+      value: http://behandlingsflyt
+    - name: INTEGRASJON_BEHANDLINGSFLYT_SCOPE
+      value: api://dev-gcp.aap.behandlingsflyt/.default
+    - name: INTEGRASJON_BEHANDLINGSFLYT_AZP
+      value: dev-gcp:aap:behandlingsflyt
