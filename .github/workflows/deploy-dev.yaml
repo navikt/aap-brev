@@ -1,0 +1,82 @@
+name: Deploy saksbehandling
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+        - '.github/pr.yml'
+        - '*.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest-8-cores
+    permissions:
+        contents: read
+        id-token: write
+        packages: write
+        checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4.2.2
+        with:
+          java-version: 22
+          distribution: 'temurin'
+      - name: Setup Gradle for a non-wrapper project
+        uses: gradle/actions/setup-gradle@v4
+        with:
+            gradle-version: 8.9
+      - name: Bygg & test
+        run: gradle test buildFatJar --continue --no-daemon --configuration-cache --stacktrace --info
+
+      - uses: dorny/test-reporter@v1.9.1
+        if: success() || failure()
+        with:
+          name: test
+          path: "**/build/test-results/test/TEST-*.xml"
+          reporter: java-junit
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: slackapi/slack-github-action@v1.26.0
+        if: failure()
+        with:
+          channel-id: "C02PPNUT6CD"
+          payload: |
+            {
+              "text": "Tester feilet for Brev! ⚠️ <!subteam^S055U2VSTT8>",
+              "attachments": [
+                {
+                  "color": "danger",
+                  "fields": [
+                  {"title": "Commit",
+                   "value": "<https://github.com/navikt/aap-brev/commit/${{ github.sha }}>",
+                   "short": false}
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+      - uses: nais/docker-build-push@v0
+        id: docker-push
+        with:
+            team: aap # required
+            project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # required, but is defined as an organization variable
+            identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # required, but is defined as an organization secret
+    outputs:
+        image: ${{ steps.docker-push.outputs.image }}
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          PRINT_PAYLOAD: true
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/app.yml
+          VAR: image=${{ needs.build.outputs.image }}
