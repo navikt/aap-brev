@@ -74,8 +74,6 @@ spec:
       value: http://tilgang
     - name: INTEGRASJON_TILGANG_SCOPE
       value: api://dev-gcp.aap.tilgang/.default
-    - name: INTEGRASJON_TILGANG_AZP
-      value: dev-gcp:aap:tilgang
     - name: INTEGRASJON_BEHANDLINGSFLYT_URL
       value: http://behandlingsflyt
     - name: INTEGRASJON_BEHANDLINGSFLYT_SCOPE
