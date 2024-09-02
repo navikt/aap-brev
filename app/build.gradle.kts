@@ -1,6 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 val ktorVersion = "2.3.12"
+val komponenterVersjon = "0.0.19"
 
 plugins {
     id("io.ktor.plugin")
@@ -60,11 +61,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.7")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
-    implementation(project(":httpklient"))
-    implementation(project(":dbflyway"))
-    implementation(project(":dbconnect"))
+    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
     implementation(project(":tilgang"))
-    implementation(project(":pip"))
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.17.1")
     runtimeOnly("org.postgresql:postgresql:42.7.3")

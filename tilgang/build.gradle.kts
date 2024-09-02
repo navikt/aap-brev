@@ -1,6 +1,8 @@
 val ktorVersion = "2.3.12"
+val komponenterVersjon = "0.0.19"
+
 dependencies {
-    implementation(project(":httpklient"))
+    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:1.5.7")
     implementation("no.nav:ktor-openapi-generator:1.0.6")
@@ -22,5 +24,4 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    testImplementation(project(":lib-test"))
 }
