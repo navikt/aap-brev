@@ -1,3 +1,5 @@
+package no.nav.aap.brev
+
 import org.junit.jupiter.api.Test
 
 class AppTest {
