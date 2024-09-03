@@ -37,6 +37,7 @@ private const val ANTALL_WORKERS = 5
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
+    // TODO fjern utkommentering for DbConfig() når vi kobler på databasen
     embeddedServer(Netty, port = 8080) { server(/*DbConfig()*/) }.start(wait = true)
 }
 
