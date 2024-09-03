@@ -113,12 +113,12 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
 }
 
 class DbConfig(
-    val host: String = System.getenv("NAIS_DATABASE_BEHANDLINGSFLYT_BEHANDLINGSFLYT_HOST"),
-    val port: String = System.getenv("NAIS_DATABASE_BEHANDLINGSFLYT_BEHANDLINGSFLYT_PORT"),
-    val database: String = System.getenv("NAIS_DATABASE_BEHANDLINGSFLYT_BEHANDLINGSFLYT_DATABASE"),
+    val host: String = System.getenv("NAIS_DATABASE_BREV_BREV_HOST"),
+    val port: String = System.getenv("NAIS_DATABASE_BREV_BREV_PORT"),
+    val database: String = System.getenv("NAIS_DATABASE_BREV_BREV_DATABASE"),
     val url: String = "jdbc:postgresql://$host:$port/$database",
-    val username: String = System.getenv("NAIS_DATABASE_BEHANDLINGSFLYT_BEHANDLINGSFLYT_USERNAME"),
-    val password: String = System.getenv("NAIS_DATABASE_BEHANDLINGSFLYT_BEHANDLINGSFLYT_PASSWORD")
+    val username: String = System.getenv("NAIS_DATABASE_BREV_BREV_USERNAME"),
+    val password: String = System.getenv("NAIS_DATABASE_BREV_BREV_PASSWORD")
 )
 
 fun initDatasource(dbConfig: DbConfig) = HikariDataSource(HikariConfig().apply {
