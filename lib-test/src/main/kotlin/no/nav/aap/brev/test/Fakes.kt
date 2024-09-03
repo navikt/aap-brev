@@ -7,13 +7,14 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
+import no.nav.aap.brev.ErrorRespons
+import no.nav.aap.brev.test.AZURE_JWKS
+import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
 
 class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val log: Logger = LoggerFactory.getLogger(Fakes::class.java)

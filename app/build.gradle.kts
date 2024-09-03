@@ -74,4 +74,5 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:1.20.1")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(kotlin("test"))
+    testImplementation(project(":lib-test"))
 }

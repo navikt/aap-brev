@@ -1,4 +1,4 @@
-package no.nav.aap.brev.no.nav.aap.brev
+package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.zaxxer.hikari.HikariConfig
@@ -21,8 +21,6 @@ import io.ktor.server.routing.*
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import no.nav.aap.brev.ErrorRespons
-import no.nav.aap.brev.generateOpenAPI
 import no.nav.aap.brev.server.authenticate.authentication
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
