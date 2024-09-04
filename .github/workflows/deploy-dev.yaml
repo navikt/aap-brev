@@ -1,4 +1,4 @@
-name: Deploy saksbehandling
+name: Deploy brev
 
 on:
   push:
