@@ -66,7 +66,7 @@ dependencies {
     implementation(project(":tilgang"))
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.17.1")
-    runtimeOnly("org.postgresql:postgresql:42.7.3")
+    runtimeOnly("org.postgresql:postgresql:42.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
