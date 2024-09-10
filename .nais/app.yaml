@@ -28,12 +28,12 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: "java"
-#  gcp:
-#    sqlInstances:
-#      - type: POSTGRES_16
-#        tier: db-f1-micro
-#        databases:
-#          - name: brev
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_16
+        tier: db-f1-micro
+        databases:
+          - name: brev
   liveness:
     path: /actuator/live
     initialDelay: 3
