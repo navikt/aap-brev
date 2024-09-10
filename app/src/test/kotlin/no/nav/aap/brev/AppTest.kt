@@ -13,14 +13,27 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import java.net.URI
 import org.assertj.core.api.Assertions.assertThat
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 class AppTest {
 
     companion object {
+        private val postgres = postgreSQLContainer()
         private val fakes = Fakes(azurePort = 8081)
+        private val dbConfig = DbConfig(
+            host = "",
+            port = "",
+            database = "",
+            url = postgres.jdbcUrl,
+            username = postgres.username,
+            password = postgres.password
+        )
 
         val httpClient = HttpClient.newBuilder().build()
         private val restClient = RestClient(
@@ -31,7 +44,7 @@ class AppTest {
 
         // Starter server
         private val server = embeddedServer(Netty, port = 8080) {
-            server(/*dbConfig = dbConfig*/)
+            server(dbConfig = dbConfig)
             module(fakes)
         }.start()
 
@@ -40,6 +53,7 @@ class AppTest {
         fun afterAll() {
             server.stop()
             fakes.close()
+            postgres.close()
         }
     }
 
@@ -55,6 +69,13 @@ class AppTest {
         )
         assertThat(res.statusCode()).isEqualTo(HttpStatusCode.OK.value)
     }
+}
+
+private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
+    val postgres = PostgreSQLContainer<Nothing>("postgres:16")
+    postgres.waitingFor(HostPortWaitStrategy().withStartupTimeout(Duration.of(60L, ChronoUnit.SECONDS)))
+    postgres.start()
+    return postgres
 }
 
 private fun Application.module(fakes: Fakes) {
