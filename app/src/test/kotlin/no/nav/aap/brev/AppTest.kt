@@ -20,7 +20,7 @@ import java.net.http.HttpResponse
 class AppTest {
 
     companion object {
-        private val fakes = Fakes()
+        private val fakes = Fakes(azurePort = 8081)
 
         val httpClient = HttpClient.newBuilder().build()
         private val restClient = RestClient(
@@ -30,7 +30,7 @@ class AppTest {
         )
 
         // Starter server
-        private val server = embeddedServer(Netty, port = 0) {
+        private val server = embeddedServer(Netty, port = 8080) {
             server(/*dbConfig = dbConfig*/)
             module(fakes)
         }.start()
