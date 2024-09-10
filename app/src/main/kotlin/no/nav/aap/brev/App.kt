@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.binder.logging.LogbackMetrics
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.server.authenticate.authentication
+import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import org.slf4j.Logger
@@ -33,15 +34,12 @@ const val AZURE = "azure"
 
 class App
 
-private const val ANTALL_WORKERS = 5
-
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
-    // TODO fjern utkommentering for DbConfig() når vi kobler på databasen
-    embeddedServer(Netty, port = 8080) { server(/*DbConfig()*/) }.start(wait = true)
+    embeddedServer(Netty, port = 8080) { server(DbConfig()) }.start(wait = true)
 }
 
-internal fun Application.server(/*dbConfig: DbConfig*/) {
+internal fun Application.server(dbConfig: DbConfig) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     install(MicrometerMetrics) {
@@ -75,9 +73,8 @@ internal fun Application.server(/*dbConfig: DbConfig*/) {
 
     authentication(AzureConfig())
 
-// TODO når vi kobler på databasen
-//    val dataSource = initDatasource(dbConfig)
-//    Migrering.migrate(dataSource)
+    val dataSource = initDatasource(dbConfig)
+    Migrering.migrate(dataSource)
 
     routing {
         authenticate(AZURE) {
@@ -101,13 +98,7 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
         }
 
         get("/ready") {
-            val kontaktMedDatabasen = true // TODO når vi kobler på databasen
-            if (kontaktMedDatabasen) {
-                val status = HttpStatusCode.OK
-                call.respond(status, "Oppe!")
-            } else {
-                call.respond(HttpStatusCode.ServiceUnavailable, "Kjører ikke")
-            }
+            call.respond(HttpStatusCode.OK, "Oppe!")
         }
     }
 }
@@ -125,7 +116,7 @@ fun initDatasource(dbConfig: DbConfig) = HikariDataSource(HikariConfig().apply {
     jdbcUrl = dbConfig.url
     username = dbConfig.username
     password = dbConfig.password
-    maximumPoolSize = 10 + ANTALL_WORKERS
+    maximumPoolSize = 10
     minimumIdle = 1
     driverClassName = "org.postgresql.Driver"
     connectionTestQuery = "SELECT 1"
