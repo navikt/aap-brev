@@ -100,6 +100,7 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
             call.respond(HttpStatusCode.OK, "Oppe!")
         }
     }
+
 }
 
 class DbConfig(
