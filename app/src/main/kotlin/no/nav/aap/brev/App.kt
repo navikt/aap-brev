@@ -73,8 +73,8 @@ internal fun Application.server(dbConfig: DbConfig) {
 
     authentication(AzureConfig())
 
-    val dataSource = initDatasource(dbConfig)
-    Migrering.migrate(dataSource)
+//    val dataSource = initDatasource(dbConfig)
+//    Migrering.migrate(dataSource)
 
     routing {
         authenticate(AZURE) {
