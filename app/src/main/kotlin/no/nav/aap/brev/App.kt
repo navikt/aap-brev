@@ -73,8 +73,8 @@ internal fun Application.server(dbConfig: DbConfig) {
 
     authentication(AzureConfig())
 
-//    val dataSource = initDatasource(dbConfig)
-//    Migrering.migrate(dataSource)
+    val dataSource = initDatasource(dbConfig)
+    Migrering.migrate(dataSource)
 
     routing {
         authenticate(AZURE) {
@@ -103,18 +103,11 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
 }
 
 class DbConfig(
-    val host: String = System.getenv("NAIS_DATABASE_BREV_BREV_HOST"),
-    val port: String = System.getenv("NAIS_DATABASE_BREV_BREV_PORT"),
-    val database: String = System.getenv("NAIS_DATABASE_BREV_BREV_DATABASE"),
-    val url: String = "jdbc:postgresql://$host:$port/$database",
-    val username: String = System.getenv("NAIS_DATABASE_BREV_BREV_USERNAME"),
-    val password: String = System.getenv("NAIS_DATABASE_BREV_BREV_PASSWORD")
+    val jdbcUrl: String = System.getenv("NAIS_DATABASE_BREV_BREV_JDBC_URL"),
 )
 
 fun initDatasource(dbConfig: DbConfig) = HikariDataSource(HikariConfig().apply {
-    jdbcUrl = dbConfig.url
-    username = dbConfig.username
-    password = dbConfig.password
+    jdbcUrl = dbConfig.jdbcUrl
     maximumPoolSize = 10
     minimumIdle = 1
     driverClassName = "org.postgresql.Driver"

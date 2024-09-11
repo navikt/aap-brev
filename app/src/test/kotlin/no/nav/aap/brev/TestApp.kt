@@ -17,12 +17,7 @@ fun main() {
     // Starter server
     embeddedServer(Netty, port = 8080) {
         val dbConfig = DbConfig(
-            host = "",
-            port = "",
-            database = "",
-            url = postgres.jdbcUrl,
-            username = postgres.username,
-            password = postgres.password
+            jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
         )
         // Useful for connecting to the test database locally
         // jdbc URL contains the host and port and database name.

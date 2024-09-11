@@ -27,12 +27,7 @@ class AppTest {
         private val postgres = postgreSQLContainer()
         private val fakes = Fakes(azurePort = 8081)
         private val dbConfig = DbConfig(
-            host = "",
-            port = "",
-            database = "",
-            url = postgres.jdbcUrl,
-            username = postgres.username,
-            password = postgres.password
+            jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
         )
 
         val httpClient = HttpClient.newBuilder().build()
