@@ -1,7 +1,7 @@
 import java.io.ByteArrayOutputStream
 
 val ktorVersion = "2.3.12"
-val komponenterVersjon = "0.0.34"
+val komponenterVersjon = "0.0.46"
 
 plugins {
     id("io.ktor.plugin")
@@ -9,20 +9,6 @@ plugins {
 
 application {
     mainClass.set("no.nav.aap.brev.AppKt")
-}
-
-tasks {
-    val projectProps by registering(WriteProperties::class) {
-        destinationFile = layout.buildDirectory.file("version.properties")
-        // Define property.
-        property("project.version", getCheckedOutGitCommitHash())
-    }
-
-    processResources {
-        // Depend on output of the task to create properties,
-        // so the properties file will be part of the Java resources.
-        from(projectProps)
-    }
 }
 
 fun runCommand(command: String): String {
