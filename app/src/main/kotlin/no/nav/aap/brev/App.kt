@@ -1,6 +1,9 @@
 package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
+import com.papsign.ktor.openapigen.route.path.normal.post
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.http.*
@@ -79,6 +82,13 @@ internal fun Application.server(dbConfig: DbConfig) {
     routing {
         authenticate(AZURE) {
             apiRouting {
+                route("/api") {
+                    route("/bestill") {
+                        post<Unit, BestillBrevResponse, BestillBrevRequest> { _, request ->
+                            respond(BestillBrevResponse(UUID.randomUUID()), HttpStatusCode.Created)
+                        }
+                    }
+                }
             }
         }
         actuator(prometheus)
