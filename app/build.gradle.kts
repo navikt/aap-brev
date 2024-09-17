@@ -51,7 +51,7 @@ dependencies {
     implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
     implementation(project(":tilgang"))
     implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.flywaydb:flyway-database-postgresql:10.17.3")
+    implementation("org.flywaydb:flyway-database-postgresql:10.18.0")
     runtimeOnly("org.postgresql:postgresql:42.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
