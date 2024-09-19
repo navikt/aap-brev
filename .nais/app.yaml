@@ -62,12 +62,10 @@ spec:
       rules:
         - application: behandlingsflyt
     outbound:
-      external:
-        - host: pdl-api.dev-fss-pub.nais.io
-        - host: pensjon-popp-q2.dev-fss-pub.nais.io
       rules:
         - application: tilgang
         - application: behandlingsflyt
+        - application: brev-sanity-proxy
 
   env:
     - name: INTEGRASJON_TILGANG_URL
