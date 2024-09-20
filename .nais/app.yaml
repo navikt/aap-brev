@@ -50,11 +50,6 @@ spec:
   azure:
     application:
       enabled: true
-      allowAllUsers: true
-      claims:
-        extra:
-          - "NAVident"
-          - "azp_name"
   secureLogs:
     enabled: true
   accessPolicy:

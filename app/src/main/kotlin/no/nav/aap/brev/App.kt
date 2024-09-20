@@ -18,8 +18,10 @@ import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.komponenter.commonKtorModule
+import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
+import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -55,12 +57,14 @@ internal fun Application.server(dbConfig: DbConfig) {
     val dataSource = initDatasource(dbConfig)
     Migrering.migrate(dataSource)
 
+    val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
+
     routing {
         authenticate(AZURE) {
             apiRouting {
                 route("/api") {
                     route("/bestill") {
-                        post<Unit, BestillBrevResponse, BestillBrevRequest> { _, request ->
+                        authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(behandlingsflytAzp) { _, request ->
                             respond(BestillBrevResponse(UUID.randomUUID()), HttpStatusCode.Created)
                         }
                     }
