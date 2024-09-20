@@ -1,5 +1,6 @@
 val ktorVersion = "2.3.12"
 val komponenterVersjon = "0.0.66"
+val tilgangVersjon = "0.0.6"
 
 dependencies {
     implementation(project(":app"))
@@ -11,11 +12,13 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+
     implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
+    implementation("no.nav.aap.tilgang:api-kontrakt:$tilgangVersjon")
 
     implementation("no.nav.aap.statistikk:api-kontrakt:0.0.5")
 
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
 
