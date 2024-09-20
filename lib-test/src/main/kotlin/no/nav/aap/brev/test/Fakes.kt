@@ -84,7 +84,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         install(StatusPages) {
             exception<Throwable> { call, cause ->
                 this@behandlingsflytFake.log.info(
-                    "TILGANG :: Ukjent feil ved kall til '{}'",
+                    "BEHANDLINGSFLYT :: Ukjent feil ved kall til '{}'",
                     call.request.local.uri,
                     cause
                 )
