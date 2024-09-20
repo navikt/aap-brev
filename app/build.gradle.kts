@@ -21,13 +21,6 @@ fun runCommand(command: String): String {
     return String(byteOut.toByteArray()).trim()
 }
 
-fun getCheckedOutGitCommitHash(): String {
-    if (System.getenv("GITHUB_ACTIONS") == "true") {
-        return System.getenv("GITHUB_SHA")
-    }
-    return runCommand("git rev-parse --verify HEAD")
-}
-
 dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
