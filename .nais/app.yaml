@@ -73,3 +73,7 @@ spec:
       value: api://dev-gcp.aap.behandlingsflyt/.default
     - name: INTEGRASJON_BEHANDLINGSFLYT_AZP
       value: dev-gcp:aap:behandlingsflyt
+    - name: INTEGRASJON_BREV_SANITY_PROXY_URL
+      value: http://brev-sanity-proxy
+    - name: INTEGRASJON_BREV_SANITY_PROXY_SCOPE
+      value: api://dev-gcp.aap.brev-sanity-proxy/.default

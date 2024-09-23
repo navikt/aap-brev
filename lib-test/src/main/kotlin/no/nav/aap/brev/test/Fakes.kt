@@ -11,7 +11,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
-import no.nav.aap.brev.ErrorRespons
+import no.nav.aap.brev.api.ErrorRespons
+import no.nav.aap.brev.domene.Brevinnhold
 import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
@@ -24,6 +25,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
     private val behandlingsflyt = embeddedServer(Netty, port = 0, module = { behandlingsflytFake() }).apply { start() }
     private val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
+    private val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
 
     init {
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
@@ -43,12 +45,18 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         System.setProperty("integrasjon.tilgang.url", "http://localhost:${tilgang.port()}")
         System.setProperty("integrasjon.tilgang.scope", "scope")
         System.setProperty("integrasjon.tilgang.azp", "azp")
+
+        // Brev sanity proxy
+        System.setProperty("integrasjon.brev_sanity_proxy.url", "http://localhost:${brevSanityProxy.port()}")
+        System.setProperty("integrasjon.brev_sanity_proxy.scope", "scope")
+        System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
     }
 
     override fun close() {
         azure.stop(0L, 0L)
         behandlingsflyt.stop(0L, 0L)
         tilgang.stop(0L, 0L)
+        brevSanityProxy.stop(0L, 0L)
     }
 
     private fun NettyApplicationEngine.port(): Int =
@@ -113,6 +121,27 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
             post("/tilgang") {
                 call.receive<TilgangRequest>()
                 call.respond(TilgangResponse(true))
+            }
+        }
+    }
+
+    fun Application.brevSanityProxyFake() {
+        install(ContentNegotiation) {
+            jackson()
+        }
+        install(StatusPages) {
+            exception<Throwable> { call, cause ->
+                this@brevSanityProxyFake.log.info(
+                    "BREV_SANITY_PROXY :: Ukjent feil ved kall til '{}'",
+                    call.request.local.uri,
+                    cause
+                )
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+            }
+        }
+        routing {
+            get("/api/brev") {
+                call.respond(Brevinnhold("brevinnhold"))
             }
         }
     }

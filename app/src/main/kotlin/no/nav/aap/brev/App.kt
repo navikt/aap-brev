@@ -1,7 +1,6 @@
 package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
@@ -17,6 +16,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import no.nav.aap.brev.api.BestillBrevRequest
+import no.nav.aap.brev.api.BestillBrevResponse
+import no.nav.aap.brev.api.ErrorRespons
+import no.nav.aap.brev.domene.BrevbestillingReferanse
+import no.nav.aap.brev.innhold.BrevinnholdService
+import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbmigrering.Migrering
@@ -33,10 +38,22 @@ class App
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
-    embeddedServer(Netty, port = 8080) { server(DbConfig()) }.start(wait = true)
+
+    val brevinnholdGateway = SanityBrevinnholdGateway()
+    val brevinnholdService = BrevinnholdService(brevinnholdGateway)
+
+    embeddedServer(Netty, port = 8080) {
+        server(
+            DbConfig(),
+            brevinnholdService,
+        )
+    }.start(wait = true)
 }
 
-internal fun Application.server(dbConfig: DbConfig) {
+internal fun Application.server(
+    dbConfig: DbConfig,
+    brevinnholdService: BrevinnholdService,
+) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     commonKtorModule(prometheus, AzureConfig(), "AAP - Brev")
@@ -65,7 +82,15 @@ internal fun Application.server(dbConfig: DbConfig) {
                 route("/api") {
                     route("/bestill") {
                         authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(behandlingsflytAzp) { _, request ->
-                            respond(BestillBrevResponse(UUID.randomUUID()), HttpStatusCode.Created)
+                            brevinnholdService.behandleBrevbestilling(
+                                request.behandlingReferanse,
+                                request.brevtype,
+                                request.language,
+                            )
+                            respond(
+                                response = BestillBrevResponse(BrevbestillingReferanse(UUID.randomUUID())),
+                                statusCode = HttpStatusCode.Created
+                            )
                         }
                     }
                 }
