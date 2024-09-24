@@ -7,5 +7,5 @@ import no.nav.aap.brev.domene.Språk
 data class BestillBrevRequest(
     val behandlingReferanse: BehandlingReferanse,
     val brevtype: Brevtype,
-    val language: Språk,
+    val sprak: Språk,
 )

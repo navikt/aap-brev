@@ -25,7 +25,7 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
         brevtype: Brevtype,
         språk: Språk
     ): Brevinnhold {
-        val uri = baseUri.resolve("/api/brev?brevtype=$brevtype&language=$språk")
+        val uri = baseUri.resolve("/api/brev?brevtype=$brevtype&sprak=$språk")
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
                 Header("Accept", "application/json")

@@ -1,7 +1,7 @@
 package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -17,9 +17,7 @@ import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.BestillBrevRequest
-import no.nav.aap.brev.api.BestillBrevResponse
 import no.nav.aap.brev.api.ErrorRespons
-import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.komponenter.commonKtorModule
@@ -29,7 +27,6 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureC
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
 
 private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 const val AZURE = "azure"
@@ -81,15 +78,14 @@ internal fun Application.server(
             apiRouting {
                 route("/api") {
                     route("/bestill") {
-                        authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(behandlingsflytAzp) { _, request ->
+                        authorizedPostWithApprovedList<Unit, Unit, BestillBrevRequest>(behandlingsflytAzp) { _, request ->
                             brevinnholdService.behandleBrevbestilling(
                                 request.behandlingReferanse,
                                 request.brevtype,
-                                request.language,
+                                request.sprak,
                             )
-                            respond(
-                                response = BestillBrevResponse(BrevbestillingReferanse(UUID.randomUUID())),
-                                statusCode = HttpStatusCode.Created
+                            respondWithStatus(
+                                 HttpStatusCode.Created
                             )
                         }
                     }
