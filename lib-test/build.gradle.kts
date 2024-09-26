@@ -17,7 +17,7 @@ dependencies {
     implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
     implementation("no.nav.aap.tilgang:api-kontrakt:$tilgangVersjon")
 
-    implementation("no.nav.aap.statistikk:api-kontrakt:0.0.5")
+    implementation("no.nav.aap.statistikk:api-kontrakt:0.0.8")
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
