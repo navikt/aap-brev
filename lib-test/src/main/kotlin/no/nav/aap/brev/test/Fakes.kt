@@ -140,7 +140,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
             }
         }
         routing {
-            get("/api/brev") {
+            get("/api/mal") {
                 call.respond(Brev(null, emptyList()))
             }
         }
