@@ -1,6 +1,6 @@
 package no.nav.aap.brev.innhold
 
-import no.nav.aap.brev.domene.Brevinnhold
+import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
 import no.nav.aap.komponenter.config.requiredConfigForKey
@@ -21,11 +21,11 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
         tokenProvider = ClientCredentialsTokenProvider
     )
 
-    override fun hentBrev(
+    override fun hentBrevmal(
         brevtype: Brevtype,
         språk: Språk
-    ): Brevinnhold {
-        val uri = baseUri.resolve("/api/brev?brevtype=$brevtype&sprak=$språk")
+    ): Brev {
+        val uri = baseUri.resolve("/api/mal?brevtype=$brevtype&sprak=$språk")
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
                 Header("Accept", "application/json")

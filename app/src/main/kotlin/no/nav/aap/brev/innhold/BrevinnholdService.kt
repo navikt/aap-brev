@@ -15,7 +15,7 @@ class BrevinnholdService(private val brevinnholdGateway: BrevinnholdGateway) {
         språk: Språk,
     ) {
         log.info("Henter brevinnhold for behandlingReferanse=$behandlingReferanse  brevtype=$brevtype språk=$språk")
-        val brevinnhold = brevinnholdGateway.hentBrev(brevtype, språk)
-        log.info("Hentet brevinnhold: ${brevinnhold.innhold}")
+        val brev = brevinnholdGateway.hentBrevmal(brevtype, språk)
+        log.info("Hentet brev: $brev")
     }
 }

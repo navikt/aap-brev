@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.api.ErrorRespons
-import no.nav.aap.brev.domene.Brevinnhold
+import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
@@ -141,7 +141,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         }
         routing {
             get("/api/brev") {
-                call.respond(Brevinnhold("brevinnhold"))
+                call.respond(Brev(null, emptyList()))
             }
         }
     }
