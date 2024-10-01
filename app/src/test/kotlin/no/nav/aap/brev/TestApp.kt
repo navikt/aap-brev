@@ -14,14 +14,15 @@ fun main() {
     val postgres = postgreSQLContainer()
     val fakes = Fakes(azurePort = 8081)
 
+    val dbConfig = DbConfig(
+        jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
+    )
+
+    println("Bruk følgende konfigurasjon for å koble til databasen:")
+    println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
+
     // Starter server
     embeddedServer(Netty, port = 8080) {
-        val dbConfig = DbConfig(
-            jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
-        )
-
-        println("Bruk følgende konfigurasjon for å koble til databasen:")
-        println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
         server(
             dbConfig = dbConfig,
         )

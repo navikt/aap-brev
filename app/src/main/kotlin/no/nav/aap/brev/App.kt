@@ -21,7 +21,6 @@ import no.nav.aap.brev.api.BestillBrevResponse
 import no.nav.aap.brev.api.ErrorRespons
 import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevbestilling
-import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.innhold.BrevbestillingService
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
@@ -31,6 +30,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureC
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
 import com.papsign.ktor.openapigen.route.path.normal.put
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
+import no.nav.aap.brev.api.BrevbestillingReferansePathParam
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
 import org.slf4j.Logger
@@ -96,17 +96,17 @@ internal fun Application.server(
                     }
                     route("/bestilling") {
                         route("/{referanse}") {
-                            authorizedGetWithApprovedList<BrevbestillingReferanse, Brevbestilling>(behandlingsflytAzp) {
+                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, Brevbestilling>(behandlingsflytAzp) {
                                 val brevbestilling = dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection).hent(it)
+                                    BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
                                 }
                                 respond(brevbestilling)
                             }
 
-                            put<BrevbestillingReferanse, Unit, Brev>() { referanse, brev ->
+                            put<BrevbestillingReferansePathParam, Unit, Brev>() { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection).oppdaterBrev(referanse, brev)
+                                    BrevbestillingService.konstruer(connection).oppdaterBrev(referanse.brevbestillingReferanse, brev)
                                 }
                                 respondWithStatus(HttpStatusCode.NoContent)
                             }
