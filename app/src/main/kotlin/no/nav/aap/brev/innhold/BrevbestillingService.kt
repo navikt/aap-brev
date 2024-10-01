@@ -3,6 +3,8 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.BrevbestillingRepository
 import no.nav.aap.brev.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.domene.BehandlingReferanse
+import no.nav.aap.brev.domene.Brev
+import no.nav.aap.brev.domene.Brevbestilling
 import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
@@ -39,5 +41,13 @@ class BrevbestillingService(
             sprak = språk,
             brev = brev,
         )
+    }
+
+    fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
+        return brevbestillingRepository.hent(referanse)
+    }
+
+    fun oppdaterBrev(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
+        brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 }

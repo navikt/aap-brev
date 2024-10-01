@@ -19,13 +19,20 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.BestillBrevRequest
 import no.nav.aap.brev.api.BestillBrevResponse
 import no.nav.aap.brev.api.ErrorRespons
+import no.nav.aap.brev.domene.Brev
+import no.nav.aap.brev.domene.Brevbestilling
+import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.innhold.BrevbestillingService
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
+import no.nav.aap.tilgang.authorizedGetWithApprovedList
+import com.papsign.ktor.openapigen.route.path.normal.put
+import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
+import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -85,6 +92,24 @@ internal fun Application.server(
                                 )
                             }
                             respond(BestillBrevResponse(referanse), HttpStatusCode.Created)
+                        }
+                    }
+                    route("/bestilling") {
+                        route("/{referanse}") {
+                            authorizedGetWithApprovedList<BrevbestillingReferanse, Brevbestilling>(behandlingsflytAzp) {
+                                val brevbestilling = dataSource.transaction { connection ->
+                                    BrevbestillingService.konstruer(connection).hent(it)
+                                }
+                                respond(brevbestilling)
+                            }
+
+                            put<BrevbestillingReferanse, Unit, Brev>() { referanse, brev ->
+                                installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
+                                dataSource.transaction { connection ->
+                                    BrevbestillingService.konstruer(connection).oppdaterBrev(referanse, brev)
+                                }
+                                respondWithStatus(HttpStatusCode.NoContent)
+                            }
                         }
                     }
                 }
