@@ -31,10 +31,10 @@ class BrevmodellTest {
                   "overskrift": "H3 overskrift",
                   "kanRedigeres": true,
                   "erFullstendig": false,
-                  "avsnitt": [
+                  "blokker": [
                     {
-                      "listeInnrykk": null,
-                      "tekst": [
+                      "type": "avsnitt",
+                      "innhold": [
                         {
                           "tekst": "Startdatoen er: ",
                           "type": "tekst",

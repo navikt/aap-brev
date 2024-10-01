@@ -16,34 +16,37 @@ data class Tekstbolk(
 data class Innhold(
     val sprak: String?,
     val overskrift: String,
-    val avsnitt: List<Avsnitt>,
+    val blokker: List<Blokk>,
     val kanRedigeres: Boolean,
     val erFullstendig: Boolean,
 )
 
-data class Avsnitt(
-    val tekst: List<Tekst>,
-    val listeInnrykk: Int?,
+data class Blokk(
+    val innhold: List<BlokkInnhold>,
+    val type: BlokkType,
 )
 
+enum class BlokkType {
+    avsnitt, liste
+}
 
 const val TEKST_TYPE_TEKST = "tekst"
 const val TEKST_TYPE_FAKTAGRUNNLAG = "faktagrunnlag"
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
-sealed abstract class Tekst(val type: String) {
+sealed abstract class BlokkInnhold(val type: String) {
 
     @JsonTypeName(TEKST_TYPE_TEKST)
     data class FormattertTekst(
         val tekst: String,
         val formattering: List<Formattering>,
-    ) : Tekst(TEKST_TYPE_TEKST)
+    ) : BlokkInnhold(TEKST_TYPE_TEKST)
 
     @JsonTypeName(TEKST_TYPE_FAKTAGRUNNLAG)
     data class Faktagrunnlag(
         val visningsnavn: String,
         val tekniskNavn: String,
-    ) : Tekst(TEKST_TYPE_FAKTAGRUNNLAG)
+    ) : BlokkInnhold(TEKST_TYPE_FAKTAGRUNNLAG)
 }
 
 enum class Formattering {
