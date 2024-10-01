@@ -12,15 +12,6 @@ application {
     mainClass.set("no.nav.aap.brev.AppKt")
 }
 
-fun runCommand(command: String): String {
-    val byteOut = ByteArrayOutputStream()
-    project.exec {
-        commandLine = command.split("\\s".toRegex())
-        standardOutput = byteOut
-    }
-    return String(byteOut.toByteArray()).trim()
-}
-
 dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
@@ -30,12 +21,15 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.8")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
-    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:server:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:infrastructure:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:server:$komponenterVersjon")
 
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
+
+    implementation(project(":dbflyway"))
 
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.18.0")

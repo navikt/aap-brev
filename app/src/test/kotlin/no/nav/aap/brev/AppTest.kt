@@ -7,8 +7,6 @@ import no.nav.aap.brev.api.BestillBrevRequest
 import no.nav.aap.brev.domene.BehandlingReferanse
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
-import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
@@ -24,6 +22,7 @@ import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 import java.net.URI
 import java.time.Duration
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 class AppTest {
 
@@ -33,10 +32,6 @@ class AppTest {
         private val dbConfig = DbConfig(
             jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
         )
-
-        val brevinnholdGateway = SanityBrevinnholdGateway()
-        val brevinnholdService = BrevinnholdService(brevinnholdGateway)
-
         private val restClient = RestClient(
             config = ClientConfig(scope = "brev"),
             tokenProvider = ClientCredentialsTokenProvider,
@@ -47,7 +42,6 @@ class AppTest {
         private val server = embeddedServer(Netty, port = 8080) {
             server(
                 dbConfig = dbConfig,
-                brevinnholdService = brevinnholdService,
             )
             module(fakes)
         }.start()
@@ -67,7 +61,7 @@ class AppTest {
             restClient.post<_, Unit>(
                 uri = URI.create("http://localhost:8080/").resolve("/api/bestill"),
                 request = PostRequest(
-                    body = BestillBrevRequest(BehandlingReferanse("123"), Brevtype.INNVILGELSE, Språk.NB)
+                    body = BestillBrevRequest(BehandlingReferanse(UUID.randomUUID()), Brevtype.INNVILGELSE, Språk.nb)
                 )
             )
         }

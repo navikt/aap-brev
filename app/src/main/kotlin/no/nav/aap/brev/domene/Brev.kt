@@ -14,7 +14,7 @@ data class Tekstbolk(
 )
 
 data class Innhold(
-    val sprak: String?,
+    val sprak: Språk?,
     val overskrift: String,
     val blokker: List<Blokk>,
     val kanRedigeres: Boolean,

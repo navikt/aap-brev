@@ -4,8 +4,6 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
@@ -21,15 +19,11 @@ fun main() {
         val dbConfig = DbConfig(
             jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
         )
-        val brevinnholdGateway = SanityBrevinnholdGateway()
-        val brevinnholdService = BrevinnholdService(brevinnholdGateway)
 
-        // Useful for connecting to the test database locally
-        // jdbc URL contains the host and port and database name.
+        println("Bruk følgende konfigurasjon for å koble til databasen:")
         println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
         server(
             dbConfig = dbConfig,
-            brevinnholdService = brevinnholdService,
         )
         module(fakes)
     }.start(wait = true)

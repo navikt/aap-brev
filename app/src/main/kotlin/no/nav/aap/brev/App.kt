@@ -1,7 +1,7 @@
 package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.route.response.respondWithStatus
+import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -17,11 +17,12 @@ import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.BestillBrevRequest
+import no.nav.aap.brev.api.BestillBrevResponse
 import no.nav.aap.brev.api.ErrorRespons
-import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
+import no.nav.aap.brev.innhold.BrevbestillingService
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
+import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
@@ -36,20 +37,15 @@ class App
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
 
-    val brevinnholdGateway = SanityBrevinnholdGateway()
-    val brevinnholdService = BrevinnholdService(brevinnholdGateway)
-
     embeddedServer(Netty, port = 8080) {
         server(
             DbConfig(),
-            brevinnholdService,
         )
     }.start(wait = true)
 }
 
 internal fun Application.server(
     dbConfig: DbConfig,
-    brevinnholdService: BrevinnholdService,
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
@@ -78,15 +74,17 @@ internal fun Application.server(
             apiRouting {
                 route("/api") {
                     route("/bestill") {
-                        authorizedPostWithApprovedList<Unit, Unit, BestillBrevRequest>(behandlingsflytAzp) { _, request ->
-                            brevinnholdService.behandleBrevbestilling(
-                                request.behandlingReferanse,
-                                request.brevtype,
-                                request.sprak,
-                            )
-                            respondWithStatus(
-                                 HttpStatusCode.Created
-                            )
+                        authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(
+                            behandlingsflytAzp
+                        ) { _, request ->
+                            val referanse = dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection).behandleBrevbestilling(
+                                    behandlingReferanse = request.behandlingReferanse,
+                                    brevtype = request.brevtype,
+                                    språk = request.sprak,
+                                )
+                            }
+                            respond(BestillBrevResponse(referanse), HttpStatusCode.Created)
                         }
                     }
                 }

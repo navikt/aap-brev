@@ -12,7 +12,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.api.ErrorRespons
+import no.nav.aap.brev.domene.Blokk
+import no.nav.aap.brev.domene.BlokkInnhold.FormattertTekst
+import no.nav.aap.brev.domene.BlokkType
 import no.nav.aap.brev.domene.Brev
+import no.nav.aap.brev.domene.Formattering
+import no.nav.aap.brev.domene.Innhold
+import no.nav.aap.brev.domene.Språk
+import no.nav.aap.brev.domene.Tekstbolk
 import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
@@ -141,7 +148,38 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         }
         routing {
             get("/api/mal") {
-                call.respond(Brev(null, emptyList()))
+                call.respond(
+                    Brev(
+                        overskrift = "Overskrift - Brev",
+                        tekstbolker = listOf(
+                            Tekstbolk(
+                                overskrift = "Overskrift - Tekstbolk", innhold = listOf(
+                                    Innhold(
+                                        sprak = Språk.nb,
+                                        overskrift = "Overskrift - Innhold",
+                                        blokker = listOf(
+                                            Blokk(
+                                                innhold = listOf(
+                                                    FormattertTekst(
+                                                        tekst = "Formattert",
+                                                        formattering = listOf(
+                                                            Formattering.understrek,
+                                                            Formattering.kursiv,
+                                                            Formattering.fet
+                                                        )
+                                                    )
+                                                ),
+                                                type = BlokkType.avsnitt
+                                            )
+                                        ),
+                                        kanRedigeres = true,
+                                        erFullstendig = false
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
             }
         }
     }
