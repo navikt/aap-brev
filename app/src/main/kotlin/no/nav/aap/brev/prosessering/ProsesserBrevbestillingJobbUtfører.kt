@@ -13,12 +13,15 @@ class ProsesserBrevbestillingJobbUtfører(
     private val prosesserStegService: ProsesserStegService,
 ) : JobbUtfører {
     override fun utfør(input: JobbInput) {
-        val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter("referanse")))
+        val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter(BESTILLING_REFERANSE_PARAMETER_NAVN)))
 
         prosesserStegService.prosesserBestilling(ProsesserStegService.Kontekst(referanse))
     }
 
     companion object : Jobb {
+
+        const val BESTILLING_REFERANSE_PARAMETER_NAVN = "referanse"
+
         override fun konstruer(connection: DBConnection): JobbUtfører {
             return ProsesserBrevbestillingJobbUtfører(
                 ProsesserStegService(

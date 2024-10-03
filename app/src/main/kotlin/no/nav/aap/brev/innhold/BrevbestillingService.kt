@@ -9,6 +9,7 @@ import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
+import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
@@ -45,7 +46,7 @@ class BrevbestillingService(
         val jobb =
             JobbInput(ProsesserBrevbestillingJobbUtfører)
             .medCallId()
-                .medParameter("referanse", referanse.referanse.toString())
+                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
 
         jobbRepository.leggTil(jobb)
 
