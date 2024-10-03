@@ -1,7 +1,5 @@
-package no.nav.aap.brev.innhold
+package no.nav.aap.brev
 
-import no.nav.aap.brev.BrevbestillingRepository
-import no.nav.aap.brev.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.domene.BehandlingReferanse
 import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevbestilling

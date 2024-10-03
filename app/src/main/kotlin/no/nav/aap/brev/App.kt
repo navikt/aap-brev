@@ -25,7 +25,6 @@ import no.nav.aap.brev.api.ErrorRespons
 import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevbestilling
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
-import no.nav.aap.brev.innhold.BrevbestillingService
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
