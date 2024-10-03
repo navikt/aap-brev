@@ -11,8 +11,7 @@ interface BrevbestillingRepository {
     fun opprettBestilling(
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
-        sprak: Språk,
-        brev: Brev,
+        språk: Språk,
     ): BrevbestillingReferanse
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling

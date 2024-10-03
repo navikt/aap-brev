@@ -4,10 +4,10 @@ import java.time.LocalDateTime
 
 data class Brevbestilling(
     val referanse: BrevbestillingReferanse,
-    val brev: Brev,
+    val brev: Brev?,
     val opprettet: LocalDateTime,
     val oppdatert: LocalDateTime,
     val behandlingReferanse: BehandlingReferanse,
     val brevtype: Brevtype,
-    val sprak: Språk,
+    val språk: Språk,
 )

@@ -8,19 +8,22 @@ import no.nav.aap.brev.domene.Brevbestilling
 import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
+import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.motor.FlytJobbRepository
+import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
 
 class BrevbestillingService(
-    private val brevinnholdGateway: BrevinnholdGateway,
-    private val brevbestillingRepository: BrevbestillingRepository
+    private val brevbestillingRepository: BrevbestillingRepository,
+    private val jobbRepository: FlytJobbRepository,
 ) {
 
     companion object {
         fun konstruer(connection: DBConnection): BrevbestillingService {
             return BrevbestillingService(
-                brevinnholdGateway = SanityBrevinnholdGateway(),
-                brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                jobbRepository = FlytJobbRepository(connection),
             )
         }
     }
@@ -32,15 +35,21 @@ class BrevbestillingService(
         brevtype: Brevtype,
         språk: Språk,
     ): BrevbestillingReferanse {
-        log.info("Henter brevinnhold for behandlingReferanse=$behandlingReferanse  brevtype=$brevtype språk=$språk")
-        val brev = brevinnholdGateway.hentBrevmal(brevtype, språk)
 
-        return brevbestillingRepository.opprettBestilling(
+        val referanse = brevbestillingRepository.opprettBestilling(
             behandlingReferanse = behandlingReferanse,
             brevtype = brevtype,
-            sprak = språk,
-            brev = brev,
+            språk = språk,
         )
+
+        val jobb =
+            JobbInput(ProsesserBrevbestillingJobbUtfører)
+            .medCallId()
+                .medParameter("referanse", referanse.referanse.toString())
+
+        jobbRepository.leggTil(jobb)
+
+        return referanse
     }
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling {

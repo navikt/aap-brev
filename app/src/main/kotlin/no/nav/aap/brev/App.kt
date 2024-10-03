@@ -1,7 +1,9 @@
 package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.route.apiRouting
+import com.papsign.ktor.openapigen.route.path.normal.put
 import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -18,23 +20,27 @@ import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.BestillBrevRequest
 import no.nav.aap.brev.api.BestillBrevResponse
+import no.nav.aap.brev.api.BrevbestillingReferansePathParam
 import no.nav.aap.brev.api.ErrorRespons
 import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevbestilling
+import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.brev.innhold.BrevbestillingService
+import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
+import no.nav.aap.motor.Motor
+import no.nav.aap.motor.api.motorApi
+import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
-import com.papsign.ktor.openapigen.route.path.normal.put
-import com.papsign.ktor.openapigen.route.response.respondWithStatus
-import no.nav.aap.brev.api.BrevbestillingReferansePathParam
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import javax.sql.DataSource
 
 private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 const val AZURE = "azure"
@@ -60,9 +66,18 @@ internal fun Application.server(
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            LoggerFactory.getLogger(App::class.java)
-                .warn("Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
-            call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+            when (cause) {
+                is BestillingForBehandlingEksistererException -> {
+                    call.respond(HttpStatusCode.BadRequest, ErrorRespons(cause.message))
+                }
+
+                else -> {
+                    LoggerFactory.getLogger(App::class.java)
+                        .warn("Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
+                    call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                }
+            }
+
         }
     }
 
@@ -73,6 +88,8 @@ internal fun Application.server(
 
     val dataSource = initDatasource(dbConfig)
     Migrering.migrate(dataSource)
+
+    val motor = module(dataSource)
 
     val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
 
@@ -96,7 +113,9 @@ internal fun Application.server(
                     }
                     route("/bestilling") {
                         route("/{referanse}") {
-                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, Brevbestilling>(behandlingsflytAzp) {
+                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, Brevbestilling>(
+                                behandlingsflytAzp
+                            ) {
                                 val brevbestilling = dataSource.transaction { connection ->
                                     BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
                                 }
@@ -106,20 +125,44 @@ internal fun Application.server(
                             put<BrevbestillingReferansePathParam, Unit, Brev>() { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection).oppdaterBrev(referanse.brevbestillingReferanse, brev)
+                                    BrevbestillingService.konstruer(connection)
+                                        .oppdaterBrev(referanse.brevbestillingReferanse, brev)
                                 }
                                 respondWithStatus(HttpStatusCode.NoContent)
                             }
                         }
                     }
                 }
+                motorApi(dataSource)
             }
         }
-        actuator(prometheus)
+        actuator(prometheus, motor)
     }
 }
 
-private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
+private fun Application.module(dataSource: DataSource): Motor {
+    val motor = Motor(
+        dataSource = dataSource,
+        antallKammer = 2,
+        logInfoProvider = NoExtraLogInfoProvider,
+        jobber = listOf(ProsesserBrevbestillingJobbUtfører),
+    )
+
+    environment.monitor.subscribe(ApplicationStarted) {
+        motor.start()
+    }
+    environment.monitor.subscribe(ApplicationStopped) { application ->
+        application.environment.log.info("Server har stoppet")
+        motor.stop()
+        // Release resources and unsubscribe from events
+        application.environment.monitor.unsubscribe(ApplicationStarted) {}
+        application.environment.monitor.unsubscribe(ApplicationStopped) {}
+    }
+
+    return motor
+}
+
+private fun Routing.actuator(prometheus: PrometheusMeterRegistry, motor: Motor) {
     route("/actuator") {
         get("/metrics") {
             call.respond(prometheus.scrape())
@@ -131,7 +174,12 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry) {
         }
 
         get("/ready") {
-            call.respond(HttpStatusCode.OK, "Oppe!")
+            if (motor.kjører()) {
+                val status = HttpStatusCode.OK
+                call.respond(status, "Oppe!")
+            } else {
+                call.respond(HttpStatusCode.ServiceUnavailable, "Kjører ikke")
+            }
         }
     }
 }

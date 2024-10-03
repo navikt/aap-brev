@@ -1,5 +1,3 @@
-import java.io.ByteArrayOutputStream
-
 val ktorVersion = "2.3.12"
 val komponenterVersjon = "0.0.84"
 val tilgangVersjon = "0.0.11"
@@ -25,6 +23,8 @@ dependencies {
     implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:infrastructure:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:motor:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:motor-api:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:server:$komponenterVersjon")
 
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
@@ -33,7 +33,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.18.0")
-    runtimeOnly("org.postgresql:postgresql:42.7.4")
+    implementation("org.postgresql:postgresql:42.7.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
