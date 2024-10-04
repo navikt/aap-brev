@@ -43,7 +43,7 @@ class BrevbestillingService(
 
         val jobb =
             JobbInput(ProsesserBrevbestillingJobbUtfører)
-            .medCallId()
+                .medCallId()
                 .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
 
         jobbRepository.leggTil(jobb)

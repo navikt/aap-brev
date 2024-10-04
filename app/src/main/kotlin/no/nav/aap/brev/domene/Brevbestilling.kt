@@ -10,4 +10,5 @@ data class Brevbestilling(
     val behandlingReferanse: BehandlingReferanse,
     val brevtype: Brevtype,
     val språk: Språk,
+    val prosesseringStatus: ProsesseringStatus?,
 )
