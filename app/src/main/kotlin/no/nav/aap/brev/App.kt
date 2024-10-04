@@ -42,12 +42,15 @@ import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
+private val LOGGER = LoggerFactory.getLogger(App::class.java)
 const val AZURE = "azure"
 
 class App
 
 fun main() {
-    Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
+    Thread.currentThread().setUncaughtExceptionHandler { _, e ->
+        LOGGER.error("Uhåndtert feil. Se sikker logg for detaljer.")
+        SECURE_LOGGER.error("Uhåndtert feil", e) }
 
     embeddedServer(Netty, port = 8080) {
         server(
