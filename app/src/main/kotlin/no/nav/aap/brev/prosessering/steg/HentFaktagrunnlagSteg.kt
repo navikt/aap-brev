@@ -1,18 +1,17 @@
 package no.nav.aap.brev.prosessering.steg
 
-import no.nav.aap.brev.prosessering.steg.StegUtfører.Kontekst
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
 
-class HentFaktagrunnlagSteg() : StegUtfører {
+class HentFaktagrunnlagSteg() : Steg.Utfører {
     private val log = LoggerFactory.getLogger(HentFaktagrunnlagSteg::class.java)
-    override fun utfør(kontekst: Kontekst): StegResultat {
+    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("HentFaktagrunnlagSteg")
-        return StegResultat.FULLFØRT
+        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): StegUtfører {
+        override fun konstruer(connection: DBConnection): Steg.Utfører {
             return HentFaktagrunnlagSteg()
         }
     }

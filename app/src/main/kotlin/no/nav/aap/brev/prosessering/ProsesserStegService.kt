@@ -11,8 +11,6 @@ import no.nav.aap.brev.prosessering.steg.HentInnholdSteg
 import no.nav.aap.brev.prosessering.steg.JournalførBrevSteg
 import no.nav.aap.brev.prosessering.steg.StarterSteg
 import no.nav.aap.brev.prosessering.steg.Steg
-import no.nav.aap.brev.prosessering.steg.StegResultat
-import no.nav.aap.brev.prosessering.steg.StegUtfører
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
 
@@ -36,17 +34,17 @@ class ProsesserStegService(
 
         val bestilling = brevbestillingRepository.hent(referanse)
 
-        prosesserTilStop(
-            kontekst = StegUtfører.Kontekst(referanse),
+        prosesserTilStopp(
+            kontekst = Steg.Kontekst(referanse),
             stegene = flyt.fraStatus(bestilling.prosesseringStatus),
         )
     }
 
-    private fun prosesserTilStop(kontekst: StegUtfører.Kontekst, stegene: List<Steg>) {
+    private fun prosesserTilStopp(kontekst: Steg.Kontekst, stegene: List<Steg>) {
         stegene.forEach { steg ->
             val stegResultat = steg.konstruer(connection).utfør(kontekst)
 
-            if (stegResultat == StegResultat.STOPP) {
+            if (stegResultat == Steg.Resultat.STOPP) {
                 return
             }
 
@@ -55,7 +53,6 @@ class ProsesserStegService(
             connection.markerSavepoint()
         }
     }
-
 }
 
 class ProsesseringFlyt private constructor(

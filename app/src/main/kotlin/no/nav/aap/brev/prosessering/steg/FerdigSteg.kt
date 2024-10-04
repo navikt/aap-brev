@@ -1,18 +1,17 @@
 package no.nav.aap.brev.prosessering.steg
 
-import no.nav.aap.brev.prosessering.steg.StegUtfører.Kontekst
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
 
-class FerdigSteg() : StegUtfører {
+class FerdigSteg() : Steg.Utfører {
     private val log = LoggerFactory.getLogger(FerdigSteg::class.java)
-    override fun utfør(kontekst: Kontekst): StegResultat {
+    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("Prosessering er ferdig.")
-        return StegResultat.FULLFØRT
+        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): StegUtfører {
+        override fun konstruer(connection: DBConnection): Steg.Utfører {
             return FerdigSteg()
         }
     }
