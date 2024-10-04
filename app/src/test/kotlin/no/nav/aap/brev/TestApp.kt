@@ -5,21 +5,27 @@ import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.komponenter.config.configForKey
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
 fun main() {
-    val postgres = postgreSQLContainer()
+    var jdbcUrl = configForKey("JDBC_URL")
+
+    if (jdbcUrl == null) {
+        val postgres = postgreSQLContainer()
+        println("Bruk følgende konfigurasjon for å koble til databasen:")
+        println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
+        jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
+    }
+
     val fakes = Fakes(azurePort = 8081)
 
     val dbConfig = DbConfig(
-        jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
+        jdbcUrl = jdbcUrl,
     )
-
-    println("Bruk følgende konfigurasjon for å koble til databasen:")
-    println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
 
     // Starter server
     embeddedServer(Netty, port = 8080) {
