@@ -13,7 +13,7 @@ class ProsesserBrevbestillingJobbUtfører(
     override fun utfør(input: JobbInput) {
         val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter(BESTILLING_REFERANSE_PARAMETER_NAVN)))
 
-        prosesserStegService.prosesserBestilling(ProsesserStegService.Kontekst(referanse))
+        prosesserStegService.prosesserBestilling(referanse)
     }
 
     companion object : Jobb {

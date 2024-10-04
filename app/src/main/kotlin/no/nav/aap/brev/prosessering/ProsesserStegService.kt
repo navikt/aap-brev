@@ -32,11 +32,8 @@ class ProsesserStegService(
         .med(steg = FerdigSteg, utfall = ProsesseringStatus.FERDIG)
         .build()
 
-    data class Kontekst(val referanse: BrevbestillingReferanse)
+    fun prosesserBestilling(referanse: BrevbestillingReferanse) {
 
-    fun prosesserBestilling(kontekst: Kontekst) {
-
-        val referanse = kontekst.referanse
         val bestilling = brevbestillingRepository.hent(referanse)
 
         prosesserTilStop(
