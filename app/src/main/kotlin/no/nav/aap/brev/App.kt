@@ -1,5 +1,6 @@
 package no.nav.aap.brev
 
+import com.papsign.ktor.openapigen.model.info.InfoModel
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.route.path.normal.put
 import com.papsign.ktor.openapigen.route.response.respond
@@ -26,11 +27,12 @@ import no.nav.aap.brev.domene.Brev
 import no.nav.aap.brev.domene.Brevbestilling
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
-import no.nav.aap.komponenter.commonKtorModule
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
+import no.nav.aap.komponenter.server.AZURE
+import no.nav.aap.komponenter.server.commonKtorModule
 import no.nav.aap.motor.Motor
 import no.nav.aap.motor.api.motorApi
 import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
@@ -43,14 +45,14 @@ import javax.sql.DataSource
 
 private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 private val LOGGER = LoggerFactory.getLogger(App::class.java)
-const val AZURE = "azure"
 
 class App
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e ->
         LOGGER.error("Uhåndtert feil. Se sikker logg for detaljer.")
-        SECURE_LOGGER.error("Uhåndtert feil", e) }
+        SECURE_LOGGER.error("Uhåndtert feil", e)
+    }
 
     embeddedServer(Netty, port = 8080) {
         server(
@@ -64,7 +66,7 @@ internal fun Application.server(
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-    commonKtorModule(prometheus, AzureConfig(), "AAP - Brev")
+    commonKtorModule(prometheus, AzureConfig(), InfoModel(title = "AAP - Brev"))
 
     install(StatusPages) {
         exception<Throwable> { call, cause ->
