@@ -36,6 +36,7 @@ import no.nav.aap.komponenter.server.commonKtorModule
 import no.nav.aap.motor.Motor
 import no.nav.aap.motor.api.motorApi
 import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
+import no.nav.aap.motor.retry.RetryService
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
@@ -106,7 +107,7 @@ internal fun Application.server(
                             behandlingsflytAzp
                         ) { _, request ->
                             val referanse = dataSource.transaction { connection ->
-                                BrevbestillingService.konstruer(connection).behandleBrevbestilling(
+                                BrevbestillingService.konstruer(connection).opprettBestilling(
                                     behandlingReferanse = request.behandlingReferanse,
                                     brevtype = request.brevtype,
                                     språk = request.sprak,
@@ -126,7 +127,7 @@ internal fun Application.server(
                                 respond(brevbestilling)
                             }
 
-                            put<BrevbestillingReferansePathParam, Unit, Brev>() { referanse, brev ->
+                            put<BrevbestillingReferansePathParam, Unit, Brev> { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
                                     BrevbestillingService.konstruer(connection)
@@ -151,6 +152,10 @@ private fun Application.module(dataSource: DataSource): Motor {
         logInfoProvider = NoExtraLogInfoProvider,
         jobber = listOf(ProsesserBrevbestillingJobbUtfører),
     )
+
+    dataSource.transaction { dbConnection ->
+        RetryService(dbConnection).enable()
+    }
 
     environment.monitor.subscribe(ApplicationStarted) {
         motor.start()

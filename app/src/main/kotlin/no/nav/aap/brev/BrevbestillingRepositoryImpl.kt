@@ -6,6 +6,7 @@ import no.nav.aap.brev.domene.Brevbestilling
 import no.nav.aap.brev.domene.BrevbestillingReferanse
 import no.nav.aap.brev.domene.Brevtype
 import no.nav.aap.brev.domene.Språk
+import no.nav.aap.brev.domene.ProsesseringStatus
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
@@ -61,6 +62,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                     behandlingReferanse = BehandlingReferanse(row.getUUID("BEHANDLING_REFERANSE")),
                     brevtype = row.getEnum("BREVTYPE"),
                     språk = row.getEnum("SPRAK"),
+                    prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
                 )
             }
         }
@@ -80,4 +82,17 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
+    override fun oppdaterProsesseringStatus(
+        referanse: BrevbestillingReferanse,
+        prosesseringStatus: ProsesseringStatus,
+    ) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET PROSESSERING_STATUS = ? WHERE REFERANSE = ?"
+        ) {
+            setParams {
+                setEnumName(1, prosesseringStatus)
+                setUUID(2, referanse.referanse)
+            }
+        }
+    }
 }

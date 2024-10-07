@@ -29,7 +29,7 @@ class BrevbestillingService(
 
     private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
 
-    fun behandleBrevbestilling(
+    fun opprettBestilling(
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
@@ -43,7 +43,7 @@ class BrevbestillingService(
 
         val jobb =
             JobbInput(ProsesserBrevbestillingJobbUtfører)
-            .medCallId()
+                .medCallId()
                 .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
 
         jobbRepository.leggTil(jobb)

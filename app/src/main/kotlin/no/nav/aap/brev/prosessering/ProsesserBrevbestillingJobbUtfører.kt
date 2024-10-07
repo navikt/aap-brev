@@ -1,8 +1,6 @@
 package no.nav.aap.brev.prosessering
 
-import no.nav.aap.brev.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.domene.BrevbestillingReferanse
-import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.Jobb
 import no.nav.aap.motor.JobbInput
@@ -15,7 +13,7 @@ class ProsesserBrevbestillingJobbUtfører(
     override fun utfør(input: JobbInput) {
         val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter(BESTILLING_REFERANSE_PARAMETER_NAVN)))
 
-        prosesserStegService.prosesserBestilling(ProsesserStegService.Kontekst(referanse))
+        prosesserStegService.prosesserBestilling(referanse)
     }
 
     companion object : Jobb {
@@ -24,9 +22,8 @@ class ProsesserBrevbestillingJobbUtfører(
 
         override fun konstruer(connection: DBConnection): JobbUtfører {
             return ProsesserBrevbestillingJobbUtfører(
-                ProsesserStegService(
-                    brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
-                    brevinnholdGateway = SanityBrevinnholdGateway(),
+                ProsesserStegService.konstruer(
+                    connection = connection,
                 )
             )
         }
