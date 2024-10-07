@@ -30,7 +30,10 @@ class ProsesseringFlyt private constructor(
 
         fun med(steg: Steg, utfall: ProsesseringStatus): Builder {
             if (rekkefølge.contains(steg)) {
-                throw IllegalStateException("Steg $steg er allerede lagt til: $rekkefølge")
+                throw IllegalArgumentException("Steg $steg er allerede lagt til.")
+            }
+            if (utfallTilSteg.keys.contains(utfall)) {
+                throw IllegalArgumentException("Utfall $utfall er allerede lagt til.")
             }
             rekkefølge.add(steg)
             stegTilUtfall.put(steg, utfall)
