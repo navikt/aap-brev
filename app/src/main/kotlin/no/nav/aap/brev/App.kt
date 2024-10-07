@@ -51,7 +51,8 @@ class App
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e ->
         LOGGER.error("Uhåndtert feil. Se sikker logg for detaljer.")
-        SECURE_LOGGER.error("Uhåndtert feil", e) }
+        SECURE_LOGGER.error("Uhåndtert feil", e)
+    }
 
     embeddedServer(Netty, port = 8080) {
         server(
@@ -105,7 +106,7 @@ internal fun Application.server(
                             behandlingsflytAzp
                         ) { _, request ->
                             val referanse = dataSource.transaction { connection ->
-                                BrevbestillingService.konstruer(connection).behandleBrevbestilling(
+                                BrevbestillingService.konstruer(connection).opprettBestilling(
                                     behandlingReferanse = request.behandlingReferanse,
                                     brevtype = request.brevtype,
                                     språk = request.sprak,
@@ -125,7 +126,7 @@ internal fun Application.server(
                                 respond(brevbestilling)
                             }
 
-                            put<BrevbestillingReferansePathParam, Unit, Brev>() { referanse, brev ->
+                            put<BrevbestillingReferansePathParam, Unit, Brev> { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
                                     BrevbestillingService.konstruer(connection)

@@ -29,7 +29,7 @@ class BrevbestillingService(
 
     private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
 
-    fun behandleBrevbestilling(
+    fun opprettBestilling(
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
