@@ -22,7 +22,7 @@ class ProsesserBrevbestillingJobbUtfører(
 
         override fun konstruer(connection: DBConnection): JobbUtfører {
             return ProsesserBrevbestillingJobbUtfører(
-                ProsesserStegService(
+                ProsesserStegService.konstruer(
                     connection = connection,
                 )
             )

@@ -17,6 +17,13 @@ import org.slf4j.LoggerFactory
 class ProsesserStegService(
     private val connection: DBConnection
 ) {
+
+    companion object {
+        fun konstruer(connection: DBConnection): ProsesserStegService {
+            return ProsesserStegService(connection)
+        }
+    }
+
     private val log = LoggerFactory.getLogger(ProsesserStegService::class.java)
     private val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
@@ -33,22 +40,21 @@ class ProsesserStegService(
     fun prosesserBestilling(referanse: BrevbestillingReferanse) {
 
         val bestilling = brevbestillingRepository.hent(referanse)
+        val stegene = flyt.fraStatus(bestilling.prosesseringStatus)
 
-        prosesserTilStopp(
-            kontekst = Steg.Kontekst(referanse),
-            stegene = flyt.fraStatus(bestilling.prosesseringStatus),
-        )
-    }
+        if (stegene.isEmpty()) {
+            log.warn("Forsøkte å prosessere bestilling uten flere steg og status ${bestilling.prosesseringStatus}.")
+            return
+        }
 
-    private fun prosesserTilStopp(kontekst: Steg.Kontekst, stegene: List<Steg>) {
         stegene.forEach { steg ->
-            val stegResultat = steg.konstruer(connection).utfør(kontekst)
+            val stegResultat = steg.konstruer(connection).utfør(Steg.Kontekst(referanse))
 
             if (stegResultat == Steg.Resultat.STOPP) {
                 return
             }
 
-            brevbestillingRepository.oppdaterProsesseringStatus(kontekst.referanse, flyt.utfall(steg))
+            brevbestillingRepository.oppdaterProsesseringStatus(referanse, flyt.utfall(steg))
 
             connection.markerSavepoint()
         }
