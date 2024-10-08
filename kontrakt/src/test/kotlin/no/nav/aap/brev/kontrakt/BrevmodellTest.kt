@@ -1,7 +1,6 @@
-package no.nav.aap.brev.domene
+package no.nav.aap.brev.kontrakt
 
 import com.fasterxml.jackson.databind.JsonNode
-import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language
@@ -14,7 +13,8 @@ class BrevmodellTest {
     fun `deserialiserer og serialiserer Brev riktig`() {
         val deserialisert = DefaultJsonMapper.fromJson<Brev>(brevJson)
         val serialisert: JsonNode = DefaultJsonMapper.objectMapper().valueToTree(deserialisert)
-        assertThat(serialisert).isEqualTo(DefaultJsonMapper.objectMapper().readTree(brevJson))
+        assertThat(serialisert)
+            .isEqualTo(DefaultJsonMapper.objectMapper().readTree(brevJson))
     }
 
     @Language("JSON")
