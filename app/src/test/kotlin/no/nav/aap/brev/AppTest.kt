@@ -3,10 +3,9 @@ package no.nav.aap.brev
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.aap.brev.api.BestillBrevRequest
-import no.nav.aap.brev.domene.BehandlingReferanse
-import no.nav.aap.brev.domene.Brevtype
-import no.nav.aap.brev.domene.Språk
+import no.nav.aap.brev.kontrakt.BestillBrevRequest
+import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
@@ -61,7 +60,7 @@ class AppTest {
             restClient.post<_, Unit>(
                 uri = URI.create("http://localhost:8080/").resolve("/api/bestill"),
                 request = PostRequest(
-                    body = BestillBrevRequest(BehandlingReferanse(UUID.randomUUID()), Brevtype.INNVILGELSE, Språk.nb)
+                    body = BestillBrevRequest(UUID.randomUUID(), Brevtype.INNVILGELSE, Språk.nb)
                 )
             )
         }

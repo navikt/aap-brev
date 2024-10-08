@@ -1,10 +1,9 @@
 package no.nav.aap.brev.prosessering
 
-import no.nav.aap.brev.BrevbestillingService
+import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.domene.BehandlingReferanse
-import no.nav.aap.brev.domene.Brevtype
-import no.nav.aap.brev.domene.ProsesseringStatus
-import no.nav.aap.brev.domene.Språk
+import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase

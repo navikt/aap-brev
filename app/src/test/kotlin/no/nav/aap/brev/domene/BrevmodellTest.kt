@@ -1,6 +1,7 @@
 package no.nav.aap.brev.domene
 
 import com.fasterxml.jackson.databind.JsonNode
+import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.intellij.lang.annotations.Language

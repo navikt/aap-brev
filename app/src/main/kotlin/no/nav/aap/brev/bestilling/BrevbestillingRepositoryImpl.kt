@@ -1,13 +1,11 @@
-package no.nav.aap.brev
+package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.domene.BehandlingReferanse
-import no.nav.aap.brev.domene.Brev
-import no.nav.aap.brev.domene.Brevbestilling
-import no.nav.aap.brev.domene.BrevbestillingReferanse
-import no.nav.aap.brev.domene.Brevtype
-import no.nav.aap.brev.domene.Språk
-import no.nav.aap.brev.domene.ProsesseringStatus
+import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
+import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import org.postgresql.util.PSQLException

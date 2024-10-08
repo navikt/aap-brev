@@ -1,6 +1,5 @@
 package no.nav.aap.brev.prosessering
 
-import no.nav.aap.brev.domene.ProsesseringStatus
 import no.nav.aap.brev.prosessering.steg.Steg
 
 class ProsesseringFlyt private constructor(

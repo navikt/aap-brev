@@ -19,13 +19,16 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import no.nav.aap.brev.api.BestillBrevRequest
-import no.nav.aap.brev.api.BestillBrevResponse
+import no.nav.aap.brev.kontrakt.BestillBrevRequest
+import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.api.BrevbestillingReferansePathParam
-import no.nav.aap.brev.api.ErrorRespons
-import no.nav.aap.brev.domene.Brev
-import no.nav.aap.brev.domene.Brevbestilling
+import no.nav.aap.brev.api.ErrorResponse
+import no.nav.aap.brev.api.tilResponse
+import no.nav.aap.brev.domene.BehandlingReferanse
+import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
+import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -73,13 +76,13 @@ internal fun Application.server(
         exception<Throwable> { call, cause ->
             when (cause) {
                 is BestillingForBehandlingEksistererException -> {
-                    call.respond(HttpStatusCode.BadRequest, ErrorRespons(cause.message))
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message))
                 }
 
                 else -> {
                     LoggerFactory.getLogger(App::class.java)
                         .warn("Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
-                    call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                    call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
                 }
             }
 
@@ -107,30 +110,30 @@ internal fun Application.server(
                             behandlingsflytAzp
                         ) { _, request ->
                             val referanse = dataSource.transaction { connection ->
-                                BrevbestillingService.konstruer(connection).opprettBestilling(
-                                    behandlingReferanse = request.behandlingReferanse,
+                                BrevbestillingService.Companion.konstruer(connection).opprettBestilling(
+                                    behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                                     brevtype = request.brevtype,
                                     språk = request.sprak,
                                 )
                             }
-                            respond(BestillBrevResponse(referanse), HttpStatusCode.Created)
+                            respond(BestillBrevResponse(referanse.referanse), HttpStatusCode.Created)
                         }
                     }
                     route("/bestilling") {
                         route("/{referanse}") {
-                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, Brevbestilling>(
+                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, BrevbestillingResponse>(
                                 behandlingsflytAzp
                             ) {
                                 val brevbestilling = dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
+                                    BrevbestillingService.Companion.konstruer(connection).hent(it.brevbestillingReferanse)
                                 }
-                                respond(brevbestilling)
+                                respond(brevbestilling.tilResponse())
                             }
 
                             put<BrevbestillingReferansePathParam, Unit, Brev> { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection)
+                                    BrevbestillingService.Companion.konstruer(connection)
                                         .oppdaterBrev(referanse.brevbestillingReferanse, brev)
                                 }
                                 respondWithStatus(HttpStatusCode.NoContent)

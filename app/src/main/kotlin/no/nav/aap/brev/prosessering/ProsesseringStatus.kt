@@ -1,4 +1,4 @@
-package no.nav.aap.brev.domene
+package no.nav.aap.brev.prosessering
 
 enum class ProsesseringStatus {
     STARTET,

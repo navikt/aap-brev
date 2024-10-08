@@ -39,6 +39,7 @@ dependencies {
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
 
     implementation(project(":dbflyway"))
+    implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.18.0")

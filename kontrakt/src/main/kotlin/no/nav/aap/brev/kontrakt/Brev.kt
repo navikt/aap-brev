@@ -1,4 +1,5 @@
-package no.nav.aap.brev.domene
+package no.nav.aap.brev.kontrakt
+
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName

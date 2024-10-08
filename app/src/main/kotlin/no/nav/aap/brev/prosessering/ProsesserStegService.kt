@@ -1,8 +1,7 @@
 package no.nav.aap.brev.prosessering
 
-import no.nav.aap.brev.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.domene.BrevbestillingReferanse
-import no.nav.aap.brev.domene.ProsesseringStatus
+import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.prosessering.steg.DistribuerJournalpostSteg
 import no.nav.aap.brev.prosessering.steg.FerdigSteg
 import no.nav.aap.brev.prosessering.steg.FerdigstillBrevSteg

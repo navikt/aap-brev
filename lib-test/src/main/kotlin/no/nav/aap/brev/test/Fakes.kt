@@ -11,15 +11,15 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
-import no.nav.aap.brev.api.ErrorRespons
-import no.nav.aap.brev.domene.Blokk
-import no.nav.aap.brev.domene.BlokkInnhold.FormattertTekst
-import no.nav.aap.brev.domene.BlokkType
-import no.nav.aap.brev.domene.Brev
-import no.nav.aap.brev.domene.Formattering
-import no.nav.aap.brev.domene.Innhold
-import no.nav.aap.brev.domene.Språk
-import no.nav.aap.brev.domene.Tekstbolk
+import no.nav.aap.brev.api.ErrorResponse
+import no.nav.aap.brev.kontrakt.Blokk
+import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
+import no.nav.aap.brev.kontrakt.BlokkType
+import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Formattering
+import no.nav.aap.brev.kontrakt.Innhold
+import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.kontrakt.Tekstbolk
 import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
@@ -78,7 +78,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         install(StatusPages) {
             exception<Throwable> { call, cause ->
                 this@azureFake.log.info("AZURE :: Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
             }
         }
         routing {
@@ -103,7 +103,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                     call.request.local.uri,
                     cause
                 )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
             }
         }
         routing {
@@ -121,7 +121,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                     call.request.local.uri,
                     cause
                 )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
             }
         }
         routing {
@@ -143,7 +143,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                     call.request.local.uri,
                     cause
                 )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorRespons(cause.message))
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
             }
         }
         routing {

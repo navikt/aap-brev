@@ -1,7 +1,7 @@
 package no.nav.aap.brev.prosessering.steg
 
-import no.nav.aap.brev.BrevbestillingRepository
-import no.nav.aap.brev.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.BrevbestillingRepository
+import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.innhold.BrevinnholdGateway
 import no.nav.aap.brev.innhold.SanityBrevinnholdGateway
 import no.nav.aap.komponenter.dbconnect.DBConnection

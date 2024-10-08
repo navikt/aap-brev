@@ -1,4 +1,4 @@
-package no.nav.aap.brev.domene
+package no.nav.aap.brev.bestilling
 
 import java.util.UUID
 
