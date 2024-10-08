@@ -34,7 +34,7 @@ const val TEKST_TYPE_TEKST = "tekst"
 const val TEKST_TYPE_FAKTAGRUNNLAG = "faktagrunnlag"
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
-sealed abstract class BlokkInnhold(val type: String) {
+sealed class BlokkInnhold(val type: String) {
 
     @JsonTypeName(TEKST_TYPE_TEKST)
     data class FormattertTekst(
