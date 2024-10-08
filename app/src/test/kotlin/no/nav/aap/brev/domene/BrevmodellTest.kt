@@ -26,25 +26,24 @@ class BrevmodellTest {
               "overskrift": "H2 overskrift",
               "innhold": [
                 {
-                  "sprak": "nb",
                   "overskrift": "H3 overskrift",
                   "kanRedigeres": true,
                   "erFullstendig": false,
                   "blokker": [
                     {
-                      "type": "avsnitt",
+                      "type": "AVSNITT",
                       "innhold": [
                         {
                           "tekst": "Startdatoen er: ",
-                          "type": "tekst",
+                          "type": "TEKST",
                           "formattering": [
-                            "kursiv"
+                            "KURSIV"
                           ]
                         },
                         {
                           "visningsnavn": "Startdato",
                           "tekniskNavn": "STARTDATO",
-                          "type": "faktagrunnlag"
+                          "type": "FAKTAGRUNNLAG"
                         }
                       ]
                     }

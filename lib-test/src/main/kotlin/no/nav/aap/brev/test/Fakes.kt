@@ -18,7 +18,6 @@ import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
-import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Tekstbolk
 import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
@@ -155,7 +154,6 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                             Tekstbolk(
                                 overskrift = "Overskrift - Tekstbolk", innhold = listOf(
                                     Innhold(
-                                        sprak = Språk.nb,
                                         overskrift = "Overskrift - Innhold",
                                         blokker = listOf(
                                             Blokk(
@@ -163,13 +161,13 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                                                     FormattertTekst(
                                                         tekst = "Formattert",
                                                         formattering = listOf(
-                                                            Formattering.understrek,
-                                                            Formattering.kursiv,
-                                                            Formattering.fet
+                                                            Formattering.UNDERSTREK,
+                                                            Formattering.KURSIV,
+                                                            Formattering.FET
                                                         )
                                                     )
                                                 ),
-                                                type = BlokkType.avsnitt
+                                                type = BlokkType.AVSNITT
                                             )
                                         ),
                                         kanRedigeres = true,

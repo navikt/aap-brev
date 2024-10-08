@@ -15,7 +15,6 @@ data class Tekstbolk(
 )
 
 data class Innhold(
-    val sprak: Språk?,
     val overskrift: String,
     val blokker: List<Blokk>,
     val kanRedigeres: Boolean,
@@ -28,11 +27,11 @@ data class Blokk(
 )
 
 enum class BlokkType {
-    avsnitt, liste
+    AVSNITT, LISTE
 }
 
-const val TEKST_TYPE_TEKST = "tekst"
-const val TEKST_TYPE_FAKTAGRUNNLAG = "faktagrunnlag"
+const val TEKST_TYPE_TEKST = "TEKST"
+const val TEKST_TYPE_FAKTAGRUNNLAG = "FAKTAGRUNNLAG"
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 sealed class BlokkInnhold(val type: String) {
@@ -51,5 +50,5 @@ sealed class BlokkInnhold(val type: String) {
 }
 
 enum class Formattering {
-    understrek, kursiv, fet
+    UNDERSTREK, KURSIV, FET
 }

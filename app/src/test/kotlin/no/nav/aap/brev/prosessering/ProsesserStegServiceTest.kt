@@ -34,7 +34,7 @@ class ProsesserStegServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 BehandlingReferanse(UUID.randomUUID()),
                 Brevtype.INNVILGELSE,
-                Språk.nb,
+                Språk.NB,
             )
 
             prosesserStegService.prosesserBestilling(referanse)
