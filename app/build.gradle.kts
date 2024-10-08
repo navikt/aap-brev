@@ -19,6 +19,11 @@ tasks {
     }
 }
 
+tasks.register<JavaExec>("runTestApp") {
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("no.nav.aap.brev.TestAppKt")
+}
+
 dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
