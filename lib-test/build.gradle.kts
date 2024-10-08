@@ -2,6 +2,10 @@ val ktorVersion = "2.3.12"
 val komponenterVersjon = "1.0.1"
 val tilgangVersjon = "0.0.11"
 
+plugins {
+    id("brev.conventions")
+}
+
 dependencies {
     implementation(project(":app"))
     implementation("io.ktor:ktor-server-auth:$ktorVersion")

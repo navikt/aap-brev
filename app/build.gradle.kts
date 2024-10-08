@@ -1,13 +1,22 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 val ktorVersion = "2.3.12"
 val komponenterVersjon = "1.0.1"
 val tilgangVersjon = "0.0.11"
 
 plugins {
-    id("io.ktor.plugin")
+    id("brev.conventions")
+    id("io.ktor.plugin") version "2.3.12"
 }
 
 application {
     mainClass.set("no.nav.aap.brev.AppKt")
+}
+
+tasks {
+    withType<ShadowJar> {
+        mergeServiceFiles()
+    }
 }
 
 dependencies {
