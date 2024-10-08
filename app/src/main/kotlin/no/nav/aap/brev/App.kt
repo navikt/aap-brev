@@ -110,7 +110,7 @@ internal fun Application.server(
                             behandlingsflytAzp
                         ) { _, request ->
                             val referanse = dataSource.transaction { connection ->
-                                BrevbestillingService.Companion.konstruer(connection).opprettBestilling(
+                                BrevbestillingService.konstruer(connection).opprettBestilling(
                                     behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                                     brevtype = request.brevtype,
                                     språk = request.sprak,
@@ -125,7 +125,7 @@ internal fun Application.server(
                                 behandlingsflytAzp
                             ) {
                                 val brevbestilling = dataSource.transaction { connection ->
-                                    BrevbestillingService.Companion.konstruer(connection).hent(it.brevbestillingReferanse)
+                                    BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
                                 }
                                 respond(brevbestilling.tilResponse())
                             }
@@ -133,7 +133,7 @@ internal fun Application.server(
                             put<BrevbestillingReferansePathParam, Unit, Brev> { referanse, brev ->
                                 installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
                                 dataSource.transaction { connection ->
-                                    BrevbestillingService.Companion.konstruer(connection)
+                                    BrevbestillingService.konstruer(connection)
                                         .oppdaterBrev(referanse.brevbestillingReferanse, brev)
                                 }
                                 respondWithStatus(HttpStatusCode.NoContent)
