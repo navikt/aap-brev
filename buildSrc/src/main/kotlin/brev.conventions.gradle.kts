@@ -18,7 +18,7 @@ repositories {
             password = (project.findProperty("githubPassword")
                 ?: System.getenv("GITHUB_PASSWORD")
                 ?: System.getenv("GITHUB_TOKEN")
-                ?: error("")).toString()
+                ?: error("Mangler PAT for GitHub package registry. Sett property githubPassword, eller miljøvariabelen GITHUB_TOKEN")).toString()
         }
     }
 }
