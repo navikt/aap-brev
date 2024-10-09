@@ -24,7 +24,7 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.api.BrevbestillingReferansePathParam
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.tilResponse
-import no.nav.aap.brev.domene.BehandlingReferanse
+import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.brev.kontrakt.Brev

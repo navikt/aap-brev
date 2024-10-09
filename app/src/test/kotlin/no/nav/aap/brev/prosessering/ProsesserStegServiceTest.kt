@@ -1,7 +1,7 @@
 package no.nav.aap.brev.prosessering
 
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.domene.BehandlingReferanse
+import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
