@@ -2,10 +2,6 @@ package no.nav.aap.brev
 
 import com.papsign.ktor.openapigen.model.info.InfoModel
 import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.route.path.normal.put
-import com.papsign.ktor.openapigen.route.response.respond
-import com.papsign.ktor.openapigen.route.response.respondWithStatus
-import com.papsign.ktor.openapigen.route.route
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.http.*
@@ -19,18 +15,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import no.nav.aap.brev.kontrakt.BestillBrevRequest
-import no.nav.aap.brev.kontrakt.BestillBrevResponse
-import no.nav.aap.brev.api.BrevbestillingReferansePathParam
 import no.nav.aap.brev.api.ErrorResponse
-import no.nav.aap.brev.api.tilResponse
-import no.nav.aap.brev.bestilling.BehandlingReferanse
-import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.api.bestillingApi
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
-import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
-import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
@@ -40,9 +28,6 @@ import no.nav.aap.motor.Motor
 import no.nav.aap.motor.api.motorApi
 import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
 import no.nav.aap.motor.retry.RetryService
-import no.nav.aap.tilgang.authorizedGetWithApprovedList
-import no.nav.aap.tilgang.authorizedPostWithApprovedList
-import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
@@ -99,48 +84,10 @@ internal fun Application.server(
 
     val motor = module(dataSource)
 
-    val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
-
     routing {
         authenticate(AZURE) {
             apiRouting {
-                route("/api") {
-                    route("/bestill") {
-                        authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(
-                            behandlingsflytAzp
-                        ) { _, request ->
-                            val referanse = dataSource.transaction { connection ->
-                                BrevbestillingService.konstruer(connection).opprettBestilling(
-                                    behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
-                                    brevtype = request.brevtype,
-                                    språk = request.sprak,
-                                )
-                            }
-                            respond(BestillBrevResponse(referanse.referanse), HttpStatusCode.Created)
-                        }
-                    }
-                    route("/bestilling") {
-                        route("/{referanse}") {
-                            authorizedGetWithApprovedList<BrevbestillingReferansePathParam, BrevbestillingResponse>(
-                                behandlingsflytAzp
-                            ) {
-                                val brevbestilling = dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
-                                }
-                                respond(brevbestilling.tilResponse())
-                            }
-
-                            put<BrevbestillingReferansePathParam, Unit, Brev> { referanse, brev ->
-                                installerTilgangPluginWithApprovedList(listOf(behandlingsflytAzp))
-                                dataSource.transaction { connection ->
-                                    BrevbestillingService.konstruer(connection)
-                                        .oppdaterBrev(referanse.brevbestillingReferanse, brev)
-                                }
-                                respondWithStatus(HttpStatusCode.NoContent)
-                            }
-                        }
-                    }
-                }
+                bestillingApi(dataSource)
                 motorApi(dataSource)
             }
         }
