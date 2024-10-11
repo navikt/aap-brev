@@ -11,4 +11,5 @@ data class BrevbestillingResponse(
     val behandlingReferanse: UUID,
     val brevtype: Brevtype,
     val språk: Språk,
+    val status: Status,
 )
