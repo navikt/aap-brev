@@ -76,6 +76,9 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setString(1, DefaultJsonMapper.toJson(brev))
                 setUUID(2, referanse.referanse)
             }
+            setResultValidator {
+                require(1 == it)
+            }
         }
     }
 
@@ -89,6 +92,9 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             setParams {
                 setEnumName(1, prosesseringStatus)
                 setUUID(2, referanse.referanse)
+            }
+            setResultValidator {
+                require(1 == it)
             }
         }
     }
