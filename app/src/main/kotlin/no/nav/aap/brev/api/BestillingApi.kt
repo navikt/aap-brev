@@ -13,6 +13,7 @@ import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
+import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
@@ -61,6 +62,15 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         respondWithStatus(HttpStatusCode.NoContent)
                     }
                 }
+            }
+        }
+        route("/ferdigstill") {
+            authorizedPostWithApprovedList<Unit, Unit, FerdigstillBrevRequest>(
+                behandlingsflytAzp
+            ) { _, request ->
+                // valider request
+                // fortsett prosessering
+                respondWithStatus(HttpStatusCode.NoContent)
             }
         }
     }
