@@ -70,7 +70,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             ) { _, request ->
                 // valider request
                 // fortsett prosessering
-                respondWithStatus(HttpStatusCode.NoContent)
+                respondWithStatus(HttpStatusCode.Accepted)
             }
         }
     }
