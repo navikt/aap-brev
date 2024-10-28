@@ -15,10 +15,14 @@ class HentInnholdSteg(
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("Henter brevinnhold for bestillingsreferanse=${kontekst.referanse}")
 
-        val bestilling = brevbestillingRepository.hent(kontekst.referanse)
-        val brev = brevinnholdGateway.hentBrevmal(bestilling.brevtype, bestilling.språk)
+        try { // TODO midlertidig fortsetter vi ved feil slik at det ikke stopper behandlingsflyten
+            val bestilling = brevbestillingRepository.hent(kontekst.referanse)
+            val brev = brevinnholdGateway.hentBrevmal(bestilling.brevtype, bestilling.språk)
 
-        brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+            brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+        } catch (e: Exception) {
+            log.error("Feil under henting av brevmal", e)
+        }
 
         return Steg.Resultat.FULLFØRT
     }
