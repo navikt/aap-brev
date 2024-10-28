@@ -19,9 +19,4 @@ enum class Status {
      * behov for manuell redigering av saksbehandler.
      */
     FERDIGSTILT,
-
-    /**
-     * Brevet er journalført og distribuert.
-     */
-    BESTILT
 }

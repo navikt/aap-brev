@@ -28,7 +28,6 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
 
         ProsesseringStatus.BREV_FERDIGSTILT,
         ProsesseringStatus.JOURNALFORT,
-        ProsesseringStatus.DISTRIBUERT -> Status.FERDIGSTILT
-
-        ProsesseringStatus.FERDIG -> Status.BESTILT
+        ProsesseringStatus.DISTRIBUERT,
+        ProsesseringStatus.FERDIG -> Status.FERDIGSTILT
     }
