@@ -11,4 +11,4 @@ jobs:
     uses: navikt/aap-workflows/.github/workflows/gradle-pr.yml@main
     secrets: inherit
     with:
-      jdk: 22
+      jdk: 21

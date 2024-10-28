@@ -17,7 +17,7 @@ jobs:
     uses: navikt/aap-workflows/.github/workflows/gradle-build.yml@main
     secrets: inherit
     with:
-      jdk: 22
+      jdk: 21
 
   publiser-kontrakt:
     needs: build
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v4
         if: ${{ steps.tag.outputs.changed == 'true' }}
         with:
-          java-version: 22
+          java-version: 21
           distribution: 'temurin'
       - uses: gradle/actions/setup-gradle@v4
         with:
