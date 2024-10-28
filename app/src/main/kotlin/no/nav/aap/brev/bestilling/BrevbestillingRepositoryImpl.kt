@@ -52,6 +52,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             }
             setRowMapper { row ->
                 Brevbestilling(
+                    id = BrevbestillingId(row.getLong("ID")),
                     referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
                     brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
                     opprettet = row.getLocalDateTime("OPPRETTET_TID"),

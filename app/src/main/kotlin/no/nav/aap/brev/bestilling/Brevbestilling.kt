@@ -7,6 +7,7 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import java.time.LocalDateTime
 
 data class Brevbestilling(
+    val id: BrevbestillingId,
     val referanse: BrevbestillingReferanse,
     val brev: Brev?,
     val opprettet: LocalDateTime,
