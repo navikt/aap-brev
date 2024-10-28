@@ -23,7 +23,9 @@ import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import tilgang.TilgangRequest
+import tilgang.BehandlingTilgangRequest
+import tilgang.JournalpostTilgangRequest
+import tilgang.SakTilgangRequest
 import tilgang.TilgangResponse
 
 class Fakes(azurePort: Int = 0) : AutoCloseable {
@@ -65,8 +67,8 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         brevSanityProxy.stop(0L, 0L)
     }
 
-    private fun NettyApplicationEngine.port(): Int =
-        runBlocking { resolvedConnectors() }
+    private fun EmbeddedServer<*, *>.port(): Int =
+        runBlocking { this@port.engine.resolvedConnectors() }
             .first { it.type == ConnectorType.HTTP }
             .port
 
@@ -124,8 +126,20 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
             }
         }
         routing {
-            post("/tilgang") {
-                call.receive<TilgangRequest>()
+            post("/tilgang/sak") {
+                call.receive<SakTilgangRequest>()
+                call.respond(TilgangResponse(true))
+            }
+        }
+        routing {
+            post("/tilgang/behandling") {
+                call.receive<BehandlingTilgangRequest>()
+                call.respond(TilgangResponse(true))
+            }
+        }
+        routing {
+            post("/tilgang/journalpost") {
+                call.receive<JournalpostTilgangRequest>()
                 call.respond(TilgangResponse(true))
             }
         }

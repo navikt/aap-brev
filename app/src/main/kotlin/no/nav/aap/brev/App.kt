@@ -43,10 +43,11 @@ fun main() {
         SECURE_LOGGER.error("Uhåndtert feil", e)
     }
 
-    embeddedServer(Netty, port = 8080) {
-        server(
-            DbConfig(),
-        )
+    embeddedServer(Netty, configure = {
+        connector {
+            port = 8080
+        }
+    }) { server(DbConfig())
     }.start(wait = true)
 }
 
@@ -107,15 +108,15 @@ private fun Application.module(dataSource: DataSource): Motor {
         RetryService(dbConnection).enable()
     }
 
-    environment.monitor.subscribe(ApplicationStarted) {
+    monitor.subscribe(ApplicationStarted) {
         motor.start()
     }
-    environment.monitor.subscribe(ApplicationStopped) { application ->
+    monitor.subscribe(ApplicationStopped) { application ->
         application.environment.log.info("Server har stoppet")
         motor.stop()
         // Release resources and unsubscribe from events
-        application.environment.monitor.unsubscribe(ApplicationStarted) {}
-        application.environment.monitor.unsubscribe(ApplicationStopped) {}
+        application.monitor.unsubscribe(ApplicationStarted) {}
+        application.monitor.unsubscribe(ApplicationStopped) {}
     }
 
     return motor

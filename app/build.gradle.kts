@@ -1,8 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val ktorVersion = "2.3.12"
-val komponenterVersjon = "1.0.1"
-val tilgangVersjon = "0.0.11"
+val ktorVersion = "3.0.0"
+val komponenterVersjon = "1.0.39"
+val behandlingsflytVersjon = "0.0.29"
+val tilgangVersjon = "0.0.24"
 
 plugins {
     id("brev.conventions")
@@ -33,6 +34,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.8")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
+    implementation("no.nav.aap.behandlingsflyt:kontrakt:$behandlingsflytVersjon")
+
     implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
     implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
@@ -42,6 +45,8 @@ dependencies {
     implementation("no.nav.aap.kelvin:server:$komponenterVersjon")
 
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
+
+    implementation("no.nav:ktor-openapi-generator:1.0.46")
 
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
