@@ -21,9 +21,10 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
     when (prosesseringStatus) {
         null,
         ProsesseringStatus.STARTET,
-        ProsesseringStatus.INNHOLD_HENTET -> Status.REGISTRERT
+        ProsesseringStatus.INNHOLD_HENTET,
+        ProsesseringStatus.FAKTAGRUNNLAG_HENTET -> Status.REGISTRERT
 
-        ProsesseringStatus.FAKTAGRUNNLAG_HENTET -> Status.UNDER_ARBEID
+        ProsesseringStatus.BREVBESTILLING_LØST -> Status.UNDER_ARBEID
 
         ProsesseringStatus.BREV_FERDIGSTILT,
         ProsesseringStatus.JOURNALFORT,

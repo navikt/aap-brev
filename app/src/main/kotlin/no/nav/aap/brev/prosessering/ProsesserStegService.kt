@@ -8,6 +8,7 @@ import no.nav.aap.brev.prosessering.steg.FerdigstillBrevSteg
 import no.nav.aap.brev.prosessering.steg.HentFaktagrunnlagSteg
 import no.nav.aap.brev.prosessering.steg.HentInnholdSteg
 import no.nav.aap.brev.prosessering.steg.JournalførBrevSteg
+import no.nav.aap.brev.prosessering.steg.LøsBrevbestillingSteg
 import no.nav.aap.brev.prosessering.steg.StarterSteg
 import no.nav.aap.brev.prosessering.steg.Steg
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -30,6 +31,7 @@ class ProsesserStegService(
         .med(steg = StarterSteg, utfall = ProsesseringStatus.STARTET)
         .med(steg = HentInnholdSteg, utfall = ProsesseringStatus.INNHOLD_HENTET)
         .med(steg = HentFaktagrunnlagSteg, utfall = ProsesseringStatus.FAKTAGRUNNLAG_HENTET)
+        .med(steg = LøsBrevbestillingSteg, utfall = ProsesseringStatus.BREVBESTILLING_LØST)
         .med(steg = FerdigstillBrevSteg, utfall = ProsesseringStatus.BREV_FERDIGSTILT)
         .med(steg = JournalførBrevSteg, utfall = ProsesseringStatus.JOURNALFORT)
         .med(steg = DistribuerJournalpostSteg, utfall = ProsesseringStatus.DISTRIBUERT)
