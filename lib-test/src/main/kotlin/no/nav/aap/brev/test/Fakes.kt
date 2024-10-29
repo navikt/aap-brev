@@ -27,6 +27,7 @@ import tilgang.BehandlingTilgangRequest
 import tilgang.JournalpostTilgangRequest
 import tilgang.SakTilgangRequest
 import tilgang.TilgangResponse
+import java.util.UUID
 
 class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val log: Logger = LoggerFactory.getLogger(Fakes::class.java)
@@ -169,13 +170,17 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
                         overskrift = "Overskrift - Brev",
                         tekstbolker = listOf(
                             Tekstbolk(
+                                id = UUID.randomUUID(),
                                 overskrift = "Overskrift - Tekstbolk", innhold = listOf(
                                     Innhold(
+                                        id = UUID.randomUUID(),
                                         overskrift = "Overskrift - Innhold",
                                         blokker = listOf(
                                             Blokk(
+                                                id = UUID.randomUUID(),
                                                 innhold = listOf(
                                                     FormattertTekst(
+                                                        id = UUID.randomUUID(),
                                                         tekst = "Formattert",
                                                         formattering = listOf(
                                                             Formattering.UNDERSTREK,
