@@ -108,6 +108,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
             }
         }
         routing {
+            post("/api/brev/løs-bestilling") {
+                call.respond(HttpStatusCode.Accepted, "{}")
+            }
         }
     }
 
