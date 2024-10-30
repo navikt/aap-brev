@@ -65,12 +65,12 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             }
         }
         route("/ferdigstill") {
-            authorizedPostWithApprovedList<Unit, Unit, FerdigstillBrevRequest>(
+            authorizedPostWithApprovedList<Unit, String, FerdigstillBrevRequest>(
                 behandlingsflytAzp
             ) { _, request ->
                 // valider request
                 // fortsett prosessering
-                respondWithStatus(HttpStatusCode.Accepted)
+                respond("{}", HttpStatusCode.Accepted)
             }
         }
     }
