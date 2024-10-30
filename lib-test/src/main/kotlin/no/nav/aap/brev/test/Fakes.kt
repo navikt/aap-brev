@@ -31,6 +31,7 @@ import java.util.UUID
 
 class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val log: Logger = LoggerFactory.getLogger(Fakes::class.java)
+
     private val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
     private val behandlingsflyt = embeddedServer(Netty, port = 0, module = { behandlingsflytFake() }).apply { start() }
     private val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
@@ -74,15 +75,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
             .port
 
     private fun Application.azureFake() {
-        install(ContentNegotiation) {
-            jackson()
-        }
-        install(StatusPages) {
-            exception<Throwable> { call, cause ->
-                this@azureFake.log.info("AZURE :: Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
-            }
-        }
+        felles("azure")
         routing {
             post("/token") {
                 val token = AzureTokenGen("brev", "brev").generate()
@@ -95,19 +88,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     }
 
     private fun Application.behandlingsflytFake() {
-        install(ContentNegotiation) {
-            jackson()
-        }
-        install(StatusPages) {
-            exception<Throwable> { call, cause ->
-                this@behandlingsflytFake.log.info(
-                    "BEHANDLINGSFLYT :: Ukjent feil ved kall til '{}'",
-                    call.request.local.uri,
-                    cause
-                )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
-            }
-        }
+        felles("behandlingsflyt")
         routing {
             post("/api/brev/løs-bestilling") {
                 call.respond(HttpStatusCode.Accepted, "{}")
@@ -116,19 +97,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     }
 
     private fun Application.tilgangFake() {
-        install(ContentNegotiation) {
-            jackson()
-        }
-        install(StatusPages) {
-            exception<Throwable> { call, cause ->
-                this@tilgangFake.log.info(
-                    "TILGANG :: Ukjent feil ved kall til '{}'",
-                    call.request.local.uri,
-                    cause
-                )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
-            }
-        }
+        felles("tilgang")
         routing {
             post("/tilgang/sak") {
                 call.receive<SakTilgangRequest>()
@@ -150,19 +119,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     }
 
     fun Application.brevSanityProxyFake() {
-        install(ContentNegotiation) {
-            jackson()
-        }
-        install(StatusPages) {
-            exception<Throwable> { call, cause ->
-                this@brevSanityProxyFake.log.info(
-                    "BREV_SANITY_PROXY :: Ukjent feil ved kall til '{}'",
-                    call.request.local.uri,
-                    cause
-                )
-                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
-            }
-        }
+        felles("brev-sanity-proxy")
         routing {
             get("/api/mal") {
                 call.respond(
@@ -213,4 +170,17 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         val scope: String? = null,
         val expires_in: Int = 3599,
     )
+
+    private fun Application.felles(navn: String) {
+        val log = log
+        install(ContentNegotiation) {
+            jackson()
+        }
+        install(StatusPages) {
+            exception<Throwable> { call, cause ->
+                log.info("$navn :: Ukjent feil ved kall til '${call.request.local.uri}'", cause)
+                call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
+            }
+        }
+    }
 }
