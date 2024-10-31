@@ -62,7 +62,6 @@ spec:
         - application: behandlingsflyt
     outbound:
       rules:
-        - application: tilgang
         - application: behandlingsflyt
         - application: brev-sanity-proxy
 
