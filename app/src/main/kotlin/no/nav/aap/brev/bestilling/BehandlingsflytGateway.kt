@@ -20,7 +20,7 @@ class BehandlingsflytGateway : BestillerGateway {
         tokenProvider = ClientCredentialsTokenProvider
     )
 
-    override fun oppdaterBrevStatus(referanse: BrevbestillingReferanse, status: Status) {
+    override fun oppdaterBrevStatus(brevbestilling: Brevbestilling, status: Status) {
         val brevbestillingLøsningStatus = when (status) {
             Status.REGISTRERT -> return
             Status.UNDER_ARBEID -> BrevbestillingLøsningStatus.KLAR_FOR_EDITERING
@@ -28,7 +28,8 @@ class BehandlingsflytGateway : BestillerGateway {
         }
 
         val request = LøsBrevbestillingDto(
-            referanse = referanse.referanse,
+            behandlingReferanse = brevbestilling.behandlingReferanse.referanse,
+            bestillingReferanse = brevbestilling.referanse.referanse,
             brevbestillingLøsningStatus,
         )
 
