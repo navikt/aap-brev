@@ -33,7 +33,7 @@ class BehandlingsflytGateway : BestillerGateway {
             brevbestillingLøsningStatus,
         )
 
-        val uri = baseUri.resolve("/api/brev/løs-bestilling")
+        val uri = baseUri.resolve("/api/brev/los-bestilling")
         val httpRequest = PostRequest(
             body = request,
             additionalHeaders = listOf(

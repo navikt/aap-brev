@@ -90,7 +90,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     private fun Application.behandlingsflytFake() {
         felles("behandlingsflyt")
         routing {
-            post("/api/brev/løs-bestilling") {
+            post("/api/brev/los-bestilling") {
                 call.respond(HttpStatusCode.Accepted, "{}")
             }
         }
