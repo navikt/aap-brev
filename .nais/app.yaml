@@ -64,6 +64,7 @@ spec:
       rules:
         - application: behandlingsflyt
         - application: brev-sanity-proxy
+        - application: saksbehandling-pdfgen
 
   env:
     - name: INTEGRASJON_TILGANG_URL
