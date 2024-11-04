@@ -19,7 +19,7 @@ data class Tekstbolk(
 
 data class Innhold(
     val id: UUID,
-    val overskrift: String,
+    val overskrift: String?,
     val blokker: List<Blokk>,
     val kanRedigeres: Boolean,
     val erFullstendig: Boolean,
