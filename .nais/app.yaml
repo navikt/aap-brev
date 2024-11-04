@@ -60,6 +60,7 @@ spec:
     inbound:
       rules:
         - application: behandlingsflyt
+        - application: paw-patrol
     outbound:
       rules:
         - application: behandlingsflyt
