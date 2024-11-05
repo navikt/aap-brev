@@ -17,6 +17,7 @@ import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
+import no.nav.aap.brev.api.forhåndsvisApi
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -47,7 +48,8 @@ fun main() {
         connector {
             port = 8080
         }
-    }) { server(DbConfig())
+    }) {
+        server(DbConfig())
     }.start(wait = true)
 }
 
@@ -89,6 +91,7 @@ internal fun Application.server(
         authenticate(AZURE) {
             apiRouting {
                 bestillingApi(dataSource)
+                forhåndsvisApi(dataSource)
                 motorApi(dataSource)
             }
         }
