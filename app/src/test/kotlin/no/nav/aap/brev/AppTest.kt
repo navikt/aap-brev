@@ -60,7 +60,12 @@ class AppTest {
             restClient.post<_, Unit>(
                 uri = URI.create("http://localhost:8080/").resolve("/api/bestill"),
                 request = PostRequest(
-                    body = BestillBrevRequest(UUID.randomUUID(), Brevtype.INNVILGELSE, Språk.NB)
+                    body = BestillBrevRequest(
+                        saksnummer = "SAK123",
+                        behandlingReferanse = UUID.randomUUID(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        sprak = Språk.NB
+                    )
                 )
             )
         }
