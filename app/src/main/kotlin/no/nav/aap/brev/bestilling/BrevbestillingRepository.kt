@@ -7,6 +7,7 @@ import no.nav.aap.brev.kontrakt.Brev
 
 interface BrevbestillingRepository {
     fun opprettBestilling(
+        saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,

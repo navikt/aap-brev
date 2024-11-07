@@ -8,6 +8,7 @@ import java.time.LocalDateTime
 
 data class Brevbestilling(
     val id: BrevbestillingId,
+    val saksnummer: Saksnummer,
     val referanse: BrevbestillingReferanse,
     val brev: Brev?,
     val opprettet: LocalDateTime,

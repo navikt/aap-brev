@@ -15,23 +15,25 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
     private val UNIQUE_VIOATION = "23505"
 
     override fun opprettBestilling(
+        saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
     ): BrevbestillingReferanse {
         val referanse: UUID = UUID.randomUUID()
         val query = """
-            INSERT INTO BREVBESTILLING (REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE)
-                VALUES (?, ?, ?, ?)
+            INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE)
+                VALUES (?, ?, ?, ?, ?)
         """.trimIndent()
 
         try {
             connection.execute(query) {
                 setParams {
-                    setUUID(1, referanse)
-                    setUUID(2, behandlingReferanse.referanse)
-                    setEnumName(3, språk)
-                    setEnumName(4, brevtype)
+                    setString(1, saksnummer.nummer)
+                    setUUID(2, referanse)
+                    setUUID(3, behandlingReferanse.referanse)
+                    setEnumName(4, språk)
+                    setEnumName(5, brevtype)
                 }
             }
         } catch (e: PSQLException) {
@@ -53,6 +55,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             setRowMapper { row ->
                 Brevbestilling(
                     id = BrevbestillingId(row.getLong("ID")),
+                    saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
                     referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
                     brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
                     opprettet = row.getLocalDateTime("OPPRETTET_TID"),

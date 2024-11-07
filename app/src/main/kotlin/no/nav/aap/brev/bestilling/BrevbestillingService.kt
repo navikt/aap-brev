@@ -27,12 +27,14 @@ class BrevbestillingService(
     private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
 
     fun opprettBestilling(
+        saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
     ): BrevbestillingReferanse {
 
         val referanse = brevbestillingRepository.opprettBestilling(
+            saksnummer = saksnummer,
             behandlingReferanse = behandlingReferanse,
             brevtype = brevtype,
             språk = språk,

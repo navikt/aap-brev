@@ -9,6 +9,7 @@ import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.*
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
@@ -33,6 +34,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             ) { _, request ->
                 val referanse = dataSource.transaction { connection ->
                     BrevbestillingService.konstruer(connection).opprettBestilling(
+                        saksnummer = Saksnummer(request.saksnummer),
                         behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                         brevtype = request.brevtype,
                         språk = request.sprak,
