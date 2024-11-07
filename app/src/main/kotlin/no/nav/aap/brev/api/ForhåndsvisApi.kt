@@ -21,7 +21,12 @@ fun NormalOpenAPIRoute.forhåndsvisApi(dataSource: DataSource) {
             val brevbestilling = dataSource.transaction { connection ->
                 BrevbestillingRepositoryImpl(connection).hent(it.brevbestillingReferanse)
             }
-            val pdf = SaksbehandlingPdfGenGateway().genererPdf(brevbestilling.brev!!)
+            val pdf = SaksbehandlingPdfGenGateway().genererPdf(
+                navn = "", //TODO
+                ident = "", //TODO
+                saksnummer = "", //TODO
+                brevbestilling.brev!!,
+            )
             respond(pdf.bytes)
         }
     }

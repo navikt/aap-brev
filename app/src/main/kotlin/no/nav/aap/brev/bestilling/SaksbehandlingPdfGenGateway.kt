@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
@@ -18,10 +19,20 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
         tokenProvider = NoTokenTokenProvider()
     )
 
-    override fun genererPdf(brev: Brev): Pdf {
+    override fun genererPdf(
+        navn: String,
+        ident: String,
+        saksnummer: String,
+        brev: Brev
+    ): Pdf {
         val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/fellesmodell")
         val httpRequest = PostRequest(
-            body = brev,
+            body = mapPdfBrev(
+                navn,
+                ident,
+                saksnummer,
+                brev,
+            ),
             additionalHeaders = listOf(
                 Header("Accept", "application/pdf")
             )
@@ -35,5 +46,41 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
         }
 
         return Pdf(bytes)
+    }
+
+    private fun mapPdfBrev(
+        navn: String,
+        ident: String,
+        saksnummer: String,
+        brev: Brev
+    ): PdfBrev {
+        return PdfBrev(
+            mottaker = Mottaker(navn = navn, ident = ident),
+            saksnummer = saksnummer,
+            overskrift = brev.overskrift,
+            tekstbolker = brev.tekstbolker.map {
+                Tekstbolk(
+                    overskrift = it.overskrift,
+                    innhold = it.innhold.map {
+                        Innhold(
+                            overskrift = it.overskrift,
+                            blokker = it.blokker.map {
+                                Blokk(
+                                    innhold = it.innhold.mapNotNull {
+                                        when (it) {
+                                            is BlokkInnhold.FormattertTekst -> FormattertTekst(
+                                                tekst = it.tekst,
+                                                formattering = it.formattering
+                                            )
+
+                                            else -> null
+                                        }
+                                    },
+                                    type = it.type
+                                )
+                            })
+                    })
+            },
+        )
     }
 }
