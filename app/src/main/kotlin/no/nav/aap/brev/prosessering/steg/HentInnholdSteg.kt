@@ -21,7 +21,7 @@ class HentInnholdSteg(
 
             brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
         } catch (e: Exception) {
-            log.error("Feil under henting av brevmal", e)
+            log.error("Feil under henting henting av innhold", e)
         }
 
         return Steg.Resultat.FULLFØRT

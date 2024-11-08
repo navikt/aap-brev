@@ -4,6 +4,7 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -22,9 +23,8 @@ fun NormalOpenAPIRoute.forhåndsvisApi(dataSource: DataSource) {
                 BrevbestillingRepositoryImpl(connection).hent(it.brevbestillingReferanse)
             }
             val pdf = SaksbehandlingPdfGenGateway().genererPdf(
-                navn = "", //TODO
-                ident = "", //TODO
-                saksnummer = "", //TODO
+                personinfo = Personinfo(fnr = "", navn = ""),
+                saksnummer = brevbestilling.saksnummer,
                 brevbestilling.brev!!,
             )
             respond(pdf.bytes)

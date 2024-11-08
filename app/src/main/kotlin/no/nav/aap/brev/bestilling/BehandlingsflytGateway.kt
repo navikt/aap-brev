@@ -8,11 +8,13 @@ import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.post
+import no.nav.aap.komponenter.httpklient.httpclient.request.GetRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import java.net.URI
 
-class BehandlingsflytGateway : BestillerGateway {
+class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.behandlingsflyt.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.behandlingsflyt.scope"))
     private val client = RestClient.withDefaultResponseHandler(
@@ -44,4 +46,16 @@ class BehandlingsflytGateway : BestillerGateway {
         client.post<_, Unit>(uri = uri, request = httpRequest)
     }
 
+    override fun hentPersoninfo(saksnummer: Saksnummer): Personinfo {
+        val uri = baseUri.resolve("/api/sak/${saksnummer.nummer}/personinformasjon")
+        val httpRequest = GetRequest(
+            additionalHeaders = listOf(
+                Header("Accept", "application/json")
+            )
+        )
+
+        return requireNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
+            DefaultJsonMapper.fromJson(body)
+        }))
+    }
 }

@@ -20,16 +20,14 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
     )
 
     override fun genererPdf(
-        navn: String,
-        ident: String,
-        saksnummer: String,
+        personinfo: Personinfo,
+        saksnummer: Saksnummer,
         brev: Brev
     ): Pdf {
         val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/fellesmodell")
         val httpRequest = PostRequest(
             body = mapPdfBrev(
-                navn,
-                ident,
+                personinfo,
                 saksnummer,
                 brev,
             ),
@@ -49,13 +47,12 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
     }
 
     private fun mapPdfBrev(
-        navn: String,
-        ident: String,
-        saksnummer: String,
+        personinfo: Personinfo,
+        saksnummer: Saksnummer,
         brev: Brev
     ): PdfBrev {
         return PdfBrev(
-            mottaker = Mottaker(navn = navn, ident = ident),
+            mottaker = Mottaker(navn = personinfo.navn, ident = personinfo.fnr),
             saksnummer = saksnummer,
             overskrift = brev.overskrift,
             tekstbolker = brev.tekstbolker.map {

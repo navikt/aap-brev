@@ -5,7 +5,7 @@ import no.nav.aap.brev.kontrakt.Formattering
 
 data class PdfBrev(
     val mottaker: Mottaker,
-    val saksnummer: String,
+    val saksnummer: Saksnummer,
     val overskrift: String?,
     val tekstbolker: List<Tekstbolk>,
 )
