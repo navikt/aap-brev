@@ -21,14 +21,14 @@ fun main() {
         jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
     }
 
-    val fakes = Fakes(azurePort = 8081)
+    val fakes = Fakes(azurePort = 8083)
 
     val dbConfig = DbConfig(
         jdbcUrl = jdbcUrl,
     )
 
     // Starter server
-    embeddedServer(Netty, port = 8080) {
+    embeddedServer(Netty, port = 8082) {
         server(
             dbConfig = dbConfig,
         )
