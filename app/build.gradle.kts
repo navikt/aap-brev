@@ -59,7 +59,7 @@ dependencies {
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
-    testImplementation("org.testcontainers:postgresql:1.20.2")
+    testImplementation("org.testcontainers:postgresql:1.20.3")
     testImplementation("io.mockk:mockk:1.13.12")
     testImplementation(project(":lib-test"))
 }
