@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.PdfGateway
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import java.time.LocalDate
 
 class JournalføringService(
     val brevbestillingRepository: BrevbestillingRepository,
@@ -29,7 +30,7 @@ class JournalføringService(
     fun genererBrevOgJournalfør(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
-        val pdf = pdfGateway.genererPdf(personinfo, bestilling.saksnummer, bestilling.brev!!)
+        val pdf = pdfGateway.genererPdf(personinfo, bestilling.saksnummer, bestilling.brev!!, LocalDate.now())
 
         journalfør(pdf)
     }

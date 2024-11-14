@@ -9,6 +9,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.NoTokenTokenProvider
 import java.net.URI
+import java.time.LocalDate
 
 class SaksbehandlingPdfGenGateway : PdfGateway {
 
@@ -22,14 +23,16 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
     override fun genererPdf(
         personinfo: Personinfo,
         saksnummer: Saksnummer,
-        brev: Brev
+        brev: Brev,
+        dato: LocalDate,
     ): Pdf {
         val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/fellesmodell")
         val httpRequest = PostRequest(
             body = mapPdfBrev(
-                personinfo,
-                saksnummer,
-                brev,
+                personinfo = personinfo,
+                saksnummer = saksnummer,
+                brev = brev,
+                dato = dato,
             ),
             additionalHeaders = listOf(
                 Header("Accept", "application/pdf")
@@ -49,11 +52,13 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
     private fun mapPdfBrev(
         personinfo: Personinfo,
         saksnummer: Saksnummer,
-        brev: Brev
+        brev: Brev,
+        dato: LocalDate,
     ): PdfBrev {
         return PdfBrev(
             mottaker = Mottaker(navn = personinfo.navn, ident = personinfo.fnr),
             saksnummer = saksnummer,
+            dato = dato,
             overskrift = brev.overskrift,
             tekstbolker = brev.tekstbolker.map {
                 Tekstbolk(

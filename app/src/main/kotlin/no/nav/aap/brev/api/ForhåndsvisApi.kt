@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
+import java.time.LocalDate
 import javax.sql.DataSource
 
 fun NormalOpenAPIRoute.forhåndsvisApi(dataSource: DataSource) {
@@ -26,6 +27,7 @@ fun NormalOpenAPIRoute.forhåndsvisApi(dataSource: DataSource) {
                 personinfo = Personinfo(fnr = "", navn = ""),
                 saksnummer = brevbestilling.saksnummer,
                 brevbestilling.brev!!,
+                LocalDate.now()
             )
             respond(pdf.bytes)
         }

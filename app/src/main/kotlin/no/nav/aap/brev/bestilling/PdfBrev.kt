@@ -2,10 +2,12 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Formattering
+import java.time.LocalDate
 
 data class PdfBrev(
     val mottaker: Mottaker,
     val saksnummer: Saksnummer,
+    val dato: LocalDate,
     val overskrift: String?,
     val tekstbolker: List<Tekstbolk>,
 )
