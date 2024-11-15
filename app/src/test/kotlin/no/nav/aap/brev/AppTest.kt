@@ -11,6 +11,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.post
+import no.nav.aap.komponenter.httpklient.httpclient.request.GetRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import org.junit.jupiter.api.AfterAll
@@ -18,7 +19,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
+import java.io.BufferedWriter
+import java.io.FileWriter
 import java.net.URI
+import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -69,6 +73,29 @@ class AppTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun `skal lager openapi som fil`() {
+        val openApiDoc =
+            requireNotNull(
+                restClient.get<String>(
+                    URI.create("http://localhost:8080/openapi.json"),
+                    GetRequest()
+                ) { body, _ ->
+                    String(body.readAllBytes(), StandardCharsets.UTF_8)
+                }
+            )
+
+        try {
+            val writer = BufferedWriter(FileWriter("../openapi.json"));
+            writer.write(openApiDoc);
+
+            writer.close();
+        } catch (e: Exception) {
+            throw e
+        }
+
     }
 }
 
