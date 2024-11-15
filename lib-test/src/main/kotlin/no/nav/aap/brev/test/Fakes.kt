@@ -127,7 +127,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     fun Application.pdfGenFake() {
         felles("brev-sanity-proxy")
         routing {
-            post("/api/v1/genpdf/aap-saksbehandling-pdfgen/fellesmodell") {
+            post("/api/v1/genpdf/aap-saksbehandling-pdfgen/brev") {
                 call.respond(ByteArray(0))
             }
         }

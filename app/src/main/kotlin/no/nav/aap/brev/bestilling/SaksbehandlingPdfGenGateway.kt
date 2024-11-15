@@ -26,7 +26,7 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
         brev: Brev,
         dato: LocalDate,
     ): Pdf {
-        val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/fellesmodell")
+        val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/brev")
         val httpRequest = PostRequest(
             body = mapPdfBrev(
                 personinfo = personinfo,
