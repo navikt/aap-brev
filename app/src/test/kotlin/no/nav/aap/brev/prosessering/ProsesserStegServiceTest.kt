@@ -6,6 +6,7 @@ import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
@@ -52,7 +53,32 @@ class ProsesserStegServiceTest {
 
     @Test
     fun `lagrer prosesserte steg frem til det feiler`() {
-        // TODO når det finnes logikk for noe kan feile for en spesifikk bestilling
+        val referanse = dataSource.transaction { connection ->
+            BrevbestillingService.konstruer(connection)
+                .opprettBestilling(
+                    Saksnummer(Random.nextInt(1000..9999).toString()),
+                    BehandlingReferanse(UUID.randomUUID()),
+                    Brevtype.INNVILGELSE,
+                    Språk.NB,
+                )
+        }
+
+        feilLøsBestillingFor(bestilling = referanse)
+
+        try {
+            dataSource.transaction { connection ->
+                val prosesserStegService = ProsesserStegService.konstruer(connection)
+                prosesserStegService.prosesserBestilling(referanse)
+            }
+        } catch (_: Exception) {
+        }
+
+        assertEquals(
+            ProsesseringStatus.FAKTAGRUNNLAG_HENTET,
+            dataSource.transaction { connection ->
+                BrevbestillingService.konstruer(connection).hent(referanse).prosesseringStatus
+            }
+        )
     }
 
     @Test
