@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val komponenterVersjon = "1.0.63"
-val tilgangVersjon = "0.0.46"
 
 plugins {
     id("brev.conventions")
@@ -45,7 +44,6 @@ publishing {
 }
 
 dependencies {
-    api("no.nav.aap.tilgang:plugin-kontrakt:$tilgangVersjon")
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
 
     testImplementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
