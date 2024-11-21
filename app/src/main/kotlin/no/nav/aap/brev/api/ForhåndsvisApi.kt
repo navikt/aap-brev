@@ -8,7 +8,8 @@ import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.tilgang.authorizedGetWithApprovedList
+import no.nav.aap.tilgang.AuthorizationParamPathConfig
+import no.nav.aap.tilgang.authorizedGet
 import java.time.LocalDate
 import javax.sql.DataSource
 
@@ -17,8 +18,11 @@ fun NormalOpenAPIRoute.forhåndsvisApi(dataSource: DataSource) {
     val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
 
     route("/api/forhandsvis/{referanse}") {
-        authorizedGetWithApprovedList<BrevbestillingReferansePathParam, ByteArray>(
-            behandlingsflytAzp
+        authorizedGet<BrevbestillingReferansePathParam, ByteArray>(
+            AuthorizationParamPathConfig(
+                approvedApplications = setOf(behandlingsflytAzp),
+                applicationsOnly = true
+            )
         ) {
             val brevbestilling = dataSource.transaction { connection ->
                 BrevbestillingRepositoryImpl(connection).hent(it.brevbestillingReferanse)

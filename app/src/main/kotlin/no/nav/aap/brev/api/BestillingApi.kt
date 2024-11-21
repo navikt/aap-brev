@@ -1,8 +1,6 @@
 package no.nav.aap.brev.api
 
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import com.papsign.ktor.openapigen.route.path.normal.put
-import com.papsign.ktor.openapigen.route.response.OpenAPIPipelineResponseContext
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
@@ -18,27 +16,27 @@ import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
-import no.nav.aap.tilgang.authorizedGetWithApprovedList
+import no.nav.aap.tilgang.AuthorizationParamPathConfig
+import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
-import no.nav.aap.tilgang.authorizedPostWithApprovedList
-import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
-import javax.sql.DataSource
+import no.nav.aap.tilgang.authorizedPut
 import tilgang.Operasjon
+import javax.sql.DataSource
 
 
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
 
     val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
 
+    val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
+        operasjon = Operasjon.SAKSBEHANDLE,
+        approvedApplications = setOf(behandlingsflytAzp),
+        applicationsOnly = true
+    )
+
     route("/api") {
         route("/bestill") {
-            authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(
-                AuthorizationBodyPathConfig(
-                    operasjon = Operasjon.SAKSBEHANDLE,
-                    approvedApplications = setOf(behandlingsflytAzp),
-                    applicationsOnly = true
-                )
-            ) { _, request ->
+            authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 val referanse = dataSource.transaction { connection ->
                     BrevbestillingService.konstruer(connection).opprettBestilling(
                         saksnummer = Saksnummer(request.saksnummer),
@@ -52,8 +50,11 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
         }
         route("/bestilling") {
             route("/{referanse}") {
-                authorizedGetWithApprovedList<BrevbestillingReferansePathParam, BrevbestillingResponse>(
-                    behandlingsflytAzp
+                authorizedGet<BrevbestillingReferansePathParam, BrevbestillingResponse>(
+                    AuthorizationParamPathConfig(
+                        approvedApplications = setOf(behandlingsflytAzp),
+                        applicationsOnly = true
+                    )
                 ) {
                     val brevbestilling = dataSource.transaction { connection ->
                         BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
@@ -61,9 +62,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     respond(brevbestilling.tilResponse())
                 }
                 route("/oppdater") {
-                    authorizedPutWithApprovedList<BrevbestillingReferansePathParam, Unit, Brev>(
-                        behandlingsflytAzp
-                    ) { referanse, brev ->
+                    authorizedPut<BrevbestillingReferansePathParam, Unit, Brev>(authorizationBodyPathConfig) { referanse, brev ->
                         dataSource.transaction { connection ->
                             BrevbestillingService.konstruer(connection)
                                 .oppdaterBrev(referanse.brevbestillingReferanse, brev)
@@ -74,21 +73,11 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             }
         }
         route("/ferdigstill") {
-            authorizedPostWithApprovedList<Unit, String, FerdigstillBrevRequest>(
-                behandlingsflytAzp
-            ) { _, request ->
+            authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 // valider request
                 // fortsett prosessering
                 respond("{}", HttpStatusCode.Accepted)
             }
         }
     }
-}
-
-inline fun <reified TParams : Any, reified TResponse : Any, reified TRequest : Any> NormalOpenAPIRoute.authorizedPutWithApprovedList(
-    vararg approvedList: String,
-    noinline body: suspend OpenAPIPipelineResponseContext<TResponse>.(TParams, TRequest) -> Unit
-) {
-    ktorRoute.installerTilgangPluginWithApprovedList(approvedList.toList())
-    put<TParams, TResponse, TRequest> { params, request -> body(params, request) }
 }

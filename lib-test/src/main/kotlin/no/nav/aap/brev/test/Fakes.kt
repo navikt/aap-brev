@@ -63,7 +63,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
 
         // PdfGen
-        System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:8020")
+        System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
         System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
     }
 
