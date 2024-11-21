@@ -17,10 +17,13 @@ import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedGetWithApprovedList
+import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPostWithApprovedList
 import no.nav.aap.tilgang.installerTilgangPluginWithApprovedList
 import javax.sql.DataSource
+import tilgang.Operasjon
 
 
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
@@ -29,8 +32,12 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
 
     route("/api") {
         route("/bestill") {
-            authorizedPostWithApprovedList<Unit, BestillBrevResponse, BestillBrevRequest>(
-                behandlingsflytAzp
+            authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(
+                AuthorizationBodyPathConfig(
+                    operasjon = Operasjon.SAKSBEHANDLE,
+                    approvedApplications = setOf(behandlingsflytAzp),
+                    applicationsOnly = true
+                )
             ) { _, request ->
                 val referanse = dataSource.transaction { connection ->
                     BrevbestillingService.konstruer(connection).opprettBestilling(
