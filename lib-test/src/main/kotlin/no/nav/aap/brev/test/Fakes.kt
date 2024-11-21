@@ -12,6 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.api.ErrorResponse
+import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.kontrakt.Blokk
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.BlokkType
@@ -98,6 +99,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         routing {
             post("/api/brev/los-bestilling") {
                 call.respond(HttpStatusCode.Accepted, "{}")
+            }
+            get("/api/sak/{saksnummer}/personinformasjon") {
+                call.respond(Personinfo("", ""))
             }
         }
     }
