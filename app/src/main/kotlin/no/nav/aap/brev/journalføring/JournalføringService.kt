@@ -15,6 +15,7 @@ class JournalføringService(
     val brevbestillingRepository: BrevbestillingRepository,
     val personinfoGateway: PersoninfoGateway,
     val pdfGateway: PdfGateway,
+    val arkivGateway: ArkivGateway,
 ) {
 
     companion object {
@@ -23,6 +24,7 @@ class JournalføringService(
                 BrevbestillingRepositoryImpl(connection),
                 BehandlingsflytGateway(),
                 SaksbehandlingPdfGenGateway(),
+                DokarkivGateway(),
             )
         }
     }
@@ -36,6 +38,6 @@ class JournalføringService(
     }
 
     fun journalfør(pdf: Pdf) {
-        // TODO
+        arkivGateway.journalførBrev()
     }
 }
