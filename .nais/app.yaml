@@ -63,6 +63,8 @@ spec:
         - application: behandlingsflyt
         - application: paw-patrol
     outbound:
+      external:
+        - host: dokarkiv-q2.dev-fss-pub.nais.io
       rules:
         - application: behandlingsflyt
         - application: brev-sanity-proxy
@@ -90,3 +92,8 @@ spec:
       value: http://saksbehandling-pdfgen
     - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE
       value: api://dev-gcp.aap.saksbehandling-pdfgen/.default
+
+    - name: INTEGRASJON_DOKARKIV_URL
+      value: https://dokarkiv-q2.dev-fss-pub.nais.io
+    - name: INTEGRASJON_DOKARKIV_SCOPE
+      value: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
