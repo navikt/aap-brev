@@ -11,7 +11,7 @@ import java.util.UUID
 fun Application.dokarkivFake() {
     applicationFakeFelles("dokarkiv")
     routing {
-        post("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true") {
+        post("/rest/journalpostapi/v1/journalpost") {
             call.respond(
                 OpprettJournalpostResponse(
                     journalpostId = UUID.randomUUID().toString(),

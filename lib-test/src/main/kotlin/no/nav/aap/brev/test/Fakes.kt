@@ -61,6 +61,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         tilgang.stop(0L, 0L)
         brevSanityProxy.stop(0L, 0L)
         pdfGen.stop(0L, 0L)
+        dokarkiv.stop(0L, 0L)
     }
 
     private fun EmbeddedServer<*, *>.port(): Int =
