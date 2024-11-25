@@ -33,6 +33,6 @@ class JournalføringService(
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
         val pdf = pdfGateway.genererPdf(personinfo, bestilling.saksnummer, bestilling.brev!!, LocalDate.now())
 
-//        arkivGateway.journalførBrev(bestilling, personinfo, pdf)
+        arkivGateway.journalførBrev(bestilling, personinfo, pdf)
     }
 }
