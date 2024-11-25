@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.test.fakes.azureFake
 import no.nav.aap.brev.test.fakes.behandlingsflytFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
+import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
@@ -19,6 +20,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
     private val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
     private val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
+    private val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
 
     init {
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
@@ -47,6 +49,10 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         // PdfGen
         System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
         System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
+
+        // Dokarkiv
+        System.setProperty("integrasjon.dokarkiv.url", "http://localhost:${dokarkiv.port()}")
+        System.setProperty("integrasjon.dokarkiv.scope", "scope")
     }
 
     override fun close() {
