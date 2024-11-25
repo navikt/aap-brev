@@ -4,7 +4,6 @@ import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.Pdf
 import no.nav.aap.brev.bestilling.PdfGateway
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
@@ -34,10 +33,6 @@ class JournalføringService(
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
         val pdf = pdfGateway.genererPdf(personinfo, bestilling.saksnummer, bestilling.brev!!, LocalDate.now())
 
-        journalfør(pdf)
-    }
-
-    fun journalfør(pdf: Pdf) {
-        arkivGateway.journalførBrev()
+//        arkivGateway.journalførBrev(bestilling, personinfo, pdf)
     }
 }
