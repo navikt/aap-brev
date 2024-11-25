@@ -54,7 +54,7 @@ class DokarkivGateway : ArkivGateway {
                 id = personinfo.fnr,
                 idType = AvsenderMottaker.IdType.FNR,
             ),
-            behandlingstema = null, // TODO
+            behandlingstema = null,
             bruker = Bruker(
                 id = personinfo.fnr,
                 idType = Bruker.IdType.FNR
