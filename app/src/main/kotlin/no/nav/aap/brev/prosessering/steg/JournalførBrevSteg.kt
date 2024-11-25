@@ -8,11 +8,7 @@ class JournalførBrevSteg(val journalføringService: JournalføringService) : St
     private val log = LoggerFactory.getLogger(JournalførBrevSteg::class.java)
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("JournalførBrevSteg")
-        try { // TODO midlertidig fortsetter vi ved feil slik at det ikke stopper behandlingsflyten
-            journalføringService.genererBrevOgJournalfør(kontekst.referanse)
-        } catch (e: Exception) {
-            log.error("Feil under journalføring", e)
-        }
+        journalføringService.genererBrevOgJournalfør(kontekst.referanse)
         return Steg.Resultat.FULLFØRT
     }
 
