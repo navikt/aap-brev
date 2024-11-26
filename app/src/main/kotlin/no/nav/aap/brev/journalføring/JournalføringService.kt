@@ -11,10 +11,10 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
 
 class JournalføringService(
-    val brevbestillingRepository: BrevbestillingRepository,
-    val personinfoGateway: PersoninfoGateway,
-    val pdfGateway: PdfGateway,
-    val arkivGateway: ArkivGateway,
+    private val brevbestillingRepository: BrevbestillingRepository,
+    private val personinfoGateway: PersoninfoGateway,
+    private val pdfGateway: PdfGateway,
+    private val arkivGateway: ArkivGateway,
 ) {
 
     companion object {
@@ -32,7 +32,8 @@ class JournalføringService(
         val bestilling = brevbestillingRepository.hent(referanse)
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
         val pdf = pdfGateway.genererPdf(personinfo, bestilling.saksnummer, bestilling.brev!!, LocalDate.now())
+        val journalpostId = arkivGateway.journalførBrev(bestilling, personinfo, pdf)
 
-        arkivGateway.journalførBrev(bestilling, personinfo, pdf)
+        brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId)
     }
 }

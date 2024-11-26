@@ -7,5 +7,5 @@ import no.nav.aap.brev.bestilling.Personinfo
 interface ArkivGateway {
     fun journalførBrev(bestilling: Brevbestilling,
                        personinfo: Personinfo,
-                       pdf: Pdf)
+                       pdf: Pdf): JournalpostId
 }

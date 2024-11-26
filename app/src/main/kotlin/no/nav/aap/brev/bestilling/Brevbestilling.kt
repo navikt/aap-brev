@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -17,4 +18,5 @@ data class Brevbestilling(
     val brevtype: Brevtype,
     val språk: Språk,
     val prosesseringStatus: ProsesseringStatus?,
+    val journalpostId: JournalpostId?,
 )

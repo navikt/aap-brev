@@ -4,6 +4,7 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
+import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
@@ -64,6 +65,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                     brevtype = row.getEnum("BREVTYPE"),
                     språk = row.getEnum("SPRAK"),
                     prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
+                    journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
                 )
             }
         }
@@ -96,6 +98,23 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             setParams {
                 setEnumName(1, prosesseringStatus)
                 setUUID(2, referanse.referanse)
+            }
+            setResultValidator {
+                require(1 == it)
+            }
+        }
+    }
+
+    override fun lagreJournalpost(
+        id: BrevbestillingId,
+        journalpostId: JournalpostId
+    ) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setString(1, journalpostId.id)
+                setLong(2, id.id)
             }
             setResultValidator {
                 require(1 == it)

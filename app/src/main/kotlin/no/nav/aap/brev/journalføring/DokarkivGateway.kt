@@ -30,7 +30,7 @@ class DokarkivGateway : ArkivGateway {
         bestilling: Brevbestilling,
         personinfo: Personinfo,
         pdf: Pdf,
-    ) {
+    ): JournalpostId {
         val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true")
         val request = lagRequest(bestilling, personinfo, pdf)
         val httpRequest = PostRequest(
@@ -39,7 +39,9 @@ class DokarkivGateway : ArkivGateway {
 //                Header("Nav-User-Id", navIdent) // TODO vurder om vi skal sette denne
             )
         )
-        client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest)
+        // TODO håndter 409 Conflict
+        val response = requireNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
+        return response.journalpostId
     }
 
     private fun lagRequest(
@@ -159,8 +161,11 @@ data class OpprettJournalpostRequest(
     )
 }
 
+@JvmInline
+value class JournalpostId(val id: String)
+
 data class OpprettJournalpostResponse(
-    val journalpostId: String,
+    val journalpostId: JournalpostId,
     val journalpostferdigstilt: Boolean,
     val dokumenter: List<DokumentInfoId>
 ) {
