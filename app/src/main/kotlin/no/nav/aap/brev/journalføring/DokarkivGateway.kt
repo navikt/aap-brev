@@ -9,6 +9,7 @@ import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument.DokumentVariant
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.JournalpostType
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Sak
+import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
@@ -24,7 +25,7 @@ class DokarkivGateway : ArkivGateway {
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
-        responseHandler = DokarkivResponseHandler()
+        responseHandler = HåndterConflictResponseHandler()
     )
 
     override fun journalførBrev(
