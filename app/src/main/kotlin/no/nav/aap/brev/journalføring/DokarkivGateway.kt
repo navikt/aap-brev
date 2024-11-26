@@ -21,9 +21,10 @@ import java.util.*
 class DokarkivGateway : ArkivGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokarkiv.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
-    private val client = RestClient.withDefaultResponseHandler(
+    private val client = RestClient(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider
+        tokenProvider = ClientCredentialsTokenProvider,
+        responseHandler = DokarkivResponseHandler()
     )
 
     override fun journalførBrev(
@@ -39,7 +40,6 @@ class DokarkivGateway : ArkivGateway {
 //                Header("Nav-User-Id", navIdent) // TODO vurder om vi skal sette denne
             )
         )
-        // TODO håndter 409 Conflict
         val response = requireNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
         return response.journalpostId
     }
