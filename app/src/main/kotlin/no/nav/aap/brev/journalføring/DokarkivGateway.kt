@@ -16,10 +16,13 @@ import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import no.nav.aap.komponenter.httpklient.httpclient.post
+import org.slf4j.LoggerFactory
 import java.net.URI
 import java.util.*
 
 class DokarkivGateway : ArkivGateway {
+    private val log = LoggerFactory.getLogger(DokarkivGateway::class.java)
+
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokarkiv.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
     private val client = RestClient(
@@ -42,6 +45,11 @@ class DokarkivGateway : ArkivGateway {
             )
         )
         val response = requireNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
+
+        if (!response.journalpostferdigstilt) {
+            log.error("Journalpost ble ikke ferdigstilt. Journalpost må ferdigstilles for å kunne bli distribuert.")
+        }
+
         return response.journalpostId
     }
 
