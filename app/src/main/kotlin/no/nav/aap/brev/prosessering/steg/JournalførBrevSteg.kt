@@ -8,7 +8,7 @@ class JournalførBrevSteg(val journalføringService: JournalføringService) : St
     private val log = LoggerFactory.getLogger(JournalførBrevSteg::class.java)
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("JournalførBrevSteg")
-        journalføringService.genererBrevOgJournalfør(kontekst.referanse)
+        journalføringService.journalførBrevbestilling(kontekst.referanse)
         return Steg.Resultat.FULLFØRT
     }
 

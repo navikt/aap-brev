@@ -53,6 +53,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         // Dokarkiv
         System.setProperty("integrasjon.dokarkiv.url", "http://localhost:${dokarkiv.port()}")
         System.setProperty("integrasjon.dokarkiv.scope", "scope")
+
+        // Dokumentinnhenting
+        System.setProperty("integrasjon.dokumentinnhenting.azp", "azp")
     }
 
     override fun close() {

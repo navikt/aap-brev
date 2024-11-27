@@ -1,8 +1,6 @@
 package no.nav.aap.brev.journalføring
 
-import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.Pdf
-import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.AvsenderMottaker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Bruker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument
@@ -13,9 +11,9 @@ import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
+import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
-import no.nav.aap.komponenter.httpklient.httpclient.post
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.util.*
@@ -32,12 +30,11 @@ class DokarkivGateway : ArkivGateway {
     )
 
     override fun journalførBrev(
-        bestilling: Brevbestilling,
-        personinfo: Personinfo,
+        journalpostInfo: JournalpostInfo,
         pdf: Pdf,
     ): JournalpostId {
         val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true")
-        val request = lagRequest(bestilling, personinfo, pdf)
+        val request = lagRequest(journalpostInfo, pdf)
         val httpRequest = PostRequest(
             body = request,
             additionalHeaders = listOf(
@@ -54,26 +51,23 @@ class DokarkivGateway : ArkivGateway {
     }
 
     private fun lagRequest(
-        bestilling: Brevbestilling,
-        personinfo: Personinfo,
+        journalpostInfo: JournalpostInfo,
         pdf: Pdf,
     ): OpprettJournalpostRequest {
-        val overskrift = requireNotNull(bestilling.brev?.overskrift)
-        val brevkode = bestilling.brevtype.name
         return OpprettJournalpostRequest(
             avsenderMottaker = AvsenderMottaker(
-                id = personinfo.fnr,
+                id = journalpostInfo.fnr,
                 idType = AvsenderMottaker.IdType.FNR,
             ),
             behandlingstema = null,
             bruker = Bruker(
-                id = personinfo.fnr,
+                id = journalpostInfo.fnr,
                 idType = Bruker.IdType.FNR
             ),
             dokumenter = listOf(
                 Dokument(
-                    tittel = overskrift,
-                    brevkode = brevkode,
+                    tittel = journalpostInfo.tittel,
+                    brevkode = journalpostInfo.brevkode,
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             filtype = "PDFA",
@@ -83,17 +77,17 @@ class DokarkivGateway : ArkivGateway {
                     ),
                 )
             ),
-            eksternReferanseId = bestilling.referanse.referanse,
+            eksternReferanseId = journalpostInfo.eksternReferanseId,
             journalfoerendeEnhet = "9999", // TODO
             journalposttype = JournalpostType.UTGAAENDE,
             sak = Sak(
-                fagsakId = bestilling.saksnummer.nummer,
+                fagsakId = journalpostInfo.saksnummer.nummer,
                 fagsaksystem = "KELVIN",
                 sakstype = Sak.Type.FAGSAK
             ),
             tema = "AAP",
             tilleggsopplysninger = emptyList(),
-            tittel = overskrift,
+            tittel = journalpostInfo.tittel,
         )
     }
 }

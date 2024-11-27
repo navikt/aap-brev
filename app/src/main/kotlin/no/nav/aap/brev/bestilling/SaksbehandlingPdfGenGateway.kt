@@ -20,20 +20,10 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
         tokenProvider = NoTokenTokenProvider()
     )
 
-    override fun genererPdf(
-        personinfo: Personinfo,
-        saksnummer: Saksnummer,
-        brev: Brev,
-        dato: LocalDate,
-    ): Pdf {
+    override fun genererPdf(brev: PdfBrev): Pdf {
         val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/brev")
         val httpRequest = PostRequest(
-            body = mapPdfBrev(
-                personinfo = personinfo,
-                saksnummer = saksnummer,
-                brev = brev,
-                dato = dato,
-            ),
+            body = brev,
             additionalHeaders = listOf(
                 Header("Accept", "application/pdf")
             )
@@ -47,42 +37,5 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
         }
 
         return Pdf(bytes)
-    }
-
-    private fun mapPdfBrev(
-        personinfo: Personinfo,
-        saksnummer: Saksnummer,
-        brev: Brev,
-        dato: LocalDate,
-    ): PdfBrev {
-        return PdfBrev(
-            mottaker = Mottaker(navn = personinfo.navn, ident = personinfo.fnr),
-            saksnummer = saksnummer,
-            dato = dato,
-            overskrift = brev.overskrift,
-            tekstbolker = brev.tekstbolker.map {
-                Tekstbolk(
-                    overskrift = it.overskrift,
-                    innhold = it.innhold.map {
-                        Innhold(
-                            overskrift = it.overskrift,
-                            blokker = it.blokker.map {
-                                Blokk(
-                                    innhold = it.innhold.mapNotNull {
-                                        when (it) {
-                                            is BlokkInnhold.FormattertTekst -> FormattertTekst(
-                                                tekst = it.tekst,
-                                                formattering = it.formattering
-                                            )
-
-                                            else -> null
-                                        }
-                                    },
-                                    type = it.type
-                                )
-                            })
-                    })
-            },
-        )
     }
 }

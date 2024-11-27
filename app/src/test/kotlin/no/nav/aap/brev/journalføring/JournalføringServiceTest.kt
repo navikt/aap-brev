@@ -50,7 +50,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            journalføringService.genererBrevOgJournalfør(referanse)
+            journalføringService.journalførBrevbestilling(referanse)
 
             val bestilling = brevbestillingService.hent(referanse)
             assertEquals(forventetJournalpostId, bestilling.journalpostId)
