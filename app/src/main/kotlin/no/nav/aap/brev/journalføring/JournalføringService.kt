@@ -1,22 +1,22 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.BehandlingsflytGateway
-import no.nav.aap.brev.bestilling.Blokk
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.FormattertTekst
-import no.nav.aap.brev.bestilling.Innhold
-import no.nav.aap.brev.bestilling.Mottaker
-import no.nav.aap.brev.bestilling.PdfBrev
 import no.nav.aap.brev.bestilling.PdfGateway
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.bestilling.Tekstbolk
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.PdfBrev
+import no.nav.aap.brev.kontrakt.PdfBrev.Blokk
+import no.nav.aap.brev.kontrakt.PdfBrev.FormattertTekst
+import no.nav.aap.brev.kontrakt.PdfBrev.Innhold
+import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker
+import no.nav.aap.brev.kontrakt.PdfBrev.Tekstbolk
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
 
@@ -64,7 +64,7 @@ class JournalføringService(
     ): PdfBrev {
         return PdfBrev(
             mottaker = Mottaker(navn = personinfo.navn, ident = personinfo.fnr),
-            saksnummer = saksnummer,
+            saksnummer = saksnummer.nummer,
             dato = dato,
             overskrift = brev.overskrift,
             tekstbolker = brev.tekstbolker.map {

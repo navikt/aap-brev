@@ -4,11 +4,12 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.*
-import no.nav.aap.brev.bestilling.PdfBrev
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
+import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.DokarkivGateway
-import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.journalføring.JournalpostInfo
+import no.nav.aap.brev.kontrakt.JournalførBrevRequest
+import no.nav.aap.brev.kontrakt.JournalpostIdResponse
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedPost
@@ -32,13 +33,20 @@ fun NormalOpenAPIRoute.journalførBrevApi() {
                 val arkivGateway = DokarkivGateway()
 
                 val pdf = pdfGateway.genererPdf(request.brev)
-                val journalpostId = arkivGateway.journalførBrev(request.journalpostInfo, pdf)
+                val journalpostId = arkivGateway.journalførBrev(
+                    journalpostInfo = JournalpostInfo(
+                        fnr = request.fnr,
+                        navn = request.navn,
+                        saksnummer = Saksnummer(request.saksnummer),
+                        eksternReferanseId = request.eksternReferanseId,
+                        tittel = request.tittel,
+                        brevkode = request.brevkode
+                    ),
+                    pdf = pdf
+                )
 
-                respond(JournalpostIdResponse(journalpostId), HttpStatusCode.Created)
+                respond(JournalpostIdResponse(journalpostId.id), HttpStatusCode.Created)
             }
         }
     }
 }
-
-data class JournalførBrevRequest(val journalpostInfo: JournalpostInfo, val brev: PdfBrev)
-data class JournalpostIdResponse(val journalpostId: JournalpostId)

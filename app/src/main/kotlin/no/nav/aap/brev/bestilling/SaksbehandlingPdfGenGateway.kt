@@ -1,7 +1,6 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.kontrakt.BlokkInnhold
-import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.PdfBrev
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
@@ -9,7 +8,6 @@ import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.NoTokenTokenProvider
 import java.net.URI
-import java.time.LocalDate
 
 class SaksbehandlingPdfGenGateway : PdfGateway {
 
