@@ -78,7 +78,7 @@ class AppTest {
     @Test
     fun `skal lager openapi som fil`() {
         val openApiDoc =
-            requireNotNull(
+            checkNotNull(
                 restClient.get<String>(
                     URI.create("http://localhost:8080/openapi.json"),
                     GetRequest()

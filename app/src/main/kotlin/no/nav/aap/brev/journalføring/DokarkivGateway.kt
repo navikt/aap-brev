@@ -41,7 +41,7 @@ class DokarkivGateway : ArkivGateway {
 //                Header("Nav-User-Id", navIdent) // TODO vurder om vi skal sette denne
             )
         )
-        val response = requireNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
+        val response = checkNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
 
         if (!response.journalpostferdigstilt) {
             log.error("Journalpost ble ikke ferdigstilt. Journalpost må ferdigstilles for å kunne bli distribuert.")

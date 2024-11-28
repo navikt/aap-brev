@@ -54,7 +54,7 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway {
             )
         )
 
-        return requireNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
+        return checkNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
             DefaultJsonMapper.fromJson(body)
         }))
     }
