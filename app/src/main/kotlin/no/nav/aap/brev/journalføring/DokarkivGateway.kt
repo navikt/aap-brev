@@ -37,9 +37,6 @@ class DokarkivGateway : ArkivGateway {
         val request = lagRequest(journalpostInfo, pdf)
         val httpRequest = PostRequest(
             body = request,
-            additionalHeaders = listOf(
-//                Header("Nav-User-Id", navIdent) // TODO vurder om vi skal sette denne
-            )
         )
         val response = checkNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
 
@@ -78,7 +75,7 @@ class DokarkivGateway : ArkivGateway {
                 )
             ),
             eksternReferanseId = journalpostInfo.eksternReferanseId,
-            journalfoerendeEnhet = "9999", // TODO
+            journalfoerendeEnhet = "9999",
             journalposttype = JournalpostType.UTGAAENDE,
             sak = Sak(
                 fagsakId = journalpostInfo.saksnummer.nummer,
