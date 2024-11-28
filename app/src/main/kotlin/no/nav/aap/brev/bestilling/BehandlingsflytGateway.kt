@@ -66,6 +66,29 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagru
         behandlingReferanse: BehandlingReferanse,
         faktagrunnlag: Set<FaktagrunnlagType>
     ): Set<Faktagrunnlag> {
-        TODO("Not yet implemented")
+        val uri = baseUri.resolve("/api/brev/faktagrunnlag")
+        val httpRequest = PostRequest(
+            body = HentFaktaGrunnlagRequest(
+                behandlingReferanse,
+                faktagrunnlag
+            ),
+            additionalHeaders = listOf(
+                Header("Accept", "application/json")
+            )
+        )
+
+        val response : HentFaktaGrunnlagResponse = checkNotNull(client.post(uri = uri, request = httpRequest))
+
+        return response.faktagrunnlag
     }
+
+    //TODO Flytt begge inn i kontrakten
+    data class HentFaktaGrunnlagRequest(
+        val behandlingReferanse: BehandlingReferanse,
+        val faktagrunnlag: Set<FaktagrunnlagType>
+    )
+
+    data class HentFaktaGrunnlagResponse(
+        val faktagrunnlag: Set<Faktagrunnlag>,
+    )
 }
