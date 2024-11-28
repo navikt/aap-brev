@@ -164,9 +164,6 @@ data class OpprettJournalpostRequest(
     )
 }
 
-@JvmInline
-value class JournalpostId(val id: String)
-
 data class OpprettJournalpostResponse(
     val journalpostId: JournalpostId,
     val journalpostferdigstilt: Boolean,
