@@ -2,6 +2,9 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.BrevbestillingLøsningStatus
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
+import no.nav.aap.brev.innhold.Faktagrunnlag
+import no.nav.aap.brev.innhold.FaktagrunnlagType
+import no.nav.aap.brev.innhold.HentFagtagrunnlagGateway
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
@@ -14,7 +17,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.Client
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import java.net.URI
 
-class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway {
+class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagrunnlagGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.behandlingsflyt.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.behandlingsflyt.scope"))
     private val client = RestClient.withDefaultResponseHandler(
@@ -57,5 +60,12 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway {
         return checkNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
             DefaultJsonMapper.fromJson(body)
         }))
+    }
+
+    override fun hent(
+        behandlingReferanse: BehandlingReferanse,
+        faktagrunnlag: Set<FaktagrunnlagType>
+    ): Set<Faktagrunnlag> {
+        TODO("Not yet implemented")
     }
 }

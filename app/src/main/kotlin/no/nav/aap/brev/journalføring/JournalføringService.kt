@@ -52,7 +52,7 @@ class JournalføringService(
         )
 
         val pdf = pdfGateway.genererPdf(pdfBrev)
-        val journalpostId =  arkivGateway.journalførBrev(journalpostInfo, pdf)
+        val journalpostId = arkivGateway.journalførBrev(journalpostInfo, pdf)
         brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId)
     }
 
