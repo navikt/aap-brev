@@ -24,7 +24,7 @@ fun randomDistribusjonBestillingId(): DistribusjonBestillingId {
 }
 
 fun Application.dokdistfordelingFake() {
-    applicationFakeFelles("dokarkiv")
+    applicationFakeFelles("dokdistfordeling")
     routing {
         post("/rest/v1/distribuerjournalpost") {
             val request = DefaultJsonMapper.fromJson<DistribuerJournalpostRequest>(call.receiveText())

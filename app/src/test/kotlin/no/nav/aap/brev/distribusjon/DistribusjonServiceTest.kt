@@ -57,7 +57,6 @@ class DistribusjonServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
             journalføringService.journalførBrevbestilling(referanse)
-
             distribusjonService.distribuerBrev(referanse)
 
             val bestilling = brevbestillingService.hent(referanse)
