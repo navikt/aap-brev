@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -19,4 +20,5 @@ data class Brevbestilling(
     val språk: Språk,
     val prosesseringStatus: ProsesseringStatus?,
     val journalpostId: JournalpostId?,
+    val distribusjonBestillingId: DistribusjonBestillingId?,
 )

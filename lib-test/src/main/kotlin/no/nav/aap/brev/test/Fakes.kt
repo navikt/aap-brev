@@ -7,6 +7,7 @@ import no.nav.aap.brev.test.fakes.azureFake
 import no.nav.aap.brev.test.fakes.behandlingsflytFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
+import no.nav.aap.brev.test.fakes.dokdistfordelingFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
@@ -21,6 +22,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
     private val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
     private val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
+    private val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
 
     init {
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
@@ -54,6 +56,10 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         System.setProperty("integrasjon.dokarkiv.url", "http://localhost:${dokarkiv.port()}")
         System.setProperty("integrasjon.dokarkiv.scope", "scope")
 
+        // Dokdistfordeling
+        System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+        System.setProperty("integrasjon.saf.scope", "scope")
+
         // Dokumentinnhenting
         System.setProperty("integrasjon.dokumentinnhenting.azp", "azp")
     }
@@ -65,6 +71,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         brevSanityProxy.stop(0L, 0L)
         pdfGen.stop(0L, 0L)
         dokarkiv.stop(0L, 0L)
+        dokdistfordeling.stop(0L, 0L)
     }
 
     private fun EmbeddedServer<*, *>.port(): Int =

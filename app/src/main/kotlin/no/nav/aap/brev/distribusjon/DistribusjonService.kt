@@ -6,8 +6,8 @@ import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class DistribusjonService(
-    val brevbestillingRepository: BrevbestillingRepository,
-    val distribusjonGateway: DistribusjonGateway,
+    private val brevbestillingRepository: BrevbestillingRepository,
+    private val distribusjonGateway: DistribusjonGateway,
 ) {
 
     companion object {
@@ -18,6 +18,10 @@ class DistribusjonService(
 
     fun distribuerBrev(brevbestillingReferanse: BrevbestillingReferanse) {
         val brevbestilling = brevbestillingRepository.hent(brevbestillingReferanse)
-        distribusjonGateway.distribuerJournalpost(checkNotNull(brevbestilling.journalpostId), brevbestilling.brevtype)
+        val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
+            checkNotNull(brevbestilling.journalpostId),
+            brevbestilling.brevtype
+        )
+        brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
     }
 }

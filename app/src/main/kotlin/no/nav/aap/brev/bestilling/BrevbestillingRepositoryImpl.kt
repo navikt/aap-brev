@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -66,6 +67,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                     språk = row.getEnum("SPRAK"),
                     prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
                     journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
+                    distribusjonBestillingId = row.getStringOrNull("DISTRIBUSJON_BESTILLING_ID")?.let { DistribusjonBestillingId(it) },
                 )
             }
         }
@@ -114,6 +116,23 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         ) {
             setParams {
                 setString(1, journalpostId.id)
+                setLong(2, id.id)
+            }
+            setResultValidator {
+                require(1 == it)
+            }
+        }
+    }
+
+    override fun lagreDistribusjonBestilling(
+        id: BrevbestillingId,
+        distribusjonBestillingId: DistribusjonBestillingId
+    ) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET DISTRIBUSJON_BESTILLING_ID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setString(1, distribusjonBestillingId.id)
                 setLong(2, id.id)
             }
             setResultValidator {
