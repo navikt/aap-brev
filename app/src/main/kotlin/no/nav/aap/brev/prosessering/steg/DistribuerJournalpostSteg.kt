@@ -8,7 +8,7 @@ class DistribuerJournalpostSteg(val distribusjonService: DistribusjonService) : 
     private val log = LoggerFactory.getLogger(DistribuerJournalpostSteg::class.java)
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("DistribuerJournalpostSteg")
-        distribusjonService.distribuerBrev(kontekst.referanse)
+//        distribusjonService.distribuerBrev(kontekst.referanse)
         return Steg.Resultat.FULLFØRT
     }
 
