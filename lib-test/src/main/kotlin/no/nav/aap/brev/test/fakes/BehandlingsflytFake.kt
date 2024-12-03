@@ -10,9 +10,12 @@ import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.Personinfo
+import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import java.util.UUID
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 private val feilForBestilling = mutableSetOf<UUID>()
 
@@ -25,6 +28,10 @@ fun feilLøsBestillingFor(bestilling: BrevbestillingReferanse) {
 fun faktagrunnlagForBehandling(behandlingReferanse: BehandlingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
     behandlingsReferanseTilFaktagrunnlag.put(behandlingReferanse, faktagrunnlag)
 }
+
+fun randomBehandlingReferanse() = BehandlingReferanse(UUID.randomUUID())
+
+fun randomSaksnummer() = Saksnummer(Random.nextInt(1000..9999).toString())
 
 fun Application.behandlingsflytFake() {
     applicationFakeFelles("behandlingsflyt")
@@ -42,7 +49,7 @@ fun Application.behandlingsflytFake() {
         post("/api/brev/faktagrunnlag") {
             val dto = DefaultJsonMapper.fromJson<BehandlingsflytGateway.HentFaktaGrunnlagRequest>(call.receiveText())
 
-            val faktagrunnlagResult = behandlingsReferanseTilFaktagrunnlag.get(dto.behandlingReferanse) ?: emptySet()
+            val faktagrunnlagResult = behandlingsReferanseTilFaktagrunnlag[dto.behandlingReferanse] ?: emptySet()
 
             call.respond(BehandlingsflytGateway.HentFaktaGrunnlagResponse(faktagrunnlagResult))
         }

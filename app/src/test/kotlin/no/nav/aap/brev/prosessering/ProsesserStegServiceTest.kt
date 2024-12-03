@@ -1,20 +1,20 @@
 package no.nav.aap.brev.prosessering
 
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.bestilling.BehandlingReferanse
-import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
+import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
+import no.nav.aap.brev.test.fakes.randomSaksnummer
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.UUID
-import kotlin.random.Random
-import kotlin.random.nextInt
+import java.time.LocalDate
 
 class ProsesserStegServiceTest {
 
@@ -35,12 +35,14 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
+            val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                Saksnummer(Random.nextInt(1000..9999).toString()),
-                BehandlingReferanse(UUID.randomUUID()),
+                randomSaksnummer(),
+                behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
             )
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
 
             prosesserStegService.prosesserBestilling(referanse)
 
@@ -56,8 +58,8 @@ class ProsesserStegServiceTest {
         val referanse = dataSource.transaction { connection ->
             BrevbestillingService.konstruer(connection)
                 .opprettBestilling(
-                    Saksnummer(Random.nextInt(1000..9999).toString()),
-                    BehandlingReferanse(UUID.randomUUID()),
+                    randomSaksnummer(),
+                    randomBehandlingReferanse(),
                     Brevtype.INNVILGELSE,
                     Språk.NB,
                 )

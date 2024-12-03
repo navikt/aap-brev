@@ -40,8 +40,19 @@ class JournalføringService(
 
     fun journalførBrevbestilling(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
+
+        checkNotNull(bestilling.brev) {
+            "Kan ikke journalføre bestilling uten brev."
+        }
+        check(bestilling.journalpostId == null) {
+            "Kan ikke journalføre brev for bestilling som allerede er journalført."
+        }
+
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
-        val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev!!, LocalDate.now())
+
+        val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now())
+        val pdf = pdfGateway.genererPdf(pdfBrev)
+
         val journalpostInfo = JournalpostInfo(
             fnr = personinfo.fnr,
             navn = personinfo.navn,
@@ -51,7 +62,6 @@ class JournalføringService(
             brevkode = bestilling.brevtype.name
         )
 
-        val pdf = pdfGateway.genererPdf(pdfBrev)
         val journalpostId = arkivGateway.journalførBrev(journalpostInfo, pdf)
         brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId)
     }
@@ -82,7 +92,8 @@ class JournalføringService(
                                                 formattering = it.formattering
                                             )
 
-                                            else -> null
+                                            is BlokkInnhold.Faktagrunnlag ->
+                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
                                         }
                                     },
                                     type = it.type

@@ -88,7 +88,7 @@ class HentFaktagrunnlagService(
             is Faktagrunnlag.Startdato ->
                 BlokkInnhold.FormattertTekst(
                     id = blokkInnhold.id,
-                    tekst = faktagrunnlag.dato.format(DateTimeFormatter.ofPattern("dd.mm.yyyy")),
+                    tekst = faktagrunnlag.dato.format(DateTimeFormatter.ofPattern("dd.MM.YYYY")),
                     formattering = emptyList(),
                 )
         }

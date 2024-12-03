@@ -4,7 +4,9 @@ import io.ktor.server.application.Application
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import no.nav.aap.brev.innhold.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Blokk
+import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
@@ -39,6 +41,11 @@ fun Application.brevSanityProxyFake() {
                                                         Formattering.KURSIV,
                                                         Formattering.FET
                                                     )
+                                                ),
+                                                Faktagrunnlag(
+                                                    id = UUID.randomUUID(),
+                                                    visningsnavn = "Startdato",
+                                                    tekniskNavn = FaktagrunnlagType.STARTDATO.verdi,
                                                 )
                                             ),
                                             type = BlokkType.AVSNITT

@@ -1,5 +1,6 @@
 package no.nav.aap.brev.test.fakes
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -14,8 +15,15 @@ import java.util.*
 import kotlin.random.Random
 
 private val referanseTilJournalpost = mutableMapOf<BrevbestillingReferanse, JournalpostId>()
-fun journalpostForBestilling(referanse: BrevbestillingReferanse, journalpostId: JournalpostId) {
+private val referanseTilJournalpostFinnesAllerede = mutableMapOf<BrevbestillingReferanse, Boolean>()
+
+fun journalpostForBestilling(
+    referanse: BrevbestillingReferanse,
+    journalpostId: JournalpostId,
+    finnesAllerede: Boolean = false
+) {
     referanseTilJournalpost.set(referanse, journalpostId)
+    referanseTilJournalpostFinnesAllerede.set(referanse, finnesAllerede)
 }
 
 fun randomJournalpostId(): JournalpostId {
@@ -29,7 +37,17 @@ fun Application.dokarkivFake() {
             val request = DefaultJsonMapper.fromJson<OpprettJournalpostRequest>(call.receiveText())
             val journalpostId = referanseTilJournalpost.get(BrevbestillingReferanse(request.eksternReferanseId))
                 ?: randomJournalpostId()
+            val status =
+                if (referanseTilJournalpostFinnesAllerede
+                        .getOrDefault(BrevbestillingReferanse(request.eksternReferanseId), false)
+                ) {
+                    HttpStatusCode.Conflict
+                } else {
+                    HttpStatusCode.Created
+                }
+
             call.respond(
+                status,
                 OpprettJournalpostResponse(
                     journalpostId = journalpostId,
                     journalpostferdigstilt = true,
