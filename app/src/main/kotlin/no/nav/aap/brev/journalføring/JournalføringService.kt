@@ -93,7 +93,9 @@ class JournalføringService(
                                             )
 
                                             is BlokkInnhold.Faktagrunnlag ->
-                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
+                                                // TODO
+//                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
+                                                null
                                         }
                                     },
                                     type = it.type
