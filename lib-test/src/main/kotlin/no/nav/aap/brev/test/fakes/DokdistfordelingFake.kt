@@ -1,5 +1,6 @@
 package no.nav.aap.brev.test.fakes
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -12,11 +13,14 @@ import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
 import java.util.*
 
 private val journalpostTilDistribusjonBestillingId = mutableMapOf<JournalpostId, DistribusjonBestillingId>()
+private val journalpostTilDistribusjonBestillingFinnesAllerede = mutableMapOf<JournalpostId, Boolean>()
 fun distribusjonBestillingIdForJournalpost(
     journalpost: JournalpostId,
-    distribusjonBestillingId: DistribusjonBestillingId
+    distribusjonBestillingId: DistribusjonBestillingId,
+    finnesAllerede: Boolean = false
 ) {
     journalpostTilDistribusjonBestillingId.set(journalpost, distribusjonBestillingId)
+    journalpostTilDistribusjonBestillingFinnesAllerede.set(journalpost, finnesAllerede)
 }
 
 fun randomDistribusjonBestillingId(): DistribusjonBestillingId {
@@ -28,11 +32,19 @@ fun Application.dokdistfordelingFake() {
     routing {
         post("/rest/v1/distribuerjournalpost") {
             val request = DefaultJsonMapper.fromJson<DistribuerJournalpostRequest>(call.receiveText())
+            val status =
+                if (journalpostTilDistribusjonBestillingFinnesAllerede
+                        .getOrDefault(JournalpostId(request.journalpostId), false)
+                ) {
+                    HttpStatusCode.Conflict
+                } else {
+                    HttpStatusCode.Created
+                }
             val distribusjonBestillingId =
                 journalpostTilDistribusjonBestillingId.get(JournalpostId(request.journalpostId))
                     ?: randomDistribusjonBestillingId()
             call.respond(
-                DistribuerJournalpostResponse(distribusjonBestillingId.id)
+                status, DistribuerJournalpostResponse(distribusjonBestillingId.id)
             )
         }
     }

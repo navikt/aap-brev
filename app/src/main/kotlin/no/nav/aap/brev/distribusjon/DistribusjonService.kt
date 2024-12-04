@@ -18,8 +18,17 @@ class DistribusjonService(
 
     fun distribuerBrev(brevbestillingReferanse: BrevbestillingReferanse) {
         val brevbestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+
+        checkNotNull(brevbestilling.journalpostId) {
+            "Kan ikke distribuere en bestilling som ikke er journalført."
+        }
+
+        check(brevbestilling.distribusjonBestillingId == null) {
+            "Brevet er allerede distribuert."
+        }
+
         val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
-            checkNotNull(brevbestilling.journalpostId),
+            brevbestilling.journalpostId,
             brevbestilling.brevtype
         )
         brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)

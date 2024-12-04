@@ -20,6 +20,7 @@ import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 
 class DistribusjonServiceTest {
@@ -69,4 +70,106 @@ class DistribusjonServiceTest {
         }
     }
 
+    @Test
+    fun `validering feiler dersom brevet ikke er journalført`() {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val brevinnholdService = BrevinnholdService.konstruer(connection)
+            val distribusjonService = DistribusjonService.konstruer(connection)
+            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+
+            val behandlingReferanse = randomBehandlingReferanse()
+            val referanse = brevbestillingService.opprettBestilling(
+                randomSaksnummer(),
+                behandlingReferanse,
+                Brevtype.INNVILGELSE,
+                Språk.NB,
+            )
+
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            val journalpostId = randomJournalpostId()
+            journalpostForBestilling(referanse, journalpostId)
+
+            brevinnholdService.hentOgLagre(referanse)
+            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+
+            val exception = assertThrows<IllegalStateException> {
+                distribusjonService.distribuerBrev(referanse)
+            }
+            assertEquals(exception.message, "Kan ikke distribuere en bestilling som ikke er journalført.")
+        }
+    }
+
+    @Test
+    fun `validering feiler dersom brevet allerede er distribuert`() {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val brevinnholdService = BrevinnholdService.konstruer(connection)
+            val journalføringService = JournalføringService.konstruer(connection)
+            val distribusjonService = DistribusjonService.konstruer(connection)
+            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+
+            val behandlingReferanse = randomBehandlingReferanse()
+            val referanse = brevbestillingService.opprettBestilling(
+                randomSaksnummer(),
+                behandlingReferanse,
+                Brevtype.INNVILGELSE,
+                Språk.NB,
+            )
+
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            val journalpostId = randomJournalpostId()
+            journalpostForBestilling(referanse, journalpostId)
+
+            brevinnholdService.hentOgLagre(referanse)
+            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            journalføringService.journalførBrevbestilling(referanse)
+            distribusjonService.distribuerBrev(referanse)
+
+            val exception = assertThrows<IllegalStateException> {
+                distribusjonService.distribuerBrev(referanse)
+            }
+            assertEquals(exception.message, "Brevet er allerede distribuert.")
+        }
+
+    }
+
+    @Test
+    fun `håndterer respons med http status 409 pga allerede distribuert`() {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val brevinnholdService = BrevinnholdService.konstruer(connection)
+            val journalføringService = JournalføringService.konstruer(connection)
+            val distribusjonService = DistribusjonService.konstruer(connection)
+            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+
+            val behandlingReferanse = randomBehandlingReferanse()
+            val referanse = brevbestillingService.opprettBestilling(
+                randomSaksnummer(),
+                behandlingReferanse,
+                Brevtype.INNVILGELSE,
+                Språk.NB,
+            )
+
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            val journalpostId = randomJournalpostId()
+            journalpostForBestilling(referanse, journalpostId)
+
+            val forventetDistribusjonBestillingId = randomDistribusjonBestillingId()
+            distribusjonBestillingIdForJournalpost(
+                journalpost = journalpostId,
+                distribusjonBestillingId = forventetDistribusjonBestillingId,
+                finnesAllerede = true
+            )
+
+            brevinnholdService.hentOgLagre(referanse)
+            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            journalføringService.journalførBrevbestilling(referanse)
+            distribusjonService.distribuerBrev(referanse)
+
+            val bestilling = brevbestillingService.hent(referanse)
+            assertEquals(forventetDistribusjonBestillingId, bestilling.distribusjonBestillingId)
+        }
+
+    }
 }
