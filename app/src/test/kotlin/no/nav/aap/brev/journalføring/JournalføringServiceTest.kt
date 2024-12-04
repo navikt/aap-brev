@@ -84,7 +84,7 @@ class JournalføringServiceTest {
         }
     }
 
-//    @Test TODO
+    @Test
     fun `validering feiler dersom brevet inneholder manglende faktagrunnlag`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)

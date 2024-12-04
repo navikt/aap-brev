@@ -18,6 +18,8 @@ import no.nav.aap.brev.kontrakt.PdfBrev.Innhold
 import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker
 import no.nav.aap.brev.kontrakt.PdfBrev.Tekstbolk
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.miljo.Miljø
+import no.nav.aap.komponenter.miljo.MiljøKode
 import java.time.LocalDate
 
 class JournalføringService(
@@ -92,10 +94,12 @@ class JournalføringService(
                                                 formattering = it.formattering
                                             )
 
-                                            is BlokkInnhold.Faktagrunnlag ->
-                                                // TODO
-//                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
+                                            is BlokkInnhold.Faktagrunnlag -> {
+                                                if (Miljø.er() != MiljøKode.DEV) { // TODO ta bort denne når faktagrunnlag hentes fra behandlignsflyt
+                                                    throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
+                                                }
                                                 null
+                                            }
                                         }
                                     },
                                     type = it.type
