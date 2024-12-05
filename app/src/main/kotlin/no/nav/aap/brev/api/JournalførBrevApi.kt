@@ -9,7 +9,7 @@ import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.journalføring.JournalpostInfo
 import no.nav.aap.brev.kontrakt.JournalførBrevRequest
-import no.nav.aap.brev.kontrakt.JournalpostIdResponse
+import no.nav.aap.brev.kontrakt.JournalførBrevResponse
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedPost
@@ -28,12 +28,12 @@ fun NormalOpenAPIRoute.journalførBrevApi() {
 
     route("/api") {
         route("/journalforbrev") {
-            authorizedPost<Unit, JournalpostIdResponse, JournalførBrevRequest>(authorizationBodyPathConfig) { _, request ->
+            authorizedPost<Unit, JournalførBrevResponse, JournalførBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 val pdfGateway = SaksbehandlingPdfGenGateway()
                 val arkivGateway = DokarkivGateway()
 
                 val pdf = pdfGateway.genererPdf(request.brev)
-                val journalpostId = arkivGateway.journalførBrev(
+                val journalpostResponse = arkivGateway.journalførBrev(
                     journalpostInfo = JournalpostInfo(
                         fnr = request.fnr,
                         navn = request.navn,
@@ -45,7 +45,13 @@ fun NormalOpenAPIRoute.journalførBrevApi() {
                     pdf = pdf
                 )
 
-                respond(JournalpostIdResponse(journalpostId.id), HttpStatusCode.Created)
+                respond(
+                    JournalførBrevResponse(
+                    journalpostId = journalpostResponse.journalpostId.id,
+                    journalpostferdigstilt = journalpostResponse.journalpostferdigstilt,
+                    dokumenter = journalpostResponse.dokumenter.map { it.dokumentInfoId }),
+                    HttpStatusCode.Created
+                )
             }
         }
     }

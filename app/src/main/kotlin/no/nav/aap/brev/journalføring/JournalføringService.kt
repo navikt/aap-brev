@@ -65,7 +65,7 @@ class JournalføringService(
         )
 
         val journalpostId = arkivGateway.journalførBrev(journalpostInfo, pdf)
-        brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId)
+        brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId.journalpostId)
     }
 
     private fun mapPdfBrev(
