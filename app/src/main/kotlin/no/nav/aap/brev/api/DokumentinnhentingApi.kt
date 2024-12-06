@@ -10,6 +10,7 @@ import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.journalføring.JournalpostInfo
 import no.nav.aap.brev.journalføring.JournalpostInfo.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkType
+import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingResponse
 import no.nav.aap.brev.kontrakt.PdfBrev
@@ -64,6 +65,14 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                         dokumenter = journalpostResponse.dokumenter.map { it.dokumentInfoId }),
                     HttpStatusCode.Created
                 )
+            }
+        }
+        route("/ekspeder-journalpost-behandler-bestilling") {
+            authorizedPost<Unit, String, EkspederBehandlerBestillingRequest>(
+                authorizationBodyPathConfig
+            ) { _, request ->
+                // TODO
+                respond("{}", HttpStatusCode.OK)
             }
         }
     }
