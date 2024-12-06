@@ -52,12 +52,15 @@ class DokarkivGateway : ArkivGateway {
     ): OpprettJournalpostRequest {
         return OpprettJournalpostRequest(
             avsenderMottaker = AvsenderMottaker(
-                id = journalpostInfo.fnr,
-                idType = AvsenderMottaker.IdType.FNR,
+                id = journalpostInfo.mottakerIdent,
+                idType = when(journalpostInfo.mottakerType) {
+                    JournalpostInfo.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
+                    JournalpostInfo.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
+                },
             ),
             behandlingstema = null,
             bruker = Bruker(
-                id = journalpostInfo.fnr,
+                id = journalpostInfo.brukerFnr,
                 idType = Bruker.IdType.FNR
             ),
             dokumenter = listOf(

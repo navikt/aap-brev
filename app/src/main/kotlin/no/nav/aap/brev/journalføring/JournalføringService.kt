@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.journalføring.JournalpostInfo.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.PdfBrev
@@ -56,8 +57,9 @@ class JournalføringService(
         val pdf = pdfGateway.genererPdf(pdfBrev)
 
         val journalpostInfo = JournalpostInfo(
-            fnr = personinfo.fnr,
-            navn = personinfo.navn,
+            brukerFnr = personinfo.fnr,
+            mottakerIdent = personinfo.fnr,
+            mottakerType = MottakerType.FNR,
             saksnummer = bestilling.saksnummer,
             eksternReferanseId = bestilling.referanse.referanse,
             tittel = checkNotNull(value = bestilling.brev.overskrift),

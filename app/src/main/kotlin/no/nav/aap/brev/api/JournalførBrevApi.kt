@@ -16,6 +16,7 @@ import no.nav.aap.tilgang.authorizedPost
 import tilgang.Operasjon
 
 
+@Deprecated("Erstattes av dokumentinnhentingApi")
 fun NormalOpenAPIRoute.journalførBrevApi() {
 
     val dokumentinnhentingAzp = requiredConfigForKey("integrasjon.dokumentinnhenting.azp")
@@ -35,8 +36,9 @@ fun NormalOpenAPIRoute.journalførBrevApi() {
                 val pdf = pdfGateway.genererPdf(request.brev)
                 val journalpostResponse = arkivGateway.journalførBrev(
                     journalpostInfo = JournalpostInfo(
-                        fnr = request.fnr,
-                        navn = request.navn,
+                        brukerFnr = request.fnr,
+                        mottakerIdent = request.fnr,
+                        mottakerType = JournalpostInfo.MottakerType.FNR,
                         saksnummer = Saksnummer(request.saksnummer),
                         eksternReferanseId = request.eksternReferanseId,
                         tittel = request.tittel,
@@ -47,9 +49,9 @@ fun NormalOpenAPIRoute.journalførBrevApi() {
 
                 respond(
                     JournalførBrevResponse(
-                    journalpostId = journalpostResponse.journalpostId.id,
-                    journalpostferdigstilt = journalpostResponse.journalpostferdigstilt,
-                    dokumenter = journalpostResponse.dokumenter.map { it.dokumentInfoId }),
+                        journalpostId = journalpostResponse.journalpostId.id,
+                        journalpostferdigstilt = journalpostResponse.journalpostferdigstilt,
+                        dokumenter = journalpostResponse.dokumenter.map { it.dokumentInfoId }),
                     HttpStatusCode.Created
                 )
             }
