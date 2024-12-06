@@ -7,4 +7,7 @@ data class BestillBrevRequest(
     val behandlingReferanse: UUID,
     val brevtype: Brevtype,
     val sprak: Språk,
+    val vedlegg: Set<Vedlegg> = emptySet(),
 )
+
+data class Vedlegg(val journalpostId: String, val dokumentInfoId: String)
