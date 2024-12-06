@@ -71,7 +71,10 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
             authorizedPost<Unit, String, EkspederBehandlerBestillingRequest>(
                 authorizationBodyPathConfig
             ) { _, request ->
-                // TODO
+                val arkivGateway = DokarkivGateway()
+
+                arkivGateway.ekspediterJournalpost(request.journalpostId)
+
                 respond("{}", HttpStatusCode.OK)
             }
         }

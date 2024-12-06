@@ -11,7 +11,9 @@ import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
+import no.nav.aap.komponenter.httpklient.httpclient.patch
 import no.nav.aap.komponenter.httpklient.httpclient.post
+import no.nav.aap.komponenter.httpklient.httpclient.request.PatchRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import org.slf4j.LoggerFactory
@@ -44,6 +46,17 @@ class DokarkivGateway : ArkivGateway {
         }
 
         return response
+    }
+
+    override fun ekspediterJournalpost(journalpostId: String) {
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/oppdaterDistribusjonsinfo")
+        val request = EkspediterJournalpostRequest(settStatusEkspedert = true)
+
+        val httpRequest = PatchRequest(
+            body = request
+        )
+
+        client.patch<EkspediterJournalpostRequest, Unit>(uri, httpRequest)
     }
 
     private fun lagRequest(
