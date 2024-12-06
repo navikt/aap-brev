@@ -17,7 +17,7 @@ import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
-import no.nav.aap.brev.api.journalførBrevApi
+import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -53,9 +53,7 @@ fun main() {
     }.start(wait = true)
 }
 
-internal fun Application.server(
-    dbConfig: DbConfig,
-) {
+internal fun Application.server(dbConfig: DbConfig) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     commonKtorModule(prometheus, AzureConfig(), InfoModel(title = "AAP - Brev"))
@@ -73,7 +71,6 @@ internal fun Application.server(
                     call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
                 }
             }
-
         }
     }
 
@@ -91,7 +88,7 @@ internal fun Application.server(
         authenticate(AZURE) {
             apiRouting {
                 bestillingApi(dataSource)
-                journalførBrevApi()
+                dokumentinnhentingApi()
                 motorApi(dataSource)
             }
         }
@@ -100,12 +97,13 @@ internal fun Application.server(
 }
 
 private fun Application.module(dataSource: DataSource): Motor {
-    val motor = Motor(
-        dataSource = dataSource,
-        antallKammer = 2,
-        logInfoProvider = NoExtraLogInfoProvider,
-        jobber = listOf(ProsesserBrevbestillingJobbUtfører),
-    )
+    val motor =
+        Motor(
+            dataSource = dataSource,
+            antallKammer = 2,
+            logInfoProvider = NoExtraLogInfoProvider,
+            jobber = listOf(ProsesserBrevbestillingJobbUtfører)
+        )
 
     dataSource.transaction { dbConnection ->
         RetryService(dbConnection).enable()
@@ -125,7 +123,10 @@ private fun Application.module(dataSource: DataSource): Motor {
     return motor
 }
 
-private fun Routing.actuator(prometheus: PrometheusMeterRegistry, motor: Motor) {
+private fun Routing.actuator(
+    prometheus: PrometheusMeterRegistry,
+    motor: Motor
+) {
     route("/actuator") {
         get("/metrics") {
             call.respond(prometheus.scrape())
@@ -148,13 +149,16 @@ private fun Routing.actuator(prometheus: PrometheusMeterRegistry, motor: Motor) 
 }
 
 class DbConfig(
-    val jdbcUrl: String = System.getenv("NAIS_DATABASE_BREV_BREV_JDBC_URL"),
+    val jdbcUrl: String = System.getenv("NAIS_DATABASE_BREV_BREV_JDBC_URL")
 )
 
-fun initDatasource(dbConfig: DbConfig) = HikariDataSource(HikariConfig().apply {
-    jdbcUrl = dbConfig.jdbcUrl
-    maximumPoolSize = 10
-    minimumIdle = 1
-    driverClassName = "org.postgresql.Driver"
-    connectionTestQuery = "SELECT 1"
-})
+fun initDatasource(dbConfig: DbConfig) =
+    HikariDataSource(
+        HikariConfig().apply {
+            jdbcUrl = dbConfig.jdbcUrl
+            maximumPoolSize = 10
+            minimumIdle = 1
+            driverClassName = "org.postgresql.Driver"
+            connectionTestQuery = "SELECT 1"
+        }
+    )
