@@ -19,8 +19,11 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.Client
 import org.slf4j.LoggerFactory
 import java.net.URI
 
+private const val MASKINELL_JOURNALFØRING_ENHET = "9999"
+
 class DokarkivGateway : ArkivGateway {
     private val log = LoggerFactory.getLogger(DokarkivGateway::class.java)
+
 
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokarkiv.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
@@ -33,19 +36,30 @@ class DokarkivGateway : ArkivGateway {
     override fun journalførBrev(
         journalpostInfo: JournalpostInfo,
         pdf: Pdf,
+        forsøkFerdigstill: Boolean,
     ): OpprettJournalpostResponse {
-        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true")
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=$forsøkFerdigstill")
         val request = lagRequest(journalpostInfo, pdf)
         val httpRequest = PostRequest(
             body = request,
         )
-        val response = checkNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
+        val response =
+            checkNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
 
         if (!response.journalpostferdigstilt) {
             log.error("Journalpost ble ikke ferdigstilt. Journalpost må ferdigstilles for å kunne bli distribuert.")
         }
 
         return response
+    }
+
+    override fun ferdigstillJournalpost(journalpostId: JournalpostId) {
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/ferdigstill")
+        val request = FerdigstillJournalpostRequest(journalfoerendeEnhet = MASKINELL_JOURNALFØRING_ENHET)
+        val httpRequest = PatchRequest(
+            body = request,
+        )
+        client.patch<FerdigstillJournalpostRequest, Unit>(uri, httpRequest)
     }
 
     override fun ekspediterJournalpost(journalpostId: String) {
@@ -66,7 +80,7 @@ class DokarkivGateway : ArkivGateway {
         return OpprettJournalpostRequest(
             avsenderMottaker = AvsenderMottaker(
                 id = journalpostInfo.mottakerIdent,
-                idType = when(journalpostInfo.mottakerType) {
+                idType = when (journalpostInfo.mottakerType) {
                     JournalpostInfo.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
                     JournalpostInfo.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
                 },
@@ -90,7 +104,7 @@ class DokarkivGateway : ArkivGateway {
                 )
             ),
             eksternReferanseId = journalpostInfo.eksternReferanseId,
-            journalfoerendeEnhet = "9999",
+            journalfoerendeEnhet = MASKINELL_JOURNALFØRING_ENHET,
             journalposttype = JournalpostType.UTGAAENDE,
             sak = Sak(
                 fagsakId = journalpostInfo.saksnummer.nummer,

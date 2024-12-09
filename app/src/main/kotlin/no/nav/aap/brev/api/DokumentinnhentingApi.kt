@@ -55,7 +55,8 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                         tittel = request.tittel,
                         brevkode = request.brevkode
                     ),
-                    pdf = pdf
+                    pdf = pdf,
+                    forsøkFerdigstill = true,
                 )
 
                 respond(

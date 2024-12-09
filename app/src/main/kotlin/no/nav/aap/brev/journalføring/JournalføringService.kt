@@ -66,7 +66,11 @@ class JournalføringService(
             brevkode = bestilling.brevtype.name
         )
 
-        val journalpostId = arkivGateway.journalførBrev(journalpostInfo, pdf)
+        val journalpostId = arkivGateway.journalførBrev(
+            journalpostInfo = journalpostInfo,
+            pdf = pdf,
+            forsøkFerdigstill = true,
+        )
         brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId.journalpostId)
     }
 
