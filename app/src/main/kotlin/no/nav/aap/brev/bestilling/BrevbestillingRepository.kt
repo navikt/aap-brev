@@ -13,6 +13,7 @@ interface BrevbestillingRepository {
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
+        vedlegg: Set<Vedlegg>,
     ): BrevbestillingReferanse
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling

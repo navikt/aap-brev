@@ -21,4 +21,5 @@ data class Brevbestilling(
     val prosesseringStatus: ProsesseringStatus?,
     val journalpostId: JournalpostId?,
     val distribusjonBestillingId: DistribusjonBestillingId?,
+    val vedlegg: Set<Vedlegg>,
 )

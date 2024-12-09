@@ -1,5 +1,7 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.journalføring.DokumentInfoId
+import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -42,6 +44,12 @@ class BrevbestillingService(
             behandlingReferanse = behandlingReferanse,
             brevtype = brevtype,
             språk = språk,
+            vedlegg = vedlegg.map {
+                Vedlegg(
+                    journalpostId = JournalpostId(it.journalpostId),
+                    dokumentInfoId = DokumentInfoId(it.dokumentInfoId)
+                )
+            }.toSet(),
         )
 
         val jobb =
