@@ -31,8 +31,8 @@ class BrevbestillingRepositoryImplTest {
             val brevtype = Brevtype.INNVILGELSE
             val språk = Språk.NB
             val vedlegg = setOf<Vedlegg>(
-//                Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
-//                Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
+                Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
+                Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
             val brev = brev()
             val journalpostId = randomJournalpostId()
