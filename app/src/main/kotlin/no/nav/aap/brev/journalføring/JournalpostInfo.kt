@@ -6,6 +6,7 @@ import java.util.UUID
 data class JournalpostInfo(
     val brukerFnr: String,
     val mottakerIdent: String,
+    val mottakerNavn: String?,
     val mottakerType: MottakerType,
     val saksnummer: Saksnummer,
     val eksternReferanseId: UUID,

@@ -107,6 +107,7 @@ class DokarkivGateway : ArkivGateway {
                     JournalpostInfo.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
                     JournalpostInfo.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
                 },
+                navn = journalpostInfo.mottakerNavn
             ),
             behandlingstema = null,
             bruker = Bruker(

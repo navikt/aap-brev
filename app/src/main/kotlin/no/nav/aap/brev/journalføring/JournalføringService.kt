@@ -60,6 +60,7 @@ class JournalføringService(
             brukerFnr = personinfo.fnr,
             mottakerIdent = personinfo.fnr,
             mottakerType = MottakerType.FNR,
+            mottakerNavn = null,
             saksnummer = bestilling.saksnummer,
             eksternReferanseId = bestilling.referanse.referanse,
             tittel = checkNotNull(value = bestilling.brev.overskrift),

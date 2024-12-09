@@ -49,6 +49,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                     journalpostInfo = JournalpostInfo(
                         brukerFnr = request.brukerFnr,
                         mottakerIdent = request.mottakerHprnr,
+                        mottakerNavn = request.mottakerNavn,
                         mottakerType = MottakerType.HPRNR,
                         saksnummer = Saksnummer(request.saksnummer),
                         eksternReferanseId = request.eksternReferanseId,
