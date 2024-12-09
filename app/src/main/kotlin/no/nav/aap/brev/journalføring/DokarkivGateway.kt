@@ -7,14 +7,17 @@ import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument.DokumentVariant
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.JournalpostType
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Sak
+import no.nav.aap.brev.kontrakt.Vedlegg
 import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.patch
 import no.nav.aap.komponenter.httpklient.httpclient.post
+import no.nav.aap.komponenter.httpklient.httpclient.put
 import no.nav.aap.komponenter.httpklient.httpclient.request.PatchRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
+import no.nav.aap.komponenter.httpklient.httpclient.request.PutRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -60,6 +63,26 @@ class DokarkivGateway : ArkivGateway {
             body = request,
         )
         client.patch<FerdigstillJournalpostRequest, Unit>(uri, httpRequest)
+    }
+
+    override fun tilknyttVedlegg(
+        journalpostId: JournalpostId,
+        vedlegg: Set<Vedlegg>
+    ) {
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/tilknyttVedlegg")
+        val request = TilknyttVedleggRequest(dokument = vedlegg.map {
+            TilknyttVedleggRequest.DokumentVedlegg(it.journalpostId, it.dokumentInfoId)
+        })
+        val httpRequest = PutRequest(
+            body = request,
+        )
+        val response = checkNotNull(client.put<TilknyttVedleggRequest, TilknyttVedleggResponse>(uri, httpRequest))
+        if (response.feiledeDokumenter.isNotEmpty()) {
+            response.feiledeDokumenter.forEach {
+                log.error("Kunne ikke tilknytte vedlegg, kildeJournalpostId: ${it.kildeJournalpostId}, dokumentInfoId: ${it.dokumentInfoId}, arsakKode: ${it.arsakKode}.")
+            }
+            throw IllegalStateException("Kunne ikke tilknytte ${response.feiledeDokumenter.size} vedlegg, journalpostId: ${journalpostId.id}.")
+        }
     }
 
     override fun ekspediterJournalpost(journalpostId: String) {
