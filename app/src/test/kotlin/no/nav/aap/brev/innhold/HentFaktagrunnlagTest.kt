@@ -43,7 +43,8 @@ class HentFaktagrunnlagTest {
                     randomSaksnummer(),
                     behandlingReferanse,
                     Brevtype.INNVILGELSE,
-                    Språk.NB
+                    Språk.NB,
+                    emptySet(),
                 )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.of(2001, 2, 3))))

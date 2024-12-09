@@ -3,6 +3,7 @@ package no.nav.aap.brev.bestilling
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.kontrakt.Vedlegg
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -31,7 +32,10 @@ class BrevbestillingService(
         behandlingReferanse: BehandlingReferanse,
         brevtype: Brevtype,
         språk: Språk,
+        vedlegg: Set<Vedlegg>,
     ): BrevbestillingReferanse {
+
+        validerBestilling(saksnummer, vedlegg)
 
         val referanse = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
@@ -56,5 +60,12 @@ class BrevbestillingService(
 
     fun oppdaterBrev(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
+    }
+
+    private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
+        if (vedlegg.isNotEmpty()) {
+            // TODO sjekk at vedlegg saksnummer == saksnummer
+            // TODO sjekk at vedlegg journalpost har riktig status
+        }
     }
 }

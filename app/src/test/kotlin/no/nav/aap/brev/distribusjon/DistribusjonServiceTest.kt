@@ -51,6 +51,7 @@ class DistribusjonServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -84,6 +85,7 @@ class DistribusjonServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -115,6 +117,7 @@ class DistribusjonServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -149,6 +152,7 @@ class DistribusjonServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))

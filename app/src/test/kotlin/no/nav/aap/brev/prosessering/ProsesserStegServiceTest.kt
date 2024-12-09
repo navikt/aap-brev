@@ -41,6 +41,7 @@ class ProsesserStegServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
 
@@ -62,6 +63,7 @@ class ProsesserStegServiceTest {
                     randomBehandlingReferanse(),
                     Brevtype.INNVILGELSE,
                     Språk.NB,
+                    emptySet(),
                 )
         }
 

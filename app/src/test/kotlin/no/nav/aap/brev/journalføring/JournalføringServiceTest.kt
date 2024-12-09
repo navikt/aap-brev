@@ -47,6 +47,7 @@ class JournalføringServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -75,6 +76,7 @@ class JournalføringServiceTest {
                 randomBehandlingReferanse(),
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             val exception = assertThrows<IllegalStateException> {
@@ -96,6 +98,7 @@ class JournalføringServiceTest {
                 randomBehandlingReferanse(),
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             brevinnholdService.hentOgLagre(referanse)
@@ -121,6 +124,7 @@ class JournalføringServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -159,6 +163,7 @@ class JournalføringServiceTest {
                 behandlingReferanse,
                 Brevtype.INNVILGELSE,
                 Språk.NB,
+                emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))

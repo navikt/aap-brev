@@ -43,6 +43,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                         brevtype = request.brevtype,
                         språk = request.sprak,
+                        vedlegg = request.vedlegg,
                     )
                 }
                 respond(BestillBrevResponse(referanse.referanse), HttpStatusCode.Created)
