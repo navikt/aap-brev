@@ -28,7 +28,7 @@ interface BrevbestillingRepository {
         prosesseringStatus: ProsesseringStatus,
     )
 
-    fun lagreJournalpost(id: BrevbestillingId, journalpostId: JournalpostId)
+    fun lagreJournalpost(id: BrevbestillingId, journalpostId: JournalpostId, journalpostFerdigstilt: Boolean)
 
     fun lagreDistribusjonBestilling(id: BrevbestillingId, distribusjonBestillingId: DistribusjonBestillingId)
 }

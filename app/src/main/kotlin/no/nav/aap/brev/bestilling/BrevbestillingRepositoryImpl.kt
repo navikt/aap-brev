@@ -112,6 +112,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             språk = row.getEnum("SPRAK"),
             prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
             journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
+            journalpostFerdigstilt = row.getBooleanOrNull("JOURNALPOST_FERDIGSTILT"),
             distribusjonBestillingId = row.getStringOrNull("DISTRIBUSJON_BESTILLING_ID")
                 ?.let { DistribusjonBestillingId(it) },
             vedlegg = vedlegg.toSet(),
@@ -154,14 +155,16 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun lagreJournalpost(
         id: BrevbestillingId,
-        journalpostId: JournalpostId
+        journalpostId: JournalpostId,
+        journalpostFerdigstilt: Boolean
     ) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ? WHERE ID = ?"
+            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ?, JOURNALPOST_FERDIGSTILT = ? WHERE ID = ?"
         ) {
             setParams {
                 setString(1, journalpostId.id)
-                setLong(2, id.id)
+                setBoolean(2, journalpostFerdigstilt)
+                setLong(3, id.id)
             }
             setResultValidator {
                 require(1 == it)

@@ -67,12 +67,12 @@ class JournalføringService(
             brevkode = bestilling.brevtype.name
         )
 
-        val journalpostId = arkivGateway.journalførBrev(
+        val response = arkivGateway.journalførBrev(
             journalpostInfo = journalpostInfo,
             pdf = pdf,
             forsøkFerdigstill = true,
         )
-        brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId.journalpostId)
+        brevbestillingRepository.lagreJournalpost(bestilling.id, response.journalpostId, response.journalpostferdigstilt)
     }
 
     private fun mapPdfBrev(

@@ -12,6 +12,7 @@ import no.nav.aap.brev.test.fakes.randomSaksnummer
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
@@ -51,6 +52,7 @@ class BrevbestillingRepositoryImplTest {
             assertNull(bestilling.brev)
             assertNull(bestilling.prosesseringStatus)
             assertNull(bestilling.journalpostId)
+            assertNull(bestilling.journalpostFerdigstilt)
 
             brevbestillingRepository.oppdaterBrev(bestillingReferanse, brev)
             bestilling = brevbestillingRepository.hent(bestillingReferanse)
@@ -65,10 +67,11 @@ class BrevbestillingRepositoryImplTest {
 
             assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
 
-            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId)
+            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
             bestilling = brevbestillingRepository.hent(bestillingReferanse)
 
             assertEquals(journalpostId, bestilling.journalpostId)
+            assertTrue(bestilling.journalpostFerdigstilt == true)
 
             brevbestillingRepository.lagreDistribusjonBestilling(bestilling.id, distribusjonBestillingId)
             bestilling = brevbestillingRepository.hent(bestillingReferanse)

@@ -20,6 +20,7 @@ data class Brevbestilling(
     val språk: Språk,
     val prosesseringStatus: ProsesseringStatus?,
     val journalpostId: JournalpostId?,
+    val journalpostFerdigstilt: Boolean?,
     val distribusjonBestillingId: DistribusjonBestillingId?,
     val vedlegg: Set<Vedlegg>,
 )
