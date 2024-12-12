@@ -7,7 +7,7 @@ val tilgangVersjon = "0.0.56"
 
 plugins {
     id("brev.conventions")
-    id("io.ktor.plugin") version "3.0.1"
+    id("io.ktor.plugin") version "3.0.2"
 }
 
 application {
