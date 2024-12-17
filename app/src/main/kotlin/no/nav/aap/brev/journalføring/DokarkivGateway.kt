@@ -1,13 +1,13 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.Pdf
+import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.AvsenderMottaker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Bruker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument.DokumentVariant
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.JournalpostType
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Sak
-import no.nav.aap.brev.kontrakt.Vedlegg
 import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
@@ -71,7 +71,7 @@ class DokarkivGateway : ArkivGateway {
     ) {
         val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/tilknyttVedlegg")
         val request = TilknyttVedleggRequest(dokument = vedlegg.map {
-            TilknyttVedleggRequest.DokumentVedlegg(it.journalpostId, it.dokumentInfoId)
+            TilknyttVedleggRequest.DokumentVedlegg(it.journalpostId.id, it.dokumentInfoId.id)
         })
         val httpRequest = PutRequest(
             body = request,

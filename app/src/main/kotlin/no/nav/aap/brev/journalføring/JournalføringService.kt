@@ -74,11 +74,20 @@ class JournalføringService(
             pdf = pdf,
             forsøkFerdigstill = forsøkFerdigstill,
         )
-        brevbestillingRepository.lagreJournalpost(bestilling.id, response.journalpostId, response.journalpostferdigstilt)
+        brevbestillingRepository.lagreJournalpost(
+            bestilling.id,
+            response.journalpostId,
+            response.journalpostferdigstilt
+        )
     }
 
     fun tilknyttVedlegg(referanse: BrevbestillingReferanse) {
-        // TODO
+        val bestilling = brevbestillingRepository.hent(referanse)
+        val journalpostId = checkNotNull(bestilling.journalpostId)
+        val vedlegg = bestilling.vedlegg
+        if (vedlegg.isNotEmpty()) {
+            arkivGateway.tilknyttVedlegg(journalpostId, vedlegg)
+        }
     }
 
     fun ferdigstillJournalpost(referanse: BrevbestillingReferanse) {

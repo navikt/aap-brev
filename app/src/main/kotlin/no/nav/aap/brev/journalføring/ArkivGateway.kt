@@ -1,7 +1,7 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.Pdf
-import no.nav.aap.brev.kontrakt.Vedlegg
+import no.nav.aap.brev.bestilling.Vedlegg
 
 interface ArkivGateway {
     fun journalførBrev(
