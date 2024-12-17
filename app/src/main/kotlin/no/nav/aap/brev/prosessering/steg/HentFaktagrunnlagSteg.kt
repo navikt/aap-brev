@@ -19,7 +19,7 @@ class HentFaktagrunnlagSteg(
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): HentFaktagrunnlagSteg {
             return HentFaktagrunnlagSteg(HentFaktagrunnlagService.konstruer(connection))
         }
     }

@@ -25,7 +25,7 @@ class LøsBrevbestillingSteg(
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): LøsBrevbestillingSteg {
             return LøsBrevbestillingSteg(
                 bestillerGateway = BehandlingsflytGateway(),
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),

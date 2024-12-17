@@ -17,7 +17,7 @@ class HentInnholdSteg(
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): HentInnholdSteg {
             return HentInnholdSteg(
                 brevinnholdService = BrevinnholdService.konstruer(connection),
             )

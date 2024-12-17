@@ -13,7 +13,7 @@ class JournalførBrevSteg(val journalføringService: JournalføringService) : St
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): JournalførBrevSteg {
             return JournalførBrevSteg(JournalføringService.konstruer(connection))
         }
     }

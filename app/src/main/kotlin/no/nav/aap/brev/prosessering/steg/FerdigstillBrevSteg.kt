@@ -11,7 +11,7 @@ class FerdigstillBrevSteg() : Steg.Utfører {
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): FerdigstillBrevSteg {
             return FerdigstillBrevSteg()
         }
     }

@@ -11,7 +11,7 @@ class StarterSteg() : Steg.Utfører {
     }
 
     companion object : Steg {
-        override fun konstruer(connection: DBConnection): Steg.Utfører {
+        override fun konstruer(connection: DBConnection): StarterSteg {
             return StarterSteg()
         }
     }
