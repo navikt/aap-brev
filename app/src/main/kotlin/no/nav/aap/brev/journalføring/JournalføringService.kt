@@ -1,6 +1,7 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.BehandlingsflytGateway
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
@@ -67,12 +68,29 @@ class JournalføringService(
             brevkode = bestilling.brevtype.name
         )
 
+        val forsøkFerdigstill = ferdigstillVedOpprettelseAvJournalpost(bestilling)
         val response = arkivGateway.journalførBrev(
             journalpostInfo = journalpostInfo,
             pdf = pdf,
-            forsøkFerdigstill = true,
+            forsøkFerdigstill = forsøkFerdigstill,
         )
         brevbestillingRepository.lagreJournalpost(bestilling.id, response.journalpostId, response.journalpostferdigstilt)
+    }
+
+    fun tilknyttVedlegg(referanse: BrevbestillingReferanse) {
+        // TODO
+    }
+
+    fun ferdigstillJournalpost(referanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        val journalpostId = checkNotNull(bestilling.journalpostId)
+        if (bestilling.journalpostFerdigstilt != true) {
+            arkivGateway.ferdigstillJournalpost(journalpostId)
+        }
+    }
+
+    private fun ferdigstillVedOpprettelseAvJournalpost(bestilling: Brevbestilling): Boolean {
+        return bestilling.vedlegg.isEmpty()
     }
 
     private fun mapPdfBrev(

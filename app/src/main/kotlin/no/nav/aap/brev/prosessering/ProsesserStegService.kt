@@ -5,12 +5,14 @@ import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.prosessering.steg.DistribuerJournalpostSteg
 import no.nav.aap.brev.prosessering.steg.FerdigSteg
 import no.nav.aap.brev.prosessering.steg.FerdigstillBrevSteg
+import no.nav.aap.brev.prosessering.steg.FerdigstillJournalpostSteg
 import no.nav.aap.brev.prosessering.steg.HentFaktagrunnlagSteg
 import no.nav.aap.brev.prosessering.steg.HentInnholdSteg
 import no.nav.aap.brev.prosessering.steg.JournalførBrevSteg
 import no.nav.aap.brev.prosessering.steg.LøsBrevbestillingSteg
 import no.nav.aap.brev.prosessering.steg.StarterSteg
 import no.nav.aap.brev.prosessering.steg.Steg
+import no.nav.aap.brev.prosessering.steg.TilknyttVedleggSteg
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
 
@@ -34,6 +36,8 @@ class ProsesserStegService(
         .med(steg = LøsBrevbestillingSteg, utfall = ProsesseringStatus.BREVBESTILLING_LØST)
         .med(steg = FerdigstillBrevSteg, utfall = ProsesseringStatus.BREV_FERDIGSTILT)
         .med(steg = JournalførBrevSteg, utfall = ProsesseringStatus.JOURNALFORT)
+        .med(steg = TilknyttVedleggSteg, utfall = ProsesseringStatus.JOURNALPOST_VEDLEGG_TILKNYTTET)
+        .med(steg = FerdigstillJournalpostSteg, utfall = ProsesseringStatus.JOURNALPOST_FERDIGSTILT)
         .med(steg = DistribuerJournalpostSteg, utfall = ProsesseringStatus.DISTRIBUERT)
         .med(steg = FerdigSteg, utfall = ProsesseringStatus.FERDIG)
         .build()

@@ -49,8 +49,8 @@ class DokarkivGateway : ArkivGateway {
         val response =
             checkNotNull(client.post<OpprettJournalpostRequest, OpprettJournalpostResponse>(uri, httpRequest))
 
-        if (!response.journalpostferdigstilt) {
-            log.error("Journalpost ble ikke ferdigstilt. Journalpost må ferdigstilles for å kunne bli distribuert.")
+        if (forsøkFerdigstill && !response.journalpostferdigstilt) {
+            log.error("Journalpost forsøkt ferdigstilt ble ikke ferdigstilt. Journalpost må ferdigstilles for å kunne bli distribuert.")
         }
 
         return response
