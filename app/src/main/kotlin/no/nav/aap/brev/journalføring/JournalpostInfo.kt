@@ -11,7 +11,8 @@ data class JournalpostInfo(
     val saksnummer: Saksnummer,
     val eksternReferanseId: UUID,
     val tittel: String,
-    val brevkode: String
+    val brevkode: String,
+    val overstyrInnsynsregel: Boolean,
 ) {
     enum class MottakerType {
         FNR, HPRNR

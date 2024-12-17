@@ -6,6 +6,7 @@ import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.AvsenderMottaker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Bruker
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument.DokumentVariant
+import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Innsynsregl
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.JournalpostType
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Sak
 import no.nav.aap.brev.util.HåndterConflictResponseHandler
@@ -138,6 +139,8 @@ class DokarkivGateway : ArkivGateway {
             tema = "AAP",
             tilleggsopplysninger = emptyList(),
             tittel = journalpostInfo.tittel,
+            overstyrInnsynsregler =
+                if (journalpostInfo.overstyrInnsynsregel) Innsynsregl.VISES_MASKINELT_GODKJENT else null,
         )
     }
 }

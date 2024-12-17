@@ -65,7 +65,8 @@ class JournalføringService(
             saksnummer = bestilling.saksnummer,
             eksternReferanseId = bestilling.referanse.referanse,
             tittel = checkNotNull(value = bestilling.brev.overskrift),
-            brevkode = bestilling.brevtype.name
+            brevkode = bestilling.brevtype.name,
+            overstyrInnsynsregel = false,
         )
 
         val forsøkFerdigstill = ferdigstillVedOpprettelseAvJournalpost(bestilling)

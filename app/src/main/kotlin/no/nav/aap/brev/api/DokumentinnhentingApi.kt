@@ -54,7 +54,8 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                         saksnummer = Saksnummer(request.saksnummer),
                         eksternReferanseId = request.eksternReferanseId,
                         tittel = request.tittel,
-                        brevkode = request.brevkode
+                        brevkode = request.brevkode,
+                        overstyrInnsynsregel = true,
                     ),
                     pdf = pdf,
                     forsøkFerdigstill = true,

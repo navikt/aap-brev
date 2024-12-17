@@ -14,6 +14,7 @@ data class OpprettJournalpostRequest(
     val tema: String,
     val tilleggsopplysninger: List<Tilleggsopplysning>,
     val tittel: String,
+    val overstyrInnsynsregler: Innsynsregl?,
 ) {
     data class AvsenderMottaker(
         val id: String,
@@ -72,4 +73,9 @@ data class OpprettJournalpostRequest(
         val nokkel: String,
         val verdi: String
     )
+
+    enum class Innsynsregl {
+        VISES_MASKINELT_GODKJENT,
+        VISES_MANUELT_GODKJENT,
+    }
 }
