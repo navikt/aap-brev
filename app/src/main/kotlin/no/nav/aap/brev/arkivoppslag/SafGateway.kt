@@ -15,7 +15,7 @@ import java.net.URI
 
 class SafGateway : ArkivoppslagGateway {
     private val graphqlUrl = URI.create(requiredConfigForKey("integrasjon.saf.url.graphql"))
-    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.saf.scope"))
+    private val config = ClientConfig(scope = requiredConfigForKey("integrasjon.saf.scope"))
 
     private val client = RestClient(
         config = config,
@@ -23,25 +23,15 @@ class SafGateway : ArkivoppslagGateway {
         responseHandler = GraphQLResponseHandler()
     )
 
-    override fun hentSaksinfo(journalpostId: JournalpostId): JournalpostSaksinfo {
+    override fun hentJournalpost(journalpostId: JournalpostId): Journalpost {
         val request = GraphqlRequest(journalpostSakQuery.asQuery(), SafJournalpostVariables(journalpostId.id))
         val response = query(request)
-        return mapResonse(response)
+        return checkNotNull(response.data?.journalpost)
     }
 
     private fun query(request: GraphqlRequest<SafJournalpostVariables>): GraphQLResponse<SafJournalpostData> {
         val httpRequest = PostRequest(body = request)
         return requireNotNull(client.post(uri = graphqlUrl, request = httpRequest))
-    }
-
-    private fun mapResonse(response: GraphQLResponse<SafJournalpostData>): JournalpostSaksinfo {
-        val data = checkNotNull(response.data?.journalpost?.sak)
-        return JournalpostSaksinfo(
-            fagsakId = checkNotNull(data.fagsakId),
-            fagsaksystem = checkNotNull(data.fagsaksystem),
-            sakstype = checkNotNull(data.sakstype),
-            tema = checkNotNull(data.tema),
-        )
     }
 }
 
@@ -50,11 +40,19 @@ private const val journalpostId = "\$journalpostId"
 private val journalpostSakQuery = """
     query($journalpostId: String!) {
         journalpost(journalpostId: $journalpostId) {
+            journalstatus
+            brukerHarTilgang
             sak {
                 fagsakId
                 fagsaksystem
                 sakstype
                 tema
+            }
+            dokumenter {
+                dokumentInfoId
+                dokumentvarianter {
+                    brukerHarTilgang
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
+import no.nav.aap.brev.test.fakes.safFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +24,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
     private val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
     private val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
     private val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
+    private val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
 
     init {
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
@@ -58,6 +60,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+
+        // Saf
+        System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}")
         System.setProperty("integrasjon.saf.scope", "scope")
 
         // Dokumentinnhenting
