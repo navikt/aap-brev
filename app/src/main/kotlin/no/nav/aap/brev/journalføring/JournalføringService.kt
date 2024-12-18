@@ -28,7 +28,7 @@ class JournalføringService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
     private val pdfGateway: PdfGateway,
-    private val arkivGateway: ArkivGateway,
+    private val journalføringGateway: JournalføringGateway,
 ) {
 
     companion object {
@@ -70,7 +70,7 @@ class JournalføringService(
         )
 
         val forsøkFerdigstill = ferdigstillVedOpprettelseAvJournalpost(bestilling)
-        val response = arkivGateway.journalførBrev(
+        val response = journalføringGateway.journalførBrev(
             journalpostInfo = journalpostInfo,
             pdf = pdf,
             forsøkFerdigstill = forsøkFerdigstill,
@@ -87,7 +87,7 @@ class JournalføringService(
         val journalpostId = checkNotNull(bestilling.journalpostId)
         val vedlegg = bestilling.vedlegg
         if (vedlegg.isNotEmpty()) {
-            arkivGateway.tilknyttVedlegg(journalpostId, vedlegg)
+            journalføringGateway.tilknyttVedlegg(journalpostId, vedlegg)
         }
     }
 
@@ -95,7 +95,7 @@ class JournalføringService(
         val bestilling = brevbestillingRepository.hent(referanse)
         val journalpostId = checkNotNull(bestilling.journalpostId)
         if (bestilling.journalpostFerdigstilt != true) {
-            arkivGateway.ferdigstillJournalpost(journalpostId)
+            journalføringGateway.ferdigstillJournalpost(journalpostId)
         }
     }
 

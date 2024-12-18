@@ -72,7 +72,7 @@ class BrevbestillingService(
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
         if (vedlegg.isNotEmpty()) {
-            // TODO sjekk at vedlegg saksnummer == saksnummer
+            // TODO sjekk at for alle vedlegg så er vedlegg.saksnummer == saksnummer
             // TODO sjekk at vedlegg journalpost har riktig status
         }
     }

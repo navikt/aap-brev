@@ -67,6 +67,7 @@ spec:
       external:
         - host: dokarkiv-q2.dev-fss-pub.nais.io
         - host: dokdistfordeling.dev-fss-pub.nais.io
+        - host: saf-q2.dev-fss-pub.nais.io
       rules:
         - application: behandlingsflyt
         - application: brev-sanity-proxy
@@ -105,5 +106,8 @@ spec:
 
     - name: INTEGRASJON_DOKDISTFORDELING_URL
       value: https://dokdistfordeling.dev-fss-pub.nais.io
+
+    - name: INTEGRASJON_SAF_URL_GRAPHQL
+      value: https://saf-q2.dev-fss-pub.nais.io/graphql
     - name: INTEGRASJON_SAF_SCOPE
       value: api://dev-fss.teamdokumenthandtering.saf/.default

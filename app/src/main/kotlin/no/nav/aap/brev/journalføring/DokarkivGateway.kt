@@ -25,9 +25,8 @@ import java.net.URI
 
 private const val MASKINELL_JOURNALFØRING_ENHET = "9999"
 
-class DokarkivGateway : ArkivGateway {
+class DokarkivGateway : JournalføringGateway {
     private val log = LoggerFactory.getLogger(DokarkivGateway::class.java)
-
 
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokarkiv.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))

@@ -3,7 +3,7 @@ package no.nav.aap.brev.journalføring
 import no.nav.aap.brev.bestilling.Pdf
 import no.nav.aap.brev.bestilling.Vedlegg
 
-interface ArkivGateway {
+interface JournalføringGateway {
     fun journalførBrev(
         journalpostInfo: JournalpostInfo,
         pdf: Pdf,
