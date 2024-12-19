@@ -57,7 +57,7 @@ class DokarkivGateway : JournalføringGateway {
     }
 
     override fun ferdigstillJournalpost(journalpostId: JournalpostId) {
-        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/ferdigstill")
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/${journalpostId.id}/ferdigstill")
         val request = FerdigstillJournalpostRequest(journalfoerendeEnhet = MASKINELL_JOURNALFØRING_ENHET)
         val httpRequest = PatchRequest(
             body = request,
@@ -69,7 +69,7 @@ class DokarkivGateway : JournalføringGateway {
         journalpostId: JournalpostId,
         vedlegg: Set<Vedlegg>
     ) {
-        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/tilknyttVedlegg")
+        val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/${journalpostId.id}/tilknyttVedlegg")
         val request = TilknyttVedleggRequest(dokument = vedlegg.map {
             TilknyttVedleggRequest.DokumentVedlegg(it.journalpostId.id, it.dokumentInfoId.id)
         })
