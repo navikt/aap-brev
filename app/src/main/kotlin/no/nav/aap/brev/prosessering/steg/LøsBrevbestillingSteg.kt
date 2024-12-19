@@ -4,6 +4,7 @@ import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BestillerGateway
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
@@ -18,6 +19,7 @@ class LøsBrevbestillingSteg(
 
         val brevbestilling = brevbestillingRepository.hent(kontekst.referanse)
         // TODO: Sende riktig status i oppdaterBrevStatus - Er Status.FERDIGSTILT for å forhindre stopp i flyten
+        if (brevbestilling.brevtype == Brevtype.VARSEL_OM_BESTILLING) return Steg.Resultat.FULLFØRT
         bestillerGateway.oppdaterBrevStatus(
             brevbestilling,
             Status.FERDIGSTILT)
