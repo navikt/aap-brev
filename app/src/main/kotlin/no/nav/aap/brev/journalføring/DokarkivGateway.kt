@@ -62,7 +62,7 @@ class DokarkivGateway : JournalføringGateway {
         val httpRequest = PatchRequest(
             body = request,
         )
-        client.patch<FerdigstillJournalpostRequest, Unit>(uri, httpRequest)
+        client.patch<FerdigstillJournalpostRequest, String>(uri, httpRequest)
     }
 
     override fun tilknyttVedlegg(
