@@ -13,6 +13,7 @@ import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
@@ -79,7 +80,7 @@ internal fun Application.server(dbConfig: DbConfig) {
         allowHeader(HttpHeaders.ContentType)
     }
 
-    val dataSource = initDatasource(dbConfig)
+    val dataSource = initDatasource(dbConfig, prometheus)
     Migrering.migrate(dataSource)
 
     val motor = module(dataSource)
@@ -152,7 +153,7 @@ class DbConfig(
     val jdbcUrl: String = System.getenv("NAIS_DATABASE_BREV_BREV_JDBC_URL")
 )
 
-fun initDatasource(dbConfig: DbConfig) =
+fun initDatasource(dbConfig: DbConfig, meterRegistry: MeterRegistry) =
     HikariDataSource(
         HikariConfig().apply {
             jdbcUrl = dbConfig.jdbcUrl
@@ -160,5 +161,6 @@ fun initDatasource(dbConfig: DbConfig) =
             minimumIdle = 1
             driverClassName = "org.postgresql.Driver"
             connectionTestQuery = "SELECT 1"
+            metricRegistry = meterRegistry
         }
     )
