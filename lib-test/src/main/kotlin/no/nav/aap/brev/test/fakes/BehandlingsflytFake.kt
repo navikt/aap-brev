@@ -12,7 +12,7 @@ import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.innhold.Faktagrunnlag
-import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt

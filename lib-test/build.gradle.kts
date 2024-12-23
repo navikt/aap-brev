@@ -1,6 +1,6 @@
 val ktorVersion = "3.0.3"
-val komponenterVersjon = "1.0.91"
-val tilgangVersjon = "0.0.56"
+val komponenterVersjon = "1.0.101"
+val tilgangVersjon = "0.0.72"
 val behandlingsflytVersjon = "0.0.49"
 
 plugins {
@@ -21,6 +21,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
     implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
+    implementation("no.nav.aap.kelvin:json:$komponenterVersjon")
     implementation("no.nav.aap.tilgang:api-kontrakt:$tilgangVersjon")
     implementation("no.nav.aap.behandlingsflyt:kontrakt:$behandlingsflytVersjon")
 

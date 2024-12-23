@@ -11,7 +11,7 @@ import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest
 import no.nav.aap.brev.journalføring.OpprettJournalpostResponse
 import no.nav.aap.brev.journalføring.OpprettJournalpostResponse.Dokument
-import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextULong

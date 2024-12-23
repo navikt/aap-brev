@@ -9,7 +9,7 @@ import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest
 import no.nav.aap.brev.distribusjon.DistribuerJournalpostResponse
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.JournalpostId
-import no.nav.aap.komponenter.httpklient.json.DefaultJsonMapper
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.*
 
 private val journalpostTilDistribusjonBestillingId = mutableMapOf<JournalpostId, DistribusjonBestillingId>()
