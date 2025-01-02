@@ -5,7 +5,7 @@ import no.nav.aap.brev.bestilling.Vedlegg
 
 interface JournalføringGateway {
     fun journalførBrev(
-        journalpostInfo: JournalpostInfo,
+        journalføringData: JournalføringData,
         pdf: Pdf,
         forsøkFerdigstill: Boolean,
     ): OpprettJournalpostResponse

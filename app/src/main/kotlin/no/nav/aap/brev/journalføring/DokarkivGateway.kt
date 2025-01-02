@@ -37,12 +37,12 @@ class DokarkivGateway : JournalføringGateway {
     )
 
     override fun journalførBrev(
-        journalpostInfo: JournalpostInfo,
+        journalføringData: JournalføringData,
         pdf: Pdf,
         forsøkFerdigstill: Boolean,
     ): OpprettJournalpostResponse {
         val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=$forsøkFerdigstill")
-        val request = lagRequest(journalpostInfo, pdf)
+        val request = lagRequest(journalføringData, pdf)
         val httpRequest = PostRequest(
             body = request,
         )
@@ -97,27 +97,27 @@ class DokarkivGateway : JournalføringGateway {
     }
 
     private fun lagRequest(
-        journalpostInfo: JournalpostInfo,
+        journalføringData: JournalføringData,
         pdf: Pdf,
     ): OpprettJournalpostRequest {
         return OpprettJournalpostRequest(
             avsenderMottaker = AvsenderMottaker(
-                id = journalpostInfo.mottakerIdent,
-                idType = when (journalpostInfo.mottakerType) {
-                    JournalpostInfo.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
-                    JournalpostInfo.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
+                id = journalføringData.mottakerIdent,
+                idType = when (journalføringData.mottakerType) {
+                    JournalføringData.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
+                    JournalføringData.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
                 },
-                navn = journalpostInfo.mottakerNavn
+                navn = journalføringData.mottakerNavn
             ),
             behandlingstema = null,
             bruker = Bruker(
-                id = journalpostInfo.brukerFnr,
+                id = journalføringData.brukerFnr,
                 idType = Bruker.IdType.FNR
             ),
             dokumenter = listOf(
                 Dokument(
-                    tittel = journalpostInfo.tittel,
-                    brevkode = journalpostInfo.brevkode,
+                    tittel = journalføringData.tittel,
+                    brevkode = journalføringData.brevkode,
                     dokumentVarianter = listOf(
                         DokumentVariant(
                             filtype = "PDFA",
@@ -127,19 +127,19 @@ class DokarkivGateway : JournalføringGateway {
                     ),
                 )
             ),
-            eksternReferanseId = journalpostInfo.eksternReferanseId,
+            eksternReferanseId = journalføringData.eksternReferanseId,
             journalfoerendeEnhet = MASKINELL_JOURNALFØRING_ENHET,
             journalposttype = JournalpostType.UTGAAENDE,
             sak = Sak(
-                fagsakId = journalpostInfo.saksnummer.nummer,
+                fagsakId = journalføringData.saksnummer.nummer,
                 fagsaksystem = "KELVIN",
                 sakstype = Sak.Type.FAGSAK
             ),
             tema = "AAP",
             tilleggsopplysninger = emptyList(),
-            tittel = journalpostInfo.tittel,
+            tittel = journalføringData.tittel,
             overstyrInnsynsregler =
-                if (journalpostInfo.overstyrInnsynsregel) Innsynsregl.VISES_MASKINELT_GODKJENT else null,
+                if (journalføringData.overstyrInnsynsregel) Innsynsregl.VISES_MASKINELT_GODKJENT else null,
         )
     }
 }

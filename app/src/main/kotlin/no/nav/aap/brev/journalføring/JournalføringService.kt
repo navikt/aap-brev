@@ -10,7 +10,7 @@ import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.journalføring.JournalpostInfo.MottakerType
+import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.PdfBrev
@@ -57,7 +57,7 @@ class JournalføringService(
         val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now())
         val pdf = pdfGateway.genererPdf(pdfBrev)
 
-        val journalpostInfo = JournalpostInfo(
+        val journalføringData = JournalføringData(
             brukerFnr = personinfo.fnr,
             mottakerIdent = personinfo.fnr,
             mottakerType = MottakerType.FNR,
@@ -71,7 +71,7 @@ class JournalføringService(
 
         val forsøkFerdigstill = ferdigstillVedOpprettelseAvJournalpost(bestilling)
         val response = journalføringGateway.journalførBrev(
-            journalpostInfo = journalpostInfo,
+            journalføringData = journalføringData,
             pdf = pdf,
             forsøkFerdigstill = forsøkFerdigstill,
         )

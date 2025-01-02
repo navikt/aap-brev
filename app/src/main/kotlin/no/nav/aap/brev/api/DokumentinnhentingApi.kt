@@ -7,8 +7,8 @@ import io.ktor.http.*
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.DokarkivGateway
-import no.nav.aap.brev.journalføring.JournalpostInfo
-import no.nav.aap.brev.journalføring.JournalpostInfo.MottakerType
+import no.nav.aap.brev.journalføring.JournalføringData
+import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
@@ -46,7 +46,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                 val pdfBrev = mapPdfBrev(request)
                 val pdf = pdfGateway.genererPdf(pdfBrev)
                 val journalpostResponse = arkivGateway.journalførBrev(
-                    journalpostInfo = JournalpostInfo(
+                    journalføringData = JournalføringData(
                         brukerFnr = request.brukerFnr,
                         mottakerIdent = request.mottakerHprnr,
                         mottakerNavn = request.mottakerNavn,
