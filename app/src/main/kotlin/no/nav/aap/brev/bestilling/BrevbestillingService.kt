@@ -41,8 +41,7 @@ class BrevbestillingService(
         vedlegg: Set<Vedlegg>,
     ): BrevbestillingReferanse {
 
-        // TODO:
-//        validerBestilling(saksnummer, vedlegg)
+        validerBestilling(saksnummer, vedlegg)
 
         val referanse = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
