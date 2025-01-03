@@ -63,6 +63,9 @@ spec:
         - application: behandlingsflyt
         - application: paw-patrol
         - application: dokumentinnhenting
+        - application: azure-token-generator
+          namespace: aura
+          cluster: dev-gcp
     outbound:
       external:
         - host: dokarkiv-q2.dev-fss-pub.nais.io
@@ -111,3 +114,6 @@ spec:
       value: https://saf-q2.dev-fss-pub.nais.io/graphql
     - name: INTEGRASJON_SAF_SCOPE
       value: api://dev-fss.teamdokumenthandtering.saf/.default
+
+    - name: INTEGRASJON_AZURE_TOKEN_GENERATOR_AZP
+      value: dev-gcp:aura:azure-token-generator

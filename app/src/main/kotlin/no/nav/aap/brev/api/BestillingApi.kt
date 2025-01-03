@@ -15,6 +15,8 @@ import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.miljo.Miljø
+import no.nav.aap.komponenter.miljo.MiljøKode
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.authorizedGet
@@ -27,10 +29,16 @@ import javax.sql.DataSource
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
 
     val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
-
+    val azureTokenGeneratorAzp = requiredConfigForKey("integrasjon.azure_token_generator.azp")
+    // TODO erstatt med custom role når det er på plass i tilgang-plugin
+    val approvedApplications = if (Miljø.er() == MiljøKode.DEV) {
+        setOf(behandlingsflytAzp, azureTokenGeneratorAzp)
+    } else {
+        setOf(behandlingsflytAzp)
+    }
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
-        approvedApplications = setOf(behandlingsflytAzp),
+        approvedApplications = approvedApplications,
         applicationsOnly = true
     )
 
