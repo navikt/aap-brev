@@ -69,7 +69,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             route("/{referanse}") {
                 authorizedGet<BrevbestillingReferansePathParam, BrevbestillingResponse>(
                     AuthorizationParamPathConfig(
-                        approvedApplications = setOf(behandlingsflytAzp),
+                        approvedApplications = approvedApplications,
                         applicationsOnly = true
                     )
                 ) {
