@@ -62,7 +62,7 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
 
         // Saf
-        System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}")
+        System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}/graphql")
         System.setProperty("integrasjon.saf.scope", "scope")
 
         // Dokumentinnhenting

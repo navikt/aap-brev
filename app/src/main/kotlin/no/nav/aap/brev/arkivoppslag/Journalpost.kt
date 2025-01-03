@@ -1,5 +1,7 @@
 package no.nav.aap.brev.arkivoppslag
 
+import no.nav.aap.brev.journalføring.DokumentInfoId
+
 data class Journalpost(
     val journalstatus: String,
     val brukerHarTilgang: Boolean,
@@ -14,7 +16,7 @@ data class Journalpost(
     )
 
     data class Dokument(
-        val dokumentInfoId: String,
+        val dokumentInfoId: DokumentInfoId,
         val dokumentvarianter: List<Variant>
     ) {
         data class Variant(val brukerHarTilgang: Boolean)

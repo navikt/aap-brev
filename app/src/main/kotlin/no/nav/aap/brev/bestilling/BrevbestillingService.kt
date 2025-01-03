@@ -2,12 +2,9 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
-import no.nav.aap.brev.journalføring.DokumentInfoId
-import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.kontrakt.Vedlegg
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -48,12 +45,7 @@ class BrevbestillingService(
             behandlingReferanse = behandlingReferanse,
             brevtype = brevtype,
             språk = språk,
-            vedlegg = vedlegg.map {
-                Vedlegg(
-                    journalpostId = JournalpostId(it.journalpostId),
-                    dokumentInfoId = DokumentInfoId(it.dokumentInfoId)
-                )
-            }.toSet(),
+            vedlegg = vedlegg,
         )
 
         val jobb =
@@ -77,10 +69,10 @@ class BrevbestillingService(
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
         if (vedlegg.isNotEmpty()) {
             vedlegg.forEach { (journalpostId, dokumentInfoId) ->
-                val journalpost = arkivoppslagGateway.hentJournalpost(JournalpostId(journalpostId))
+                val journalpost = arkivoppslagGateway.hentJournalpost(journalpostId)
                 val sak = journalpost.sak
                 val feilmelding =
-                    "Kan ikke legge ved dokument, dokumentInfoId=$dokumentInfoId fra journalpostId=$journalpostId i bestilling for sak ${saksnummer.nummer}"
+                    "Kan ikke legge ved dokument, dokumentInfoId=${dokumentInfoId.id} fra journalpostId=${journalpostId.id} i bestilling for sak ${saksnummer.nummer}"
 
                 check(
                     sak.fagsakId == saksnummer.nummer &&

@@ -8,6 +8,9 @@ import io.ktor.http.*
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.bestilling.Vedlegg
+import no.nav.aap.brev.journalføring.DokumentInfoId
+import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
@@ -51,7 +54,12 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                         brevtype = request.brevtype,
                         språk = request.sprak,
-                        vedlegg = request.vedlegg,
+                        vedlegg = request.vedlegg.map {
+                            Vedlegg(
+                                JournalpostId(it.journalpostId),
+                                DokumentInfoId(it.dokumentInfoId)
+                            )
+                        }.toSet(),
                     )
                 }
                 respond(BestillBrevResponse(referanse.referanse), HttpStatusCode.Created)
