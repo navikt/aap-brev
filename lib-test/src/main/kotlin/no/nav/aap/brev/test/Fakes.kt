@@ -67,6 +67,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
 
         // Dokumentinnhenting
         System.setProperty("integrasjon.dokumentinnhenting.azp", "azp")
+
+        // Azure token generator
+        System.setProperty("integrasjon.azure_token_generator.azp", "azp")
     }
 
     override fun close() {
