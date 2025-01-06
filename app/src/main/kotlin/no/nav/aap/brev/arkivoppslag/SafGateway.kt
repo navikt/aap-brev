@@ -24,7 +24,7 @@ class SafGateway : ArkivoppslagGateway {
     )
 
     override fun hentJournalpost(journalpostId: JournalpostId): Journalpost {
-        val request = GraphqlRequest(journalpostQuery.asQuery(), SafJournalpostVariables(journalpostId.id))
+        val request = GraphqlRequest(journalpostQuery.asQuery(), SafJournalpostVariables(journalpostId))
         val response = query(request)
         return checkNotNull(response.data?.journalpost)
     }
@@ -40,6 +40,7 @@ private const val journalpostId = "\$journalpostId"
 private val journalpostQuery = """
     query($journalpostId: String!) {
         journalpost(journalpostId: $journalpostId) {
+            journalpostId
             journalstatus
             brukerHarTilgang
             sak {

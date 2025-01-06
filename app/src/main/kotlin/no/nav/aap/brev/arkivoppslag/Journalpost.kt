@@ -1,8 +1,10 @@
 package no.nav.aap.brev.arkivoppslag
 
 import no.nav.aap.brev.journalføring.DokumentInfoId
+import no.nav.aap.brev.journalføring.JournalpostId
 
 data class Journalpost(
+    val journalpostId: JournalpostId,
     val journalstatus: String,
     val brukerHarTilgang: Boolean,
     val sak: Sak,

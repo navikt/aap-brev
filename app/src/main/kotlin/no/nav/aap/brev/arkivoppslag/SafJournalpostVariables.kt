@@ -1,3 +1,5 @@
 package no.nav.aap.brev.arkivoppslag
 
-data class SafJournalpostVariables(val journalpostId: String)
+import no.nav.aap.brev.journalføring.JournalpostId
+
+data class SafJournalpostVariables(val journalpostId: JournalpostId)
