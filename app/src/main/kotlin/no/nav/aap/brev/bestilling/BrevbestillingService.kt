@@ -2,6 +2,7 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
+import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -74,7 +75,7 @@ class BrevbestillingService(
                 val feilmelding =
                     "Kan ikke legge ved dokument, dokumentInfoId=${dokumentInfoId.id} fra journalpostId=${journalpostId.id} i bestilling for sak ${saksnummer.nummer}"
 
-                check(
+                valider(
                     sak.fagsakId == saksnummer.nummer &&
                             sak.fagsaksystem == "KELVIN" &&
                             sak.sakstype == "FAGSAK" &&
@@ -83,23 +84,31 @@ class BrevbestillingService(
                     "$feilmelding: Ulik sak."
                 }
 
-                check(journalpost.brukerHarTilgang) {
+                valider(journalpost.brukerHarTilgang) {
                     "$feilmelding: Bruker har ikke tilgang til journalpost."
                 }
 
-                check(journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
+                valider(journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
                     "$feilmelding: Feil status ${journalpost.journalstatus}."
                 }
 
                 val dokument = journalpost.dokumenter.find { it.dokumentInfoId == dokumentInfoId }
-                checkNotNull(dokument) {
+                valider(dokument != null) {
                     "$feilmelding: Fant ikke dokument i journalpost."
                 }
 
-                check(dokument.dokumentvarianter.find { it.brukerHarTilgang } != null) {
+                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
                     "$feilmelding: Bruker har ikke tilgang til dokumentet."
                 }
             }
+        }
+
+    }
+
+    private fun valider(value: Boolean, lazyMessage: () -> String): Unit {
+        if (!value) {
+            val message = lazyMessage()
+            throw ValideringsfeilException(message)
         }
     }
 }

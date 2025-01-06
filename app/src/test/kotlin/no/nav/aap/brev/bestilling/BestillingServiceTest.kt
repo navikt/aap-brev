@@ -4,6 +4,7 @@ import no.nav.aap.brev.arkivoppslag.Journalpost
 import no.nav.aap.brev.arkivoppslag.Journalpost.Dokument
 import no.nav.aap.brev.arkivoppslag.Journalpost.Dokument.Variant
 import no.nav.aap.brev.arkivoppslag.Journalpost.Sak
+import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -243,7 +244,7 @@ class BestillingServiceTest {
     ) {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val exception = assertThrows<IllegalStateException> {
+            val exception = assertThrows<ValideringsfeilException> {
                 brevbestillingService.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = randomBehandlingReferanse(),
