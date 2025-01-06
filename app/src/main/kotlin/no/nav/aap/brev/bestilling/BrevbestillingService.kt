@@ -84,7 +84,7 @@ class BrevbestillingService(
                 }
 
                 check(journalpost.brukerHarTilgang) {
-                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
+                    "$feilmelding: Bruker har ikke tilgang til journalpost."
                 }
 
                 check(journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
