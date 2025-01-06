@@ -19,7 +19,6 @@ class LøsBrevbestillingSteg(
 
         val brevbestilling = brevbestillingRepository.hent(kontekst.referanse)
         // TODO: Sende riktig status i oppdaterBrevStatus - Er Status.FERDIGSTILT for å forhindre stopp i flyten
-        if (brevbestilling.brevtype == Brevtype.VARSEL_OM_BESTILLING) return Steg.Resultat.FULLFØRT
         bestillerGateway.oppdaterBrevStatus(
             brevbestilling,
             Status.FERDIGSTILT)
