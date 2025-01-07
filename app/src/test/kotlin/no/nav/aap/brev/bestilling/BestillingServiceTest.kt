@@ -22,6 +22,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.UUID
 
 class BestillingServiceTest {
 
@@ -52,6 +53,7 @@ class BestillingServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
                 behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = UUID.randomUUID().toString(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
@@ -248,6 +250,7 @@ class BestillingServiceTest {
                 brevbestillingService.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = randomBehandlingReferanse(),
+                    unikReferanse = UUID.randomUUID().toString(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = vedlegg,

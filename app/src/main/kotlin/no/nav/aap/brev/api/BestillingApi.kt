@@ -52,6 +52,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     BrevbestillingService.konstruer(connection).opprettBestilling(
                         saksnummer = Saksnummer(request.saksnummer),
                         behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
+                        unikReferanse = request.unikReferanse,
                         brevtype = request.brevtype,
                         språk = request.sprak,
                         vedlegg = request.vedlegg.map {

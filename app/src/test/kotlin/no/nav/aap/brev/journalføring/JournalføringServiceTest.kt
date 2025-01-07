@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
+import java.util.UUID
 
 class JournalføringServiceTest {
 
@@ -43,11 +44,12 @@ class JournalføringServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -72,11 +74,12 @@ class JournalføringServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
 
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                randomBehandlingReferanse(),
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             val exception = assertThrows<IllegalStateException> {
@@ -94,11 +97,12 @@ class JournalføringServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
 
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                randomBehandlingReferanse(),
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             brevinnholdService.hentOgLagre(referanse)
@@ -120,11 +124,12 @@ class JournalføringServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -159,11 +164,12 @@ class JournalføringServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))

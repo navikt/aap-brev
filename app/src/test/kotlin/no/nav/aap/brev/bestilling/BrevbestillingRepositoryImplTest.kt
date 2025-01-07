@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class BrevbestillingRepositoryImplTest {
 
@@ -29,6 +30,7 @@ class BrevbestillingRepositoryImplTest {
 
             val saksnummer = randomSaksnummer()
             val behandlingReferanse = randomBehandlingReferanse()
+            val unikReferanse = UUID.randomUUID().toString()
             val brevtype = Brevtype.INNVILGELSE
             val språk = Språk.NB
             val vedlegg = setOf<Vedlegg>(
@@ -40,12 +42,20 @@ class BrevbestillingRepositoryImplTest {
             val distribusjonBestillingId = randomDistribusjonBestillingId()
 
             val bestillingReferanse =
-                brevbestillingRepository.opprettBestilling(saksnummer, behandlingReferanse, brevtype, språk, vedlegg)
+                brevbestillingRepository.opprettBestilling(
+                    saksnummer = saksnummer,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    vedlegg = vedlegg
+                )
 
             var bestilling = brevbestillingRepository.hent(bestillingReferanse)
 
             assertEquals(saksnummer, bestilling.saksnummer)
             assertEquals(behandlingReferanse, bestilling.behandlingReferanse)
+            assertEquals(unikReferanse, bestilling.unikReferanse)
             assertEquals(brevtype, bestilling.brevtype)
             assertEquals(språk, bestilling.språk)
             assertEquals(vedlegg, bestilling.vedlegg)

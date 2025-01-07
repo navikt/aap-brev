@@ -17,6 +17,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.util.UUID
 
 class HentFaktagrunnlagTest {
     companion object {
@@ -40,11 +41,12 @@ class HentFaktagrunnlagTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse =
                 brevbestillingService.opprettBestilling(
-                    randomSaksnummer(),
-                    behandlingReferanse,
-                    Brevtype.INNVILGELSE,
-                    Språk.NB,
-                    emptySet(),
+                    saksnummer = randomSaksnummer(),
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = UUID.randomUUID().toString(),
+                    brevtype = Brevtype.INNVILGELSE,
+                    språk = Språk.NB,
+                    vedlegg = emptySet(),
                 )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.of(2001, 2, 3))))

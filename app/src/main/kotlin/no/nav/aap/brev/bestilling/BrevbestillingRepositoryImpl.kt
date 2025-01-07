@@ -4,7 +4,7 @@ import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import no.nav.aap.brev.exception.BestillingForBehandlingEksistererException
+import no.nav.aap.brev.exception.BestillingEksistererAlleredeException
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
@@ -21,14 +21,15 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
     override fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
+        unikReferanse: String?,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
     ): BrevbestillingReferanse {
         val referanse: UUID = UUID.randomUUID()
         val query = """
-            INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE)
-                VALUES (?, ?, ?, ?, ?)
+            INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
+                VALUES (?, ?, ?, ?, ?, ?)
         """.trimIndent()
 
         val id = try {
@@ -39,11 +40,12 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                     setUUID(3, behandlingReferanse.referanse)
                     setEnumName(4, språk)
                     setEnumName(5, brevtype)
+                    setString(6, unikReferanse)
                 }
             }
         } catch (e: PSQLException) {
             if (e.sqlState == UNIQUE_VIOLATION) {
-                throw BestillingForBehandlingEksistererException()
+                throw BestillingEksistererAlleredeException(e)
             }
             throw e
         }
@@ -108,6 +110,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             opprettet = row.getLocalDateTime("OPPRETTET_TID"),
             oppdatert = row.getLocalDateTime("OPPDATERT_TID"),
             behandlingReferanse = BehandlingReferanse(row.getUUID("BEHANDLING_REFERANSE")),
+            unikReferanse = row.getStringOrNull("UNIK_REFERANSE"),
             brevtype = row.getEnum("BREVTYPE"),
             språk = row.getEnum("SPRAK"),
             prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),

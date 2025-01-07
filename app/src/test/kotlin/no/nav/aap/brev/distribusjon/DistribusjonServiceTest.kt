@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
+import java.util.UUID
 
 class DistribusjonServiceTest {
 
@@ -47,11 +48,12 @@ class DistribusjonServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -81,11 +83,12 @@ class DistribusjonServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -113,11 +116,12 @@ class DistribusjonServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
@@ -148,11 +152,12 @@ class DistribusjonServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
-                randomSaksnummer(),
-                behandlingReferanse,
-                Brevtype.INNVILGELSE,
-                Språk.NB,
-                emptySet(),
+                saksnummer = randomSaksnummer(),
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = UUID.randomUUID().toString(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                vedlegg = emptySet(),
             )
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))

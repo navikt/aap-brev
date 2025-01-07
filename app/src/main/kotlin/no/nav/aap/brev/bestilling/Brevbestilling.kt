@@ -16,6 +16,7 @@ data class Brevbestilling(
     val opprettet: LocalDateTime,
     val oppdatert: LocalDateTime,
     val behandlingReferanse: BehandlingReferanse,
+    val unikReferanse: String?,
     val brevtype: Brevtype,
     val språk: Språk,
     val prosesseringStatus: ProsesseringStatus?,
