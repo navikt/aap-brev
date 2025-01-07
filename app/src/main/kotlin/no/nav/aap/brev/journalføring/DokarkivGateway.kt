@@ -85,9 +85,9 @@ class DokarkivGateway : JournalføringGateway {
         }
     }
 
-    override fun ekspediterJournalpost(journalpostId: String) {
+    override fun ekspediterJournalpost(journalpostId: String, utsendingskanal: String) {
         val uri = baseUri.resolve("/rest/journalpostapi/v1/journalpost/$journalpostId/oppdaterDistribusjonsinfo")
-        val request = EkspediterJournalpostRequest(settStatusEkspedert = true)
+        val request = EkspediterJournalpostRequest(settStatusEkspedert = true, utsendingskanal = utsendingskanal)
 
         val httpRequest = PatchRequest(
             body = request

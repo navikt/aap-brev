@@ -84,7 +84,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
             ) { _, request ->
                 val arkivGateway = DokarkivGateway()
 
-                arkivGateway.ekspediterJournalpost(request.journalpostId)
+                arkivGateway.ekspediterJournalpost(request.journalpostId, "HELSENETTET")
 
                 respond("{}", HttpStatusCode.OK)
             }

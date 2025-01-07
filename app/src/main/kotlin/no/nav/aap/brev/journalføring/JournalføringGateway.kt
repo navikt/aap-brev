@@ -14,6 +14,6 @@ interface JournalføringGateway {
 
     fun tilknyttVedlegg(journalpostId: JournalpostId, vedlegg: Set<Vedlegg>)
 
-    fun ekspediterJournalpost(journalpostId: String)
+    fun ekspediterJournalpost(journalpostId: String, utsendingskanal: String)
 }
 
