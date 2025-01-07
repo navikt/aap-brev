@@ -93,7 +93,7 @@ class DokarkivGateway : JournalføringGateway {
             body = request
         )
 
-        client.patch<EkspediterJournalpostRequest, Unit>(uri, httpRequest)
+        client.patch<EkspediterJournalpostRequest, String>(uri, httpRequest)
     }
 
     private fun lagRequest(
