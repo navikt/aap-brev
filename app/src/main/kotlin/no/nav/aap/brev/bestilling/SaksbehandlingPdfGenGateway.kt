@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.kontrakt.PdfBrev
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header

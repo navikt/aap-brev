@@ -1,5 +1,7 @@
-package no.nav.aap.brev.kontrakt
+package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.kontrakt.BlokkType
+import no.nav.aap.brev.kontrakt.Formattering
 import java.time.LocalDate
 
 data class PdfBrev(
