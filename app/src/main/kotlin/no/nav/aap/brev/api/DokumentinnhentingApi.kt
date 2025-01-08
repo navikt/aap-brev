@@ -18,6 +18,7 @@ import no.nav.aap.brev.kontrakt.PdfBrev.Blokk
 import no.nav.aap.brev.kontrakt.PdfBrev.FormattertTekst
 import no.nav.aap.brev.kontrakt.PdfBrev.Innhold
 import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker
+import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker.IdentType
 import no.nav.aap.brev.kontrakt.PdfBrev.Tekstbolk
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.miljo.Miljø
@@ -94,7 +95,11 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 
 private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev {
     return PdfBrev(
-        mottaker = Mottaker(navn = request.mottakerNavn, ident = request.mottakerHprnr),
+        mottaker = Mottaker(
+            navn = request.mottakerNavn,
+            ident = request.mottakerHprnr,
+            identType = IdentType.HPRNR
+        ),
         saksnummer = request.saksnummer,
         dato = request.dato,
         overskrift = request.tittel,

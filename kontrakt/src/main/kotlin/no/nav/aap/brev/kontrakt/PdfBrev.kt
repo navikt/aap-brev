@@ -12,7 +12,12 @@ data class PdfBrev(
     data class Mottaker(
         val navn: String,
         val ident: String,
-    )
+        val identType: IdentType
+    ) {
+        enum class IdentType {
+            FNR, HPRNR
+        }
+    }
 
     data class Tekstbolk(
         val overskrift: String?,

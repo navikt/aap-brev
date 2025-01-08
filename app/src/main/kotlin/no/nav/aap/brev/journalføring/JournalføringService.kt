@@ -18,6 +18,7 @@ import no.nav.aap.brev.kontrakt.PdfBrev.Blokk
 import no.nav.aap.brev.kontrakt.PdfBrev.FormattertTekst
 import no.nav.aap.brev.kontrakt.PdfBrev.Innhold
 import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker
+import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker.IdentType
 import no.nav.aap.brev.kontrakt.PdfBrev.Tekstbolk
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
@@ -110,7 +111,11 @@ class JournalføringService(
         dato: LocalDate,
     ): PdfBrev {
         return PdfBrev(
-            mottaker = Mottaker(navn = personinfo.navn, ident = personinfo.fnr),
+            mottaker = Mottaker(
+                navn = personinfo.navn,
+                ident = personinfo.fnr,
+                identType = IdentType.FNR
+            ),
             saksnummer = saksnummer.nummer,
             dato = dato,
             overskrift = brev.overskrift,
