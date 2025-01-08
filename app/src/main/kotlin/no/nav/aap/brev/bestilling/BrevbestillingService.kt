@@ -34,7 +34,7 @@ class BrevbestillingService(
     fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String?,
+        unikReferanse: String,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,

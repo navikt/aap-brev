@@ -68,6 +68,7 @@ class AppTest {
                         saksnummer = "SAK123",
                         behandlingReferanse = UUID.randomUUID(),
                         brevtype = Brevtype.INNVILGELSE,
+                        unikReferanse = UUID.randomUUID().toString(),
                         sprak = Språk.NB
                     )
                 )
