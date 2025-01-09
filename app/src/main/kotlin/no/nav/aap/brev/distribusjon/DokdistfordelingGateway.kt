@@ -42,6 +42,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
         return when (brevtype) {
             Brevtype.INNVILGELSE, Brevtype.AVSLAG -> Distribusjonstype.VEDTAK
             Brevtype.VARSEL_OM_BESTILLING -> Distribusjonstype.ANNET // TODO, er det riktig?
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> Distribusjonstype.VIKTIG // TODO, er det riktig?
         }
     }
 }
