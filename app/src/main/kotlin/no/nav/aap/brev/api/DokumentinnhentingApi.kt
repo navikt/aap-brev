@@ -106,22 +106,22 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev 
         tekstbolker = listOf(
             Tekstbolk(
                 overskrift = null,
-                innhold = listOf(
+                innhold = request.brevAvsnitt.map {
                     Innhold(
                         overskrift = null,
                         blokker = listOf(
                             Blokk(
-                                innhold = request.brevAvsnitt.map {
+                                innhold = listOf(
                                     FormattertTekst(
                                         tekst = it,
                                         formattering = emptyList()
                                     )
-                                },
+                                ),
                                 type = BlokkType.AVSNITT
                             )
                         )
                     )
-                )
+                }
             )
         )
     )
