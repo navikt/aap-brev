@@ -64,12 +64,6 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         // Saf
         System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}/graphql")
         System.setProperty("integrasjon.saf.scope", "scope")
-
-        // Dokumentinnhenting
-        System.setProperty("integrasjon.dokumentinnhenting.azp", "azp")
-
-        // Azure token generator
-        System.setProperty("integrasjon.azure_token_generator.azp", "azp")
     }
 
     override fun close() {

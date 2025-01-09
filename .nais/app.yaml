@@ -61,11 +61,23 @@ spec:
     inbound:
       rules:
         - application: behandlingsflyt
+          permissions:
+            roles:
+              - "bestill-brev"
+              - "hent-brev"
         - application: paw-patrol
         - application: dokumentinnhenting
+          permissions:
+            roles:
+              - "dokumentinnhenting-api"
         - application: azure-token-generator
           namespace: aura
           cluster: dev-gcp
+          permissions:
+            roles:
+              - "bestill-brev"
+              - "hent-brev"
+              - "dokumentinnhenting-api"
     outbound:
       external:
         - host: dokarkiv-q2.dev-fss-pub.nais.io

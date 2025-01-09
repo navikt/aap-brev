@@ -30,8 +30,7 @@ internal class AzureTokenGen(private val issuer: String, private val audience: S
             .issuer(issuer)
             .audience(audience)
             .expirationTime(LocalDateTime.now().plusHours(4).toDate())
-            .claim("NAVident", "Lokalsaksbehandler")
-            .claim("azp_name", "azp")
+            .claim("roles", listOf("bestill-brev", "hent-brev", "dokumentinnhenting-api"))
             .build()
     }
 
