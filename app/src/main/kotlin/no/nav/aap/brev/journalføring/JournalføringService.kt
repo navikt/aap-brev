@@ -65,7 +65,8 @@ class JournalføringService(
             mottakerNavn = null,
             saksnummer = bestilling.saksnummer,
             eksternReferanseId = bestilling.referanse.referanse,
-            tittel = checkNotNull(value = bestilling.brev.overskrift),
+            tittelJournalpost = checkNotNull(value = bestilling.brev.journalpostTittel ?: bestilling.brev.overskrift),
+            tittelBrev = checkNotNull(value = bestilling.brev.overskrift),
             brevkode = bestilling.brevtype.name,
             overstyrInnsynsregel = false,
         )

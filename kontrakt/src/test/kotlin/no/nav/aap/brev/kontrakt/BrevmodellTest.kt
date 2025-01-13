@@ -30,6 +30,7 @@ class BrevmodellTest {
     val maksimalModell = """
         {
           "overskrift": "H1 overskrift",
+          "journalpostTittel": "Journalpost tittel",
           "tekstbolker": [
             {
               "id": "f5934e55-c30a-422d-a597-4e39311d10c9",
@@ -73,6 +74,7 @@ class BrevmodellTest {
     val minimalModell = """
    {
           "overskrift": null,
+          "journalpostTittel": null,
           "tekstbolker": [
             {
               "id": "f5934e55-c30a-422d-a597-4e39311d10c9",

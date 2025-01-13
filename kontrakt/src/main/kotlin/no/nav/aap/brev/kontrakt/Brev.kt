@@ -8,6 +8,7 @@ import java.util.UUID
 
 data class Brev(
     val overskrift: String?,
+    val journalpostTittel: String?,
     val tekstbolker: List<Tekstbolk>,
 )
 

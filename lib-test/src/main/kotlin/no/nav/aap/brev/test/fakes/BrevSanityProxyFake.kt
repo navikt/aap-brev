@@ -18,6 +18,7 @@ import java.util.UUID
 fun brev(): Brev {
     return Brev(
         overskrift = "Overskrift - Brev",
+        journalpostTittel = "Journalpost - tittel",
         tekstbolker = listOf(
             Tekstbolk(
                 id = UUID.randomUUID(),

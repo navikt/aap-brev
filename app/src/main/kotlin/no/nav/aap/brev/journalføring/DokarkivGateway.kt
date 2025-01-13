@@ -116,7 +116,7 @@ class DokarkivGateway : JournalføringGateway {
             ),
             dokumenter = listOf(
                 Dokument(
-                    tittel = journalføringData.tittel,
+                    tittel = journalføringData.tittelBrev,
                     brevkode = journalføringData.brevkode,
                     dokumentVarianter = listOf(
                         DokumentVariant(
@@ -137,7 +137,7 @@ class DokarkivGateway : JournalføringGateway {
             ),
             tema = "AAP",
             tilleggsopplysninger = emptyList(),
-            tittel = journalføringData.tittel,
+            tittel = journalføringData.tittelJournalpost,
             overstyrInnsynsregler =
                 if (journalføringData.overstyrInnsynsregel) Innsynsregl.VISES_MASKINELT_GODKJENT else null,
         )
