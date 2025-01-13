@@ -5,13 +5,14 @@ import io.ktor.server.application.*
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagDto
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.HentFaktaGrunnlagRequest
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
 import no.nav.aap.brev.bestilling.BehandlingReferanse
-import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.UUID
 import kotlin.random.Random
@@ -19,14 +20,15 @@ import kotlin.random.nextInt
 
 private val feilForBestilling = mutableSetOf<UUID>()
 
-private val behandlingsReferanseTilFaktagrunnlag = mutableMapOf<BehandlingReferanse, Set<Faktagrunnlag>>()
+private val behandlingsReferanseTilFaktagrunnlag = mutableMapOf<no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse, Set<Faktagrunnlag>>()
 
 fun feilLøsBestillingFor(bestilling: BrevbestillingReferanse) {
     feilForBestilling.add(bestilling.referanse)
 }
 
 fun faktagrunnlagForBehandling(behandlingReferanse: BehandlingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
-    behandlingsReferanseTilFaktagrunnlag.put(behandlingReferanse, faktagrunnlag)
+    val nyBehandlingsReferanse = no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse(behandlingReferanse.referanse)
+    behandlingsReferanseTilFaktagrunnlag.put(nyBehandlingsReferanse, faktagrunnlag)
 }
 
 fun randomBehandlingReferanse() = BehandlingReferanse(UUID.randomUUID())
@@ -47,11 +49,11 @@ fun Application.behandlingsflytFake() {
             call.respond(Personinfo("", ""))
         }
         post("/api/brev/faktagrunnlag") {
-            val dto = DefaultJsonMapper.fromJson<BehandlingsflytGateway.HentFaktaGrunnlagRequest>(call.receiveText())
+            val dto = DefaultJsonMapper.fromJson<HentFaktaGrunnlagRequest>(call.receiveText())
 
             val faktagrunnlagResult = behandlingsReferanseTilFaktagrunnlag[dto.behandlingReferanse] ?: emptySet()
 
-            call.respond(BehandlingsflytGateway.HentFaktaGrunnlagResponse(faktagrunnlagResult))
+            call.respond(FaktagrunnlagDto(faktagrunnlagResult.toList()))
         }
     }
 }

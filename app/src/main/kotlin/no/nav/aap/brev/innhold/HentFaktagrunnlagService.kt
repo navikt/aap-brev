@@ -1,8 +1,7 @@
 package no.nav.aap.brev.innhold
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.annotation.JsonTypeName
-import com.fasterxml.jackson.annotation.JsonValue
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
@@ -10,8 +9,6 @@ import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class HentFaktagrunnlagService(
     private val hentFagtagrunnlagGateway: HentFagtagrunnlagGateway,
@@ -24,6 +21,15 @@ class HentFaktagrunnlagService(
                 BrevbestillingRepositoryImpl(connection),
             )
         }
+
+        private fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
+            brev.tekstbolker
+                .flatMap { it.innhold }
+                .flatMap { it.blokker }
+                .flatMap { it.innhold }
+                .filterIsInstance<BlokkInnhold.Faktagrunnlag>()
+
+        fun harFaktagrunnlag(brev: Brev): Boolean = finnFaktagrunnlag(brev).isNotEmpty()
     }
 
     fun hentFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
@@ -54,12 +60,7 @@ class HentFaktagrunnlagService(
         })
 
 
-    private fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
-        brev.tekstbolker
-            .flatMap { it.innhold }
-            .flatMap { it.blokker }
-            .flatMap { it.innhold }
-            .filterIsInstance<BlokkInnhold.Faktagrunnlag>()
+
 
     private fun mapBlokkInnholdTilTekst(blokkInnhold: BlokkInnhold, faktagrunnlag: Set<Faktagrunnlag>): BlokkInnhold =
         when (blokkInnhold) {
@@ -85,28 +86,12 @@ class HentFaktagrunnlagService(
         blokkInnhold: BlokkInnhold.Faktagrunnlag
     ): BlokkInnhold.FormattertTekst {
         return when (faktagrunnlag) {
-            is Faktagrunnlag.Startdato ->
+            is Faktagrunnlag.Testverdi ->
                 BlokkInnhold.FormattertTekst(
                     id = blokkInnhold.id,
-                    tekst = faktagrunnlag.dato.format(DateTimeFormatter.ofPattern("dd.MM.YYYY")),
+                    tekst = faktagrunnlag.testString,
                     formattering = emptyList(),
                 )
         }
     }
-}
-
-// TODO Flytt alt under til Behandlingsflyt-kontrakt
-const val FAKTAGRUNNLAG_TYPE_STARTDATO = "STARTDATO"
-
-enum class FaktagrunnlagType(@JsonValue val verdi: String) {
-    STARTDATO(FAKTAGRUNNLAG_TYPE_STARTDATO)
-}
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
-sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
-    @JsonTypeName(FAKTAGRUNNLAG_TYPE_STARTDATO)
-    data class Startdato(
-        val dato: LocalDate
-    ) : Faktagrunnlag(FaktagrunnlagType.STARTDATO)
-
 }

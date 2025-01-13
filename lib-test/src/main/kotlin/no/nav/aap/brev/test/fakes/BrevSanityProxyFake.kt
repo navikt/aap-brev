@@ -4,7 +4,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import no.nav.aap.brev.innhold.FaktagrunnlagType
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Blokk
 import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
@@ -15,7 +15,7 @@ import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
 import java.util.UUID
 
-fun brev(): Brev {
+fun brev(medFaktaGrunnlag: Boolean = true): Brev {
     return Brev(
         overskrift = "Overskrift - Brev",
         journalpostTittel = "Journalpost - tittel",
@@ -39,12 +39,12 @@ fun brev(): Brev {
                                             Formattering.FET
                                         )
                                     ),
-                                    Faktagrunnlag(
+                                    if (medFaktaGrunnlag) Faktagrunnlag(
                                         id = UUID.randomUUID(),
-                                        visningsnavn = "Startdato",
-                                        tekniskNavn = FaktagrunnlagType.STARTDATO.verdi,
-                                    )
-                                ),
+                                        visningsnavn = "Testverdi",
+                                        tekniskNavn = FaktagrunnlagType.TESTVERDI.verdi,
+                                    ) else null
+                                ).mapNotNull { it },
                                 type = BlokkType.AVSNITT
                             )
                         ),

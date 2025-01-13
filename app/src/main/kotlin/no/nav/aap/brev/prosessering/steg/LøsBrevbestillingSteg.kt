@@ -4,7 +4,6 @@ import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BestillerGateway
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
