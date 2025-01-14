@@ -1,9 +1,11 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.BrevbestillingLøsningStatus
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagDto
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.HentFaktaGrunnlagRequest
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
-import no.nav.aap.brev.innhold.Faktagrunnlag
-import no.nav.aap.brev.innhold.FaktagrunnlagType
 import no.nav.aap.brev.innhold.HentFagtagrunnlagGateway
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.config.requiredConfigForKey
@@ -69,7 +71,7 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagru
         val uri = baseUri.resolve("/api/brev/faktagrunnlag")
         val httpRequest = PostRequest(
             body = HentFaktaGrunnlagRequest(
-                behandlingReferanse,
+                no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse(behandlingReferanse.referanse),
                 faktagrunnlag
             ),
             additionalHeaders = listOf(
@@ -77,18 +79,8 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagru
             )
         )
 
-        val response : HentFaktaGrunnlagResponse = checkNotNull(client.post(uri = uri, request = httpRequest))
+        val response : FaktagrunnlagDto = checkNotNull(client.post(uri = uri, request = httpRequest))
 
-        return response.faktagrunnlag
+        return response.faktagrunnlag.toSet()
     }
-
-    //TODO Flytt begge inn i kontrakten
-    data class HentFaktaGrunnlagRequest(
-        val behandlingReferanse: BehandlingReferanse,
-        val faktagrunnlag: Set<FaktagrunnlagType>
-    )
-
-    data class HentFaktaGrunnlagResponse(
-        val faktagrunnlag: Set<Faktagrunnlag>,
-    )
 }

@@ -1,8 +1,8 @@
 package no.nav.aap.brev.journalføring
 
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.brev.innhold.HentFaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
 import java.util.UUID
 
 class JournalføringServiceTest {
@@ -52,7 +51,7 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
@@ -110,7 +109,7 @@ class JournalføringServiceTest {
             val exception = assertThrows<IllegalStateException> {
                 journalføringService.journalførBrevbestilling(referanse)
             }
-            assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag STARTDATO.")
+            assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag TESTVERDI.")
         }
     }
 
@@ -132,7 +131,7 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
@@ -172,7 +171,7 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
 

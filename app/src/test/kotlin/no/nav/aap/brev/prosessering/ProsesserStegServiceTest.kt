@@ -1,7 +1,7 @@
 package no.nav.aap.brev.prosessering
 
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
@@ -14,7 +14,6 @@ import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 import java.util.UUID
 
 class ProsesserStegServiceTest {
@@ -45,7 +44,7 @@ class ProsesserStegServiceTest {
                 språk = Språk.NB,
                 vedlegg = emptySet(),
             )
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 
             prosesserStegService.prosesserBestilling(referanse)
 

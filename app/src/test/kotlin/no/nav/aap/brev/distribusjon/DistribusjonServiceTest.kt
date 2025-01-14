@@ -1,8 +1,9 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.Faktagrunnlag
 import no.nav.aap.brev.innhold.HentFaktagrunnlagService
 import no.nav.aap.brev.journalføring.JournalføringService
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -56,7 +57,7 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -91,7 +92,7 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -124,7 +125,7 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -160,7 +161,7 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             )
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Startdato(LocalDate.now())))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
