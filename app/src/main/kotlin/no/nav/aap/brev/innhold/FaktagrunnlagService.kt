@@ -38,7 +38,15 @@ class FaktagrunnlagService(
         val behandlingReferanse = bestilling.behandlingReferanse
         val faktagrunnlagTyper = finnFaktagrunnlag(brev).mapNotNull { mapFaktagrunnlag(it) }.toSet()
 
+        if (faktagrunnlagTyper.isEmpty()) {
+            return
+        }
+
         val faktagrunnlag = hentFagtagrunnlagGateway.hent(behandlingReferanse, faktagrunnlagTyper)
+
+        if (faktagrunnlag.isEmpty()) {
+            return
+        }
 
         val oppdatertBrev = erstattFaktagrunnlag(brev, faktagrunnlag)
 
