@@ -1,10 +1,9 @@
 package no.nav.aap.brev.distribusjon
 
-import no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.HentFaktagrunnlagService
+import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.journalføring.JournalføringService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDate
 import java.util.UUID
 
 class DistribusjonServiceTest {
@@ -45,7 +43,7 @@ class DistribusjonServiceTest {
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -65,7 +63,7 @@ class DistribusjonServiceTest {
             distribusjonBestillingIdForJournalpost(journalpostId, forventetDistribusjonBestillingId)
 
             brevinnholdService.hentOgLagre(referanse)
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
@@ -80,7 +78,7 @@ class DistribusjonServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -97,7 +95,7 @@ class DistribusjonServiceTest {
             journalpostForBestilling(referanse, journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
 
             val exception = assertThrows<IllegalStateException> {
                 distribusjonService.distribuerBrev(referanse)
@@ -113,7 +111,7 @@ class DistribusjonServiceTest {
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -130,7 +128,7 @@ class DistribusjonServiceTest {
             journalpostForBestilling(referanse, journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
@@ -149,7 +147,7 @@ class DistribusjonServiceTest {
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -173,7 +171,7 @@ class DistribusjonServiceTest {
             )
 
             brevinnholdService.hentOgLagre(referanse)
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 

@@ -3,7 +3,7 @@ package no.nav.aap.brev.journalføring
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.HentFaktagrunnlagService
+import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
@@ -39,7 +39,7 @@ class JournalføringServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -57,7 +57,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -119,7 +119,7 @@ class JournalføringServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -137,7 +137,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -159,7 +159,7 @@ class JournalføringServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val hentFaktagrunnlagService = HentFaktagrunnlagService.konstruer(connection)
+            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
@@ -177,7 +177,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            hentFaktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 

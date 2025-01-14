@@ -10,13 +10,13 @@ import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
-class HentFaktagrunnlagService(
+class FaktagrunnlagService(
     private val hentFagtagrunnlagGateway: HentFagtagrunnlagGateway,
     private val brevbestillingRepository: BrevbestillingRepository,
 ) {
     companion object {
-        fun konstruer(connection: DBConnection): HentFaktagrunnlagService {
-            return HentFaktagrunnlagService(
+        fun konstruer(connection: DBConnection): FaktagrunnlagService {
+            return FaktagrunnlagService(
                 BehandlingsflytGateway(),
                 BrevbestillingRepositoryImpl(connection),
             )
