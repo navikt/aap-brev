@@ -35,14 +35,13 @@ class FaktagrunnlagService(
     fun hentOgFyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brev = checkNotNull(bestilling.brev)
-        val behandlingReferanse = bestilling.behandlingReferanse
         val faktagrunnlagTyper = finnFaktagrunnlag(brev).mapNotNull { mapFaktagrunnlag(it) }.toSet()
 
         if (faktagrunnlagTyper.isEmpty()) {
             return
         }
 
-        val faktagrunnlag = hentFagtagrunnlagGateway.hent(behandlingReferanse, faktagrunnlagTyper)
+        val faktagrunnlag = hentFagtagrunnlagGateway.hent(bestilling.behandlingReferanse, faktagrunnlagTyper)
 
         if (faktagrunnlag.isEmpty()) {
             return
@@ -75,7 +74,7 @@ class FaktagrunnlagService(
             is BlokkInnhold.FormattertTekst -> blokkInnhold
             is BlokkInnhold.Faktagrunnlag ->
                 mapFaktagrunnlag(blokkInnhold)
-                    ?.let { finnFaktagrunnlad(faktagrunnlag, it) }
+                    ?.let { finnFaktagrunnlag(faktagrunnlag, it) }
                     ?.let { faktagrunnlagTilFormatertTekst(it, blokkInnhold) }
                     ?: blokkInnhold
         }
@@ -83,7 +82,7 @@ class FaktagrunnlagService(
     private fun mapFaktagrunnlag(blokkInnhold: BlokkInnhold.Faktagrunnlag): FaktagrunnlagType? =
         FaktagrunnlagType.entries.find { it.name == blokkInnhold.tekniskNavn.uppercase() }
 
-    private fun finnFaktagrunnlad(
+    private fun finnFaktagrunnlag(
         faktagrunnlag: Set<Faktagrunnlag>,
         faktagrunnlagType: FaktagrunnlagType
     ): Faktagrunnlag? =
