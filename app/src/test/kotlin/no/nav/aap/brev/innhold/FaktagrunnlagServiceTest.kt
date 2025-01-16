@@ -1,6 +1,7 @@
 package no.nav.aap.brev.innhold
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.UUID
+import org.assertj.core.api.Assertions.assertThat
 
 class FaktagrunnlagServiceTest {
     companion object {
@@ -31,7 +33,7 @@ class FaktagrunnlagServiceTest {
     }
 
     @Test
-    fun `erstatt faktagrunnlag`() {
+    fun `finner og fyller inn faktagrunnlag som ligger til grunn for en behandling`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
@@ -50,27 +52,34 @@ class FaktagrunnlagServiceTest {
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 
-            val ubehandletBrev = brev()
+            val ubehandletBrev =
+                brev(medFaktagrunnlag = listOf(FaktagrunnlagType.TESTVERDI.verdi, "ukjentFaktagrunnlag"))
 
             brevbestillingRepository.oppdaterBrev(referanse, ubehandletBrev)
 
-            val hentetBrev = brevbestillingRepository.hent(referanse)
-            assertTrue(FaktagrunnlagService.harFaktagrunnlag(hentetBrev.brev!!))
+            val hentetBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
+
+            assertThat(
+                FaktagrunnlagService.finnFaktagrunnlag(hentetBrev).map { it.tekniskNavn }
+            ).containsExactlyInAnyOrder(FaktagrunnlagType.TESTVERDI.verdi, "ukjentFaktagrunnlag")
 
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
-            val oppdatertBrev = brevbestillingRepository.hent(referanse).brev
-            assertFalse(FaktagrunnlagService.harFaktagrunnlag(oppdatertBrev!!))
+            val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
+
+            assertThat(
+                FaktagrunnlagService.finnFaktagrunnlag(oppdatertBrev).map { it.tekniskNavn }
+            ).containsExactlyInAnyOrder("ukjentFaktagrunnlag")
         }
     }
 
     @Test
     fun `har faktagrunnlag`() {
-        assertTrue(FaktagrunnlagService.harFaktagrunnlag(brev(medFaktaGrunnlag = true)))
+        assertTrue(FaktagrunnlagService.harFaktagrunnlag(brev(listOf("faktagrunnlag"))))
     }
 
     @Test
     fun `har ikke faktagrunnlag`() {
-        assertFalse(FaktagrunnlagService.harFaktagrunnlag(brev(medFaktaGrunnlag = false)))
+        assertFalse(FaktagrunnlagService.harFaktagrunnlag(brev(medFaktagrunnlag = emptyList())))
     }
 }

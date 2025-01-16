@@ -24,7 +24,7 @@ class FaktagrunnlagService(
 
         fun harFaktagrunnlag(brev: Brev): Boolean = finnFaktagrunnlag(brev).isNotEmpty()
 
-        private fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
+        fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
             brev.tekstbolker
                 .flatMap { it.innhold }
                 .flatMap { it.blokker }

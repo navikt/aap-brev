@@ -15,7 +15,7 @@ import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
 import java.util.UUID
 
-fun brev(medFaktaGrunnlag: Boolean = true): Brev {
+fun brev(medFaktagrunnlag: List<String> = listOf(FaktagrunnlagType.TESTVERDI.verdi)): Brev {
     return Brev(
         overskrift = "Overskrift - Brev",
         journalpostTittel = "Journalpost - tittel",
@@ -38,13 +38,14 @@ fun brev(medFaktaGrunnlag: Boolean = true): Brev {
                                             Formattering.KURSIV,
                                             Formattering.FET
                                         )
-                                    ),
-                                    if (medFaktaGrunnlag) Faktagrunnlag(
+                                    )
+                                ).plus(medFaktagrunnlag.map {
+                                    Faktagrunnlag(
                                         id = UUID.randomUUID(),
-                                        visningsnavn = "Testverdi",
-                                        tekniskNavn = FaktagrunnlagType.TESTVERDI.verdi,
-                                    ) else null
-                                ).mapNotNull { it },
+                                        visningsnavn = it,
+                                        tekniskNavn = it,
+                                    )
+                                }),
                                 type = BlokkType.AVSNITT
                             )
                         ),
@@ -55,7 +56,6 @@ fun brev(medFaktaGrunnlag: Boolean = true): Brev {
             )
         )
     )
-
 }
 
 fun Application.brevSanityProxyFake() {
