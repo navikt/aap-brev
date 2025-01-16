@@ -136,7 +136,7 @@ class JournalføringService(
                                             )
 
                                             is BlokkInnhold.Faktagrunnlag -> {
-                                                if (Miljø.er() != MiljøKode.DEV) { // TODO ta bort denne når faktagrunnlag hentes fra behandlignsflyt
+                                                if (Miljø.er() != MiljøKode.DEV) { // TODO ta bort denne når vi er klar til å teste at faktagrunnlag hentes fra behandlignsflyt
                                                     throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
                                                 }
                                                 null

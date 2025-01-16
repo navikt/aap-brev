@@ -6,6 +6,7 @@ import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.*
 import no.nav.aap.brev.bestilling.BehandlingReferanse
+import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.Vedlegg
@@ -81,8 +82,9 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
         }
         route("/ferdigstill") {
             authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                // valider request
-                // fortsett prosessering
+                dataSource.transaction { connection ->
+                    BrevbestillingService.konstruer(connection).ferdigstill(BrevbestillingReferanse(request.referanse))
+                }
                 respond("{}", HttpStatusCode.Accepted)
             }
         }

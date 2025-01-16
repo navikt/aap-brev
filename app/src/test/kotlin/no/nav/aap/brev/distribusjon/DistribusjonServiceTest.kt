@@ -63,7 +63,7 @@ class DistribusjonServiceTest {
             distribusjonBestillingIdForJournalpost(journalpostId, forventetDistribusjonBestillingId)
 
             brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
@@ -95,7 +95,7 @@ class DistribusjonServiceTest {
             journalpostForBestilling(referanse, journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             val exception = assertThrows<IllegalStateException> {
                 distribusjonService.distribuerBrev(referanse)
@@ -128,7 +128,7 @@ class DistribusjonServiceTest {
             journalpostForBestilling(referanse, journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
@@ -171,7 +171,7 @@ class DistribusjonServiceTest {
             )
 
             brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 

@@ -22,17 +22,17 @@ class FaktagrunnlagService(
             )
         }
 
+        fun harFaktagrunnlag(brev: Brev): Boolean = finnFaktagrunnlag(brev).isNotEmpty()
+
         private fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
             brev.tekstbolker
                 .flatMap { it.innhold }
                 .flatMap { it.blokker }
                 .flatMap { it.innhold }
                 .filterIsInstance<BlokkInnhold.Faktagrunnlag>()
-
-        fun harFaktagrunnlag(brev: Brev): Boolean = finnFaktagrunnlag(brev).isNotEmpty()
     }
 
-    fun hentFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
+    fun hentOgFyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brev = checkNotNull(bestilling.brev)
         val behandlingReferanse = bestilling.behandlingReferanse
@@ -48,12 +48,12 @@ class FaktagrunnlagService(
             return
         }
 
-        val oppdatertBrev = erstattFaktagrunnlag(brev, faktagrunnlag)
+        val oppdatertBrev = fyllInnFaktagrunnlag(brev, faktagrunnlag)
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, oppdatertBrev)
     }
 
-    private fun erstattFaktagrunnlag(brev: Brev, faktagrunnlag: Set<Faktagrunnlag>): Brev =
+    private fun fyllInnFaktagrunnlag(brev: Brev, faktagrunnlag: Set<Faktagrunnlag>): Brev =
         brev.copy(tekstbolker = brev.tekstbolker.map { tekstbolk ->
             tekstbolk.copy(innhold = tekstbolk.innhold.map { innhold ->
                 innhold.copy(blokker = innhold.blokker.map { blokk ->

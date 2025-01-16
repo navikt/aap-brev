@@ -13,7 +13,7 @@ class HentFaktagrunnlagSteg(
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
         log.info("HentFaktagrunnlagSteg")
         if (Miljø.er() != MiljøKode.DEV) {
-            faktagrunnlagService.hentFaktagrunnlag(kontekst.referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(kontekst.referanse)
         }
         return Steg.Resultat.FULLFØRT
     }

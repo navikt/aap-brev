@@ -69,6 +69,13 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 
+    fun ferdigstill(referanse: BrevbestillingReferanse) {
+        // valider request
+        // fortsett prosessering
+        val bestilling = hent(referanse)
+        validerFerdigstilling(bestilling)
+    }
+
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
         if (vedlegg.isNotEmpty()) {
             vedlegg.forEach { (journalpostId, dokumentInfoId) ->
@@ -104,7 +111,10 @@ class BrevbestillingService(
                 }
             }
         }
+    }
 
+    private fun validerFerdigstilling(bestilling: Brevbestilling) {
+        // TODO
     }
 
     private fun valider(value: Boolean, lazyMessage: () -> String): Unit {

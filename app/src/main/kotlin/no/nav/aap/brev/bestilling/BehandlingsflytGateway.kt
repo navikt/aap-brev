@@ -79,7 +79,7 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagru
             )
         )
 
-        val response : FaktagrunnlagDto = checkNotNull(client.post(uri = uri, request = httpRequest))
+        val response: FaktagrunnlagDto = checkNotNull(client.post(uri = uri, request = httpRequest))
 
         return response.faktagrunnlag.toSet()
     }

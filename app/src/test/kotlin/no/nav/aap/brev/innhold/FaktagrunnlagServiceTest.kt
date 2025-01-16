@@ -57,7 +57,7 @@ class FaktagrunnlagServiceTest {
             val hentetBrev = brevbestillingRepository.hent(referanse)
             assertTrue(FaktagrunnlagService.harFaktagrunnlag(hentetBrev.brev!!))
 
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             val oppdatertBrev = brevbestillingRepository.hent(referanse).brev
             assertFalse(FaktagrunnlagService.harFaktagrunnlag(oppdatertBrev!!))

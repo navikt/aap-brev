@@ -57,7 +57,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -137,7 +137,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -177,7 +177,7 @@ class JournalføringServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
 
-            faktagrunnlagService.hentFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
