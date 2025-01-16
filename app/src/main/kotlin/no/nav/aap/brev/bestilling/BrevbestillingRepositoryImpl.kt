@@ -12,6 +12,7 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.postgresql.util.PSQLException
+import java.time.LocalDateTime
 import java.util.UUID
 
 class BrevbestillingRepositoryImpl(private val connection: DBConnection) : BrevbestillingRepository {
@@ -127,11 +128,12 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         brev: Brev
     ) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET BREV = ?::jsonb WHERE REFERANSE = ?"
+            "UPDATE BREVBESTILLING SET BREV = ?::jsonb, OPPDATERT_TID = ? WHERE REFERANSE = ?"
         ) {
             setParams {
                 setString(1, DefaultJsonMapper.toJson(brev))
-                setUUID(2, referanse.referanse)
+                setLocalDateTime(2, LocalDateTime.now())
+                setUUID(3, referanse.referanse)
             }
             setResultValidator {
                 require(1 == it)
@@ -144,11 +146,12 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         prosesseringStatus: ProsesseringStatus,
     ) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET PROSESSERING_STATUS = ? WHERE REFERANSE = ?"
+            "UPDATE BREVBESTILLING SET PROSESSERING_STATUS = ?, OPPDATERT_TID = ? WHERE REFERANSE = ?"
         ) {
             setParams {
                 setEnumName(1, prosesseringStatus)
-                setUUID(2, referanse.referanse)
+                setLocalDateTime(2, LocalDateTime.now())
+                setUUID(3, referanse.referanse)
             }
             setResultValidator {
                 require(1 == it)
@@ -162,12 +165,13 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         journalpostFerdigstilt: Boolean
     ) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ?, JOURNALPOST_FERDIGSTILT = ? WHERE ID = ?"
+            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ?, JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
         ) {
             setParams {
                 setString(1, journalpostId.id)
                 setBoolean(2, journalpostFerdigstilt)
-                setLong(3, id.id)
+                setLocalDateTime(3, LocalDateTime.now())
+                setLong(4, id.id)
             }
             setResultValidator {
                 require(1 == it)
@@ -180,11 +184,12 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         distribusjonBestillingId: DistribusjonBestillingId
     ) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET DISTRIBUSJON_BESTILLING_ID = ? WHERE ID = ?"
+            "UPDATE BREVBESTILLING SET DISTRIBUSJON_BESTILLING_ID = ?, OPPDATERT_TID = ? WHERE ID = ?"
         ) {
             setParams {
                 setString(1, distribusjonBestillingId.id)
-                setLong(2, id.id)
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
             }
             setResultValidator {
                 require(1 == it)
