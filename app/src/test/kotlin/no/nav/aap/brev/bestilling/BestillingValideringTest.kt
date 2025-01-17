@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 
-class BestillingServiceTest {
+class BestillingValideringTest {
 
     companion object {
         private val fakes = Fakes()
@@ -41,7 +41,7 @@ class BestillingServiceTest {
     fun `bestilling går igjennom dersom ingen valideringsfeil`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
@@ -65,7 +65,7 @@ class BestillingServiceTest {
     @Test
     fun `validering feiler dersom sak på vedlegg ikke har fagsakId lik bestillingens saksnummer`() {
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = randomSaksnummer(),
             dokumentInfoId = dokumentInfoId
@@ -82,7 +82,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom sak på vedlegg ikke har fagsystem KELVIN`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -104,7 +104,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom sak på vedlegg ikke er sakstype FAGSAK`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -122,7 +122,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom sak på vedlegg ikke har tema AAP`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -140,7 +140,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom bruker ikke har tilgang til vedlegg (journalposten)`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -158,7 +158,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT eller EKSPEDERT`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -175,7 +175,7 @@ class BestillingServiceTest {
     @Test
     fun `validering feiler dersom vedlegg ikke har dokumentet i arkivet`() {
         val saksnummer = randomSaksnummer()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = randomDokumentInfoId(),
@@ -192,7 +192,7 @@ class BestillingServiceTest {
     fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIAkrivet(
+        val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId,
@@ -206,7 +206,7 @@ class BestillingServiceTest {
         )
     }
 
-    private fun gittJournalpostIAkrivet(
+    private fun gittJournalpostIArkivet(
         journalpostId: JournalpostId,
         saksnummer: Saksnummer,
         dokumentInfoId: DokumentInfoId,

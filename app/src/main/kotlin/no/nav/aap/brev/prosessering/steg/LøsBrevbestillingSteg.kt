@@ -17,6 +17,7 @@ class LøsBrevbestillingSteg(
         log.info("LøsBrevbestillingSteg")
 
         val brevbestilling = brevbestillingRepository.hent(kontekst.referanse)
+
         // TODO: Sende riktig status i oppdaterBrevStatus - Er Status.FERDIGSTILT for å forhindre stopp i flyten
         bestillerGateway.oppdaterBrevStatus(
             brevbestilling,

@@ -4,6 +4,7 @@ val ktorVersion = "3.0.3"
 val komponenterVersjon = "1.0.114"
 val behandlingsflytVersjon = "0.0.105"
 val tilgangVersjon = "0.0.89"
+val junitVersjon = "5.11.4"
 
 plugins {
     id("brev.conventions")
@@ -57,9 +58,10 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql:11.1.1")
     implementation("org.postgresql:postgresql:42.7.4")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersjon")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersjon")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersjon")
     testImplementation("org.assertj:assertj-core:3.27.2")
     testImplementation("org.testcontainers:postgresql:1.20.4")
     constraints {
