@@ -15,13 +15,13 @@ import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.fakes.randomJournalpostId
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 class DistribusjonServiceTest {
 
@@ -49,11 +49,11 @@ class DistribusjonServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
@@ -84,11 +84,11 @@ class DistribusjonServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
@@ -117,11 +117,11 @@ class DistribusjonServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
@@ -153,11 +153,11 @@ class DistribusjonServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()

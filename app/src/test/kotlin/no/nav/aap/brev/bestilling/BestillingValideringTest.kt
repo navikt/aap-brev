@@ -14,6 +14,7 @@ import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomDokumentInfoId
 import no.nav.aap.brev.test.fakes.randomJournalpostId
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.brev.test.fakes.safJournalpost
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 class BestillingValideringTest {
 
@@ -53,11 +53,11 @@ class BestillingValideringTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
                 behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-            )
+            ).referanse
             assertNotNull(brevbestillingRepository.hent(referanse))
         }
     }
@@ -250,7 +250,7 @@ class BestillingValideringTest {
                 brevbestillingService.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = randomBehandlingReferanse(),
-                    unikReferanse = UUID.randomUUID().toString(),
+                    unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = vedlegg,

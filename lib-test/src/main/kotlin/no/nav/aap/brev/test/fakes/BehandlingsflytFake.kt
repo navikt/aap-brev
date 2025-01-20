@@ -13,6 +13,7 @@ import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.UUID
 import kotlin.random.Random
@@ -32,6 +33,8 @@ fun faktagrunnlagForBehandling(behandlingReferanse: BehandlingReferanse, faktagr
 }
 
 fun randomBehandlingReferanse() = BehandlingReferanse(UUID.randomUUID())
+
+fun randomUnikReferanse() = UnikReferanse(UUID.randomUUID().toString())
 
 fun randomSaksnummer() = Saksnummer(Random.nextInt(1000..9999).toString())
 

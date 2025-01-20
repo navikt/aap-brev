@@ -36,15 +36,15 @@ class BrevbestillingService(
     fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String,
+        unikReferanse: UnikReferanse,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): BrevbestillingReferanse {
+    ): BrevbestillingRepository.OpprettBrevbestillingResultat {
 
         validerBestilling(saksnummer, vedlegg)
 
-        val bestilling = brevbestillingRepository.opprettBestilling(
+        val bestillingResultat = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
             behandlingReferanse = behandlingReferanse,
             unikReferanse = unikReferanse,
@@ -53,9 +53,11 @@ class BrevbestillingService(
             vedlegg = vedlegg,
         )
 
-        leggTilJobb(bestilling)
+        if (!bestillingResultat.alleredeOpprettet) {
+            leggTilJobb(bestillingResultat.id, bestillingResultat.referanse)
+        }
 
-        return bestilling.referanse
+        return bestillingResultat
     }
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
@@ -76,7 +78,7 @@ class BrevbestillingService(
 
         validerFerdigstilling(bestilling)
 
-        leggTilJobb(bestilling)
+        leggTilJobb(bestilling.id, bestilling.referanse)
     }
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
@@ -146,12 +148,12 @@ class BrevbestillingService(
         }
     }
 
-    private fun leggTilJobb(bestilling: Brevbestilling) {
+    private fun leggTilJobb(id: BrevbestillingId, referanse: BrevbestillingReferanse) {
         val jobb =
             JobbInput(ProsesserBrevbestillingJobbUtfører)
                 .medCallId()
-                .forSak(bestilling.id.id)
-                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, bestilling.referanse.referanse.toString())
+                .forSak(id.id)
+                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
 
         jobbRepository.leggTil(jobb)
     }

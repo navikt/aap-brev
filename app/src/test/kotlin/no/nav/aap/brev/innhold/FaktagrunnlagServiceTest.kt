@@ -11,14 +11,14 @@ import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.UUID
-import org.assertj.core.api.Assertions.assertThat
 
 class FaktagrunnlagServiceTest {
     companion object {
@@ -44,11 +44,11 @@ class FaktagrunnlagServiceTest {
                 brevbestillingService.opprettBestilling(
                     saksnummer = randomSaksnummer(),
                     behandlingReferanse = behandlingReferanse,
-                    unikReferanse = UUID.randomUUID().toString(),
+                    unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = emptySet(),
-                )
+                ).referanse
 
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 

@@ -1,39 +1,55 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.bestilling.BrevbestillingRepository.OpprettBrevbestillingResultat
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import no.nav.aap.brev.exception.BestillingEksistererAlleredeException
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
-import org.postgresql.util.PSQLException
 import java.time.LocalDateTime
 import java.util.UUID
 
 class BrevbestillingRepositoryImpl(private val connection: DBConnection) : BrevbestillingRepository {
 
-    private val UNIQUE_VIOLATION = "23505"
-
     override fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String,
+        unikReferanse: UnikReferanse,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): Brevbestilling {
+    ): OpprettBrevbestillingResultat {
+        val eksisterendeBestilling = hent(unikReferanse)
+        if (eksisterendeBestilling != null &&
+            erDuplikatBestilling(
+                eksisterendeBestilling = eksisterendeBestilling,
+                saksnummer = saksnummer,
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = unikReferanse,
+                brevtype = brevtype,
+                språk = språk,
+                vedlegg = vedlegg,
+            )
+        ) {
+            return OpprettBrevbestillingResultat(
+                id = eksisterendeBestilling.id,
+                referanse = eksisterendeBestilling.referanse,
+                alleredeOpprettet = true
+            )
+        }
+
         val referanse: UUID = UUID.randomUUID()
         val query = """
             INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
                 VALUES (?, ?, ?, ?, ?, ?)
         """.trimIndent()
 
-        val id = try {
+        val id =
             connection.executeReturnKey(query) {
                 setParams {
                     setString(1, saksnummer.nummer)
@@ -41,21 +57,38 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                     setUUID(3, behandlingReferanse.referanse)
                     setEnumName(4, språk)
                     setEnumName(5, brevtype)
-                    setString(6, unikReferanse)
+                    setString(6, unikReferanse.referanse)
                 }
             }
-        } catch (e: PSQLException) {
-            if (e.sqlState == UNIQUE_VIOLATION) {
-                throw BestillingEksistererAlleredeException(e)
-            }
-            throw e
-        }
 
         if (vedlegg.isNotEmpty()) {
             insertVedlegg(id, vedlegg)
         }
 
-        return hent(BrevbestillingReferanse(referanse))
+        val bestilling = hent(BrevbestillingReferanse(referanse))
+        return OpprettBrevbestillingResultat(
+            id = bestilling.id,
+            referanse = bestilling.referanse,
+            alleredeOpprettet = false
+        )
+    }
+
+    private fun erDuplikatBestilling(
+        eksisterendeBestilling: Brevbestilling,
+        saksnummer: Saksnummer,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        vedlegg: Set<Vedlegg>,
+    ): Boolean {
+        return eksisterendeBestilling.saksnummer == saksnummer &&
+                eksisterendeBestilling.behandlingReferanse == behandlingReferanse &&
+                eksisterendeBestilling.unikReferanse == unikReferanse &&
+                eksisterendeBestilling.brevtype == brevtype &&
+                eksisterendeBestilling.språk == språk &&
+                eksisterendeBestilling.vedlegg.containsAll(vedlegg) &&
+                vedlegg.containsAll(eksisterendeBestilling.vedlegg)
     }
 
     private fun insertVedlegg(id: Long, vedlegg: Set<Vedlegg>) {
@@ -70,6 +103,17 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setString(2, it.journalpostId.id)
                 setString(3, it.dokumentInfoId.id)
             }
+        }
+    }
+
+    private fun hent(unikReferanse: UnikReferanse): Brevbestilling? {
+        return connection.queryFirstOrNull(
+            "SELECT * FROM BREVBESTILLING WHERE UNIK_REFERANSE = ?"
+        ) {
+            setParams {
+                setString(1, unikReferanse.referanse)
+            }
+            setRowMapper { row -> mapBestilling(row) }
         }
     }
 
@@ -111,7 +155,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             opprettet = row.getLocalDateTime("OPPRETTET_TID"),
             oppdatert = row.getLocalDateTime("OPPDATERT_TID"),
             behandlingReferanse = BehandlingReferanse(row.getUUID("BEHANDLING_REFERANSE")),
-            unikReferanse = row.getStringOrNull("UNIK_REFERANSE"),
+            unikReferanse = UnikReferanse(row.getString("UNIK_REFERANSE")),
             brevtype = row.getEnum("BREVTYPE"),
             språk = row.getEnum("SPRAK"),
             prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),

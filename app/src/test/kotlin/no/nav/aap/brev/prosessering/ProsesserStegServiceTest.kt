@@ -9,12 +9,12 @@ import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
 import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class ProsesserStegServiceTest {
 
@@ -39,11 +39,11 @@ class ProsesserStegServiceTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 
             prosesserStegService.prosesserBestilling(referanse)
@@ -62,11 +62,11 @@ class ProsesserStegServiceTest {
                 .opprettBestilling(
                     saksnummer = randomSaksnummer(),
                     behandlingReferanse = randomBehandlingReferanse(),
-                    unikReferanse = UUID.randomUUID().toString(),
+                    unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = emptySet(),
-                )
+                ).referanse
         }
 
         feilLøsBestillingFor(bestilling = referanse)

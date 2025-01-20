@@ -10,6 +10,7 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import java.util.*
 
 class FerdigstillValideringTest {
 
@@ -80,11 +80,11 @@ class FerdigstillValideringTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            )
+            ).referanse
 
             brevinnholdService.hentOgLagre(referanse)
             brevbestillingService.oppdaterBrev(referanse, brev)

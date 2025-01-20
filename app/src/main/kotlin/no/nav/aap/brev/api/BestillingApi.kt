@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
@@ -38,11 +39,11 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
     route("/api") {
         route("/bestill") {
             authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                val referanse = dataSource.transaction { connection ->
+                val bestillingResultat = dataSource.transaction { connection ->
                     BrevbestillingService.konstruer(connection).opprettBestilling(
                         saksnummer = Saksnummer(request.saksnummer),
                         behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
-                        unikReferanse = request.unikReferanse,
+                        unikReferanse = UnikReferanse(request.unikReferanse),
                         brevtype = request.brevtype,
                         språk = request.sprak,
                         vedlegg = request.vedlegg.map {
@@ -53,7 +54,12 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         }.toSet(),
                     )
                 }
-                respond(BestillBrevResponse(referanse.referanse), HttpStatusCode.Created)
+                val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
+                    HttpStatusCode.Conflict
+                } else {
+                    HttpStatusCode.Created
+                }
+                respond(BestillBrevResponse(bestillingResultat.referanse.referanse), httpStatusCode)
             }
         }
         route("/bestilling") {

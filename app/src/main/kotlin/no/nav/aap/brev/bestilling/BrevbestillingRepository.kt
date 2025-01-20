@@ -11,11 +11,17 @@ interface BrevbestillingRepository {
     fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String,
+        unikReferanse: UnikReferanse,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): Brevbestilling
+    ): OpprettBrevbestillingResultat
+
+    data class OpprettBrevbestillingResultat(
+        val id: BrevbestillingId,
+        val referanse: BrevbestillingReferanse,
+        val alleredeOpprettet: Boolean
+    )
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling
 
