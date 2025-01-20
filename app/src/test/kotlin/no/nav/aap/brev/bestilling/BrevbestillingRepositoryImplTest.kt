@@ -41,7 +41,7 @@ class BrevbestillingRepositoryImplTest {
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
 
-            val bestillingReferanse =
+            var bestilling =
                 brevbestillingRepository.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = behandlingReferanse,
@@ -50,8 +50,6 @@ class BrevbestillingRepositoryImplTest {
                     språk = språk,
                     vedlegg = vedlegg
                 )
-
-            var bestilling = brevbestillingRepository.hent(bestillingReferanse)
 
             assertEquals(saksnummer, bestilling.saksnummer)
             assertEquals(behandlingReferanse, bestilling.behandlingReferanse)
@@ -64,27 +62,27 @@ class BrevbestillingRepositoryImplTest {
             assertNull(bestilling.journalpostId)
             assertNull(bestilling.journalpostFerdigstilt)
 
-            brevbestillingRepository.oppdaterBrev(bestillingReferanse, brev)
-            bestilling = brevbestillingRepository.hent(bestillingReferanse)
+            brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(brev, bestilling.brev)
 
             brevbestillingRepository.oppdaterProsesseringStatus(
-                bestillingReferanse,
+                bestilling.referanse,
                 ProsesseringStatus.FAKTAGRUNNLAG_HENTET
             )
-            bestilling = brevbestillingRepository.hent(bestillingReferanse)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
 
             brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
-            bestilling = brevbestillingRepository.hent(bestillingReferanse)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(journalpostId, bestilling.journalpostId)
             assertTrue(bestilling.journalpostFerdigstilt == true)
 
             brevbestillingRepository.lagreDistribusjonBestilling(bestilling.id, distribusjonBestillingId)
-            bestilling = brevbestillingRepository.hent(bestillingReferanse)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(distribusjonBestillingId, bestilling.distribusjonBestillingId)
         }

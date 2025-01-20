@@ -44,7 +44,7 @@ class BrevbestillingService(
 
         validerBestilling(saksnummer, vedlegg)
 
-        val referanse = brevbestillingRepository.opprettBestilling(
+        val bestilling = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
             behandlingReferanse = behandlingReferanse,
             unikReferanse = unikReferanse,
@@ -53,14 +53,9 @@ class BrevbestillingService(
             vedlegg = vedlegg,
         )
 
-        val jobb =
-            JobbInput(ProsesserBrevbestillingJobbUtfører)
-                .medCallId()
-                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
+        leggTilJobb(bestilling)
 
-        jobbRepository.leggTil(jobb)
-
-        return referanse
+        return bestilling.referanse
     }
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
@@ -73,12 +68,15 @@ class BrevbestillingService(
 
     fun ferdigstill(referanse: BrevbestillingReferanse) {
         val bestilling = hent(referanse)
+
         if (erBestillingAlleredeFerdigstilt(bestilling)) {
             log.warn("Forsøkte å ferdigstille allerede ferdigstilt bestilling.")
             return
         }
+
         validerFerdigstilling(bestilling)
-        // TODO fortsett prosessering
+
+        leggTilJobb(bestilling)
     }
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
@@ -147,4 +145,15 @@ class BrevbestillingService(
             throw ValideringsfeilException(message)
         }
     }
+
+    private fun leggTilJobb(bestilling: Brevbestilling) {
+        val jobb =
+            JobbInput(ProsesserBrevbestillingJobbUtfører)
+                .medCallId()
+                .forSak(bestilling.id.id)
+                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, bestilling.referanse.referanse.toString())
+
+        jobbRepository.leggTil(jobb)
+    }
+
 }

@@ -15,7 +15,7 @@ interface BrevbestillingRepository {
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): BrevbestillingReferanse
+    ): Brevbestilling
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling
 

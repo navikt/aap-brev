@@ -26,7 +26,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): BrevbestillingReferanse {
+    ): Brevbestilling {
         val referanse: UUID = UUID.randomUUID()
         val query = """
             INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
@@ -55,7 +55,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             insertVedlegg(id, vedlegg)
         }
 
-        return BrevbestillingReferanse(referanse)
+        return hent(BrevbestillingReferanse(referanse))
     }
 
     private fun insertVedlegg(id: Long, vedlegg: Set<Vedlegg>) {
