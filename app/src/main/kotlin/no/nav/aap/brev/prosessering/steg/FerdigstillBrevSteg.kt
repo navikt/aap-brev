@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 class FerdigstillBrevSteg() : Steg.Utfører {
     private val log = LoggerFactory.getLogger(FerdigstillBrevSteg::class.java)
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
-        log.info("FerdigstillBrevSteg")
+        log.info("Starter ferdigstilling av brev.")
         return Steg.Resultat.FULLFØRT
     }
 

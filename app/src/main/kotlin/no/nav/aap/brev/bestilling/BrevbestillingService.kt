@@ -118,7 +118,7 @@ class BrevbestillingService(
 
     private fun erBestillingAlleredeFerdigstilt(bestilling: Brevbestilling): Boolean {
         return bestilling.prosesseringStatus != null &&
-                bestilling.prosesseringStatus > ProsesseringStatus.BREVBESTILLING_LØST
+                bestilling.prosesseringStatus >= ProsesseringStatus.BREV_FERDIGSTILT
     }
 
     private fun validerFerdigstilling(bestilling: Brevbestilling) {
