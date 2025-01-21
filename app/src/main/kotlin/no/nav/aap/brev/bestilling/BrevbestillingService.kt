@@ -41,27 +41,29 @@ class BrevbestillingService(
         språk: Språk,
         vedlegg: Set<Vedlegg>,
     ): OpprettBrevbestillingResultat {
+        val eksisterendeBestilling = brevbestillingRepository.hent(unikReferanse)
+        if (eksisterendeBestilling != null) {
+            if (erDuplikatBestilling(
+                    eksisterendeBestilling = eksisterendeBestilling,
+                    saksnummer = saksnummer,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    vedlegg = vedlegg,
+                )
+            ) {
+                return OpprettBrevbestillingResultat(
+                    id = eksisterendeBestilling.id,
+                    referanse = eksisterendeBestilling.referanse,
+                    alleredeOpprettet = true
+                )
+            } else {
+                throw IllegalStateException("Bestilling med unikReferanse=${unikReferanse.referanse} finnnes allerede, men er ikke samme bestilling.")
+            }
+        }
 
         validerBestilling(saksnummer, vedlegg)
-
-        val eksisterendeBestilling = brevbestillingRepository.hent(unikReferanse)
-        if (eksisterendeBestilling != null &&
-            erDuplikatBestilling(
-                eksisterendeBestilling = eksisterendeBestilling,
-                saksnummer = saksnummer,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = brevtype,
-                språk = språk,
-                vedlegg = vedlegg,
-            )
-        ) {
-            return OpprettBrevbestillingResultat(
-                id = eksisterendeBestilling.id,
-                referanse = eksisterendeBestilling.referanse,
-                alleredeOpprettet = true
-            )
-        }
 
         val bestilling = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,

@@ -85,6 +85,8 @@ class BrevbestillingRepositoryImplTest {
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(distribusjonBestillingId, bestilling.distribusjonBestillingId)
+
+            assertEquals(bestilling, brevbestillingRepository.hent(unikReferanse))
         }
     }
 }
