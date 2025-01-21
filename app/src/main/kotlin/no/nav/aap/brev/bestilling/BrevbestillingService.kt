@@ -44,7 +44,26 @@ class BrevbestillingService(
 
         validerBestilling(saksnummer, vedlegg)
 
-        val bestillingResultat = brevbestillingRepository.opprettBestilling(
+        val eksisterendeBestilling = brevbestillingRepository.hent(unikReferanse)
+        if (eksisterendeBestilling != null &&
+            erDuplikatBestilling(
+                eksisterendeBestilling = eksisterendeBestilling,
+                saksnummer = saksnummer,
+                behandlingReferanse = behandlingReferanse,
+                unikReferanse = unikReferanse,
+                brevtype = brevtype,
+                språk = språk,
+                vedlegg = vedlegg,
+            )
+        ) {
+            return OpprettBrevbestillingResultat(
+                id = eksisterendeBestilling.id,
+                referanse = eksisterendeBestilling.referanse,
+                alleredeOpprettet = true
+            )
+        }
+
+        val bestilling = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
             behandlingReferanse = behandlingReferanse,
             unikReferanse = unikReferanse,
@@ -53,11 +72,13 @@ class BrevbestillingService(
             vedlegg = vedlegg,
         )
 
-        if (!bestillingResultat.alleredeOpprettet) {
-            leggTilJobb(bestillingResultat.id, bestillingResultat.referanse)
-        }
+        leggTilJobb(bestilling)
 
-        return bestillingResultat
+        return return OpprettBrevbestillingResultat(
+            id = bestilling.id,
+            referanse = bestilling.referanse,
+            alleredeOpprettet = false
+        )
     }
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
@@ -78,7 +99,7 @@ class BrevbestillingService(
 
         validerFerdigstilling(bestilling)
 
-        leggTilJobb(bestilling.id, bestilling.referanse)
+        leggTilJobb(bestilling)
     }
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
@@ -148,12 +169,30 @@ class BrevbestillingService(
         }
     }
 
-    private fun leggTilJobb(id: BrevbestillingId, referanse: BrevbestillingReferanse) {
+    private fun erDuplikatBestilling(
+        eksisterendeBestilling: Brevbestilling,
+        saksnummer: Saksnummer,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        vedlegg: Set<Vedlegg>,
+    ): Boolean {
+        return eksisterendeBestilling.saksnummer == saksnummer &&
+                eksisterendeBestilling.behandlingReferanse == behandlingReferanse &&
+                eksisterendeBestilling.unikReferanse == unikReferanse &&
+                eksisterendeBestilling.brevtype == brevtype &&
+                eksisterendeBestilling.språk == språk &&
+                eksisterendeBestilling.vedlegg.containsAll(vedlegg) &&
+                vedlegg.containsAll(eksisterendeBestilling.vedlegg)
+    }
+
+    private fun leggTilJobb(bestilling: Brevbestilling) {
         val jobb =
             JobbInput(ProsesserBrevbestillingJobbUtfører)
                 .medCallId()
-                .forSak(id.id)
-                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, referanse.referanse.toString())
+                .forSak(bestilling.id.id)
+                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, bestilling.referanse.referanse.toString())
 
         jobbRepository.leggTil(jobb)
     }

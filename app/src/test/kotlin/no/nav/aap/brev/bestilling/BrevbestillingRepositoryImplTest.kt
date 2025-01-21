@@ -41,7 +41,7 @@ class BrevbestillingRepositoryImplTest {
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
 
-            var referanse =
+            var bestilling =
                 brevbestillingRepository.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = behandlingReferanse,
@@ -49,9 +49,7 @@ class BrevbestillingRepositoryImplTest {
                     brevtype = brevtype,
                     språk = språk,
                     vedlegg = vedlegg
-                ).referanse
-
-            var bestilling = brevbestillingRepository.hent(referanse)
+                )
 
             assertEquals(saksnummer, bestilling.saksnummer)
             assertEquals(behandlingReferanse, bestilling.behandlingReferanse)

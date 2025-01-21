@@ -22,26 +22,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): OpprettBrevbestillingResultat {
-        val eksisterendeBestilling = hent(unikReferanse)
-        if (eksisterendeBestilling != null &&
-            erDuplikatBestilling(
-                eksisterendeBestilling = eksisterendeBestilling,
-                saksnummer = saksnummer,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = brevtype,
-                språk = språk,
-                vedlegg = vedlegg,
-            )
-        ) {
-            return OpprettBrevbestillingResultat(
-                id = eksisterendeBestilling.id,
-                referanse = eksisterendeBestilling.referanse,
-                alleredeOpprettet = true
-            )
-        }
-
+    ): Brevbestilling {
         val referanse: UUID = UUID.randomUUID()
         val query = """
             INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
@@ -64,30 +45,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             insertVedlegg(id, vedlegg)
         }
 
-        val bestilling = hent(BrevbestillingReferanse(referanse))
-        return OpprettBrevbestillingResultat(
-            id = bestilling.id,
-            referanse = bestilling.referanse,
-            alleredeOpprettet = false
-        )
-    }
-
-    private fun erDuplikatBestilling(
-        eksisterendeBestilling: Brevbestilling,
-        saksnummer: Saksnummer,
-        behandlingReferanse: BehandlingReferanse,
-        unikReferanse: UnikReferanse,
-        brevtype: Brevtype,
-        språk: Språk,
-        vedlegg: Set<Vedlegg>,
-    ): Boolean {
-        return eksisterendeBestilling.saksnummer == saksnummer &&
-                eksisterendeBestilling.behandlingReferanse == behandlingReferanse &&
-                eksisterendeBestilling.unikReferanse == unikReferanse &&
-                eksisterendeBestilling.brevtype == brevtype &&
-                eksisterendeBestilling.språk == språk &&
-                eksisterendeBestilling.vedlegg.containsAll(vedlegg) &&
-                vedlegg.containsAll(eksisterendeBestilling.vedlegg)
+        return hent(BrevbestillingReferanse(referanse))
     }
 
     private fun insertVedlegg(id: Long, vedlegg: Set<Vedlegg>) {
@@ -105,7 +63,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
-    private fun hent(unikReferanse: UnikReferanse): Brevbestilling? {
+    override fun hent(unikReferanse: UnikReferanse): Brevbestilling? {
         return connection.queryFirstOrNull(
             "SELECT * FROM BREVBESTILLING WHERE UNIK_REFERANSE = ?"
         ) {
