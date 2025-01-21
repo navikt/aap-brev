@@ -40,7 +40,7 @@ class BrevbestillingService(
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): BrevbestillingRepository.OpprettBrevbestillingResultat {
+    ): OpprettBrevbestillingResultat {
 
         validerBestilling(saksnummer, vedlegg)
 

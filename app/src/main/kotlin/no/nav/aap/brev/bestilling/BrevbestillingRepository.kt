@@ -17,12 +17,6 @@ interface BrevbestillingRepository {
         vedlegg: Set<Vedlegg>,
     ): OpprettBrevbestillingResultat
 
-    data class OpprettBrevbestillingResultat(
-        val id: BrevbestillingId,
-        val referanse: BrevbestillingReferanse,
-        val alleredeOpprettet: Boolean
-    )
-
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling
 
     fun oppdaterBrev(

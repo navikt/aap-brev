@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.bestilling.BrevbestillingRepository.OpprettBrevbestillingResultat
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
