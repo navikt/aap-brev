@@ -36,11 +36,32 @@ class BrevbestillingService(
     fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String,
+        unikReferanse: UnikReferanse,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
-    ): BrevbestillingReferanse {
+    ): OpprettBrevbestillingResultat {
+        val eksisterendeBestilling = brevbestillingRepository.hent(unikReferanse)
+        if (eksisterendeBestilling != null) {
+            if (erDuplikatBestilling(
+                    eksisterendeBestilling = eksisterendeBestilling,
+                    saksnummer = saksnummer,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    vedlegg = vedlegg,
+                )
+            ) {
+                return OpprettBrevbestillingResultat(
+                    id = eksisterendeBestilling.id,
+                    referanse = eksisterendeBestilling.referanse,
+                    alleredeOpprettet = true
+                )
+            } else {
+                throw IllegalStateException("Bestilling med unikReferanse=${unikReferanse.referanse} finnnes allerede, men er ikke samme bestilling.")
+            }
+        }
 
         validerBestilling(saksnummer, vedlegg)
 
@@ -55,7 +76,11 @@ class BrevbestillingService(
 
         leggTilJobb(bestilling)
 
-        return bestilling.referanse
+        return return OpprettBrevbestillingResultat(
+            id = bestilling.id,
+            referanse = bestilling.referanse,
+            alleredeOpprettet = false
+        )
     }
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
@@ -144,6 +169,24 @@ class BrevbestillingService(
             val message = lazyMessage()
             throw ValideringsfeilException(message)
         }
+    }
+
+    private fun erDuplikatBestilling(
+        eksisterendeBestilling: Brevbestilling,
+        saksnummer: Saksnummer,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        vedlegg: Set<Vedlegg>,
+    ): Boolean {
+        return eksisterendeBestilling.saksnummer == saksnummer &&
+                eksisterendeBestilling.behandlingReferanse == behandlingReferanse &&
+                eksisterendeBestilling.unikReferanse == unikReferanse &&
+                eksisterendeBestilling.brevtype == brevtype &&
+                eksisterendeBestilling.språk == språk &&
+                eksisterendeBestilling.vedlegg.containsAll(vedlegg) &&
+                vedlegg.containsAll(eksisterendeBestilling.vedlegg)
     }
 
     private fun leggTilJobb(bestilling: Brevbestilling) {

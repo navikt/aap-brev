@@ -9,13 +9,13 @@ import no.nav.aap.brev.test.fakes.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.fakes.randomDokumentInfoId
 import no.nav.aap.brev.test.fakes.randomJournalpostId
 import no.nav.aap.brev.test.fakes.randomSaksnummer
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class BrevbestillingRepositoryImplTest {
 
@@ -30,7 +30,7 @@ class BrevbestillingRepositoryImplTest {
 
             val saksnummer = randomSaksnummer()
             val behandlingReferanse = randomBehandlingReferanse()
-            val unikReferanse = UUID.randomUUID().toString()
+            val unikReferanse = randomUnikReferanse()
             val brevtype = Brevtype.INNVILGELSE
             val språk = Språk.NB
             val vedlegg = setOf<Vedlegg>(
@@ -85,6 +85,8 @@ class BrevbestillingRepositoryImplTest {
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(distribusjonBestillingId, bestilling.distribusjonBestillingId)
+
+            assertEquals(bestilling, brevbestillingRepository.hent(unikReferanse))
         }
     }
 }

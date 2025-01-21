@@ -1,20 +1,16 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.Journalpost
-import no.nav.aap.brev.arkivoppslag.Journalpost.Dokument
-import no.nav.aap.brev.arkivoppslag.Journalpost.Dokument.Variant
-import no.nav.aap.brev.arkivoppslag.Journalpost.Sak
 import no.nav.aap.brev.exception.ValideringsfeilException
-import no.nav.aap.brev.journalføring.DokumentInfoId
-import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
 import no.nav.aap.brev.test.fakes.randomDokumentInfoId
 import no.nav.aap.brev.test.fakes.randomJournalpostId
 import no.nav.aap.brev.test.fakes.randomSaksnummer
-import no.nav.aap.brev.test.fakes.safJournalpost
+import no.nav.aap.brev.test.fakes.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
@@ -22,7 +18,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 class BestillingValideringTest {
 
@@ -53,11 +48,11 @@ class BestillingValideringTest {
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
                 behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = UUID.randomUUID().toString(),
+                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-            )
+            ).referanse
             assertNotNull(brevbestillingRepository.hent(referanse))
         }
     }
@@ -206,39 +201,6 @@ class BestillingValideringTest {
         )
     }
 
-    private fun gittJournalpostIArkivet(
-        journalpostId: JournalpostId,
-        saksnummer: Saksnummer,
-        dokumentInfoId: DokumentInfoId,
-        journalstatus: String = "FERDIGSTILT",
-        brukerHarTilgangTilJournalpost: Boolean = true,
-        fagsaksystem: String = "KELVIN",
-        sakstype: String = "FAGSAK",
-        tema: String = "AAP",
-        brukerHarTilgangTilDokument: Boolean = true,
-    ): Journalpost {
-        val dokument = Dokument(
-            dokumentInfoId = dokumentInfoId,
-            dokumentvarianter = listOf(Variant(brukerHarTilgang = brukerHarTilgangTilDokument))
-        )
-        val journalpost = Journalpost(
-            journalpostId = journalpostId,
-            journalstatus = journalstatus,
-            brukerHarTilgang = brukerHarTilgangTilJournalpost,
-            sak = Sak(
-                fagsakId = saksnummer.nummer,
-                fagsaksystem = fagsaksystem,
-                sakstype = sakstype,
-                tema = tema
-            ),
-            dokumenter = listOf(dokument)
-        )
-
-        safJournalpost(journalpost)
-
-        return journalpost
-    }
-
     private fun validerFeilVedBestilling(
         saksnummer: Saksnummer,
         vedlegg: Set<Vedlegg>,
@@ -250,7 +212,7 @@ class BestillingValideringTest {
                 brevbestillingService.opprettBestilling(
                     saksnummer = saksnummer,
                     behandlingReferanse = randomBehandlingReferanse(),
-                    unikReferanse = UUID.randomUUID().toString(),
+                    unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = vedlegg,

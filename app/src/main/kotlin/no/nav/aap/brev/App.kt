@@ -19,7 +19,6 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
-import no.nav.aap.brev.exception.BestillingEksistererAlleredeException
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -63,7 +62,7 @@ internal fun Application.server(dbConfig: DbConfig) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             when (cause) {
-                is BestillingEksistererAlleredeException, is ValideringsfeilException -> {
+                is ValideringsfeilException -> {
                     call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message))
                 }
 

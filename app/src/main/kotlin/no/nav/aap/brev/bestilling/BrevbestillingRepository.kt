@@ -11,13 +11,15 @@ interface BrevbestillingRepository {
     fun opprettBestilling(
         saksnummer: Saksnummer,
         behandlingReferanse: BehandlingReferanse,
-        unikReferanse: String,
+        unikReferanse: UnikReferanse,
         brevtype: Brevtype,
         språk: Språk,
         vedlegg: Set<Vedlegg>,
     ): Brevbestilling
 
     fun hent(referanse: BrevbestillingReferanse): Brevbestilling
+
+    fun hent(unikReferanse: UnikReferanse): Brevbestilling?
 
     fun oppdaterBrev(
         referanse: BrevbestillingReferanse,
