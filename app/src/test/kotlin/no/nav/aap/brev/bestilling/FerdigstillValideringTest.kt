@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType.TESTVERDI
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.kontrakt.Brev
@@ -35,16 +36,32 @@ class FerdigstillValideringTest {
 
     @Test
     fun `ferdigstilling går igjennom dersom ingen valideringsfeil`() {
-        val referanse = gittBrevMed(brev = brev(), status = ProsesseringStatus.BREVBESTILLING_LØST)
+        val referanse =
+            gittBrevMed(brev = brev(medFaktagrunnlag = emptyList()), status = ProsesseringStatus.BREVBESTILLING_LØST)
         ferdigstill(referanse)
         // TODO sjekk at fortsett prosessering blir gjort
+    }
+
+    @Test
+    fun `ferdigstilling feiler dersom ingen brevet har faktagrunnlag`() {
+        val referanse =
+            gittBrevMed(
+                brev = brev(medFaktagrunnlag = listOf(TESTVERDI.verdi)),
+                status = ProsesseringStatus.BREVBESTILLING_LØST
+            )
+        val exception = assertThrows<ValideringsfeilException> {
+            ferdigstill(referanse)
+        }
+        assertThat(exception.message).endsWith(
+            "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${TESTVERDI.verdi}."
+        )
     }
 
     @ParameterizedTest
     @EnumSource(
         ProsesseringStatus::class, names = ["STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET"]
     )
-    fun `ferdigstill med status før BREVBESTILLING_LØST feiler`(status : ProsesseringStatus) {
+    fun `ferdigstill med status før BREVBESTILLING_LØST feiler`(status: ProsesseringStatus) {
         val referanse = gittBrevMed(brev = brev(), status = status)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
@@ -65,7 +82,7 @@ class FerdigstillValideringTest {
             "FERDIG"
         ]
     )
-    fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status : ProsesseringStatus) {
+    fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {
         val referanse = gittBrevMed(brev = brev(), status = status)
         ferdigstill(referanse)
         // TODO sjekk at fortsett prosessering ikke blir gjort

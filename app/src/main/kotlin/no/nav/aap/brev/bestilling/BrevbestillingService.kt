@@ -153,14 +153,14 @@ class BrevbestillingService(
         checkNotNull(bestilling.prosesseringStatus)
 
         val feilmelding =
-            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse}"
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
 
         valider(bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST) {
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, prosesseringStatus=${bestilling.prosesseringStatus}"
         }
 
         val faktagrunnlag = bestilling.brev.finnFaktagrunnlag()
-        valider(faktagrunnlag.isNotEmpty()) {
+        valider(faktagrunnlag.isEmpty()) {
             val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
             "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
         }
