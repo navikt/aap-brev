@@ -56,6 +56,7 @@ class ProsesserStegService(
             val stegResultat = steg.konstruer(connection).utfør(Steg.Kontekst(referanse))
 
             if (stegResultat == Steg.Resultat.STOPP) {
+                log.info("Stopper prosessering etter å ha utført steget ${steg::class.java.declaringClass.simpleName}")
                 return
             }
 

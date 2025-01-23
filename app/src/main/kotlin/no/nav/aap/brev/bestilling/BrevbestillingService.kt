@@ -3,7 +3,7 @@ package no.nav.aap.brev.bestilling
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.exception.ValideringsfeilException
-import no.nav.aap.brev.innhold.FaktagrunnlagService
+import no.nav.aap.brev.innhold.finnFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -157,7 +157,7 @@ class BrevbestillingService(
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, prosesseringStatus=${bestilling.prosesseringStatus}"
         }
 
-        val faktagrunnlag = FaktagrunnlagService.finnFaktagrunnlag(bestilling.brev)
+        val faktagrunnlag = bestilling.brev.finnFaktagrunnlag()
         valider(faktagrunnlag.isNotEmpty()) {
             val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
             "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."

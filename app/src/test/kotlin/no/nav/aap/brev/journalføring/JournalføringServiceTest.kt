@@ -9,10 +9,10 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
-import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
-import no.nav.aap.brev.test.fakes.randomJournalpostId
-import no.nav.aap.brev.test.fakes.randomSaksnummer
-import no.nav.aap.brev.test.fakes.randomUnikReferanse
+import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomJournalpostId
+import no.nav.aap.brev.test.randomSaksnummer
+import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll

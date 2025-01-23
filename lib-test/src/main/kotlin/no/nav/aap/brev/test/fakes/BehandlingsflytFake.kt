@@ -2,7 +2,7 @@ package no.nav.aap.brev.test.fakes
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.request.receiveText
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
@@ -12,12 +12,8 @@ import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.Personinfo
-import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.komponenter.json.DefaultJsonMapper
-import java.util.UUID
-import kotlin.random.Random
-import kotlin.random.nextInt
+import java.util.*
 
 private val feilForBestilling = mutableSetOf<UUID>()
 
@@ -31,12 +27,6 @@ fun faktagrunnlagForBehandling(behandlingReferanse: BehandlingReferanse, faktagr
     val nyBehandlingsReferanse = no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse(behandlingReferanse.referanse)
     behandlingsReferanseTilFaktagrunnlag.put(nyBehandlingsReferanse, faktagrunnlag)
 }
-
-fun randomBehandlingReferanse() = BehandlingReferanse(UUID.randomUUID())
-
-fun randomUnikReferanse() = UnikReferanse(UUID.randomUUID().toString())
-
-fun randomSaksnummer() = Saksnummer(Random.nextInt(1000..9999).toString())
 
 fun Application.behandlingsflytFake() {
     applicationFakeFelles("behandlingsflyt")

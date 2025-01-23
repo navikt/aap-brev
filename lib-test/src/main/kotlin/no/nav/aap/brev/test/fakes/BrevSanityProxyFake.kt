@@ -10,12 +10,19 @@ import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
 import java.util.UUID
+import kotlin.Boolean
+import kotlin.String
 
-fun brev(medFaktagrunnlag: List<String> = listOf(FaktagrunnlagType.TESTVERDI.verdi)): Brev {
+fun brev(
+    medFaktagrunnlag: List<String> = listOf(FaktagrunnlagType.TESTVERDI.verdi),
+    kanRedigeres: Boolean = true,
+    erFullstendig: Boolean = false,
+): Brev {
     return Brev(
         overskrift = "Overskrift - Brev",
         journalpostTittel = "Journalpost - tittel",
@@ -49,8 +56,8 @@ fun brev(medFaktagrunnlag: List<String> = listOf(FaktagrunnlagType.TESTVERDI.ver
                                 type = BlokkType.AVSNITT
                             )
                         ),
-                        kanRedigeres = true,
-                        erFullstendig = false
+                        kanRedigeres = kanRedigeres,
+                        erFullstendig = erFullstendig
                     )
                 )
             )
@@ -62,7 +69,24 @@ fun Application.brevSanityProxyFake() {
     applicationFakeFelles("brev-sanity-proxy")
     routing {
         get("/api/mal") {
-            call.respond(brev())
+            val brevtype = Brevtype.valueOf(checkNotNull(call.queryParameters.get("brevtype")))
+            // Gir ulike konfigurasjoner av brev for forskjellige test-scenario
+            val brev = when (brevtype) {
+                Brevtype.INNVILGELSE -> brev()
+                Brevtype.AVSLAG -> brev()
+                Brevtype.VARSEL_OM_BESTILLING -> brev(
+                    medFaktagrunnlag = emptyList(),
+                    kanRedigeres = false,
+                    erFullstendig = true
+                )
+
+                Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> brev(
+                    medFaktagrunnlag = listOf(FaktagrunnlagType.TESTVERDI.verdi),
+                    kanRedigeres = false,
+                    erFullstendig = true
+                )
+            }
+            call.respond(brev)
         }
     }
 }

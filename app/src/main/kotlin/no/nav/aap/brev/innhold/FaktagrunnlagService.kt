@@ -21,21 +21,12 @@ class FaktagrunnlagService(
                 BrevbestillingRepositoryImpl(connection),
             )
         }
-
-        fun harFaktagrunnlag(brev: Brev): Boolean = finnFaktagrunnlag(brev).isNotEmpty()
-
-        fun finnFaktagrunnlag(brev: Brev): List<BlokkInnhold.Faktagrunnlag> =
-            brev.tekstbolker
-                .flatMap { it.innhold }
-                .flatMap { it.blokker }
-                .flatMap { it.innhold }
-                .filterIsInstance<BlokkInnhold.Faktagrunnlag>()
     }
 
     fun hentOgFyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brev = checkNotNull(bestilling.brev)
-        val faktagrunnlagTyper = finnFaktagrunnlag(brev).mapNotNull { mapFaktagrunnlag(it) }.toSet()
+        val faktagrunnlagTyper = brev.finnFaktagrunnlag().mapNotNull { mapFaktagrunnlag(it) }.toSet()
 
         if (faktagrunnlagTyper.isEmpty()) {
             return

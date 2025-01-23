@@ -9,15 +9,13 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
-import no.nav.aap.brev.test.fakes.randomBehandlingReferanse
-import no.nav.aap.brev.test.fakes.randomSaksnummer
-import no.nav.aap.brev.test.fakes.randomUnikReferanse
+import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomSaksnummer
+import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class FaktagrunnlagServiceTest {
@@ -60,7 +58,7 @@ class FaktagrunnlagServiceTest {
             val hentetBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
 
             assertThat(
-                FaktagrunnlagService.finnFaktagrunnlag(hentetBrev).map { it.tekniskNavn }
+                hentetBrev.finnFaktagrunnlag().map { it.tekniskNavn }
             ).containsExactlyInAnyOrder(FaktagrunnlagType.TESTVERDI.verdi, "ukjentFaktagrunnlag")
 
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
@@ -68,18 +66,8 @@ class FaktagrunnlagServiceTest {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
 
             assertThat(
-                FaktagrunnlagService.finnFaktagrunnlag(oppdatertBrev).map { it.tekniskNavn }
+                oppdatertBrev.finnFaktagrunnlag().map { it.tekniskNavn }
             ).containsExactlyInAnyOrder("ukjentFaktagrunnlag")
         }
-    }
-
-    @Test
-    fun `har faktagrunnlag`() {
-        assertTrue(FaktagrunnlagService.harFaktagrunnlag(brev(listOf("faktagrunnlag"))))
-    }
-
-    @Test
-    fun `har ikke faktagrunnlag`() {
-        assertFalse(FaktagrunnlagService.harFaktagrunnlag(brev(medFaktagrunnlag = emptyList())))
     }
 }

@@ -9,8 +9,8 @@ import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest
 import no.nav.aap.brev.distribusjon.DistribuerJournalpostResponse
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.JournalpostId
+import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.komponenter.json.DefaultJsonMapper
-import java.util.*
 
 private val journalpostTilDistribusjonBestillingId = mutableMapOf<JournalpostId, DistribusjonBestillingId>()
 private val journalpostTilDistribusjonBestillingFinnesAllerede = mutableMapOf<JournalpostId, Boolean>()
@@ -21,10 +21,6 @@ fun distribusjonBestillingIdForJournalpost(
 ) {
     journalpostTilDistribusjonBestillingId.set(journalpost, distribusjonBestillingId)
     journalpostTilDistribusjonBestillingFinnesAllerede.set(journalpost, finnesAllerede)
-}
-
-fun randomDistribusjonBestillingId(): DistribusjonBestillingId {
-    return DistribusjonBestillingId(UUID.randomUUID().toString())
 }
 
 fun Application.dokdistfordelingFake() {

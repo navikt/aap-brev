@@ -21,8 +21,6 @@ import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.miljo.Miljø
-import no.nav.aap.komponenter.miljo.MiljøKode
 import java.time.LocalDate
 
 class JournalføringService(
@@ -136,10 +134,7 @@ class JournalføringService(
                                             )
 
                                             is BlokkInnhold.Faktagrunnlag -> {
-                                                if (Miljø.er() != MiljøKode.DEV) { // TODO ta bort denne når vi er klar til å teste at faktagrunnlag hentes fra behandlignsflyt
-                                                    throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
-                                                }
-                                                null
+                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
                                             }
                                         }
                                     },
