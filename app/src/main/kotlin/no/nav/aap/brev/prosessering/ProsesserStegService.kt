@@ -55,14 +55,14 @@ class ProsesserStegService(
         stegene.forEach { steg ->
             val stegResultat = steg.konstruer(connection).utfør(Steg.Kontekst(referanse))
 
+            brevbestillingRepository.oppdaterProsesseringStatus(referanse, flyt.utfall(steg))
+
+            connection.markerSavepoint()
+
             if (stegResultat == Steg.Resultat.STOPP) {
                 log.info("Stopper prosessering etter å ha utført steget ${steg::class.java.declaringClass.simpleName}")
                 return
             }
-
-            brevbestillingRepository.oppdaterProsesseringStatus(referanse, flyt.utfall(steg))
-
-            connection.markerSavepoint()
         }
     }
 }

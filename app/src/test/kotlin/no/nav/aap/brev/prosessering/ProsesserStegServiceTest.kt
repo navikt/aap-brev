@@ -3,12 +3,12 @@ package no.nav.aap.brev.prosessering
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomSaksnummer
+import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
@@ -41,9 +41,10 @@ class ProsesserStegServiceTest {
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
-                språk = Språk.NB,
+                språk = randomSpråk(),
                 vedlegg = emptySet(),
             ).referanse
+
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 
             prosesserStegService.prosesserBestilling(referanse)
@@ -64,7 +65,7 @@ class ProsesserStegServiceTest {
                     behandlingReferanse = randomBehandlingReferanse(),
                     unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
-                    språk = Språk.NB,
+                    språk = randomSpråk(),
                     vedlegg = emptySet(),
                 ).referanse
         }
@@ -88,7 +89,39 @@ class ProsesserStegServiceTest {
     }
 
     @Test
-    fun `stopper prosessering på et steg med resultat stopp, og prosesserer steget på nytt ved neste prosessering`() {
-        // TODO når det finnes logikk i et steg for å stoppe
+    fun `stopper prosessering på et steg med resultat stopp, og prosesserer videre fra neste steg ved ny prosessering prosessering`() {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val prosesserStegService = ProsesserStegService.konstruer(connection)
+
+            val behandlingReferanse = randomBehandlingReferanse()
+            val referanse = dataSource.transaction { connection ->
+                BrevbestillingService.konstruer(connection)
+                    .opprettBestilling(
+                        saksnummer = randomSaksnummer(),
+                        behandlingReferanse = behandlingReferanse,
+                        unikReferanse = randomUnikReferanse(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        språk = randomSpråk(),
+                        vedlegg = emptySet(),
+                    ).referanse
+            }
+
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
+
+            prosesserStegService.prosesserBestilling(referanse)
+
+            assertEquals(
+                ProsesseringStatus.BREVBESTILLING_LØST,
+                brevbestillingService.hent(referanse).prosesseringStatus
+            )
+
+            prosesserStegService.prosesserBestilling(referanse)
+
+            assertEquals(
+                ProsesseringStatus.FERDIG,
+                brevbestillingService.hent(referanse).prosesseringStatus
+            )
+        }
     }
 }
