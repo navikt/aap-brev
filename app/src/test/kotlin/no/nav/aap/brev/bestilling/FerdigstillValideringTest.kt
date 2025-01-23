@@ -43,7 +43,7 @@ class FerdigstillValideringTest {
     }
 
     @Test
-    fun `ferdigstilling feiler dersom ingen brevet har faktagrunnlag`() {
+    fun `ferdigstilling feiler dersom brevet har faktagrunnlag`() {
         val referanse =
             gittBrevMed(
                 brev = brev(medFaktagrunnlag = listOf(TESTVERDI.verdi)),
