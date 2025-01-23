@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory
 class HentInnholdSteg(
     private val brevinnholdService: BrevinnholdService,
 ) : Steg.Utfører {
-    private val log = LoggerFactory.getLogger(HentInnholdSteg::class.java)
     override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
-        log.info("Henter brevinnhold for bestillingsreferanse=${kontekst.referanse}")
-
         brevinnholdService.hentOgLagre(kontekst.referanse)
 
         return Steg.Resultat.FULLFØRT

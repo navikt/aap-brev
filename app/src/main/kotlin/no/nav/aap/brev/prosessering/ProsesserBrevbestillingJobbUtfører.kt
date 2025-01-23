@@ -5,6 +5,7 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.Jobb
 import no.nav.aap.motor.JobbInput
 import no.nav.aap.motor.JobbUtfører
+import org.slf4j.MDC
 import java.util.UUID
 
 class ProsesserBrevbestillingJobbUtfører(
@@ -13,7 +14,9 @@ class ProsesserBrevbestillingJobbUtfører(
     override fun utfør(input: JobbInput) {
         val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter(BESTILLING_REFERANSE_PARAMETER_NAVN)))
 
-        prosesserStegService.prosesserBestilling(referanse)
+        MDC.putCloseable("bestillingReferanse", referanse.referanse.toString()).use {
+            prosesserStegService.prosesserBestilling(referanse)
+        }
     }
 
     companion object : Jobb {

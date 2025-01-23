@@ -24,6 +24,7 @@ import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
+import org.slf4j.MDC
 import tilgang.Operasjon
 import javax.sql.DataSource
 
@@ -39,27 +40,30 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
     route("/api") {
         route("/bestill") {
             authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                val bestillingResultat = dataSource.transaction { connection ->
-                    BrevbestillingService.konstruer(connection).opprettBestilling(
-                        saksnummer = Saksnummer(request.saksnummer),
-                        behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
-                        unikReferanse = UnikReferanse(request.unikReferanse),
-                        brevtype = request.brevtype,
-                        språk = request.sprak,
-                        vedlegg = request.vedlegg.map {
-                            Vedlegg(
-                                JournalpostId(it.journalpostId),
-                                DokumentInfoId(it.dokumentInfoId)
-                            )
-                        }.toSet(),
-                    )
+                MDC.putCloseable("saksnummer", request.saksnummer).use {
+                    val bestillingResultat = dataSource.transaction { connection ->
+                        BrevbestillingService.konstruer(connection).opprettBestilling(
+                            saksnummer = Saksnummer(request.saksnummer),
+                            behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
+                            unikReferanse = UnikReferanse(request.unikReferanse),
+                            brevtype = request.brevtype,
+                            språk = request.sprak,
+                            vedlegg = request.vedlegg.map {
+                                Vedlegg(
+                                    JournalpostId(it.journalpostId),
+                                    DokumentInfoId(it.dokumentInfoId)
+                                )
+                            }.toSet(),
+                        )
+                    }
+                    val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
+                        HttpStatusCode.Conflict
+                    } else {
+                        HttpStatusCode.Created
+                    }
+
+                    respond(BestillBrevResponse(bestillingResultat.referanse.referanse), httpStatusCode)
                 }
-                val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
-                    HttpStatusCode.Conflict
-                } else {
-                    HttpStatusCode.Created
-                }
-                respond(BestillBrevResponse(bestillingResultat.referanse.referanse), httpStatusCode)
             }
         }
         route("/bestilling") {
@@ -69,29 +73,41 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         applicationRole = "hent-brev",
                         applicationsOnly = true
                     )
-                ) {
-                    val brevbestilling = dataSource.transaction { connection ->
-                        BrevbestillingService.konstruer(connection).hent(it.brevbestillingReferanse)
+                ) { brevbestillingReferanse ->
+                    MDC.putCloseable(
+                        "bestillingReferanse",
+                        brevbestillingReferanse.brevbestillingReferanse.referanse.toString()
+                    ).use {
+
+                        val brevbestilling = dataSource.transaction { connection ->
+                            BrevbestillingService.konstruer(connection)
+                                .hent(brevbestillingReferanse.brevbestillingReferanse)
+                        }
+                        respond(brevbestilling.tilResponse())
                     }
-                    respond(brevbestilling.tilResponse())
                 }
                 route("/oppdater") {
                     authorizedPut<BrevbestillingReferansePathParam, Unit, Brev>(authorizationBodyPathConfig) { referanse, brev ->
-                        dataSource.transaction { connection ->
-                            BrevbestillingService.konstruer(connection)
-                                .oppdaterBrev(referanse.brevbestillingReferanse, brev)
+                        MDC.putCloseable("bestillingReferanse", referanse.referanse.toString()).use {
+                            dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection)
+                                    .oppdaterBrev(referanse.brevbestillingReferanse, brev)
+                            }
+                            respondWithStatus(HttpStatusCode.NoContent)
                         }
-                        respondWithStatus(HttpStatusCode.NoContent)
                     }
                 }
             }
         }
         route("/ferdigstill") {
             authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                dataSource.transaction { connection ->
-                    BrevbestillingService.konstruer(connection).ferdigstill(BrevbestillingReferanse(request.referanse))
+                MDC.putCloseable("bestillingReferanse", request.referanse.toString()).use {
+                    dataSource.transaction { connection ->
+                        BrevbestillingService.konstruer(connection)
+                            .ferdigstill(BrevbestillingReferanse(request.referanse))
+                    }
+                    respond("{}", HttpStatusCode.Accepted)
                 }
-                respond("{}", HttpStatusCode.Accepted)
             }
         }
     }

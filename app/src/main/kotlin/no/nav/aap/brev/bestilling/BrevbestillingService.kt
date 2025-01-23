@@ -53,6 +53,7 @@ class BrevbestillingService(
                     vedlegg = vedlegg,
                 )
             ) {
+                log.info("Fant eksisterende bestilling med referanse = ${eksisterendeBestilling.referanse.referanse}")
                 return OpprettBrevbestillingResultat(
                     id = eksisterendeBestilling.id,
                     referanse = eksisterendeBestilling.referanse,
@@ -76,7 +77,8 @@ class BrevbestillingService(
 
         leggTilJobb(bestilling)
 
-        return return OpprettBrevbestillingResultat(
+        log.info("Bestilling opprettet for ${bestilling.referanse.referanse}")
+        return OpprettBrevbestillingResultat(
             id = bestilling.id,
             referanse = bestilling.referanse,
             alleredeOpprettet = false
