@@ -41,28 +41,30 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
         route("/bestill") {
             authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 MDC.putCloseable("saksnummer", request.saksnummer).use {
-                    val bestillingResultat = dataSource.transaction { connection ->
-                        BrevbestillingService.konstruer(connection).opprettBestilling(
-                            saksnummer = Saksnummer(request.saksnummer),
-                            behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
-                            unikReferanse = UnikReferanse(request.unikReferanse),
-                            brevtype = request.brevtype,
-                            språk = request.sprak,
-                            vedlegg = request.vedlegg.map {
-                                Vedlegg(
-                                    JournalpostId(it.journalpostId),
-                                    DokumentInfoId(it.dokumentInfoId)
-                                )
-                            }.toSet(),
-                        )
-                    }
-                    val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
-                        HttpStatusCode.Conflict
-                    } else {
-                        HttpStatusCode.Created
-                    }
+                    MDC.putCloseable("behandlingReferanse", request.behandlingReferanse.toString()).use {
+                        val bestillingResultat = dataSource.transaction { connection ->
+                            BrevbestillingService.konstruer(connection).opprettBestilling(
+                                saksnummer = Saksnummer(request.saksnummer),
+                                behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
+                                unikReferanse = UnikReferanse(request.unikReferanse),
+                                brevtype = request.brevtype,
+                                språk = request.sprak,
+                                vedlegg = request.vedlegg.map {
+                                    Vedlegg(
+                                        JournalpostId(it.journalpostId),
+                                        DokumentInfoId(it.dokumentInfoId)
+                                    )
+                                }.toSet(),
+                            )
+                        }
+                        val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
+                            HttpStatusCode.Conflict
+                        } else {
+                            HttpStatusCode.Created
+                        }
 
-                    respond(BestillBrevResponse(bestillingResultat.referanse.referanse), httpStatusCode)
+                        respond(BestillBrevResponse(bestillingResultat.referanse.referanse), httpStatusCode)
+                    }
                 }
             }
         }
