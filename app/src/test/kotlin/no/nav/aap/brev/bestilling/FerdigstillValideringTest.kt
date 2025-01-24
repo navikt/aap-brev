@@ -38,8 +38,9 @@ class FerdigstillValideringTest {
     fun `ferdigstilling går igjennom dersom ingen valideringsfeil`() {
         val referanse =
             gittBrevMed(brev = brev(medFaktagrunnlag = emptyList()), status = ProsesseringStatus.BREVBESTILLING_LØST)
+        assertAntallJobber(referanse, 1)
         ferdigstill(referanse)
-        // TODO sjekk at fortsett prosessering blir gjort
+        assertAntallJobber(referanse, 2)
     }
 
     @Test
@@ -49,12 +50,14 @@ class FerdigstillValideringTest {
                 brev = brev(medFaktagrunnlag = listOf(TESTVERDI.verdi)),
                 status = ProsesseringStatus.BREVBESTILLING_LØST
             )
+        assertAntallJobber(referanse, 1)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
         }
         assertThat(exception.message).endsWith(
             "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${TESTVERDI.verdi}."
         )
+        assertAntallJobber(referanse, 1)
     }
 
     @ParameterizedTest
@@ -63,12 +66,14 @@ class FerdigstillValideringTest {
     )
     fun `ferdigstill med status før BREVBESTILLING_LØST feiler`(status: ProsesseringStatus) {
         val referanse = gittBrevMed(brev = brev(), status = status)
+        assertAntallJobber(referanse, 1)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
         }
         assertThat(exception.message).endsWith(
             "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$status"
         )
+        assertAntallJobber(referanse, 1)
     }
 
     @ParameterizedTest
@@ -84,8 +89,9 @@ class FerdigstillValideringTest {
     )
     fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {
         val referanse = gittBrevMed(brev = brev(), status = status)
+        assertAntallJobber(referanse, 1)
         ferdigstill(referanse)
-        // TODO sjekk at fortsett prosessering ikke blir gjort
+        assertAntallJobber(referanse, 1)
     }
 
     private fun gittBrevMed(brev: Brev, status: ProsesseringStatus): BrevbestillingReferanse {
@@ -116,6 +122,28 @@ class FerdigstillValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
             brevbestillingService.ferdigstill(referanse)
+        }
+    }
+
+    private fun assertAntallJobber(referanse: BrevbestillingReferanse, forventetAntall: Int) {
+        return dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val bestilling = brevbestillingService.hent(referanse)
+
+            val query = """
+                SELECT count(*) as antall
+                FROM JOBB
+                WHERE sak_id = ?
+            """.trimIndent()
+
+            val antall = connection.queryFirst(query) {
+                setParams {
+                    setLong(1, bestilling.id.id)
+                }
+                setRowMapper { row -> row.getInt("antall") }
+            }
+
+            assertThat(antall).isEqualTo(forventetAntall)
         }
     }
 }
