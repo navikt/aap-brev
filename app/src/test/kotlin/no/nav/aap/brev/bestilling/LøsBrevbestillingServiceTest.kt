@@ -79,6 +79,8 @@ class LøsBrevbestillingServiceTest {
     fun gittBestilling(brev: Brev): BrevbestillingReferanse {
         return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
@@ -89,7 +91,7 @@ class LøsBrevbestillingServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            brevbestillingService.oppdaterBrev(
+            brevbestillingRepository.oppdaterBrev(
                 referanse, brev
             )
             referanse

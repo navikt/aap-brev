@@ -91,10 +91,6 @@ class BestillingValideringTest {
         )
     }
 
-    private fun Journalpost.somVedlegg(): Set<Vedlegg> {
-        return dokumenter.map { Vedlegg(journalpostId, it.dokumentInfoId) }.toSet()
-    }
-
     @Test
     fun `validering feiler dersom sak på vedlegg ikke er sakstype FAGSAK`() {
         val saksnummer = randomSaksnummer()
@@ -199,6 +195,10 @@ class BestillingValideringTest {
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Bruker har ikke tilgang til dokumentet."
         )
+    }
+
+    private fun Journalpost.somVedlegg(): Set<Vedlegg> {
+        return dokumenter.map { Vedlegg(journalpostId, it.dokumentInfoId) }.toSet()
     }
 
     private fun validerFeilVedBestilling(

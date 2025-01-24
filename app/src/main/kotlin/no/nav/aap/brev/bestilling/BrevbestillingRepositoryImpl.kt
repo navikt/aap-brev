@@ -1,6 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
+import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -137,7 +138,9 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setUUID(3, referanse.referanse)
             }
             setResultValidator {
-                require(1 == it)
+                if (it != 1) {
+                    throw ValideringsfeilException("Forsøkte å oppdatere brevbestilling som ikke finnes.")
+                }
             }
         }
     }

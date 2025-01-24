@@ -20,10 +20,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-
+import org.junit.jupiter.params.provider.EnumSource.Mode
 class FerdigstillValideringTest {
 
     companion object {
+
         private val fakes = Fakes()
         private val dataSource = InitTestDatabase.dataSource
 
@@ -78,13 +79,8 @@ class FerdigstillValideringTest {
 
     @ParameterizedTest
     @EnumSource(
-        ProsesseringStatus::class, names = [
-            "BREV_FERDIGSTILT",
-            "JOURNALFORT",
-            "JOURNALPOST_VEDLEGG_TILKNYTTET",
-            "JOURNALPOST_FERDIGSTILT",
-            "DISTRIBUERT",
-            "FERDIG"
+        ProsesseringStatus::class, mode = Mode.EXCLUDE, names = [
+            "STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "BREVBESTILLING_LØST"
         ]
     )
     fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {
@@ -110,7 +106,7 @@ class FerdigstillValideringTest {
             ).referanse
 
             brevinnholdService.hentOgLagre(referanse)
-            brevbestillingService.oppdaterBrev(referanse, brev)
+            brevbestillingRepository.oppdaterBrev(referanse, brev)
             brevbestillingRepository.oppdaterProsesseringStatus(referanse, status)
 
             referanse
