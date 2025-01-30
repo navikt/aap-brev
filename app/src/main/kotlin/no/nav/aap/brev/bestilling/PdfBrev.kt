@@ -10,6 +10,7 @@ data class PdfBrev(
     val dato: LocalDate,
     val overskrift: String?,
     val tekstbolker: List<Tekstbolk>,
+    val signatur: String = "", // TODO: Venter på avklaring på innhold i signatur
 ) {
     data class Mottaker(
         val navn: String,
