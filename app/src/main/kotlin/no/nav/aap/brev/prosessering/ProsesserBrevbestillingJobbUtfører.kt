@@ -1,5 +1,6 @@
 package no.nav.aap.brev.prosessering
 
+import no.nav.aap.brev.api.MDCNøkler
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.Jobb
@@ -14,7 +15,7 @@ class ProsesserBrevbestillingJobbUtfører(
     override fun utfør(input: JobbInput) {
         val referanse = BrevbestillingReferanse(UUID.fromString(input.parameter(BESTILLING_REFERANSE_PARAMETER_NAVN)))
 
-        MDC.putCloseable("bestillingReferanse", referanse.referanse.toString()).use {
+        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
             prosesserStegService.prosesserBestilling(referanse)
         }
     }

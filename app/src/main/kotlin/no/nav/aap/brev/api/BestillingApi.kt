@@ -40,8 +40,8 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
     route("/api") {
         route("/bestill") {
             authorizedPost<Unit, BestillBrevResponse, BestillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                MDC.putCloseable("saksnummer", request.saksnummer).use {
-                    MDC.putCloseable("behandlingReferanse", request.behandlingReferanse.toString()).use {
+                MDC.putCloseable(MDCNøkler.SAKSNUMMER.key, request.saksnummer).use {
+                    MDC.putCloseable(MDCNøkler.BEHANDLING_REFERANSE.key, request.behandlingReferanse.toString()).use {
                         val bestillingResultat = dataSource.transaction { connection ->
                             BrevbestillingService.konstruer(connection).opprettBestilling(
                                 saksnummer = Saksnummer(request.saksnummer),
@@ -77,7 +77,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     )
                 ) { brevbestillingReferanse ->
                     MDC.putCloseable(
-                        "bestillingReferanse",
+                        MDCNøkler.BESTILLING_REFERANSE.key,
                         brevbestillingReferanse.brevbestillingReferanse.referanse.toString()
                     ).use {
 
@@ -90,7 +90,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 }
                 route("/oppdater") {
                     authorizedPut<BrevbestillingReferansePathParam, Unit, Brev>(authorizationBodyPathConfig) { referanse, brev ->
-                        MDC.putCloseable("bestillingReferanse", referanse.referanse.toString()).use {
+                        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
                             dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection)
                                     .oppdaterBrev(referanse.brevbestillingReferanse, brev)
@@ -103,7 +103,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
         }
         route("/ferdigstill") {
             authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
-                MDC.putCloseable("bestillingReferanse", request.referanse.toString()).use {
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
                     dataSource.transaction { connection ->
                         BrevbestillingService.konstruer(connection)
                             .ferdigstill(BrevbestillingReferanse(request.referanse))
