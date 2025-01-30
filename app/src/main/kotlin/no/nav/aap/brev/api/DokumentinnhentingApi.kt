@@ -113,6 +113,9 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev 
                     )
                 }
             )
-        )
+        ),
+        // TODO: Venter på avklaring på innhold i signatur
+        enhet = "",
+        saksbehandler = "",
     )
 }

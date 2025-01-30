@@ -143,6 +143,9 @@ class JournalføringService(
                             })
                     })
             },
+            // TODO: Venter på avklaring på innhold i signatur
+            enhet = "",
+            saksbehandler = "",
         )
     }
 
