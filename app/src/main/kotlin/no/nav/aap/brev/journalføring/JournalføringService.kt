@@ -20,6 +20,8 @@ import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
+import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
 
@@ -53,7 +55,7 @@ class JournalføringService(
 
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
 
-        val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now())
+        val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now(), bestilling.språk)
         val pdf = pdfGateway.genererPdf(pdfBrev)
 
         val journalføringData = JournalføringData(
@@ -108,6 +110,7 @@ class JournalføringService(
         saksnummer: Saksnummer,
         brev: Brev,
         dato: LocalDate,
+        språk: Språk,
     ): PdfBrev {
         return PdfBrev(
             mottaker = Mottaker(
@@ -116,7 +119,7 @@ class JournalføringService(
                 identType = IdentType.FNR
             ),
             saksnummer = saksnummer.nummer,
-            dato = dato,
+            dato = dato.formaterFullLengde(språk),
             overskrift = brev.overskrift,
             tekstbolker = brev.tekstbolker.map {
                 Tekstbolk(

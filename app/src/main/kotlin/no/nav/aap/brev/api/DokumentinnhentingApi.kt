@@ -20,6 +20,8 @@ import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingResponse
+import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedPost
 import tilgang.Operasjon
@@ -91,7 +93,7 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev 
             identType = IdentType.HPRNR
         ),
         saksnummer = request.saksnummer,
-        dato = request.dato,
+        dato = request.dato.formaterFullLengde(Språk.NB),
         overskrift = request.tittel,
         tekstbolker = listOf(
             Tekstbolk(

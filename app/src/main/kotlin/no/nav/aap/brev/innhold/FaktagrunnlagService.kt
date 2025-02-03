@@ -7,7 +7,10 @@ import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.kontrakt.BlokkInnhold
+import no.nav.aap.brev.kontrakt.BlokkInnhold.*
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class FaktagrunnlagService(
@@ -38,19 +41,20 @@ class FaktagrunnlagService(
             return
         }
 
-        val oppdatertBrev = fyllInnFaktagrunnlag(brev, faktagrunnlag)
+        val oppdatertBrev = fyllInnFaktagrunnlag(brev, faktagrunnlag, bestilling.språk)
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, oppdatertBrev)
     }
 
-    private fun fyllInnFaktagrunnlag(brev: Brev, faktagrunnlag: Set<Faktagrunnlag>): Brev =
+    private fun fyllInnFaktagrunnlag(brev: Brev, faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): Brev =
         brev.copy(tekstbolker = brev.tekstbolker.map { tekstbolk ->
             tekstbolk.copy(innhold = tekstbolk.innhold.map { innhold ->
                 innhold.copy(blokker = innhold.blokker.map { blokk ->
                     blokk.copy(innhold = blokk.innhold.map { blokkInnhold ->
                         mapBlokkInnholdTilTekst(
                             blokkInnhold,
-                            faktagrunnlag
+                            faktagrunnlag,
+                            språk
                         )
                     })
                 })
@@ -58,15 +62,17 @@ class FaktagrunnlagService(
         })
 
 
-
-
-    private fun mapBlokkInnholdTilTekst(blokkInnhold: BlokkInnhold, faktagrunnlag: Set<Faktagrunnlag>): BlokkInnhold =
+    private fun mapBlokkInnholdTilTekst(
+        blokkInnhold: BlokkInnhold,
+        faktagrunnlag: Set<Faktagrunnlag>,
+        språk: Språk
+    ): BlokkInnhold =
         when (blokkInnhold) {
             is BlokkInnhold.FormattertTekst -> blokkInnhold
             is BlokkInnhold.Faktagrunnlag ->
                 mapFaktagrunnlag(blokkInnhold)
                     ?.let { finnFaktagrunnlag(faktagrunnlag, it) }
-                    ?.let { faktagrunnlagTilFormatertTekst(it, blokkInnhold) }
+                    ?.let { faktagrunnlagTilFormatertTekst(it, blokkInnhold, språk) }
                     ?: blokkInnhold
         }
 
@@ -81,13 +87,21 @@ class FaktagrunnlagService(
 
     private fun faktagrunnlagTilFormatertTekst(
         faktagrunnlag: Faktagrunnlag,
-        blokkInnhold: BlokkInnhold.Faktagrunnlag
-    ): BlokkInnhold.FormattertTekst {
+        blokkInnhold: BlokkInnhold.Faktagrunnlag,
+        språk: Språk
+    ): FormattertTekst {
         return when (faktagrunnlag) {
             is Faktagrunnlag.Testverdi ->
-                BlokkInnhold.FormattertTekst(
+                FormattertTekst(
                     id = blokkInnhold.id,
                     tekst = faktagrunnlag.testString,
+                    formattering = emptyList(),
+                )
+
+            is Faktagrunnlag.FristDato11_7 ->
+                FormattertTekst(
+                    id = blokkInnhold.id,
+                    tekst = faktagrunnlag.frist.formaterFullLengde(språk),
                     formattering = emptyList(),
                 )
         }
