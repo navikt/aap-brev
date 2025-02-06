@@ -5,6 +5,7 @@ import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.*
+import no.nav.aap.behandlingsflyt.kontrakt.avklaringsbehov.SKRIV_BREV_KODE
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Saksnummer
@@ -13,25 +14,22 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
-import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
+import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
-import tilgang.Operasjon
 import javax.sql.DataSource
 
+val APPLICATION_ROLE = "brev"
 
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
-
-    val behandlingsflytAzp = requiredConfigForKey("integrasjon.behandlingsflyt.azp")
-
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
-        approvedApplications = setOf(behandlingsflytAzp),
-        applicationsOnly = true
+        applicationRole = APPLICATION_ROLE,
+        applicationsOnly = true,
     )
 
     route("/api") {
@@ -53,8 +51,10 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             route("/{referanse}") {
                 authorizedGet<BrevbestillingReferansePathParam, BrevbestillingResponse>(
                     AuthorizationParamPathConfig(
-                        approvedApplications = setOf(behandlingsflytAzp),
-                        applicationsOnly = true
+                        operasjon = Operasjon.SAKSBEHANDLE,
+                        applicationRole = APPLICATION_ROLE,
+                        applicationsOnly = true,
+                        avklaringsbehovKode = SKRIV_BREV_KODE
                     )
                 ) {
                     val brevbestilling = dataSource.transaction { connection ->

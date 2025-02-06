@@ -19,18 +19,16 @@ import no.nav.aap.brev.kontrakt.PdfBrev.FormattertTekst
 import no.nav.aap.brev.kontrakt.PdfBrev.Innhold
 import no.nav.aap.brev.kontrakt.PdfBrev.Mottaker
 import no.nav.aap.brev.kontrakt.PdfBrev.Tekstbolk
-import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
+import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedPost
-import tilgang.Operasjon
 
 fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 
-    val dokumentinnhentingAzp = requiredConfigForKey("integrasjon.dokumentinnhenting.azp")
 
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
-        approvedApplications = setOf(dokumentinnhentingAzp),
+        applicationRole = "dokumentinnhenting",
         applicationsOnly = true
     )
 
