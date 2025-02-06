@@ -25,7 +25,7 @@ import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
 import org.slf4j.MDC
-import tilgang.Operasjon
+import no.nav.aap.tilgang.Operasjon
 import javax.sql.DataSource
 
 

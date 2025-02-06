@@ -24,7 +24,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedPost
-import tilgang.Operasjon
+import no.nav.aap.tilgang.Operasjon
 
 fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 

@@ -5,10 +5,10 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import tilgang.BehandlingTilgangRequest
-import tilgang.JournalpostTilgangRequest
-import tilgang.SakTilgangRequest
-import tilgang.TilgangResponse
+import no.nav.aap.tilgang.BehandlingTilgangRequest
+import no.nav.aap.tilgang.JournalpostTilgangRequest
+import no.nav.aap.tilgang.SakTilgangRequest
+import no.nav.aap.tilgang.TilgangResponse
 
 fun Application.tilgangFake() {
     applicationFakeFelles("tilgang")
