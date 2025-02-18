@@ -7,8 +7,7 @@ import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.kontrakt.BlokkInnhold
-import no.nav.aap.brev.kontrakt.BlokkInnhold.*
-import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -29,7 +28,7 @@ class FaktagrunnlagService(
     fun hentOgFyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brev = checkNotNull(bestilling.brev)
-        val faktagrunnlagTyper = brev.finnFaktagrunnlag().mapNotNull { mapFaktagrunnlag(it) }.toSet()
+        val faktagrunnlagTyper = brev.kjenteFaktagrunnlag().map { it.tilFaktagrunnlagType() }.toSet()
 
         if (faktagrunnlagTyper.isEmpty()) {
             return
@@ -41,69 +40,70 @@ class FaktagrunnlagService(
             return
         }
 
-        val oppdatertBrev = fyllInnFaktagrunnlag(brev, faktagrunnlag, bestilling.språk)
+        val faktagrunnlagTekst = faktagrunnlagTilTekst(faktagrunnlag, bestilling.språk)
+        val oppdatertBrev = brev.endreBlokkInnhold { erstattFaktagrunnlagMedTekst(it, faktagrunnlagTekst) }
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, oppdatertBrev)
     }
 
-    private fun fyllInnFaktagrunnlag(brev: Brev, faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): Brev =
-        brev.copy(tekstbolker = brev.tekstbolker.map { tekstbolk ->
-            tekstbolk.copy(innhold = tekstbolk.innhold.map { innhold ->
-                innhold.copy(blokker = innhold.blokker.map { blokk ->
-                    blokk.copy(innhold = blokk.innhold.map { blokkInnhold ->
-                        mapBlokkInnholdTilTekst(
-                            blokkInnhold,
-                            faktagrunnlag,
-                            språk
-                        )
-                    })
-                })
-            })
-        })
-
-
-    private fun mapBlokkInnholdTilTekst(
+    private fun erstattFaktagrunnlagMedTekst(
         blokkInnhold: BlokkInnhold,
-        faktagrunnlag: Set<Faktagrunnlag>,
-        språk: Språk
+        faktagrunnlagTekst: Map<KjentFaktagrunnlag, String>,
     ): BlokkInnhold =
         when (blokkInnhold) {
             is BlokkInnhold.FormattertTekst -> blokkInnhold
             is BlokkInnhold.Faktagrunnlag ->
-                mapFaktagrunnlag(blokkInnhold)
-                    ?.let { finnFaktagrunnlag(faktagrunnlag, it) }
-                    ?.let { faktagrunnlagTilFormatertTekst(it, blokkInnhold, språk) }
+                blokkInnhold.kjentFaktagrunnlag()?.let { faktagrunnlagTekst[it] }
+                    ?.let { blokkInnhold.tilFormattertTekst(it) }
                     ?: blokkInnhold
         }
 
-    private fun mapFaktagrunnlag(blokkInnhold: BlokkInnhold.Faktagrunnlag): FaktagrunnlagType? =
-        FaktagrunnlagType.entries.find { it.name == blokkInnhold.tekniskNavn.uppercase() }
+    private fun faktagrunnlagTilTekst(faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): Map<KjentFaktagrunnlag, String> {
+        return buildMap {
+            faktagrunnlag.forEach {
+                when (it) {
+                    is Faktagrunnlag.Testverdi ->
+                        put(KjentFaktagrunnlag.TESTVERDI, it.testString)
 
-    private fun finnFaktagrunnlag(
-        faktagrunnlag: Set<Faktagrunnlag>,
-        faktagrunnlagType: FaktagrunnlagType
-    ): Faktagrunnlag? =
-        faktagrunnlag.find { it.type == faktagrunnlagType }
+                    is Faktagrunnlag.FristDato11_7 ->
+                        put(KjentFaktagrunnlag.FRIST_DATO_11_7, it.frist.formaterFullLengde(språk))
 
-    private fun faktagrunnlagTilFormatertTekst(
-        faktagrunnlag: Faktagrunnlag,
-        blokkInnhold: BlokkInnhold.Faktagrunnlag,
-        språk: Språk
-    ): FormattertTekst {
-        return when (faktagrunnlag) {
-            is Faktagrunnlag.Testverdi ->
-                FormattertTekst(
-                    id = blokkInnhold.id,
-                    tekst = faktagrunnlag.testString,
-                    formattering = emptyList(),
-                )
-
-            is Faktagrunnlag.FristDato11_7 ->
-                FormattertTekst(
-                    id = blokkInnhold.id,
-                    tekst = faktagrunnlag.frist.formaterFullLengde(språk),
-                    formattering = emptyList(),
-                )
+                    is Faktagrunnlag.GrunnlagBeregning -> {
+                        val sortert = it.inntekterPerÅr.sortedBy { it.år }
+                        sortert.getOrNull(0)?.also {
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL, it.år.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.toString())
+                        }
+                        sortert.getOrNull(1)?.also {
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL, it.år.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT, it.inntekt.toString())
+                        }
+                        sortert.getOrNull(2)?.also {
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL, it.år.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT, it.inntekt.toString())
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    fun KjentFaktagrunnlag.tilFaktagrunnlagType(): FaktagrunnlagType = when (this) {
+        KjentFaktagrunnlag.TESTVERDI -> FaktagrunnlagType.TESTVERDI
+        KjentFaktagrunnlag.FRIST_DATO_11_7 -> FaktagrunnlagType.FRIST_DATO_11_7
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL,
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL,
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL,
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT,
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT,
+        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT -> FaktagrunnlagType.GRUNNLAG_BEREGNING
+    }
+
+    private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
+        return FormattertTekst(
+            id = id,
+            tekst = tekst,
+            formattering = emptyList()
+        )
     }
 }

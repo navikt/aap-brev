@@ -1,7 +1,6 @@
 package no.nav.aap.brev.innhold
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -17,6 +16,9 @@ import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.Year
 
 class FaktagrunnlagServiceTest {
     companion object {
@@ -48,26 +50,62 @@ class FaktagrunnlagServiceTest {
                     vedlegg = emptySet(),
                 ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
+            faktagrunnlagForBehandling(
+                behandlingReferanse, setOf(
+                    Faktagrunnlag.Testverdi("Testverdi"),
+                    Faktagrunnlag.FristDato11_7(LocalDate.now()),
+                    Faktagrunnlag.GrunnlagBeregning(
+                        listOf(
+                            Faktagrunnlag.GrunnlagBeregning.InntektPerÅr(Year.of(2020), BigDecimal(123)),
+                            Faktagrunnlag.GrunnlagBeregning.InntektPerÅr(Year.of(2021), BigDecimal(123)),
+                        )
+                    )
+                )
+            )
 
             val ubehandletBrev =
-                brev(medFaktagrunnlag = listOf(FaktagrunnlagType.TESTVERDI.verdi, "ukjentFaktagrunnlag"))
+                brev(
+                    medFaktagrunnlag = listOf(
+                        KjentFaktagrunnlag.TESTVERDI.name,
+                        KjentFaktagrunnlag.FRIST_DATO_11_7.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT.name,
+                        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT.name,
+                        "ukjentFaktagrunnlag"
+                    )
+                )
 
             brevbestillingRepository.oppdaterBrev(referanse, ubehandletBrev)
 
             val hentetBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
 
             assertThat(
-                hentetBrev.finnFaktagrunnlag().map { it.tekniskNavn }
-            ).containsExactlyInAnyOrder(FaktagrunnlagType.TESTVERDI.verdi, "ukjentFaktagrunnlag")
+                hentetBrev.alleFaktagrunnlag().map { it.tekniskNavn }
+            ).containsExactlyInAnyOrder(
+                KjentFaktagrunnlag.TESTVERDI.name,
+                KjentFaktagrunnlag.FRIST_DATO_11_7.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT.name,
+                "ukjentFaktagrunnlag"
+            )
 
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
 
             assertThat(
-                oppdatertBrev.finnFaktagrunnlag().map { it.tekniskNavn }
-            ).containsExactlyInAnyOrder("ukjentFaktagrunnlag")
+                oppdatertBrev.alleFaktagrunnlag().map { it.tekniskNavn }
+            ).containsExactlyInAnyOrder(
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL.name,
+                KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT.name,
+                "ukjentFaktagrunnlag")
         }
     }
 }
