@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType.TESTVERDI
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.prosessering.ProsesseringStatus

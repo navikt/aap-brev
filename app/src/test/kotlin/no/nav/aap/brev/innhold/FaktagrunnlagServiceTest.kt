@@ -52,7 +52,6 @@ class FaktagrunnlagServiceTest {
 
             faktagrunnlagForBehandling(
                 behandlingReferanse, setOf(
-                    Faktagrunnlag.Testverdi("Testverdi"),
                     Faktagrunnlag.FristDato11_7(LocalDate.now()),
                     Faktagrunnlag.GrunnlagBeregning(
                         listOf(
@@ -66,7 +65,6 @@ class FaktagrunnlagServiceTest {
             val ubehandletBrev =
                 brev(
                     medFaktagrunnlag = listOf(
-                        KjentFaktagrunnlag.TESTVERDI.name,
                         KjentFaktagrunnlag.FRIST_DATO_11_7.name,
                         KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
                         KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL.name,
@@ -85,7 +83,6 @@ class FaktagrunnlagServiceTest {
             assertThat(
                 hentetBrev.alleFaktagrunnlag().map { it.tekniskNavn }
             ).containsExactlyInAnyOrder(
-                KjentFaktagrunnlag.TESTVERDI.name,
                 KjentFaktagrunnlag.FRIST_DATO_11_7.name,
                 KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
                 KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL.name,

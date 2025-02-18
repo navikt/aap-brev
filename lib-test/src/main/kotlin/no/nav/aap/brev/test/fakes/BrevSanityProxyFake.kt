@@ -19,7 +19,7 @@ import kotlin.Boolean
 import kotlin.String
 
 fun brev(
-    medFaktagrunnlag: List<String> = listOf(FaktagrunnlagType.TESTVERDI.verdi),
+    medFaktagrunnlag: List<String> = emptyList(),
     kanRedigeres: Boolean = true,
     erFullstendig: Boolean = false,
 ): Brev {
@@ -81,7 +81,7 @@ fun Application.brevSanityProxyFake() {
                 )
 
                 Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> brev(
-                    medFaktagrunnlag = listOf(FaktagrunnlagType.TESTVERDI.verdi),
+                    medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi),
                     kanRedigeres = false,
                     erFullstendig = true
                 )

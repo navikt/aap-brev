@@ -1,6 +1,6 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType.TESTVERDI
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.kontrakt.Brev
@@ -49,7 +49,7 @@ class FerdigstillValideringTest {
     fun `ferdigstilling feiler dersom brevet har faktagrunnlag`() {
         val referanse =
             gittBrevMed(
-                brev = brev(medFaktagrunnlag = listOf(TESTVERDI.verdi)),
+                brev = brev(medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi)),
                 status = ProsesseringStatus.BREVBESTILLING_LØST
             )
         assertAntallJobber(referanse, 1)
@@ -57,7 +57,7 @@ class FerdigstillValideringTest {
             ferdigstill(referanse)
         }
         assertThat(exception.message).endsWith(
-            "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${TESTVERDI.verdi}."
+            "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${FaktagrunnlagType.FRIST_DATO_11_7.verdi}."
         )
         assertAntallJobber(referanse, 1)
     }

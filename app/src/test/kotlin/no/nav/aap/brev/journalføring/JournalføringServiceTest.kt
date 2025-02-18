@@ -1,13 +1,11 @@
 package no.nav.aap.brev.journalføring
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
-import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomJournalpostId
@@ -51,7 +49,6 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
@@ -99,7 +96,7 @@ class JournalføringServiceTest {
                 saksnummer = randomSaksnummer(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
+                brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
             ).referanse
@@ -109,7 +106,7 @@ class JournalføringServiceTest {
             val exception = assertThrows<IllegalStateException> {
                 journalføringService.journalførBrevbestilling(referanse)
             }
-            assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag TESTVERDI.")
+            assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag FRIST_DATO_11_7.")
         }
     }
 
@@ -131,7 +128,6 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
@@ -171,7 +167,6 @@ class JournalføringServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
 

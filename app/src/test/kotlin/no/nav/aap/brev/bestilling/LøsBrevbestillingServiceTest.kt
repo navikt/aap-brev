@@ -44,7 +44,7 @@ class LøsBrevbestillingServiceTest {
     fun `gir status under arbeid for brev som har faktagrunnlag`() {
         val referanse = gittBestilling(
             brev = brev(
-                medFaktagrunnlag = listOf(FaktagrunnlagType.TESTVERDI.verdi),
+                medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi),
                 kanRedigeres = false,
                 erFullstendig = true,
             )

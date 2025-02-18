@@ -1,6 +1,5 @@
 package no.nav.aap.brev.distribusjon
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
@@ -9,7 +8,6 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.distribusjonBestillingIdForJournalpost
-import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomDistribusjonBestillingId
@@ -55,7 +53,6 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -90,7 +87,6 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -123,7 +119,6 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 
@@ -159,7 +154,6 @@ class DistribusjonServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
 

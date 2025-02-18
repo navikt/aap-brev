@@ -62,8 +62,6 @@ class FaktagrunnlagService(
         return buildMap {
             faktagrunnlag.forEach {
                 when (it) {
-                    is Faktagrunnlag.Testverdi ->
-                        put(KjentFaktagrunnlag.TESTVERDI, it.testString)
 
                     is Faktagrunnlag.FristDato11_7 ->
                         put(KjentFaktagrunnlag.FRIST_DATO_11_7, it.frist.formaterFullLengde(språk))
@@ -89,7 +87,6 @@ class FaktagrunnlagService(
     }
 
     fun KjentFaktagrunnlag.tilFaktagrunnlagType(): FaktagrunnlagType = when (this) {
-        KjentFaktagrunnlag.TESTVERDI -> FaktagrunnlagType.TESTVERDI
         KjentFaktagrunnlag.FRIST_DATO_11_7 -> FaktagrunnlagType.FRIST_DATO_11_7
         KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL,
         KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL,

@@ -15,6 +15,7 @@ import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 
 class ProsesserStegServiceTest {
 
@@ -45,7 +46,7 @@ class ProsesserStegServiceTest {
                 vedlegg = emptySet(),
             ).referanse
 
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
+            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.FristDato11_7(LocalDate.now())))
 
             prosesserStegService.prosesserBestilling(referanse)
 
@@ -106,8 +107,6 @@ class ProsesserStegServiceTest {
                         vedlegg = emptySet(),
                     ).referanse
             }
-
-            faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.Testverdi("Testverdi")))
 
             prosesserStegService.prosesserBestilling(referanse)
 
