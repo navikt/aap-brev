@@ -63,7 +63,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersjon")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersjon")
     testImplementation("org.assertj:assertj-core:3.27.3")
-    testImplementation("org.testcontainers:postgresql:1.20.4")
+    testImplementation("org.testcontainers:postgresql:1.20.5")
     constraints {
         implementation("org.apache.commons:commons-compress:1.27.1") {
             because("https://github.com/advisories/GHSA-4g9r-vxhx-9pgx")
