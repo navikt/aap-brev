@@ -1,7 +1,7 @@
 val ktorVersion = "3.1.1"
 val komponenterVersjon = "1.0.152"
 val behandlingsflytVersjon = "0.0.162"
-val tilgangVersjon = "1.0.7"
+val tilgangVersjon = "1.0.10"
 
 plugins {
     id("brev.conventions")
