@@ -85,6 +85,8 @@ fun Application.brevSanityProxyFake() {
                     kanRedigeres = false,
                     erFullstendig = true
                 )
+
+                Brevtype.FORVALTNINGSMELDING -> brev()
             }
             call.respond(brev)
         }
