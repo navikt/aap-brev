@@ -4,7 +4,7 @@ val ktorVersion = "3.1.1"
 val komponenterVersjon = "1.0.156"
 val behandlingsflytVersjon = "0.0.162"
 val tilgangVersjon = "1.0.10"
-val junitVersjon = "5.11.4"
+val junitVersjon = "5.12.0"
 
 plugins {
     id("brev.conventions")
@@ -69,6 +69,5 @@ dependencies {
             because("https://github.com/advisories/GHSA-4g9r-vxhx-9pgx")
         }
     }
-    testImplementation("io.mockk:mockk:1.13.16")
     testImplementation(project(":lib-test"))
 }
