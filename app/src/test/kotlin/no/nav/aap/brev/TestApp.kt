@@ -21,7 +21,7 @@ fun main() {
         jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
     }
 
-    val fakes = Fakes(azurePort = 8083)
+    Fakes.start(azurePort = 8083)
 
     val dbConfig = DbConfig(
         jdbcUrl = jdbcUrl,
@@ -32,7 +32,7 @@ fun main() {
         server(
             dbConfig = dbConfig,
         )
-        module(fakes)
+        module()
     }.start(wait = true)
 }
 
@@ -43,11 +43,10 @@ private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
     return postgres
 }
 
-private fun Application.module(fakes: Fakes) {
+private fun Application.module() {
     // Setter opp virtuell sandkasse lokalt
     monitor.subscribe(ApplicationStopped) { application ->
         application.environment.log.info("Server har stoppet")
-        fakes.close()
         // Release resources and unsubscribe from events
         application.monitor.unsubscribe(ApplicationStopped) {}
     }

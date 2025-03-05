@@ -16,21 +16,20 @@ import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class DistribusjonServiceTest {
 
     companion object {
-        private val fakes = Fakes()
         private val dataSource = InitTestDatabase.dataSource
 
+        @BeforeAll
         @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            fakes.close()
+        fun beforeAll() {
+            Fakes.start()
         }
     }
 

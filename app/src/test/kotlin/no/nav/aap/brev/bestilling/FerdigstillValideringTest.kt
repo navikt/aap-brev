@@ -15,7 +15,7 @@ import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -26,13 +26,12 @@ class FerdigstillValideringTest {
 
     companion object {
 
-        private val fakes = Fakes()
         private val dataSource = InitTestDatabase.dataSource
 
+        @BeforeAll
         @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            fakes.close()
+        fun beforeAll() {
+            Fakes.start()
         }
     }
 
@@ -64,9 +63,9 @@ class FerdigstillValideringTest {
 
     @ParameterizedTest
     @EnumSource(
-        ProsesseringStatus::class, names = ["STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET"]
+        ProsesseringStatus::class, names = ["STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "AVBRUTT"]
     )
-    fun `ferdigstill med status før BREVBESTILLING_LØST feiler`(status: ProsesseringStatus) {
+    fun `ferdigstill med status før BREVBESTILLING_LØST eller AVBRUTT feiler`(status: ProsesseringStatus) {
         val referanse = gittBrevMed(brev = brev(), status = status)
         assertAntallJobber(referanse, 1)
         val exception = assertThrows<ValideringsfeilException> {
@@ -81,7 +80,7 @@ class FerdigstillValideringTest {
     @ParameterizedTest
     @EnumSource(
         ProsesseringStatus::class, mode = Mode.EXCLUDE, names = [
-            "STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "BREVBESTILLING_LØST"
+            "STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "BREVBESTILLING_LØST", "AVBRUTT"
         ]
     )
     fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {

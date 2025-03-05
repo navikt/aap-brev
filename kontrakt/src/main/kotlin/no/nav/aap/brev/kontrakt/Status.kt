@@ -19,4 +19,9 @@ enum class Status {
      * behov for manuell redigering av saksbehandler.
      */
     FERDIGSTILT,
+
+    /**
+     * Brevbestillingen er manuelt avbrutt
+     */
+    AVBRUTT,
 }

@@ -3,7 +3,6 @@ package no.nav.aap.brev.bestilling
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrevtype
 import no.nav.aap.brev.test.randomSaksnummer
@@ -19,8 +18,10 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.EnumSource.Mode
 
-class OppdaterBestillingValideringTest {
+class AvbrytValideringTest {
+
     companion object {
+
         private val dataSource = InitTestDatabase.dataSource
 
         @BeforeAll
@@ -31,32 +32,28 @@ class OppdaterBestillingValideringTest {
     }
 
     @Test
-    fun `oppdaterer brev i riktig status`() {
-        dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
-
-            val referanse = brevbestillingService.opprettBestilling(
-                saksnummer = randomSaksnummer(),
-                behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = randomUnikReferanse(),
-                brevtype = randomBrevtype(),
-                språk = randomSpråk(),
-                vedlegg = emptySet(),
-            ).referanse
-
-            brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.BREVBESTILLING_LØST)
-
-            brevbestillingService.oppdaterBrev(referanse, brev())
-        }
+    fun `avbryt går igjennom fra gydlig status`() {
+        val referanse =
+            gittBrevMed(status = ProsesseringStatus.BREVBESTILLING_LØST)
+        avbryt(referanse)
+        assertStatus(referanse, ProsesseringStatus.AVBRUTT)
     }
 
     @ParameterizedTest
-    @EnumSource(
-        ProsesseringStatus::class, mode = Mode.EXCLUDE, names = ["BREVBESTILLING_LØST"]
-    )
-    fun `validering feiler ved forsøk på oppdatering av brev i feil status`(status: ProsesseringStatus) {
-        dataSource.transaction { connection ->
+    @EnumSource(ProsesseringStatus::class, mode = Mode.EXCLUDE, names = ["BREVBESTILLING_LØST"])
+    fun `avbryt feiler fra andre statuser enn BREVBESTILLING_LØST`(status: ProsesseringStatus) {
+        val referanse = gittBrevMed(status = status)
+        val exception = assertThrows<ValideringsfeilException> {
+            avbryt(referanse)
+        }
+        assertThat(exception.message).endsWith(
+            "Kan ikke avbryte brevbestilling med status $status"
+        )
+        assertStatus(referanse, status)
+    }
+
+    private fun gittBrevMed(status: ProsesseringStatus): BrevbestillingReferanse {
+        return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
@@ -71,13 +68,22 @@ class OppdaterBestillingValideringTest {
 
             brevbestillingRepository.oppdaterProsesseringStatus(referanse, status)
 
-            val exception = assertThrows<ValideringsfeilException> {
-                brevbestillingService.oppdaterBrev(referanse, brev())
-            }
-            assertThat(exception.message).endsWith(
-                "Forsøkte å oppdatere brev i bestilling med prosesseringStatus=$status"
-            )
+            referanse
+        }
+    }
 
+    private fun avbryt(referanse: BrevbestillingReferanse) {
+        dataSource.transaction { connection ->
+            BrevbestillingService.konstruer(connection).avbryt(referanse)
+        }
+    }
+
+    private fun assertStatus(referanse: BrevbestillingReferanse, forventetProsesseringStatus: ProsesseringStatus) {
+        return dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val bestilling = brevbestillingService.hent(referanse)
+
+            assertThat(bestilling.prosesseringStatus).isEqualTo(forventetProsesseringStatus)
         }
     }
 }

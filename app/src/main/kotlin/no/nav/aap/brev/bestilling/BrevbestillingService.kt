@@ -110,6 +110,16 @@ class BrevbestillingService(
         leggTilJobb(bestilling)
     }
 
+    fun avbryt(referanse: BrevbestillingReferanse) {
+        val bestilling = hent(referanse)
+
+        valider(kanBestillingAvbrytes(bestilling)) {
+            "Kan ikke avbryte brevbestilling med status ${bestilling.prosesseringStatus}"
+        }
+
+        brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
+    }
+
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
         if (vedlegg.isNotEmpty()) {
             vedlegg.forEach { (journalpostId, dokumentInfoId) ->
@@ -149,7 +159,13 @@ class BrevbestillingService(
 
     private fun erBestillingAlleredeFerdigstilt(bestilling: Brevbestilling): Boolean {
         return bestilling.prosesseringStatus != null &&
-                bestilling.prosesseringStatus >= ProsesseringStatus.BREV_FERDIGSTILT
+                bestilling.prosesseringStatus >= ProsesseringStatus.BREV_FERDIGSTILT &&
+                bestilling.prosesseringStatus != ProsesseringStatus.AVBRUTT
+    }
+
+    private fun kanBestillingAvbrytes(bestilling: Brevbestilling): Boolean {
+        return bestilling.prosesseringStatus != null &&
+                bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST
     }
 
     private fun validerFerdigstilling(bestilling: Brevbestilling) {

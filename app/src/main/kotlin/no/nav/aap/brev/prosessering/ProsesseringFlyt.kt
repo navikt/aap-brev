@@ -12,6 +12,9 @@ class ProsesseringFlyt private constructor(
         if (prosesseringStatus == null) {
             return rekkefølge
         }
+        if (prosesseringStatus == ProsesseringStatus.AVBRUTT) {
+            return emptyList()
+        }
         val stegForUtfall = utfallTilSteg[prosesseringStatus]
             ?: throw IllegalStateException("Uforventet oppslag av udefinert steg for status $prosesseringStatus")
         return rekkefølge.dropWhile { it != stegForUtfall }.drop(1)

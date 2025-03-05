@@ -31,7 +31,11 @@ class AppTest {
 
     companion object {
         private val postgres = postgreSQLContainer()
-        private val fakes = Fakes()
+
+        init {
+            Fakes.start()
+        }
+
         private val dbConfig = DbConfig(
             jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}",
         )
@@ -46,14 +50,13 @@ class AppTest {
             server(
                 dbConfig = dbConfig,
             )
-            module(fakes)
+            module()
         }.start()
 
         @JvmStatic
         @AfterAll
         fun afterAll() {
             server.stop()
-            fakes.close()
             postgres.close()
         }
     }
@@ -107,11 +110,10 @@ private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
     return postgres
 }
 
-private fun Application.module(fakes: Fakes) {
+private fun Application.module() {
     // Setter opp virtuell sandkasse lokalt
     monitor.subscribe(ApplicationStopped) { application ->
         application.environment.log.info("Server har stoppet")
-        fakes.close()
         // Release resources and unsubscribe from events
         application.monitor.unsubscribe(ApplicationStopped) {}
     }

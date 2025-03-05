@@ -13,20 +13,39 @@ import no.nav.aap.brev.test.fakes.safFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicBoolean
 
-class Fakes(azurePort: Int = 0) : AutoCloseable {
+object Fakes : AutoCloseable {
+
     private val log: Logger = LoggerFactory.getLogger(Fakes::class.java)
 
-    private val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
-    private val behandlingsflyt = embeddedServer(Netty, port = 0, module = { behandlingsflytFake() }).apply { start() }
-    private val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
-    private val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
-    private val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
-    private val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
-    private val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
-    private val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
+    private val started = AtomicBoolean(false)
+    private val servers = mutableListOf<EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>>()
 
-    init {
+    fun start(azurePort: Int = 0) {
+        if (started.get()) {
+            return
+        }
+        val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
+        val behandlingsflyt = embeddedServer(Netty, port = 0, module = { behandlingsflytFake() }).apply { start() }
+        val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
+        val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
+        val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
+        val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
+        val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
+        val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
+        servers.addAll(
+            listOf(
+                azure,
+                behandlingsflyt,
+                tilgang,
+                brevSanityProxy,
+                pdfGen,
+                dokarkiv,
+                dokdistfordeling,
+                saf,
+            )
+        )
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
         // Azure
         System.setProperty("azure.openid.config.token.endpoint", "http://localhost:${azure.port()}/token")
@@ -66,14 +85,9 @@ class Fakes(azurePort: Int = 0) : AutoCloseable {
         System.setProperty("integrasjon.saf.scope", "scope")
     }
 
+
     override fun close() {
-        azure.stop(0L, 0L)
-        behandlingsflyt.stop(0L, 0L)
-        tilgang.stop(0L, 0L)
-        brevSanityProxy.stop(0L, 0L)
-        pdfGen.stop(0L, 0L)
-        dokarkiv.stop(0L, 0L)
-        dokdistfordeling.stop(0L, 0L)
+        servers.forEach { it.stop(0L, 0L) }
     }
 
     private fun EmbeddedServer<*, *>.port(): Int =

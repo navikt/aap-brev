@@ -99,6 +99,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         }
                     }
                 }
+                route("/avbryt") {
+                    authorizedPost<BrevbestillingReferansePathParam, String, Unit>(authorizationBodyPathConfig) { referanse, _ ->
+                        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
+                            dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection)
+                                    .avbryt(referanse.brevbestillingReferanse)
+                            }
+                            respond("{}", HttpStatusCode.Accepted)
+                        }
+                    }
+                }
             }
         }
         route("/ferdigstill") {

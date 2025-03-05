@@ -10,5 +10,6 @@ enum class ProsesseringStatus {
     JOURNALPOST_VEDLEGG_TILKNYTTET,
     JOURNALPOST_FERDIGSTILT,
     DISTRIBUERT,
-    FERDIG
+    FERDIG,
+    AVBRUTT
 }

@@ -29,9 +29,9 @@ class BehandlingsflytGateway : BestillerGateway, PersoninfoGateway, HentFagtagru
 
     override fun oppdaterBrevStatus(brevbestilling: Brevbestilling, status: Status) {
         val brevbestillingLøsningStatus = when (status) {
-            Status.REGISTRERT -> return
             Status.UNDER_ARBEID -> BrevbestillingLøsningStatus.KLAR_FOR_EDITERING
             Status.FERDIGSTILT -> BrevbestillingLøsningStatus.AUTOMATISK_FERDIGSTILT
+            Status.REGISTRERT, Status.AVBRUTT -> throw IllegalStateException("Uforventet status $status")
         }
 
         val request = LøsBrevbestillingDto(

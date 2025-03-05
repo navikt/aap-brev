@@ -92,6 +92,23 @@ class ProsesseringFlytTest {
     }
 
     @Test
+    fun `fra status der status avbrutt gir ingen steg`() {
+        val flyt = ProsesseringFlyt.Builder()
+            .med(steg = StarterSteg, utfall = ProsesseringStatus.STARTET)
+            .med(steg = HentInnholdSteg, utfall = ProsesseringStatus.INNHOLD_HENTET)
+            .med(steg = HentFaktagrunnlagSteg, utfall = ProsesseringStatus.FAKTAGRUNNLAG_HENTET)
+            .med(steg = FerdigstillBrevSteg, utfall = ProsesseringStatus.BREV_FERDIGSTILT)
+            .med(steg = JournalførBrevSteg, utfall = ProsesseringStatus.JOURNALFORT)
+            .med(steg = DistribuerJournalpostSteg, utfall = ProsesseringStatus.DISTRIBUERT)
+            .med(steg = FerdigSteg, utfall = ProsesseringStatus.FERDIG)
+            .build()
+
+        assertThat(
+            flyt.fraStatus(ProsesseringStatus.AVBRUTT)
+        ).isEmpty()
+    }
+
+    @Test
     fun `steg til utfall gir definerte utfall for steg`() {
         val flyt = ProsesseringFlyt.Builder()
             .med(steg = StarterSteg, utfall = ProsesseringStatus.STARTET)
