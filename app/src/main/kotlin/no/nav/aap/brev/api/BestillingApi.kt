@@ -13,6 +13,7 @@ import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
+import no.nav.aap.brev.kontrakt.AvbrytBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
@@ -99,17 +100,6 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         }
                     }
                 }
-                route("/avbryt") {
-                    authorizedPost<BrevbestillingReferansePathParam, String, Unit>(authorizationBodyPathConfig) { referanse, _ ->
-                        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
-                            dataSource.transaction { connection ->
-                                BrevbestillingService.konstruer(connection)
-                                    .avbryt(referanse.brevbestillingReferanse)
-                            }
-                            respond("{}", HttpStatusCode.Accepted)
-                        }
-                    }
-                }
             }
         }
         route("/ferdigstill") {
@@ -118,6 +108,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     dataSource.transaction { connection ->
                         BrevbestillingService.konstruer(connection)
                             .ferdigstill(BrevbestillingReferanse(request.referanse))
+                    }
+                    respond("{}", HttpStatusCode.Accepted)
+                }
+            }
+        }
+        route("/avbryt") {
+            authorizedPost<Unit, String, AvbrytBrevbestillingRequest>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
+                    dataSource.transaction { connection ->
+                        BrevbestillingService.konstruer(connection)
+                            .avbryt(BrevbestillingReferanse(request.referanse))
                     }
                     respond("{}", HttpStatusCode.Accepted)
                 }

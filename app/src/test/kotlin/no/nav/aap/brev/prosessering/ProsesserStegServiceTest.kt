@@ -105,7 +105,7 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val referanse = opprettBestilling()
+            val referanse = opprettBestilling(brevtype = Brevtype.INNVILGELSE)
             prosesserStegService.prosesserBestilling(referanse)
 
             assertEquals(
