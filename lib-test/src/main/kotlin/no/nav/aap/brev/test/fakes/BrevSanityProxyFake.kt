@@ -74,6 +74,7 @@ fun Application.brevSanityProxyFake() {
             val brev = when (brevtype) {
                 Brevtype.INNVILGELSE -> brev()
                 Brevtype.AVSLAG -> brev()
+                Brevtype.VEDTAK_ENDRING -> brev()
                 Brevtype.VARSEL_OM_BESTILLING -> brev(
                     medFaktagrunnlag = emptyList(),
                     kanRedigeres = false,

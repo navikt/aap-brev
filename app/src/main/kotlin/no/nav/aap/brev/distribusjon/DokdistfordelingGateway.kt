@@ -40,7 +40,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
 
     private fun utledDistribusjonstype(brevtype: Brevtype): Distribusjonstype {
         return when (brevtype) {
-            Brevtype.INNVILGELSE, Brevtype.AVSLAG -> Distribusjonstype.VEDTAK
+            Brevtype.INNVILGELSE, Brevtype.AVSLAG, Brevtype.VEDTAK_ENDRING -> Distribusjonstype.VEDTAK
             Brevtype.VARSEL_OM_BESTILLING -> Distribusjonstype.ANNET
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> Distribusjonstype.VIKTIG // TODO, er det riktig?
             Brevtype.FORVALTNINGSMELDING -> Distribusjonstype.ANNET // TODO, er det riktig?
