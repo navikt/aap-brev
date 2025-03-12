@@ -71,7 +71,7 @@ spec:
             roles:
               - "dokumentinnhenting-api"
         - application: azure-token-generator
-          namespace: aura
+          namespace: nais
           cluster: dev-gcp
           permissions:
             roles:
@@ -128,4 +128,4 @@ spec:
       value: api://dev-fss.teamdokumenthandtering.saf/.default
 
     - name: INTEGRASJON_AZURE_TOKEN_GENERATOR_AZP
-      value: dev-gcp:aura:azure-token-generator
+      value: dev-gcp:nais:azure-token-generator
