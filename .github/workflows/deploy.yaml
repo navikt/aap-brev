@@ -20,7 +20,7 @@ jobs:
       jdk: 21
       app-navn: brev
       publish-typescript: true
-      openapi-test-navn: "*AppTest*.*openapi*"
+      generate-openapi-command: gradle genererOpenApi
 
   publiser-kontrakt:
     needs: build

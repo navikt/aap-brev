@@ -36,13 +36,6 @@ fun main() {
     }.start(wait = true)
 }
 
-private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
-    val postgres = PostgreSQLContainer<Nothing>("postgres:16")
-    postgres.waitingFor(HostPortWaitStrategy().withStartupTimeout(Duration.of(60L, ChronoUnit.SECONDS)))
-    postgres.start()
-    return postgres
-}
-
 private fun Application.module() {
     // Setter opp virtuell sandkasse lokalt
     monitor.subscribe(ApplicationStopped) { application ->

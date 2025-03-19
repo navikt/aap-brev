@@ -26,6 +26,12 @@ tasks.register<JavaExec>("runTestApp") {
     mainClass.set("no.nav.aap.brev.TestAppKt")
 }
 
+tasks.register<JavaExec>("genererOpenApi") {
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("no.nav.aap.brev.GenererOpenApiJsonKt")
+    workingDir = rootDir
+}
+
 dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")

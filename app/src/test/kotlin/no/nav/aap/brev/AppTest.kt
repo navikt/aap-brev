@@ -11,7 +11,6 @@ import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.post
-import no.nav.aap.komponenter.httpklient.httpclient.request.GetRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import org.junit.jupiter.api.AfterAll
@@ -19,13 +18,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
-import java.io.BufferedWriter
-import java.io.FileWriter
 import java.net.URI
-import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 
 class AppTest {
 
@@ -78,32 +74,9 @@ class AppTest {
             )
         }
     }
-
-    @Test
-    fun `skal lager openapi som fil`() {
-        val openApiDoc =
-            checkNotNull(
-                restClient.get<String>(
-                    URI.create("http://localhost:8080/openapi.json"),
-                    GetRequest()
-                ) { body, _ ->
-                    String(body.readAllBytes(), StandardCharsets.UTF_8)
-                }
-            )
-
-        try {
-            val writer = BufferedWriter(FileWriter("../openapi.json"));
-            writer.write(openApiDoc);
-
-            writer.close();
-        } catch (e: Exception) {
-            throw e
-        }
-
-    }
 }
 
-private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
+internal fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
     val postgres = PostgreSQLContainer<Nothing>("postgres:16")
     postgres.waitingFor(HostPortWaitStrategy().withStartupTimeout(Duration.of(60L, ChronoUnit.SECONDS)))
     postgres.start()
@@ -112,9 +85,9 @@ private fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
 
 private fun Application.module() {
     // Setter opp virtuell sandkasse lokalt
-    monitor.subscribe(ApplicationStopped) { application ->
-        application.environment.log.info("Server har stoppet")
+    monitor.subscribe(ApplicationStopPreparing) { application ->
+        environment.log.info("Server har stoppet")
         // Release resources and unsubscribe from events
-        application.monitor.unsubscribe(ApplicationStopped) {}
+        monitor.unsubscribe(ApplicationStopped) {}
     }
 }
