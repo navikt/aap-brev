@@ -1,0 +1,117 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: brev
+  namespace: aap
+  labels:
+    team: aap
+    sub: brev
+spec:
+  image: {{image}}
+  replicas:
+    cpuThresholdPercentage: 90
+    max: 2
+    min: 1
+  resources:
+    limits:
+      memory: 1024Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: "java"
+    logging:
+        destinations:
+            - id: elastic
+            - id: loki
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_16
+        tier: db-custom-1-3840
+        diskAutoresize: true
+        highAvailability: true
+        pointInTimeRecovery:
+        databases:
+          - name: brev
+  liveness:
+    path: /actuator/live
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  readiness:
+    path: /actuator/ready
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  prometheus:
+    enabled: true
+    path: /actuator/metrics
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+  secureLogs:
+    enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: behandlingsflyt
+          permissions:
+            roles:
+              - "bestill-brev"
+              - "hent-brev"
+        - application: paw-patrol
+        - application: dokumentinnhenting
+          permissions:
+            roles:
+              - "dokumentinnhenting-api"
+    outbound:
+      external:
+        - host: dokarkiv.prod-fss-pub.nais.io
+        - host: dokdistfordeling.prod-fss-pub.nais.io
+        - host: saf.prod-fss-pub.nais.io
+      rules:
+        - application: behandlingsflyt
+        - application: brev-sanity-proxy
+        - application: saksbehandling-pdfgen
+
+  env:
+    - name: INTEGRASJON_TILGANG_URL
+      value: http://tilgang
+    - name: INTEGRASJON_TILGANG_SCOPE
+      value: api://prod-gcp.aap.tilgang/.default
+
+    - name: INTEGRASJON_BEHANDLINGSFLYT_URL
+      value: http://behandlingsflyt
+    - name: INTEGRASJON_BEHANDLINGSFLYT_SCOPE
+      value: api://prod-gcp.aap.behandlingsflyt/.default
+    - name: INTEGRASJON_BEHANDLINGSFLYT_AZP
+      value: prod-gcp:aap:behandlingsflyt
+
+    - name: INTEGRASJON_DOKUMENTINNHENTING_AZP
+      value: prod-gcp:aap:dokumentinnhenting
+
+    - name: INTEGRASJON_BREV_SANITY_PROXY_URL
+      value: http://brev-sanity-proxy
+    - name: INTEGRASJON_BREV_SANITY_PROXY_SCOPE
+      value: api://prod-gcp.aap.brev-sanity-proxy/.default
+
+    - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL
+      value: http://saksbehandling-pdfgen
+    - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE
+      value: api://prod-gcp.aap.saksbehandling-pdfgen/.default
+
+    - name: INTEGRASJON_DOKARKIV_URL
+      value: https://dokarkiv.prod-fss-pub.nais.io
+    - name: INTEGRASJON_DOKARKIV_SCOPE
+      value: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
+
+    - name: INTEGRASJON_DOKDISTFORDELING_URL
+      value: https://dokdistfordeling.prod-fss-pub.nais.io
+
+    - name: INTEGRASJON_SAF_URL_GRAPHQL
+      value: https://saf.prod-fss-pub.nais.io/graphql
+    - name: INTEGRASJON_SAF_SCOPE
+      value: api://prod-fss.teamdokumenthandtering.saf/.default

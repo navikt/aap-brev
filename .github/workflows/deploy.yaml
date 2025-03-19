@@ -83,4 +83,15 @@ jobs:
     secrets: inherit
     with:
       cluster: dev-gcp
-      manifest: .nais/app.yaml
+      manifest: .nais/dev.yaml
+
+  deploy-prod:
+    needs: [ build,deploy-dev ]
+    permissions:
+      contents: read
+      id-token: write
+    uses: navikt/aap-workflows/.github/workflows/deploy.yml@main
+    secrets: inherit
+    with:
+      cluster: prod-gcp
+      manifest: .nais/prod.yaml

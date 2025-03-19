@@ -8,15 +8,13 @@ metadata:
     sub: brev
 spec:
   image: {{image}}
-  # Setter utrullingsstrategi til Recreate for test. Settes til default før prodsetting
-  #  strategy:
-  #    type: Recreate
+  {{#if isdev}}
   ingresses:
     - "https://aap-brev.intern.dev.nav.no"
+  {{/if}}
   replicas:
     cpuThresholdPercentage: 90
-    disableAutoScaling: true
-    max: 1
+    max: 2
     min: 1
   resources:
     limits:
@@ -35,7 +33,10 @@ spec:
   gcp:
     sqlInstances:
       - type: POSTGRES_16
-        tier: db-f1-micro
+        tier: db-custom-1-3840
+        diskAutoresize: true
+        highAvailability: true
+        pointInTimeRecovery:
         databases:
           - name: brev
   liveness:
