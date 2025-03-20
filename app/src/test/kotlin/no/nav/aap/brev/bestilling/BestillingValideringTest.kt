@@ -7,6 +7,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomDokumentInfoId
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
@@ -34,6 +35,7 @@ class BestillingValideringTest {
     @Test
     fun `bestilling går igjennom dersom ingen valideringsfeil`() {
         val saksnummer = randomSaksnummer()
+        val brukerIdent = randomBrukerIdent()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
@@ -46,6 +48,7 @@ class BestillingValideringTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
+                brukerIdent = brukerIdent,
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -210,6 +213,7 @@ class BestillingValideringTest {
             val exception = assertThrows<ValideringsfeilException> {
                 brevbestillingService.opprettBestilling(
                     saksnummer = saksnummer,
+                    brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = randomBehandlingReferanse(),
                     unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,

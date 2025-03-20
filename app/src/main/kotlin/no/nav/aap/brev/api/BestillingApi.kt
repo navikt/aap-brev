@@ -46,6 +46,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         val bestillingResultat = dataSource.transaction { connection ->
                             BrevbestillingService.konstruer(connection).opprettBestilling(
                                 saksnummer = Saksnummer(request.saksnummer),
+                                brukerIdent = request.brukerIdent,
                                 behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
                                 unikReferanse = UnikReferanse(request.unikReferanse),
                                 brevtype = request.brevtype,
@@ -107,7 +108,10 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
                     dataSource.transaction { connection ->
                         BrevbestillingService.konstruer(connection)
-                            .ferdigstill(BrevbestillingReferanse(request.referanse))
+                            .ferdigstill(
+                                referanse = BrevbestillingReferanse(request.referanse),
+                                signaturer = request.signaturer
+                            )
                     }
                     respond("{}", HttpStatusCode.Accepted)
                 }

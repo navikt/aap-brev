@@ -10,6 +10,7 @@ import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.distribusjonBestillingIdForJournalpost
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
@@ -45,6 +46,7 @@ class DistribusjonServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -79,6 +81,7 @@ class DistribusjonServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -111,6 +114,7 @@ class DistribusjonServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -146,6 +150,7 @@ class DistribusjonServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,

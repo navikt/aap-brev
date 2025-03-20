@@ -10,6 +10,7 @@ import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrevtype
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
@@ -136,6 +137,7 @@ class ProsesserStegServiceTest {
             BrevbestillingService.konstruer(connection)
                 .opprettBestilling(
                     saksnummer = randomSaksnummer(),
+                    brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = behandlingReferanse,
                     unikReferanse = randomUnikReferanse(),
                     brevtype = brevtype,

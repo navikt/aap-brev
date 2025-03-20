@@ -5,6 +5,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomDokumentInfoId
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
@@ -33,6 +34,7 @@ class BestillingDuplikathåndteringTest {
     @Test
     fun `håndterer duplikat bestilling`() {
         val saksnummer = randomSaksnummer()
+        val brukerIdent = randomBrukerIdent()
         val behandlingReferanse = randomBehandlingReferanse()
         val unikReferanse = randomUnikReferanse()
         val dokumentInfoId = randomDokumentInfoId()
@@ -46,6 +48,7 @@ class BestillingDuplikathåndteringTest {
 
             val resultatFørste = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
+                brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
@@ -57,6 +60,7 @@ class BestillingDuplikathåndteringTest {
 
             val resultatAndre = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
+                brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
@@ -71,6 +75,7 @@ class BestillingDuplikathåndteringTest {
     @Test
     fun `feiler dersom bestilling med lik unik referanse ikke er identisk med opprinnelig bestilling`() {
         val saksnummer = randomSaksnummer()
+        val brukerIdent = randomBrukerIdent()
         val behandlingReferanse = randomBehandlingReferanse()
         val unikReferanse = randomUnikReferanse()
         val dokumentInfoId = randomDokumentInfoId()
@@ -85,6 +90,7 @@ class BestillingDuplikathåndteringTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = saksnummer,
+                brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
@@ -98,6 +104,11 @@ class BestillingDuplikathåndteringTest {
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
             bestilling = bestilling,
             saksnummer = randomSaksnummer(),
+        )
+
+        assertThrowsVedLikUnikReferanseMenUlikBestilling(
+            bestilling = bestilling,
+            brukerIdent = randomBrukerIdent(),
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
@@ -124,6 +135,7 @@ class BestillingDuplikathåndteringTest {
     fun assertThrowsVedLikUnikReferanseMenUlikBestilling(
         bestilling: Brevbestilling,
         saksnummer: Saksnummer = bestilling.saksnummer,
+        brukerIdent: String? = bestilling.brukerIdent,
         behandlingReferanse: BehandlingReferanse = bestilling.behandlingReferanse,
         brevtype: Brevtype = bestilling.brevtype,
         språk: Språk = bestilling.språk,
@@ -131,6 +143,7 @@ class BestillingDuplikathåndteringTest {
     ) {
         val endretBestilling = bestilling.copy(
             saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
             behandlingReferanse = behandlingReferanse,
             brevtype = brevtype,
             språk = språk,
@@ -142,6 +155,7 @@ class BestillingDuplikathåndteringTest {
             val exception = assertThrows<IllegalStateException> {
                 brevbestillingService.opprettBestilling(
                     saksnummer = endretBestilling.saksnummer,
+                    brukerIdent = endretBestilling.brukerIdent,
                     behandlingReferanse = endretBestilling.behandlingReferanse,
                     unikReferanse = endretBestilling.unikReferanse,
                     brevtype = endretBestilling.brevtype,

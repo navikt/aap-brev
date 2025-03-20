@@ -6,6 +6,7 @@ import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
@@ -35,6 +36,7 @@ class BrevbestillingService(
 
     fun opprettBestilling(
         saksnummer: Saksnummer,
+        brukerIdent: String?,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -46,6 +48,7 @@ class BrevbestillingService(
             if (erDuplikatBestilling(
                     eksisterendeBestilling = eksisterendeBestilling,
                     saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
                     behandlingReferanse = behandlingReferanse,
                     unikReferanse = unikReferanse,
                     brevtype = brevtype,
@@ -68,6 +71,7 @@ class BrevbestillingService(
 
         val bestilling = brevbestillingRepository.opprettBestilling(
             saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
             behandlingReferanse = behandlingReferanse,
             unikReferanse = unikReferanse,
             brevtype = brevtype,
@@ -97,7 +101,10 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 
-    fun ferdigstill(referanse: BrevbestillingReferanse) {
+    fun ferdigstill(
+        referanse: BrevbestillingReferanse,
+        signaturer: List<Signatur>?
+    ) {
         val bestilling = hent(referanse)
 
         if (erBestillingAlleredeFerdigstilt(bestilling)) {
@@ -106,6 +113,10 @@ class BrevbestillingService(
         }
 
         validerFerdigstilling(bestilling)
+
+        if (signaturer != null) {
+            brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
+        }
 
         leggTilJobb(bestilling)
     }
@@ -196,6 +207,7 @@ class BrevbestillingService(
     private fun erDuplikatBestilling(
         eksisterendeBestilling: Brevbestilling,
         saksnummer: Saksnummer,
+        brukerIdent: String?,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -203,6 +215,7 @@ class BrevbestillingService(
         vedlegg: Set<Vedlegg>,
     ): Boolean {
         return eksisterendeBestilling.saksnummer == saksnummer &&
+                eksisterendeBestilling.brukerIdent == brukerIdent &&
                 eksisterendeBestilling.behandlingReferanse == behandlingReferanse &&
                 eksisterendeBestilling.unikReferanse == unikReferanse &&
                 eksisterendeBestilling.brevtype == brevtype &&

@@ -53,7 +53,13 @@ class JournalføringService(
             "Kan ikke journalføre brev for bestilling som allerede er journalført."
         }
 
-        val personinfo = personinfoGateway.hentPersoninfo(bestilling.saksnummer)
+
+        val personinfo =
+            if (bestilling.brukerIdent != null) {
+                personinfoGateway.hentPersoninfo(bestilling.saksnummer) // TODO hent fra PDL
+            } else {
+                personinfoGateway.hentPersoninfo(bestilling.saksnummer)
+            }
 
         val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now(), bestilling.språk)
         val pdf = pdfGateway.genererPdf(pdfBrev)

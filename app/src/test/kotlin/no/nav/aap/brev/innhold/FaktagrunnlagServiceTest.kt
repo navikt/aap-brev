@@ -9,6 +9,7 @@ import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -42,6 +43,7 @@ class FaktagrunnlagServiceTest {
             val referanse =
                 brevbestillingService.opprettBestilling(
                     saksnummer = randomSaksnummer(),
+                    brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = behandlingReferanse,
                     unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,

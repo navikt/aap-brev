@@ -8,6 +8,7 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
@@ -18,6 +19,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun opprettBestilling(
         saksnummer: Saksnummer,
+        brukerIdent: String?,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -26,19 +28,20 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
     ): Brevbestilling {
         val referanse: UUID = UUID.randomUUID()
         val query = """
-            INSERT INTO BREVBESTILLING (SAKSNUMMER, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
-                VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO BREVBESTILLING (SAKSNUMMER, BRUKER_IDENT, REFERANSE, BEHANDLING_REFERANSE, SPRAK, BREVTYPE, UNIK_REFERANSE)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
 
         val id =
             connection.executeReturnKey(query) {
                 setParams {
                     setString(1, saksnummer.nummer)
-                    setUUID(2, referanse)
-                    setUUID(3, behandlingReferanse.referanse)
-                    setEnumName(4, språk)
-                    setEnumName(5, brevtype)
-                    setString(6, unikReferanse.referanse)
+                    setString(2, brukerIdent)
+                    setUUID(3, referanse)
+                    setUUID(4, behandlingReferanse.referanse)
+                    setEnumName(5, språk)
+                    setEnumName(6, brevtype)
+                    setString(7, unikReferanse.referanse)
                 }
             }
 
@@ -89,27 +92,13 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
     private fun mapBestilling(row: Row): Brevbestilling {
         val id = BrevbestillingId(row.getLong("ID"))
 
-        val vedleggQuery = """
-            SELECT * FROM VEDLEGG WHERE BREVBESTILLING_ID = ?
-        """.trimIndent()
-
-        val vedlegg = connection.queryList(vedleggQuery) {
-            setParams {
-                setLong(1, id.id)
-            }
-            setRowMapper {
-                Vedlegg(
-                    journalpostId = JournalpostId(it.getString("JOURNALPOST_ID")),
-                    dokumentInfoId = DokumentInfoId(it.getString("DOKUMENT_INFO_ID")),
-                )
-            }
-        }.toList()
-
         return Brevbestilling(
             id = id,
             saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
             referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
             brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
+            brukerIdent = row.getStringOrNull("BRUKER_IDENT"),
+            signaturer = hentSignaturer(id),
             opprettet = row.getLocalDateTime("OPPRETTET_TID"),
             oppdatert = row.getLocalDateTime("OPPDATERT_TID"),
             behandlingReferanse = BehandlingReferanse(row.getUUID("BEHANDLING_REFERANSE")),
@@ -121,8 +110,44 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             journalpostFerdigstilt = row.getBooleanOrNull("JOURNALPOST_FERDIGSTILT"),
             distribusjonBestillingId = row.getStringOrNull("DISTRIBUSJON_BESTILLING_ID")
                 ?.let { DistribusjonBestillingId(it) },
-            vedlegg = vedlegg.toSet(),
+            vedlegg = hentVedlegg(id).toSet(),
         )
+    }
+
+    private fun hentSignaturer(brevbestillingId: BrevbestillingId): List<Signatur> {
+        val signaturQuery = """
+            SELECT * FROM SIGNATUR WHERE BREVBESTILLING_ID = ?
+        """.trimIndent()
+
+        return connection.queryList(signaturQuery) {
+            setParams {
+                setLong(1, brevbestillingId.id)
+            }
+            setRowMapper {
+                Signatur(
+                    navIdent = it.getString("NAV_IDENT"),
+                    rolle = it.getEnum("ROLLE"),
+                )
+            }
+        }
+    }
+
+    private fun hentVedlegg(brevbestillingId: BrevbestillingId): List<Vedlegg> {
+        val vedleggQuery = """
+            SELECT * FROM VEDLEGG WHERE BREVBESTILLING_ID = ?
+        """.trimIndent()
+
+        return connection.queryList(vedleggQuery) {
+            setParams {
+                setLong(1, brevbestillingId.id)
+            }
+            setRowMapper {
+                Vedlegg(
+                    journalpostId = JournalpostId(it.getString("JOURNALPOST_ID")),
+                    dokumentInfoId = DokumentInfoId(it.getString("DOKUMENT_INFO_ID")),
+                )
+            }
+        }
     }
 
     override fun oppdaterBrev(
@@ -159,6 +184,20 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             }
             setResultValidator {
                 require(1 == it)
+            }
+        }
+    }
+
+    override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<Signatur>) {
+        val query = """
+            INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, ROLLE) VALUES (?, ?, ?)
+        """.trimIndent()
+
+        connection.executeBatch(query, signaturer) {
+            setParams {
+                setLong(1, brevbestillingId.id)
+                setString(2, it.navIdent)
+                setString(3, it.rolle.name)
             }
         }
     }

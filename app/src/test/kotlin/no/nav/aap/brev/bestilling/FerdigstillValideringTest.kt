@@ -10,6 +10,7 @@ import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -98,6 +99,7 @@ class FerdigstillValideringTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -117,7 +119,7 @@ class FerdigstillValideringTest {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            brevbestillingService.ferdigstill(referanse)
+            brevbestillingService.ferdigstill(referanse, null)
         }
     }
 

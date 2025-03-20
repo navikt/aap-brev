@@ -7,6 +7,7 @@ import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
@@ -65,6 +66,7 @@ class AppTest {
                 request = PostRequest(
                     body = BestillBrevRequest(
                         saksnummer = "SAK123",
+                        brukerIdent = randomBrukerIdent(),
                         behandlingReferanse = UUID.randomUUID(),
                         brevtype = Brevtype.INNVILGELSE,
                         unikReferanse = UUID.randomUUID().toString(),

@@ -8,6 +8,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
@@ -41,6 +42,7 @@ class JournalføringServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -70,6 +72,7 @@ class JournalføringServiceTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -93,6 +96,7 @@ class JournalføringServiceTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
@@ -120,6 +124,7 @@ class JournalføringServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
@@ -159,6 +164,7 @@ class JournalføringServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,

@@ -7,6 +7,7 @@ import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrevtype
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
@@ -83,6 +84,7 @@ class LøsBrevbestillingServiceTest {
 
             val referanse = brevbestillingService.opprettBestilling(
                 saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = randomBrevtype(),
