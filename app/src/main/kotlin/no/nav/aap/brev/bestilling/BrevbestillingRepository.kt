@@ -6,10 +6,12 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Signatur
 
 interface BrevbestillingRepository {
     fun opprettBestilling(
         saksnummer: Saksnummer,
+        brukerIdent: String?,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -30,6 +32,8 @@ interface BrevbestillingRepository {
         referanse: BrevbestillingReferanse,
         prosesseringStatus: ProsesseringStatus,
     )
+
+    fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<Signatur>)
 
     fun lagreJournalpost(id: BrevbestillingId, journalpostId: JournalpostId, journalpostFerdigstilt: Boolean)
 

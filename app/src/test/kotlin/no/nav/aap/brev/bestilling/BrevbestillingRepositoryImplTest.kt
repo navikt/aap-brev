@@ -1,13 +1,17 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.randomDokumentInfoId
 import no.nav.aap.brev.test.randomJournalpostId
+import no.nav.aap.brev.test.randomNavIdent
+import no.nav.aap.brev.test.randomRolle
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -29,6 +33,7 @@ class BrevbestillingRepositoryImplTest {
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
             val saksnummer = randomSaksnummer()
+            val brukerIdent = randomBrukerIdent()
             val behandlingReferanse = randomBehandlingReferanse()
             val unikReferanse = randomUnikReferanse()
             val brevtype = Brevtype.INNVILGELSE
@@ -38,12 +43,17 @@ class BrevbestillingRepositoryImplTest {
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
             val brev = brev()
+            val signaturer = listOf<Signatur>(
+                Signatur(randomNavIdent(), randomRolle()),
+                Signatur(randomNavIdent(), randomRolle()),
+            )
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
 
             var bestilling =
                 brevbestillingRepository.opprettBestilling(
                     saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
                     behandlingReferanse = behandlingReferanse,
                     unikReferanse = unikReferanse,
                     brevtype = brevtype,
@@ -52,6 +62,7 @@ class BrevbestillingRepositoryImplTest {
                 )
 
             assertEquals(saksnummer, bestilling.saksnummer)
+            assertEquals(brukerIdent, bestilling.brukerIdent)
             assertEquals(behandlingReferanse, bestilling.behandlingReferanse)
             assertEquals(unikReferanse, bestilling.unikReferanse)
             assertEquals(brevtype, bestilling.brevtype)
@@ -74,6 +85,11 @@ class BrevbestillingRepositoryImplTest {
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
+
+
+            brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertEquals(signaturer, bestilling.signaturer)
 
             brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
