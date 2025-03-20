@@ -72,10 +72,15 @@ spec:
         - host: dokarkiv.prod-fss-pub.nais.io
         - host: dokdistfordeling.prod-fss-pub.nais.io
         - host: saf.prod-fss-pub.nais.io
+        - host: pdl-api.prod-fss-pub.nais.io
       rules:
         - application: behandlingsflyt
         - application: brev-sanity-proxy
         - application: saksbehandling-pdfgen
+        - application: nom-api
+          namespace: nom
+        - application: norg2
+          namespace: org
 
   env:
     - name: INTEGRASJON_TILGANG_URL
@@ -115,3 +120,16 @@ spec:
       value: https://saf.prod-fss-pub.nais.io/graphql
     - name: INTEGRASJON_SAF_SCOPE
       value: api://prod-fss.teamdokumenthandtering.saf/.default
+
+    - name: NOM_BASE_URL
+      value: http://nom-api.nom/graphql
+    - name: NOM_SCOPE
+      value: api://prod-gcp.nom.nom-api/.default
+
+    - name: INTEGRASJON_NORG_URL
+      value: http://norg2.org
+
+    - name: INTEGRASJON_PDL_URL
+      value: https://pdl-api.prod-fss-pub.nais.io/graphql
+    - name: INTEGRASJON_PDL_SCOPE
+      value: api://prod-fss.pdl.pdl-api/.default

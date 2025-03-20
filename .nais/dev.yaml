@@ -84,10 +84,15 @@ spec:
         - host: dokarkiv-q2.dev-fss-pub.nais.io
         - host: dokdistfordeling.dev-fss-pub.nais.io
         - host: saf-q2.dev-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
       rules:
         - application: behandlingsflyt
         - application: brev-sanity-proxy
         - application: saksbehandling-pdfgen
+        - application: nom-api
+          namespace: nom
+        - application: norg2
+          namespace: org
 
   env:
     - name: INTEGRASJON_TILGANG_URL
@@ -130,3 +135,16 @@ spec:
 
     - name: INTEGRASJON_AZURE_TOKEN_GENERATOR_AZP
       value: dev-gcp:nais:azure-token-generator
+
+    - name: NOM_BASE_URL
+      value: http://nom-api.nom/graphql
+    - name: NOM_SCOPE
+      value: api://dev-gcp.nom.nom-api/.default
+
+    - name: INTEGRASJON_NORG_URL
+      value: http://norg2.org
+
+    - name: INTEGRASJON_PDL_URL
+      value: https://pdl-api.dev-fss-pub.nais.io/graphql
+    - name: INTEGRASJON_PDL_SCOPE
+      value: api://dev-fss.pdl.pdl-api/.default
