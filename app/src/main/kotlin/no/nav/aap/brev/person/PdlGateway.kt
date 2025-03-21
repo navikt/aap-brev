@@ -28,7 +28,7 @@ class PdlGateway : PersoninfoV2Gateway {
         val response = checkNotNull(query(request).data) {
             "Fant ikke person i PDL"
         }
-        return mapResponse(personIdent, response)
+        return mapResponse(personIdent, response.hentPerson)
     }
 
     private fun query(request: GraphqlRequest<HentPersonVariables>): GraphQLResponse<PdlPersonData> {
@@ -36,16 +36,16 @@ class PdlGateway : PersoninfoV2Gateway {
         return requireNotNull(client.post(uri = graphqlUrl, request = httpRequest))
     }
 
-    private fun mapResponse(personIdent: String, pdlPersonData: PdlPersonData): PersoninfoV2 {
+    private fun mapResponse(personIdent: String, pdlPerson: PdlPerson): PersoninfoV2 {
         return PersoninfoV2(
-            navn = pdlPersonData.navn.single().navn(),
+            navn = pdlPerson.navn.single().navn(),
             personIdent = personIdent,
-            harStrengtFortroligAdresse = harStrengtFortroligAdresse(pdlPersonData),
+            harStrengtFortroligAdresse = harStrengtFortroligAdresse(pdlPerson),
         )
     }
 
-    private fun harStrengtFortroligAdresse(pdlPersonData: PdlPersonData): Boolean {
-        return when (pdlPersonData.adressebeskyttelse.gjeldende()?.gradering) {
+    private fun harStrengtFortroligAdresse(pdlPerson: PdlPerson): Boolean {
+        return when (pdlPerson.adressebeskyttelse.gjeldende()?.gradering) {
             Gradering.STRENGT_FORTROLIG, Gradering.STRENGT_FORTROLIG_UTLAND -> true
             else -> false
         }
