@@ -28,7 +28,7 @@ class PdlGateway : PersoninfoV2Gateway {
         val response = checkNotNull(query(request).data) {
             "Fant ikke person i PDL"
         }
-        return mapResponse(personIdent, response.hentPerson)
+        return mapResponse(personIdent, checkNotNull(response.hentPerson))
     }
 
     private fun query(request: GraphqlRequest<HentPersonVariables>): GraphQLResponse<PdlPersonData> {

@@ -1,6 +1,6 @@
 package no.nav.aap.brev.person
 
-data class PdlPersonData(val hentPerson: PdlPerson)
+data class PdlPersonData(val hentPerson: PdlPerson?)
 
 data class PdlPerson(
     val navn: List<Navn>,
