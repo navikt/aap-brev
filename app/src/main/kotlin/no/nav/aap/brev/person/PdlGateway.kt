@@ -7,6 +7,7 @@ import no.nav.aap.brev.util.graphql.GraphQLResponseHandler
 import no.nav.aap.brev.util.graphql.GraphqlRequest
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
+import no.nav.aap.komponenter.httpklient.httpclient.Header
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
@@ -15,7 +16,10 @@ import java.net.URI
 
 class PdlGateway : PersoninfoV2Gateway {
     private val graphqlUrl = URI.create(requiredConfigForKey("integrasjon.pdl.url"))
-    private val config = ClientConfig(scope = requiredConfigForKey("integrasjon.pdl.scope"))
+    private val config = ClientConfig(
+        scope = requiredConfigForKey("integrasjon.pdl.scope"),
+        additionalHeaders = listOf(Header("Behandlingsnummer", "B287")),
+    )
 
     private val client = RestClient(
         config = config,
