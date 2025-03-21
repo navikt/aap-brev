@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val ktorVersion = "3.1.1"
-val komponenterVersjon = "1.0.180"
+val komponenterVersjon = "1.0.183"
 val behandlingsflytVersjon = "0.0.162"
 val tilgangVersjon = "1.0.27"
 val junitVersjon = "5.12.1"
