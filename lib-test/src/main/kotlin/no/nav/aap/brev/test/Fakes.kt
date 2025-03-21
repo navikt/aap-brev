@@ -9,6 +9,7 @@ import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
+import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.safFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
@@ -33,6 +34,7 @@ object Fakes : AutoCloseable {
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
         val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
         val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
+        val pdl = embeddedServer(Netty, port = 0, module = { pdlFake() }).apply { start() }
         val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
         servers.addAll(
             listOf(
@@ -79,6 +81,10 @@ object Fakes : AutoCloseable {
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+
+        // PDL
+        System.setProperty("integrasjon.pdl.url", "http://localhost:${pdl.port()}/graphql")
+        System.setProperty("integrasjon.pdl.scope", "scope")
 
         // Saf
         System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}/graphql")

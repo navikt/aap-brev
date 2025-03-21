@@ -9,8 +9,7 @@ data class PdfBrev(
     val dato: String,
     val overskrift: String?,
     val tekstbolker: List<Tekstbolk>,
-    val enhet: String,
-    val saksbehandler: String,
+    val signaturer: List<Signatur>,
 ) {
     data class Mottaker(
         val navn: String,
@@ -21,6 +20,8 @@ data class PdfBrev(
             FNR, HPRNR
         }
     }
+
+    data class Signatur(val navn: String, val enhet: String)
 
     data class Tekstbolk(
         val overskrift: String?,

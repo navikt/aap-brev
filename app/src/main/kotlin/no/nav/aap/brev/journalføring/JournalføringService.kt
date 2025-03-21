@@ -5,22 +5,25 @@ import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.PdfGateway
-import no.nav.aap.brev.bestilling.Personinfo
-import no.nav.aap.brev.bestilling.PersoninfoGateway
-import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
-import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
-import no.nav.aap.brev.kontrakt.BlokkInnhold
-import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.bestilling.PdfBrev
 import no.nav.aap.brev.bestilling.PdfBrev.Blokk
 import no.nav.aap.brev.bestilling.PdfBrev.FormattertTekst
 import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
+import no.nav.aap.brev.bestilling.PdfBrev.Signatur
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
+import no.nav.aap.brev.bestilling.PdfGateway
+import no.nav.aap.brev.bestilling.PersoninfoGateway
+import no.nav.aap.brev.bestilling.PersoninfoV2
+import no.nav.aap.brev.bestilling.PersoninfoV2Gateway
+import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
+import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
+import no.nav.aap.brev.kontrakt.BlokkInnhold
+import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
@@ -28,6 +31,7 @@ import java.time.LocalDate
 class JournalføringService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
+    private val personinfoV2Gateway: PersoninfoV2Gateway,
     private val pdfGateway: PdfGateway,
     private val journalføringGateway: JournalføringGateway,
 ) {
@@ -35,10 +39,11 @@ class JournalføringService(
     companion object {
         fun konstruer(connection: DBConnection): JournalføringService {
             return JournalføringService(
-                BrevbestillingRepositoryImpl(connection),
-                BehandlingsflytGateway(),
-                SaksbehandlingPdfGenGateway(),
-                DokarkivGateway(),
+                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                personinfoGateway = BehandlingsflytGateway(),
+                personinfoV2Gateway = PdlGateway(),
+                pdfGateway = SaksbehandlingPdfGenGateway(),
+                journalføringGateway = DokarkivGateway(),
             )
         }
     }
@@ -53,20 +58,44 @@ class JournalføringService(
             "Kan ikke journalføre brev for bestilling som allerede er journalført."
         }
 
-
         val personinfo =
             if (bestilling.brukerIdent != null) {
-                personinfoGateway.hentPersoninfo(bestilling.saksnummer) // TODO hent fra PDL
+                personinfoV2Gateway.hentPersoninfo(bestilling.brukerIdent)
             } else {
-                personinfoGateway.hentPersoninfo(bestilling.saksnummer)
+                // TODO: Midlertidig for bakoverkompabilitet i dev
+                personinfoGateway.hentPersoninfo(bestilling.saksnummer).let {
+                    PersoninfoV2(
+                        personIdent = it.fnr,
+                        navn = it.navn,
+                        harStrengtFortroligAdresse = false
+                    )
+                }
             }
 
-        val pdfBrev = mapPdfBrev(personinfo, bestilling.saksnummer, bestilling.brev, LocalDate.now(), bestilling.språk)
+        val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
+            emptyList()
+        } else {
+            // for hver bestilling.signaturer:
+            // - hent fra NOM: ansatt-enhet, visningsnavn for saksbehandler
+            // - hent fra NORG: enhetsnavn basert på ansatt-enhet
+            emptyList()
+        }
+
+
+        val pdfBrev = mapPdfBrev(
+            brukerIdent = personinfo.personIdent,
+            navn = personinfo.navn,
+            saksnummer = bestilling.saksnummer,
+            brev = bestilling.brev,
+            dato = LocalDate.now(),
+            språk = bestilling.språk,
+            signaturer = signaturer,
+        )
         val pdf = pdfGateway.genererPdf(pdfBrev)
 
         val journalføringData = JournalføringData(
-            brukerFnr = personinfo.fnr,
-            mottakerIdent = personinfo.fnr,
+            brukerFnr = personinfo.personIdent,
+            mottakerIdent = personinfo.personIdent,
             mottakerType = MottakerType.FNR,
             mottakerNavn = null,
             saksnummer = bestilling.saksnummer,
@@ -112,16 +141,18 @@ class JournalføringService(
     }
 
     private fun mapPdfBrev(
-        personinfo: Personinfo,
+        brukerIdent: String,
+        navn: String,
         saksnummer: Saksnummer,
         brev: Brev,
         dato: LocalDate,
         språk: Språk,
+        signaturer: List<Signatur>,
     ): PdfBrev {
         return PdfBrev(
             mottaker = Mottaker(
-                navn = personinfo.navn,
-                ident = personinfo.fnr,
+                navn = navn,
+                ident = brukerIdent,
                 identType = IdentType.FNR
             ),
             saksnummer = saksnummer.nummer,
@@ -152,10 +183,7 @@ class JournalføringService(
                             })
                     })
             },
-            // TODO: Venter på avklaring på innhold i signatur
-            enhet = "",
-            saksbehandler = "",
+            signaturer = signaturer
         )
     }
-
 }
