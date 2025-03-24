@@ -121,9 +121,9 @@ spec:
     - name: INTEGRASJON_SAF_SCOPE
       value: api://prod-fss.teamdokumenthandtering.saf/.default
 
-    - name: NOM_BASE_URL
+    - name: INTEGRASJON_NOM_URL
       value: http://nom-api.nom/graphql
-    - name: NOM_SCOPE
+    - name: INTEGRASJON_NOM_SCOPE
       value: api://prod-gcp.nom.nom-api/.default
 
     - name: INTEGRASJON_NORG_URL
