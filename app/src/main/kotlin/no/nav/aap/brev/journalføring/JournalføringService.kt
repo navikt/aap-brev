@@ -79,11 +79,12 @@ class JournalføringService(
         val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-            bestilling.signaturer.map {
-                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
-                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
-                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
-            }
+//            bestilling.signaturer.map {
+//                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
+//                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
+//                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
+//            }
+            emptyList()
         }
 
         val pdfBrev = mapPdfBrev(
