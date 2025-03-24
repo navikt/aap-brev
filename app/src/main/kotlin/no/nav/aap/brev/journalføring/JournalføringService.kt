@@ -23,6 +23,8 @@ import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.organisasjon.AnsattInfoGateway
+import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -34,6 +36,7 @@ class JournalføringService(
     private val personinfoV2Gateway: PersoninfoV2Gateway,
     private val pdfGateway: PdfGateway,
     private val journalføringGateway: JournalføringGateway,
+    private val ansattInfoGateway: AnsattInfoGateway,
 ) {
 
     companion object {
@@ -44,6 +47,7 @@ class JournalføringService(
                 personinfoV2Gateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
                 journalføringGateway = DokarkivGateway(),
+                ansattInfoGateway = NomInfoGateway(),
             )
         }
     }
@@ -75,12 +79,12 @@ class JournalføringService(
         val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-            // for hver bestilling.signaturer:
-            // - hent fra NOM: ansatt-enhet, visningsnavn for saksbehandler
-            // - hent fra NORG: enhetsnavn basert på ansatt-enhet
-            emptyList()
+            bestilling.signaturer.map {
+                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
+                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
+                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
+            }
         }
-
 
         val pdfBrev = mapPdfBrev(
             brukerIdent = personinfo.personIdent,

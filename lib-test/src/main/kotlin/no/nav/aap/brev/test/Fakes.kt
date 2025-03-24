@@ -8,6 +8,7 @@ import no.nav.aap.brev.test.fakes.behandlingsflytFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
+import no.nav.aap.brev.test.fakes.nomFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.safFake
@@ -34,6 +35,7 @@ object Fakes : AutoCloseable {
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
         val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
         val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
+        val nom = embeddedServer(Netty, port = 0, module = { nomFake() }).apply { start() }
         val pdl = embeddedServer(Netty, port = 0, module = { pdlFake() }).apply { start() }
         val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
         servers.addAll(
@@ -81,6 +83,10 @@ object Fakes : AutoCloseable {
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+
+        // NOM
+        System.setProperty("integrasjon.nom.url", "http://localhost:${nom.port()}/graphql")
+        System.setProperty("integrasjon.nom.scope", "scope")
 
         // PDL
         System.setProperty("integrasjon.pdl.url", "http://localhost:${pdl.port()}/graphql")
