@@ -116,6 +116,7 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev 
                 }
             )
         ),
+        automatisk = false,
         signaturer = emptyList() // TODO
     )
 }
