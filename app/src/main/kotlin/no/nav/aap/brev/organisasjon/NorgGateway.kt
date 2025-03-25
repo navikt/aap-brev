@@ -13,7 +13,8 @@ import java.net.URI
 
 class NorgGateway : EnhetGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.norg.url"))
-    private val client = RestClient.withDefaultResponseHandler(config = ClientConfig(), tokenProvider = NoTokenTokenProvider())
+    private val client =
+        RestClient.withDefaultResponseHandler(config = ClientConfig(), tokenProvider = NoTokenTokenProvider())
 
     override fun hentEnhetsnavn(enhetsNummer: List<String>): List<Enhet> {
         val uri = baseUri.resolve("/norg2/api/v1/enhet")
@@ -26,13 +27,23 @@ class NorgGateway : EnhetGateway {
             )
         )
 
-        val response = checkNotNull(client.get(uri = uriWithParams, request = httpRequest, mapper = { body, _ ->
-            DefaultJsonMapper.fromJson(body)
-        }))
-        return TODO("Provide the return value")
+        val response: List<NorgEnhet> =
+            checkNotNull(client.get(uri = uriWithParams, request = httpRequest, mapper = { body, _ ->
+                DefaultJsonMapper.fromJson(body)
+            }))
+
+        return response.map { it.tilEnhet() }
     }
 
-    private fun toEnhet(enhet: NorgEnhet): Enhet {
-        TODO()
+    private fun NorgEnhet.tilEnhet(): Enhet {
+        return Enhet(
+            enhetsNummer = enhetNr,
+            navn = navn,
+            type = when (type) {
+                "LOKAL" -> EnhetsType.LOKAL
+                "YTA" -> EnhetsType.ARBEID_OG_YTELSE
+                else -> EnhetsType.ANNET
+            }
+        )
     }
 }

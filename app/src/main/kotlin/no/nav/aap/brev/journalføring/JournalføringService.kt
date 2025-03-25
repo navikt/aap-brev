@@ -25,7 +25,9 @@ import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
+import no.nav.aap.brev.organisasjon.EnhetGateway
 import no.nav.aap.brev.organisasjon.NomInfoGateway
+import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -40,6 +42,7 @@ class JournalføringService(
     private val pdfGateway: PdfGateway,
     private val journalføringGateway: JournalføringGateway,
     private val ansattInfoGateway: AnsattInfoGateway,
+    private val enhetGateway: EnhetGateway,
 ) {
 
     companion object {
@@ -51,6 +54,7 @@ class JournalføringService(
                 pdfGateway = SaksbehandlingPdfGenGateway(),
                 journalføringGateway = DokarkivGateway(),
                 ansattInfoGateway = if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway(),
+                enhetGateway = NorgGateway(),
             )
         }
     }
@@ -82,10 +86,15 @@ class JournalføringService(
         val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-            bestilling.signaturer.map {
-                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
-                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
-                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
+            val ansattInfoListe = bestilling.signaturer.map {
+                ansattInfoGateway.hentAnsattInfo(it.navIdent)
+            }
+
+            val enheter = enhetGateway.hentEnhetsnavn(ansattInfoListe.map { it.enhetsnummer })
+
+            ansattInfoListe.map { ansattInfo ->
+                val enhet = enheter.single { it.enhetsNummer == ansattInfo.enhetsnummer }
+                Signatur(navn = ansattInfo.navn, enhet = enhet.navn)
             }
         }
 
