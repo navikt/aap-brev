@@ -23,11 +23,14 @@ import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.miljo.Miljø
+import no.nav.aap.komponenter.miljo.MiljøKode
 import java.time.LocalDate
 
 class JournalføringService(
@@ -47,7 +50,7 @@ class JournalføringService(
                 personinfoV2Gateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
                 journalføringGateway = DokarkivGateway(),
-                ansattInfoGateway = NomInfoGateway(),
+                ansattInfoGateway = if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway(),
             )
         }
     }
@@ -79,11 +82,11 @@ class JournalføringService(
         val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-//            bestilling.signaturer.map {
-//                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
-//                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
-//                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
-//            }
+            bestilling.signaturer.map {
+                val ansattInfo = ansattInfoGateway.hentAnsattInfo(it.navIdent)
+                val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
+                Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
+            }
             emptyList()
         }
 
