@@ -60,7 +60,7 @@ dependencies {
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
 
-    implementation("com.zaxxer:HikariCP:6.2.1")
+    implementation("com.zaxxer:HikariCP:6.3.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.4.1")
     implementation("org.postgresql:postgresql:42.7.5")
 
