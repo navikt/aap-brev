@@ -87,7 +87,6 @@ class JournalføringService(
                 val enhetNavn = ""// TODO hent fra NORG: enhetsnavn basert på ansatt-enhet
                 Signatur(navn = ansattInfo.navn, enhet = enhetNavn)
             }
-            emptyList()
         }
 
         val pdfBrev = mapPdfBrev(
