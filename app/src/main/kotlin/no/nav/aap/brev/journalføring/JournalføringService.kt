@@ -88,7 +88,9 @@ class JournalføringService(
         val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse || automatisk ) {
             emptyList()
         } else {
-            val ansattInfoListe = bestilling.signaturer.map {
+            val sorterteSignaturer = bestilling.signaturer.sortedBy { it.rolle }
+
+            val ansattInfoListe = sorterteSignaturer.map {
                 ansattInfoGateway.hentAnsattInfo(it.navIdent)
             }
 
