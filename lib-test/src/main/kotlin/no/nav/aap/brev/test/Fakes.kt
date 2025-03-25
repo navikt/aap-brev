@@ -9,6 +9,7 @@ import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
 import no.nav.aap.brev.test.fakes.nomFake
+import no.nav.aap.brev.test.fakes.norgFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.safFake
@@ -38,6 +39,7 @@ object Fakes : AutoCloseable {
         val nom = embeddedServer(Netty, port = 0, module = { nomFake() }).apply { start() }
         val pdl = embeddedServer(Netty, port = 0, module = { pdlFake() }).apply { start() }
         val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
+        val norg = embeddedServer(Netty, port = 0, module = { norgFake() }).apply { start() }
         servers.addAll(
             listOf(
                 azure,
@@ -83,6 +85,9 @@ object Fakes : AutoCloseable {
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+
+        // Norg
+        System.setProperty("integrasjon.norg.url", "http://localhost:${norg.port()}")
 
         // NOM
         System.setProperty("integrasjon.nom.url", "http://localhost:${nom.port()}/graphql")
