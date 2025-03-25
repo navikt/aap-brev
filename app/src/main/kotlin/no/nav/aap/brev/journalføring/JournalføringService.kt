@@ -22,6 +22,7 @@ import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
@@ -91,10 +92,17 @@ class JournalføringService(
             }
 
             val enheter = enhetGateway.hentEnhetsnavn(ansattInfoListe.map { it.enhetsnummer })
-
+            val brukEnhetsTypeNavn = when (bestilling.brevtype) {
+                Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING -> {
+                    true
+                }
+                Brevtype.VEDTAK_ENDRING, Brevtype.VARSEL_OM_BESTILLING, Brevtype.AVSLAG, Brevtype.INNVILGELSE -> {
+                    false
+                }
+            }
             ansattInfoListe.map { ansattInfo ->
                 val enhet = enheter.single { it.enhetsNummer == ansattInfo.enhetsnummer }
-                Signatur(navn = ansattInfo.navn, enhet = enhet.navn)
+                Signatur(navn = ansattInfo.navn, enhet = if (brukEnhetsTypeNavn) enhet.enhetstypeNavn else enhet.navn)
             }
         }
 
