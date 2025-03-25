@@ -14,7 +14,7 @@ class AnsattInfoDevGateway : AnsattInfoGateway {
         return AnsattInfo(
             navIdent = navIdent,
             navn = "F_$navIdent E_$navIdent",
-            enhetsnummer = listOf("0313", "0314", "0315", "0316").random(),
+            enhetsnummer = listOf("0313", "0314", "4401", "4402").random(),
         )
     }
 }
