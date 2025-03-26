@@ -13,4 +13,5 @@ data class JournalførBehandlerBestillingRequest(
     val tittel: String,
     val brevAvsnitt: List<String>,
     val dato: LocalDate,
+    val bestillerNavIdent: String?
 )
