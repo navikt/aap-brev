@@ -42,7 +42,7 @@ class ProsesserStegServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse = opprettBestilling(
                 behandlingReferanse = behandlingReferanse,
-                brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT
+                brevtype = Brevtype.VARSEL_OM_BESTILLING
             )
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.FristDato11_7(LocalDate.now())))
 

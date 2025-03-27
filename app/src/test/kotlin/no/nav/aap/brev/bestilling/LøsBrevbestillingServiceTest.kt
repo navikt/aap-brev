@@ -29,9 +29,10 @@ class LøsBrevbestillingServiceTest {
     }
 
     @Test
-    fun `ferdigstiller brev som ikke har faktagrunnlag, ikke kan redigeres, og er fullsteindig`() {
+    fun `ferdigstiller brev som kan sendes automatisk, ikke har faktagrunnlag, ikke kan redigeres, og er fullsteindig`() {
         val referanse = gittBestilling(
             brev = brev(
+                kanSendesAutomatisk = true,
                 medFaktagrunnlag = emptyList(),
                 kanRedigeres = false,
                 erFullstendig = true,
@@ -41,9 +42,23 @@ class LøsBrevbestillingServiceTest {
     }
 
     @Test
-    fun `gir status under arbeid for brev som har faktagrunnlag`() {
+    fun `ferdigstiller ikke brev selv om det ikke har faktagrunnlag, ikke kan redigeres, og er fullsteindig, dersom det ikke kan sendes automatisk`() {
         val referanse = gittBestilling(
             brev = brev(
+                kanSendesAutomatisk = false,
+                medFaktagrunnlag = emptyList(),
+                kanRedigeres = false,
+                erFullstendig = true,
+            )
+        )
+        assertLøsBestillingStatus(referanse, Status.UNDER_ARBEID)
+    }
+
+    @Test
+    fun `gir status under arbeid for brev som kan sendes automatisk men som har faktagrunnlag`() {
+        val referanse = gittBestilling(
+            brev = brev(
+                kanSendesAutomatisk = true,
                 medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi),
                 kanRedigeres = false,
                 erFullstendig = true,
@@ -53,9 +68,10 @@ class LøsBrevbestillingServiceTest {
     }
 
     @Test
-    fun `gir status under arbeid for brev som kan redigeres`() {
+    fun `gir status under arbeid for brev som kan sendes automatisk men som kan redigeres`() {
         val referanse = gittBestilling(
             brev = brev(
+                kanSendesAutomatisk = true,
                 medFaktagrunnlag = emptyList(),
                 kanRedigeres = true,
                 erFullstendig = true,
@@ -65,9 +81,10 @@ class LøsBrevbestillingServiceTest {
     }
 
     @Test
-    fun `gir status under arbeid for brev som ikke er fullstendige`() {
+    fun `gir status under arbeid for brev som kan sendes automatisk men som ikke er fullstendige`() {
         val referanse = gittBestilling(
             brev = brev(
+                kanSendesAutomatisk = true,
                 medFaktagrunnlag = emptyList(),
                 kanRedigeres = false,
                 erFullstendig = false,

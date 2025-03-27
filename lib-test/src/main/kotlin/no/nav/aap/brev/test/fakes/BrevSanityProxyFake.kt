@@ -20,10 +20,12 @@ import kotlin.String
 
 fun brev(
     medFaktagrunnlag: List<String> = emptyList(),
+    kanSendesAutomatisk: Boolean = false,
     kanRedigeres: Boolean = true,
     erFullstendig: Boolean = false,
 ): Brev {
     return Brev(
+        kanSendesAutomatisk = kanSendesAutomatisk,
         overskrift = "Overskrift - Brev",
         journalpostTittel = "Journalpost - tittel",
         tekstbolker = listOf(
@@ -77,6 +79,7 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_ENDRING -> brev()
                 Brevtype.VARSEL_OM_BESTILLING -> brev(
                     medFaktagrunnlag = emptyList(),
+                    kanSendesAutomatisk = true,
                     kanRedigeres = false,
                     erFullstendig = true
                 )

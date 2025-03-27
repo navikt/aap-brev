@@ -29,6 +29,7 @@ class BrevmodellTest {
     @Language("JSON")
     val maksimalModell = """
         {
+          "kanSendesAutomatisk": true,
           "overskrift": "H1 overskrift",
           "journalpostTittel": "Journalpost tittel",
           "tekstbolker": [
@@ -73,6 +74,7 @@ class BrevmodellTest {
     @Language("JSON")
     val minimalModell = """
    {
+          "kanSendesAutomatisk": true,
           "overskrift": null,
           "journalpostTittel": null,
           "tekstbolker": [

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.util.UUID
 
 data class Brev(
+    val kanSendesAutomatisk: Boolean?,
     val overskrift: String?,
     val journalpostTittel: String?,
     val tekstbolker: List<Tekstbolk>,

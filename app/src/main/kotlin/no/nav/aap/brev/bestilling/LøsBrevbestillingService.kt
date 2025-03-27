@@ -39,6 +39,9 @@ class LøsBrevbestillingService(
     }
 
     private fun skalFerdigstilles(brev: Brev): Boolean {
-        return !brev.harFaktagrunnlag() && brev.erFullstendig() && !brev.kanRedigeres()
+        return brev.kanSendesAutomatisk == true &&
+                !brev.harFaktagrunnlag() &&
+                brev.erFullstendig() &&
+                !brev.kanRedigeres()
     }
 }
