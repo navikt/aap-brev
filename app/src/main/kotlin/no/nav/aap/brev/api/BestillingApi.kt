@@ -13,12 +13,16 @@ import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
+import no.nav.aap.brev.journalføring.SignaturService
 import no.nav.aap.brev.kontrakt.AvbrytBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
+import no.nav.aap.brev.kontrakt.HentSignaturerRequest
+import no.nav.aap.brev.kontrakt.HentSignaturerResponse
+import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
@@ -126,6 +130,19 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     }
                     respond("{}", HttpStatusCode.Accepted)
                 }
+            }
+        }
+        route("/forhandsvis-signaturer") {
+            authorizedPost<Unit, HentSignaturerResponse, HentSignaturerRequest>(authorizationBodyPathConfig) { _, request ->
+                val personinfoGateway = PdlGateway()
+                val personinfo = personinfoGateway.hentPersoninfo(request.brukerIdent)
+                val signaturService = SignaturService.konstruer()
+                val signaturer = signaturService.signaturer(
+                    signaturerGrunnlag = request.signaturGrunnlag,
+                    request.brevtype,
+                    personinfo
+                )
+                respond(HentSignaturerResponse(signaturer))
             }
         }
     }

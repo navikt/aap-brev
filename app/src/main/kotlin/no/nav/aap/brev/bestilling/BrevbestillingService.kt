@@ -6,7 +6,7 @@ import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Signatur
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
@@ -103,7 +103,7 @@ class BrevbestillingService(
 
     fun ferdigstill(
         referanse: BrevbestillingReferanse,
-        signaturer: List<Signatur>?
+        signaturer: List<SignaturGrunnlag>?
     ) {
         val bestilling = hent(referanse)
 

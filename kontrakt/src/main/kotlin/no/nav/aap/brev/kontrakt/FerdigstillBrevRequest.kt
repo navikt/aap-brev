@@ -4,5 +4,5 @@ import java.util.UUID
 
 data class FerdigstillBrevRequest(
     val referanse: UUID,
-    val signaturer: List<Signatur>?
+    val signaturer: List<SignaturGrunnlag>?
 )

@@ -6,7 +6,7 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Signatur
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 
 interface BrevbestillingRepository {
     fun opprettBestilling(
@@ -33,7 +33,7 @@ interface BrevbestillingRepository {
         prosesseringStatus: ProsesseringStatus,
     )
 
-    fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<Signatur>)
+    fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>)
 
     fun lagreJournalpost(id: BrevbestillingId, journalpostId: JournalpostId, journalpostFerdigstilt: Boolean)
 

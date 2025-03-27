@@ -10,7 +10,6 @@ import no.nav.aap.brev.bestilling.PdfBrev.FormattertTekst
 import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
-import no.nav.aap.brev.bestilling.PdfBrev.Signatur
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
@@ -21,6 +20,7 @@ import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingResponse
+import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway

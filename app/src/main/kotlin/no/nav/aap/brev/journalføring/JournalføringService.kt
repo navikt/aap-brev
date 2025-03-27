@@ -1,6 +1,5 @@
 package no.nav.aap.brev.journalføring
 
-import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
@@ -11,51 +10,37 @@ import no.nav.aap.brev.bestilling.PdfBrev.FormattertTekst
 import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
-import no.nav.aap.brev.bestilling.PdfBrev.Signatur
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
 import no.nav.aap.brev.bestilling.PdfGateway
 import no.nav.aap.brev.bestilling.PersoninfoGateway
-import no.nav.aap.brev.bestilling.PersoninfoV2
-import no.nav.aap.brev.bestilling.PersoninfoV2Gateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
-import no.nav.aap.brev.organisasjon.AnsattInfoGateway
-import no.nav.aap.brev.organisasjon.EnhetGateway
-import no.nav.aap.brev.organisasjon.NomInfoGateway
-import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.miljo.Miljø
-import no.nav.aap.komponenter.miljo.MiljøKode
 import java.time.LocalDate
 
 class JournalføringService(
+    private val signaturService: SignaturService,
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
-    private val personinfoV2Gateway: PersoninfoV2Gateway,
     private val pdfGateway: PdfGateway,
     private val journalføringGateway: JournalføringGateway,
-    private val ansattInfoGateway: AnsattInfoGateway,
-    private val enhetGateway: EnhetGateway,
 ) {
 
     companion object {
         fun konstruer(connection: DBConnection): JournalføringService {
             return JournalføringService(
+                signaturService = SignaturService.konstruer(),
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
-                personinfoGateway = BehandlingsflytGateway(),
-                personinfoV2Gateway = PdlGateway(),
+                personinfoGateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
                 journalføringGateway = DokarkivGateway(),
-                ansattInfoGateway = if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway(),
-                enhetGateway = NorgGateway(),
             )
         }
     }
@@ -69,46 +54,15 @@ class JournalføringService(
         check(bestilling.journalpostId == null) {
             "Kan ikke journalføre brev for bestilling som allerede er journalført."
         }
-
-        val personinfo =
-            if (bestilling.brukerIdent != null) {
-                personinfoV2Gateway.hentPersoninfo(bestilling.brukerIdent)
-            } else {
-                // TODO: Midlertidig for bakoverkompabilitet i dev
-                personinfoGateway.hentPersoninfo(bestilling.saksnummer).let {
-                    PersoninfoV2(
-                        personIdent = it.fnr,
-                        navn = it.navn,
-                        harStrengtFortroligAdresse = false
-                    )
-                }
-            }
-
-        val automatisk = bestilling.brevtype == Brevtype.VARSEL_OM_BESTILLING
-        val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse || automatisk ) {
-            emptyList()
-        } else {
-            val sorterteSignaturer = bestilling.signaturer.sortedBy { it.rolle }
-
-            val ansattInfoListe = sorterteSignaturer.map {
-                ansattInfoGateway.hentAnsattInfo(it.navIdent)
-            }
-
-            val enheter = enhetGateway.hentEnhetsnavn(ansattInfoListe.map { it.enhetsnummer })
-            val brukEnhetsTypeNavn = when (bestilling.brevtype) {
-                Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING -> {
-                    true
-                }
-                Brevtype.VEDTAK_ENDRING, Brevtype.VARSEL_OM_BESTILLING, Brevtype.AVSLAG, Brevtype.INNVILGELSE -> {
-                    false
-                }
-            }
-            ansattInfoListe.map { ansattInfo ->
-                val enhet = enheter.single { it.enhetsNummer == ansattInfo.enhetsnummer }
-                Signatur(navn = ansattInfo.navn, enhet = if (brukEnhetsTypeNavn) enhet.enhetstypeNavn else enhet.navn)
-            }
+        check(bestilling.brukerIdent != null) {
+            "Kan ikke journalføre brev for bestilling der brukerIdent er null"
         }
 
+        val personinfo = personinfoGateway.hentPersoninfo(bestilling.brukerIdent)
+
+        val automatisk = signaturService.skalHaSignatur(bestilling.brevtype)
+        val signaturer: List<Signatur> =
+            signaturService.signaturer(bestilling.signaturer, bestilling.brevtype, personinfo)
         val pdfBrev = mapPdfBrev(
             brukerIdent = personinfo.personIdent,
             navn = personinfo.navn,

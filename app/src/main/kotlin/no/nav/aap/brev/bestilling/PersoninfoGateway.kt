@@ -1,7 +1,11 @@
 package no.nav.aap.brev.bestilling
 
 interface PersoninfoGateway {
-    fun hentPersoninfo(saksnummer: Saksnummer): Personinfo
+    fun hentPersoninfo(personIdent: String): Personinfo
 }
 
-data class Personinfo(val fnr: String, val navn: String)
+data class Personinfo(
+    val personIdent: String,
+    val navn: String,
+    val harStrengtFortroligAdresse: Boolean
+)

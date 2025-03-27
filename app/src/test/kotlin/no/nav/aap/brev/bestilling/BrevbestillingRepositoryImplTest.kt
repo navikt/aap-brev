@@ -1,7 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Signatur
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
@@ -43,9 +43,9 @@ class BrevbestillingRepositoryImplTest {
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
             val brev = brev()
-            val signaturer = listOf<Signatur>(
-                Signatur(randomNavIdent(), randomRolle()),
-                Signatur(randomNavIdent(), randomRolle()),
+            val signaturer = listOf<SignaturGrunnlag>(
+                SignaturGrunnlag(randomNavIdent(), randomRolle()),
+                SignaturGrunnlag(randomNavIdent(), randomRolle()),
             )
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()

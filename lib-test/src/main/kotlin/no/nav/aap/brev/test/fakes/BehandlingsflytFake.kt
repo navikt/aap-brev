@@ -11,7 +11,6 @@ import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.HentFaktaGrunnlagReque
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
-import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.*
 
@@ -37,9 +36,6 @@ fun Application.behandlingsflytFake() {
                 call.respond(HttpStatusCode.InternalServerError)
             }
             call.respond(HttpStatusCode.Accepted, "{}")
-        }
-        get("/api/sak/{saksnummer}/personinformasjon") {
-            call.respond(Personinfo("", ""))
         }
         post("/api/brev/faktagrunnlag") {
             val dto = DefaultJsonMapper.fromJson<HentFaktaGrunnlagRequest>(call.receiveText())

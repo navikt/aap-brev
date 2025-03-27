@@ -2,6 +2,7 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Formattering
+import no.nav.aap.brev.kontrakt.Signatur
 
 data class PdfBrev(
     val mottaker: Mottaker,
@@ -21,8 +22,6 @@ data class PdfBrev(
             FNR, HPRNR
         }
     }
-
-    data class Signatur(val navn: String, val enhet: String)
 
     data class Tekstbolk(
         val overskrift: String?,

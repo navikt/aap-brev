@@ -8,7 +8,7 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Signatur
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
@@ -114,7 +114,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         )
     }
 
-    private fun hentSignaturer(brevbestillingId: BrevbestillingId): List<Signatur> {
+    private fun hentSignaturer(brevbestillingId: BrevbestillingId): List<SignaturGrunnlag> {
         val signaturQuery = """
             SELECT * FROM SIGNATUR WHERE BREVBESTILLING_ID = ?
         """.trimIndent()
@@ -124,7 +124,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setLong(1, brevbestillingId.id)
             }
             setRowMapper {
-                Signatur(
+                SignaturGrunnlag(
                     navIdent = it.getString("NAV_IDENT"),
                     rolle = it.getEnum("ROLLE"),
                 )
@@ -188,7 +188,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
-    override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<Signatur>) {
+    override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>) {
         val query = """
             INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, ROLLE) VALUES (?, ?, ?)
         """.trimIndent()

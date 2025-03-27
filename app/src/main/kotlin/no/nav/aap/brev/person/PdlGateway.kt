@@ -1,7 +1,7 @@
 package no.nav.aap.brev.person
 
-import no.nav.aap.brev.bestilling.PersoninfoV2
-import no.nav.aap.brev.bestilling.PersoninfoV2Gateway
+import no.nav.aap.brev.bestilling.Personinfo
+import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.util.graphql.GraphQLResponse
 import no.nav.aap.brev.util.graphql.GraphQLResponseHandler
 import no.nav.aap.brev.util.graphql.GraphqlRequest
@@ -14,7 +14,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
 import java.net.URI
 
-class PdlGateway : PersoninfoV2Gateway {
+class PdlGateway : PersoninfoGateway {
     private val graphqlUrl = URI.create(requiredConfigForKey("integrasjon.pdl.url"))
     private val config = ClientConfig(
         scope = requiredConfigForKey("integrasjon.pdl.scope"),
@@ -27,7 +27,7 @@ class PdlGateway : PersoninfoV2Gateway {
         responseHandler = GraphQLResponseHandler()
     )
 
-    override fun hentPersoninfo(personIdent: String): PersoninfoV2 {
+    override fun hentPersoninfo(personIdent: String): Personinfo {
         val request = GraphqlRequest(personinfoQuery, HentPersonVariables(personIdent))
         val response = checkNotNull(query(request).data) {
             "Fant ikke person i PDL"
@@ -40,8 +40,8 @@ class PdlGateway : PersoninfoV2Gateway {
         return requireNotNull(client.post(uri = graphqlUrl, request = httpRequest))
     }
 
-    private fun mapResponse(personIdent: String, pdlPerson: PdlPerson): PersoninfoV2 {
-        return PersoninfoV2(
+    private fun mapResponse(personIdent: String, pdlPerson: PdlPerson): Personinfo {
+        return Personinfo(
             navn = pdlPerson.navn.single().navn(),
             personIdent = personIdent,
             harStrengtFortroligAdresse = harStrengtFortroligAdresse(pdlPerson),
