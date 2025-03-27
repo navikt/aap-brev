@@ -10,6 +10,7 @@ import no.nav.aap.brev.bestilling.PdfBrev.FormattertTekst
 import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
+import no.nav.aap.brev.bestilling.PdfBrev.Signatur
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.bestilling.Saksnummer
@@ -21,7 +22,14 @@ import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingResponse
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
+import no.nav.aap.brev.organisasjon.AnsattInfoGateway
+import no.nav.aap.brev.organisasjon.NomInfoGateway
+import no.nav.aap.brev.organisasjon.NorgGateway
+import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.util.formaterFullLengde
+import no.nav.aap.komponenter.miljo.Miljø
+import no.nav.aap.komponenter.miljo.MiljøKode
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.Operasjon
@@ -42,8 +50,22 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 
                 val pdfGateway = SaksbehandlingPdfGenGateway()
                 val arkivGateway = DokarkivGateway()
+                val ansattInfoGateway: AnsattInfoGateway =
+                    if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway()
+                val personinfoV2Gateway = PdlGateway()
+                val enhetGateway = NorgGateway()
 
-                val pdfBrev = mapPdfBrev(request)
+                val personinfo = personinfoV2Gateway.hentPersoninfo(request.brukerFnr)
+
+                val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
+                    emptyList()
+                } else {
+                    val ansattInfo = ansattInfoGateway.hentAnsattInfo(request.bestillerNavIdent)
+                    val enhet = enhetGateway.hentEnhetsnavn(listOf(ansattInfo.enhetsnummer)).first()
+                    listOf(Signatur(navn = ansattInfo.navn, enhet = enhet.navn))
+                }
+
+                val pdfBrev = mapPdfBrev(request, signaturer)
                 val pdf = pdfGateway.genererPdf(pdfBrev)
                 val journalpostResponse = arkivGateway.journalførBrev(
                     journalføringData = JournalføringData(
@@ -85,7 +107,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
     }
 }
 
-private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev {
+private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest, signaturer: List<Signatur>): PdfBrev {
     return PdfBrev(
         mottaker = Mottaker(
             navn = request.mottakerNavn,
@@ -117,6 +139,6 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest): PdfBrev 
             )
         ),
         automatisk = false,
-        signaturer = emptyList() // TODO
+        signaturer = signaturer
     )
 }
