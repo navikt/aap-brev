@@ -2,6 +2,7 @@ package no.nav.aap.brev.api
 
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.*
 import no.nav.aap.brev.bestilling.PdfBrev
@@ -18,6 +19,7 @@ import no.nav.aap.brev.journalføring.JournalføringData
 import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.EkspederBehandlerBestillingRequest
+import no.nav.aap.brev.kontrakt.HentSignaturDokumentinnhentingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingRequest
 import no.nav.aap.brev.kontrakt.JournalførBehandlerBestillingResponse
 import no.nav.aap.brev.kontrakt.Signatur
@@ -31,8 +33,8 @@ import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.komponenter.miljo.MiljøKode
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
-import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.Operasjon
+import no.nav.aap.tilgang.authorizedPost
 
 fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 
@@ -50,22 +52,10 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
 
                 val pdfGateway = SaksbehandlingPdfGenGateway()
                 val arkivGateway = DokarkivGateway()
-                val ansattInfoGateway: AnsattInfoGateway =
-                    if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway()
-                val personinfoV2Gateway = PdlGateway()
-                val enhetGateway = NorgGateway()
 
-                val personinfo = personinfoV2Gateway.hentPersoninfo(request.brukerFnr)
+                val signatur = utledSignatur(brukerFnr = request.brukerFnr, navIdent = request.bestillerNavIdent)
 
-                val signaturer: List<Signatur> = if (personinfo.harStrengtFortroligAdresse) {
-                    emptyList()
-                } else {
-                    val ansattInfo = ansattInfoGateway.hentAnsattInfo(request.bestillerNavIdent)
-                    val enhet = enhetGateway.hentEnhetsnavn(listOf(ansattInfo.enhetsnummer)).first()
-                    listOf(Signatur(navn = ansattInfo.navn, enhet = enhet.navn))
-                }
-
-                val pdfBrev = mapPdfBrev(request, signaturer)
+                val pdfBrev = mapPdfBrev(request, signatur?.let { listOf(it) } ?: emptyList())
                 val pdf = pdfGateway.genererPdf(pdfBrev)
                 val journalpostResponse = arkivGateway.journalførBrev(
                     journalføringData = JournalføringData(
@@ -104,6 +94,35 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                 respond("{}", HttpStatusCode.OK)
             }
         }
+
+        route("/forhandsvis-signatur") {
+            authorizedPost<Unit, Signatur, HentSignaturDokumentinnhentingRequest>(
+                authorizationBodyPathConfig
+            ) { _, request ->
+                val signatur = utledSignatur(brukerFnr = request.brukerFnr, navIdent = request.bestillerNavIdent)
+
+                if (signatur != null) {
+                    respond(signatur)
+                } else {
+                    respondWithStatus(HttpStatusCode.NoContent)
+                }
+            }
+        }
+    }
+}
+
+private fun utledSignatur(brukerFnr: String, navIdent: String): Signatur? {
+    val ansattInfoGateway: AnsattInfoGateway =
+        if (Miljø.er() == MiljøKode.DEV) AnsattInfoDevGateway() else NomInfoGateway()
+    val personinfoV2Gateway = PdlGateway()
+    val enhetGateway = NorgGateway()
+    val personinfo = personinfoV2Gateway.hentPersoninfo(brukerFnr)
+    return if (personinfo.harStrengtFortroligAdresse) {
+        null
+    } else {
+        val ansattInfo = ansattInfoGateway.hentAnsattInfo(navIdent)
+        val enhet = enhetGateway.hentEnhetsnavn(listOf(ansattInfo.enhetsnummer)).first()
+        Signatur(navn = ansattInfo.navn, enhet = enhet.navn)
     }
 }
 

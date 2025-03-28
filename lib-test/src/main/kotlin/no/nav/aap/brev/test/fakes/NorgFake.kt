@@ -9,7 +9,7 @@ fun Application.norgFake() {
     applicationFakeFelles("norg")
     routing {
         get("/norg2/api/v1/enhet") {
-            call.respond(emptyList<NorgEnhet>())
+            call.respond(listOf(NorgEnhet("1234", "Navn", "LOKAL")))
         }
     }
 }
