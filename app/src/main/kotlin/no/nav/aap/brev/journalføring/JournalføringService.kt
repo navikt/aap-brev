@@ -60,7 +60,6 @@ class JournalføringService(
 
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.brukerIdent)
 
-        val automatisk = signaturService.skalHaSignatur(bestilling.brevtype)
         val signaturer: List<Signatur> =
             signaturService.signaturer(bestilling.signaturer, bestilling.brevtype, personinfo)
         val pdfBrev = mapPdfBrev(
@@ -71,7 +70,6 @@ class JournalføringService(
             dato = LocalDate.now(),
             språk = bestilling.språk,
             signaturer = signaturer,
-            automatisk = automatisk,
         )
         val pdf = pdfGateway.genererPdf(pdfBrev)
 
@@ -130,7 +128,6 @@ class JournalføringService(
         dato: LocalDate,
         språk: Språk,
         signaturer: List<Signatur>,
-        automatisk: Boolean,
     ): PdfBrev {
         return PdfBrev(
             mottaker = Mottaker(
@@ -166,7 +163,6 @@ class JournalføringService(
                             })
                     })
             },
-            automatisk = automatisk,
             signaturer = signaturer
         )
     }

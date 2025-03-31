@@ -31,8 +31,7 @@ class SignaturService(
         brevtype: Brevtype,
         personinfo: Personinfo
     ): List<Signatur> {
-
-        return if (personinfo.harStrengtFortroligAdresse || skalHaSignatur(brevtype)) {
+        return if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
             val sorterteSignaturGrunnlag = signaturerGrunnlag.sortedBy { it.rolle }
@@ -59,9 +58,5 @@ class SignaturService(
                 )
             }
         }
-    }
-
-    fun skalHaSignatur(brevtype: Brevtype): Boolean {
-        return brevtype != Brevtype.VARSEL_OM_BESTILLING
     }
 }

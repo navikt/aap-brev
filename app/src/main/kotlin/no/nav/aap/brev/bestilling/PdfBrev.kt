@@ -11,7 +11,6 @@ data class PdfBrev(
     val overskrift: String?,
     val tekstbolker: List<Tekstbolk>,
     val signaturer: List<Signatur>,
-    val automatisk: Boolean,
 ) {
     data class Mottaker(
         val navn: String,

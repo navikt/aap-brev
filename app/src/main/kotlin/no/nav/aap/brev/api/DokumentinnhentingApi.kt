@@ -157,7 +157,6 @@ private fun mapPdfBrev(request: JournalførBehandlerBestillingRequest, signature
                 }
             )
         ),
-        automatisk = false,
         signaturer = signaturer
     )
 }
