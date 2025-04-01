@@ -190,15 +190,14 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>) {
         val query = """
-            INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, ROLLE, SORTERINGS_NOKKEL) VALUES (?, ?, ?, ?)
+            INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, SORTERINGS_NOKKEL) VALUES (?, ?, ?)
         """.trimIndent()
 
         connection.executeBatch(query, signaturer.mapIndexed { index, signatur -> index + 1 to signatur }) {
             setParams {
                 setLong(1, brevbestillingId.id)
                 setString(2, it.second.navIdent)
-                setString(3, it.second.rolle.name)
-                setInt(4, it.first)
+                setInt(3, it.first)
             }
         }
     }

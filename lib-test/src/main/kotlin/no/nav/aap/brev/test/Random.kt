@@ -7,7 +7,6 @@ import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.Språk
 import java.util.UUID
 import kotlin.random.Random
@@ -34,10 +33,6 @@ fun randomBrukerIdent(): String {
 
 fun randomNavIdent(): String {
     return ('A' .. 'Z').random() + Random.nextLong(100000, 999999).toString()
-}
-
-fun randomRolle(): Rolle {
-    return Rolle.entries.random()
 }
 
 fun randomDokumentInfoId(): DokumentInfoId {

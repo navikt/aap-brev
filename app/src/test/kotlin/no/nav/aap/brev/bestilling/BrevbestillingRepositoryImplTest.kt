@@ -11,7 +11,6 @@ import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.randomDokumentInfoId
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomNavIdent
-import no.nav.aap.brev.test.randomRolle
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -46,8 +45,8 @@ class BrevbestillingRepositoryImplTest {
             val signaturNavIdent1 = randomNavIdent()
             val signaturNavIdent2 = randomNavIdent()
             val signaturer = listOf<SignaturGrunnlag>(
-                SignaturGrunnlag(signaturNavIdent1, randomRolle()),
-                SignaturGrunnlag(signaturNavIdent2, randomRolle()),
+                SignaturGrunnlag(signaturNavIdent1),
+                SignaturGrunnlag(signaturNavIdent2),
             )
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
