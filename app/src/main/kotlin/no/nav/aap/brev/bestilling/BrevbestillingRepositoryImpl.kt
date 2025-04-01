@@ -114,7 +114,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         )
     }
 
-    private fun hentSignaturer(brevbestillingId: BrevbestillingId): List<SignaturGrunnlag> {
+    private fun hentSignaturer(brevbestillingId: BrevbestillingId): List<SorterbarSignatur> {
         val signaturQuery = """
             SELECT * FROM SIGNATUR WHERE BREVBESTILLING_ID = ?
         """.trimIndent()
@@ -124,9 +124,9 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setLong(1, brevbestillingId.id)
             }
             setRowMapper {
-                SignaturGrunnlag(
+                SorterbarSignatur(
                     navIdent = it.getString("NAV_IDENT"),
-                    rolle = it.getEnum("ROLLE"),
+                    sorteringsnøkkel = it.getInt("SORTERINGS_NOKKEL")
                 )
             }
         }

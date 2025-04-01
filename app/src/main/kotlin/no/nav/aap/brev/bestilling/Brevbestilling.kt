@@ -4,7 +4,6 @@ import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import java.time.LocalDateTime
@@ -15,7 +14,7 @@ data class Brevbestilling(
     val referanse: BrevbestillingReferanse,
     val brev: Brev?,
     val brukerIdent: String?,
-    val signaturer: List<SignaturGrunnlag>,
+    val signaturer: List<SorterbarSignatur>,
     val opprettet: LocalDateTime,
     val oppdatert: LocalDateTime,
     val behandlingReferanse: BehandlingReferanse,

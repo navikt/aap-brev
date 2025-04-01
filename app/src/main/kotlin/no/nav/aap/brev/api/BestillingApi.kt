@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Saksnummer
+import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.journalføring.DokumentInfoId
@@ -138,7 +139,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 val personinfo = personinfoGateway.hentPersoninfo(request.brukerIdent)
                 val signaturService = SignaturService.konstruer()
                 val signaturer = signaturService.signaturer(
-                    signaturerGrunnlag = request.signaturGrunnlag,
+                    sorterbareSignaturer = request.signaturGrunnlag.mapIndexed { index, signatur -> SorterbarSignatur(signatur.navIdent, index) },
                     request.brevtype,
                     personinfo
                 )

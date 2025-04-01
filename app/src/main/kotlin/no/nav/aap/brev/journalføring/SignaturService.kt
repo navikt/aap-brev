@@ -1,9 +1,9 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.Personinfo
+import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Signatur
-import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.EnhetGateway
@@ -27,16 +27,16 @@ class SignaturService(
     }
 
     fun signaturer(
-        signaturerGrunnlag: List<SignaturGrunnlag>,
+        sorterbareSignaturer: List<SorterbarSignatur>,
         brevtype: Brevtype,
         personinfo: Personinfo
     ): List<Signatur> {
         return if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-            val sorterteSignaturGrunnlag = signaturerGrunnlag.sortedBy { it.rolle }
 
-            val ansattInfoListe = sorterteSignaturGrunnlag.map {
+            val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
+            val ansattInfoListe = sorterteSignaturer.map {
                 ansattInfoGateway.hentAnsattInfo(it.navIdent)
             }
 

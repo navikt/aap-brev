@@ -43,9 +43,11 @@ class BrevbestillingRepositoryImplTest {
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
             val brev = brev()
+            val signaturNavIdent1 = randomNavIdent()
+            val signaturNavIdent2 = randomNavIdent()
             val signaturer = listOf<SignaturGrunnlag>(
-                SignaturGrunnlag(randomNavIdent(), randomRolle()),
-                SignaturGrunnlag(randomNavIdent(), randomRolle()),
+                SignaturGrunnlag(signaturNavIdent1, randomRolle()),
+                SignaturGrunnlag(signaturNavIdent2, randomRolle()),
             )
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
@@ -89,7 +91,8 @@ class BrevbestillingRepositoryImplTest {
 
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
-            assertEquals(signaturer, bestilling.signaturer)
+
+            assertEquals(listOf<SorterbarSignatur>(SorterbarSignatur(signaturNavIdent1, 1), SorterbarSignatur(signaturNavIdent2, 2)), bestilling.signaturer)
 
             brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
