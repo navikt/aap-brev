@@ -1,6 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -45,8 +46,8 @@ class BrevbestillingRepositoryImplTest {
             val signaturNavIdent1 = randomNavIdent()
             val signaturNavIdent2 = randomNavIdent()
             val signaturer = listOf<SignaturGrunnlag>(
-                SignaturGrunnlag(signaturNavIdent1),
-                SignaturGrunnlag(signaturNavIdent2),
+                SignaturGrunnlag(signaturNavIdent1, null),
+                SignaturGrunnlag(signaturNavIdent2, Rolle.KVALITETSSIKRER),
             )
             val journalpostId = randomJournalpostId()
             val distribusjonBestillingId = randomDistribusjonBestillingId()
@@ -91,7 +92,15 @@ class BrevbestillingRepositoryImplTest {
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
-            assertEquals(listOf<SorterbarSignatur>(SorterbarSignatur(signaturNavIdent1, 1), SorterbarSignatur(signaturNavIdent2, 2)), bestilling.signaturer)
+            assertEquals(
+                listOf(
+                    SorterbarSignatur(signaturNavIdent1, 1, null), SorterbarSignatur(
+                        signaturNavIdent2, 2,
+                        Rolle.KVALITETSSIKRER
+                    )
+                ),
+                bestilling.signaturer
+            )
 
             brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)

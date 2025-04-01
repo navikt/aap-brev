@@ -126,7 +126,8 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             setRowMapper {
                 SorterbarSignatur(
                     navIdent = it.getString("NAV_IDENT"),
-                    sorteringsnøkkel = it.getInt("SORTERINGS_NOKKEL")
+                    sorteringsnøkkel = it.getInt("SORTERINGS_NOKKEL"),
+                    rolle = it.getEnumOrNull("ROLLE"),
                 )
             }
         }
@@ -190,14 +191,15 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>) {
         val query = """
-            INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, SORTERINGS_NOKKEL) VALUES (?, ?, ?)
+            INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, ROLLE, SORTERINGS_NOKKEL) VALUES (?, ?, ?, ?)
         """.trimIndent()
 
         connection.executeBatch(query, signaturer.mapIndexed { index, signatur -> index + 1 to signatur }) {
             setParams {
                 setLong(1, brevbestillingId.id)
                 setString(2, it.second.navIdent)
-                setInt(3, it.first)
+                setEnumName(3, it.second.rolle)
+                setInt(4, it.first)
             }
         }
     }

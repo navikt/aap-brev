@@ -3,7 +3,9 @@ package no.nav.aap.brev.journalføring
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.Signatur
+import no.nav.aap.brev.organisasjon.AnsattInfo
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.EnhetGateway
@@ -37,7 +39,13 @@ class SignaturService(
 
             val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
             val ansattInfoListe = sorterteSignaturer.map {
-                ansattInfoGateway.hentAnsattInfo(it.navIdent)
+                it to ansattInfoGateway.hentAnsattInfo(it.navIdent)
+            }.map { (signatur, ansattInfo) ->
+                if (signatur.rolle == Rolle.KVALITETSSIKRER && ansattInfo.enhetsnummer != "0390") {
+                    ansattInfo.copy(enhetsnummer = ansattInfo.enhetsnummer.dropLast(2) + "00")
+                } else {
+                    ansattInfo
+                }
             }
 
             val enheter = enhetGateway.hentEnhetsnavn(ansattInfoListe.map { it.enhetsnummer })

@@ -139,9 +139,15 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 val personinfo = personinfoGateway.hentPersoninfo(request.brukerIdent)
                 val signaturService = SignaturService.konstruer()
                 val signaturer = signaturService.signaturer(
-                    sorterbareSignaturer = request.signaturGrunnlag.mapIndexed { index, signatur -> SorterbarSignatur(signatur.navIdent, index) },
-                    request.brevtype,
-                    personinfo
+                    sorterbareSignaturer = request.signaturGrunnlag.mapIndexed { index, signatur ->
+                        SorterbarSignatur(
+                            navIdent = signatur.navIdent,
+                            sorteringsnøkkel = index,
+                            rolle = signatur.rolle
+                        )
+                    },
+                    brevtype = request.brevtype,
+                    personinfo = personinfo
                 )
                 respond(HentSignaturerResponse(signaturer))
             }
