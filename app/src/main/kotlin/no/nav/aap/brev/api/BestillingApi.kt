@@ -8,10 +8,11 @@ import io.ktor.http.*
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.PdfService
 import no.nav.aap.brev.bestilling.Saksnummer
-import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
+import no.nav.aap.brev.bestilling.tilSorterbareSignaturer
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.journalføring.SignaturService
@@ -21,17 +22,18 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
+import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
+import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
 import org.slf4j.MDC
-import no.nav.aap.tilgang.Operasjon
 import javax.sql.DataSource
 
 
@@ -106,6 +108,18 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         }
                     }
                 }
+                route("/forhandsvis") {
+                    authorizedPost<BrevbestillingReferansePathParam, ByteArray, ForhandsvisBrevRequest>(
+                        authorizationBodyPathConfig
+                    ) { referanse, request ->
+                        val pdf = dataSource.transaction { connection ->
+                            PdfService.konstruer(connection)
+                                .genererPdfForForhåndsvisning(referanse.brevbestillingReferanse, request.signaturer)
+
+                        }
+                        respond(pdf.bytes)
+                    }
+                }
             }
         }
         route("/ferdigstill") {
@@ -139,13 +153,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 val personinfo = personinfoGateway.hentPersoninfo(request.brukerIdent)
                 val signaturService = SignaturService.konstruer()
                 val signaturer = signaturService.signaturer(
-                    sorterbareSignaturer = request.signaturGrunnlag.mapIndexed { index, signatur ->
-                        SorterbarSignatur(
-                            navIdent = signatur.navIdent,
-                            sorteringsnøkkel = index,
-                            rolle = signatur.rolle
-                        )
-                    },
+                    sorterbareSignaturer = request.signaturGrunnlag.tilSorterbareSignaturer(),
                     brevtype = request.brevtype,
                     personinfo = personinfo
                 )

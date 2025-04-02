@@ -4,42 +4,25 @@ import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.PdfBrev
-import no.nav.aap.brev.bestilling.PdfBrev.Blokk
-import no.nav.aap.brev.bestilling.PdfBrev.FormattertTekst
-import no.nav.aap.brev.bestilling.PdfBrev.Innhold
-import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
-import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
-import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
-import no.nav.aap.brev.bestilling.PdfGateway
+import no.nav.aap.brev.bestilling.PdfService
 import no.nav.aap.brev.bestilling.PersoninfoGateway
-import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
-import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
-import no.nav.aap.brev.kontrakt.BlokkInnhold
-import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Signatur
-import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.person.PdlGateway
-import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import java.time.LocalDate
 
 class JournalføringService(
-    private val signaturService: SignaturService,
+    private val pdfService: PdfService,
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
-    private val pdfGateway: PdfGateway,
     private val journalføringGateway: JournalføringGateway,
 ) {
 
     companion object {
         fun konstruer(connection: DBConnection): JournalføringService {
             return JournalføringService(
-                signaturService = SignaturService.konstruer(),
+                pdfService = PdfService.konstruer(connection),
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
                 personinfoGateway = PdlGateway(),
-                pdfGateway = SaksbehandlingPdfGenGateway(),
                 journalføringGateway = DokarkivGateway(),
             )
         }
@@ -60,18 +43,7 @@ class JournalføringService(
 
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.brukerIdent)
 
-        val signaturer: List<Signatur> =
-            signaturService.signaturer(bestilling.signaturer, bestilling.brevtype, personinfo)
-        val pdfBrev = mapPdfBrev(
-            brukerIdent = personinfo.personIdent,
-            navn = personinfo.navn,
-            saksnummer = bestilling.saksnummer,
-            brev = bestilling.brev,
-            dato = LocalDate.now(),
-            språk = bestilling.språk,
-            signaturer = signaturer,
-        )
-        val pdf = pdfGateway.genererPdf(pdfBrev)
+        val pdf = pdfService.genererPdfForJournalføring(bestilling, personinfo)
 
         val journalføringData = JournalføringData(
             brukerFnr = personinfo.personIdent,
@@ -118,52 +90,5 @@ class JournalføringService(
 
     private fun ferdigstillVedOpprettelseAvJournalpost(bestilling: Brevbestilling): Boolean {
         return bestilling.vedlegg.isEmpty()
-    }
-
-    private fun mapPdfBrev(
-        brukerIdent: String,
-        navn: String,
-        saksnummer: Saksnummer,
-        brev: Brev,
-        dato: LocalDate,
-        språk: Språk,
-        signaturer: List<Signatur>,
-    ): PdfBrev {
-        return PdfBrev(
-            mottaker = Mottaker(
-                navn = navn,
-                ident = brukerIdent,
-                identType = IdentType.FNR
-            ),
-            saksnummer = saksnummer.nummer,
-            dato = dato.formaterFullLengde(språk),
-            overskrift = brev.overskrift,
-            tekstbolker = brev.tekstbolker.map {
-                Tekstbolk(
-                    overskrift = it.overskrift,
-                    innhold = it.innhold.map {
-                        Innhold(
-                            overskrift = it.overskrift,
-                            blokker = it.blokker.map {
-                                Blokk(
-                                    innhold = it.innhold.mapNotNull {
-                                        when (it) {
-                                            is BlokkInnhold.FormattertTekst -> FormattertTekst(
-                                                tekst = it.tekst,
-                                                formattering = it.formattering
-                                            )
-
-                                            is BlokkInnhold.Faktagrunnlag -> {
-                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
-                                            }
-                                        }
-                                    },
-                                    type = it.type
-                                )
-                            })
-                    })
-            },
-            signaturer = signaturer
-        )
     }
 }
