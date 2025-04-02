@@ -4,7 +4,7 @@ import java.util.*
 
 data class BestillBrevRequest(
     val saksnummer: String,
-    val brukerIdent: String?,
+    val brukerIdent: String,
     val behandlingReferanse: UUID,
     val brevtype: Brevtype,
     val unikReferanse: String,
