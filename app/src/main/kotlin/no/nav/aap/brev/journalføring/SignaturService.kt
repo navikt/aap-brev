@@ -41,7 +41,7 @@ class SignaturService(
             val ansattInfoListe = sorterteSignaturer.map {
                 it to ansattInfoGateway.hentAnsattInfo(it.navIdent)
             }.map { (signatur, ansattInfo) ->
-                if (signatur.rolle == Rolle.KVALITETSSIKRER && ansattInfo.enhetsnummer != "0390") {
+                if (signatur.rolle == Rolle.KVALITETSSIKRER && ansattInfo.enhetsnummer != "0393") {
                     ansattInfo.copy(enhetsnummer = ansattInfo.enhetsnummer.dropLast(2) + "00")
                 } else {
                     ansattInfo
