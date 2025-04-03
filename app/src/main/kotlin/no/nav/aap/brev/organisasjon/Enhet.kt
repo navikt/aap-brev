@@ -7,5 +7,5 @@ data class Enhet(val enhetsNummer: String, val navn: String, val type: EnhetsTyp
 }
 
 enum class EnhetsType {
-    LOKAL, ARBEID_OG_YTELSE, FYLKE, ANNET
+    LOKAL, ARBEID_OG_YTELSE, ANNET
 }

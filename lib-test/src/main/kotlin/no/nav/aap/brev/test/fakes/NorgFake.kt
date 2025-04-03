@@ -11,8 +11,5 @@ fun Application.norgFake() {
         get("/norg2/api/v1/enhet") {
             call.respond(listOf(NorgEnhet("1234", "Navn", "LOKAL")))
         }
-        get("/api/v1/enhet/{enhetNr}/overordnet") {
-            call.respond(listOf(NorgEnhet("4321", "Fylkeskontornavn", "FYLKE")))
-        }
     }
 }
