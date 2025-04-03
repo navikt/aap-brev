@@ -121,7 +121,7 @@ private fun utledSignatur(brukerFnr: String, navIdent: String): Signatur? {
         null
     } else {
         val ansattInfo = ansattInfoGateway.hentAnsattInfo(navIdent)
-        val enhet = enhetGateway.hentEnhetsnavn(listOf(ansattInfo.enhetsnummer)).first()
+        val enhet = enhetGateway.hentEnheter(listOf(ansattInfo.enhetsnummer)).first()
         Signatur(navn = ansattInfo.navn, enhet = enhet.navn)
     }
 }

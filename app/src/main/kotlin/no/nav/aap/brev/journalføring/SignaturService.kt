@@ -9,6 +9,7 @@ import no.nav.aap.brev.organisasjon.AnsattInfo
 import no.nav.aap.brev.organisasjon.AnsattInfoDevGateway
 import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.EnhetGateway
+import no.nav.aap.brev.organisasjon.EnhetsType
 import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.komponenter.miljo.Miljø
@@ -36,35 +37,44 @@ class SignaturService(
         return if (personinfo.harStrengtFortroligAdresse) {
             emptyList()
         } else {
-
             val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
-            val ansattInfoListe = sorterteSignaturer.map {
+
+            val ansattInfoMedRolle: List<AnsattInfoMedRolle> = sorterteSignaturer.map {
                 it to ansattInfoGateway.hentAnsattInfo(it.navIdent)
             }.map { (signatur, ansattInfo) ->
-                if (signatur.rolle == Rolle.KVALITETSSIKRER && ansattInfo.enhetsnummer != "0393") {
-                    ansattInfo.copy(enhetsnummer = ansattInfo.enhetsnummer.dropLast(2) + "00")
-                } else {
-                    ansattInfo
-                }
+                AnsattInfoMedRolle(ansattInfo, signatur.rolle)
             }
 
-            val enheter = enhetGateway.hentEnhetsnavn(ansattInfoListe.map { it.enhetsnummer })
-            val brukEnhetsTypeNavn = when (brevtype) {
-                Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING -> {
-                    true
-                }
+            val enheter = enhetGateway.hentEnheter(ansattInfoMedRolle.map { it.ansattInfo.enhetsnummer })
 
-                Brevtype.VEDTAK_ENDRING, Brevtype.VARSEL_OM_BESTILLING, Brevtype.AVSLAG, Brevtype.INNVILGELSE -> {
-                    false
-                }
-            }
-            ansattInfoListe.map { ansattInfo ->
-                val enhet = enheter.single { it.enhetsNummer == ansattInfo.enhetsnummer }
+            ansattInfoMedRolle.map { ansattInfoMedRolle ->
+                val ansattEnhet = enheter.single { it.enhetsNummer == ansattInfoMedRolle.ansattInfo.enhetsnummer }
+                val valgtEnhet =
+                    if (ansattEnhet.type == EnhetsType.LOKAL && ansattInfoMedRolle.rolle == Rolle.KVALITETSSIKRER) {
+                        enhetGateway.hentOverordnetFylkesenhet(ansattEnhet.enhetsNummer)
+                    } else {
+                        ansattEnhet
+                    }
+
                 Signatur(
-                    navn = ansattInfo.navn,
-                    enhet = if (brukEnhetsTypeNavn) enhet.enhetstypeNavn else enhet.navn
+                    navn = ansattInfoMedRolle.ansattInfo.navn,
+                    enhet = if (brukEnhetsTypeNavn(brevtype)) valgtEnhet.enhetstypeNavn else valgtEnhet.navn
                 )
             }
         }
     }
+
+    private fun brukEnhetsTypeNavn(brevtype: Brevtype): Boolean {
+        return when (brevtype) {
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING -> {
+                true
+            }
+
+            Brevtype.VEDTAK_ENDRING, Brevtype.VARSEL_OM_BESTILLING, Brevtype.AVSLAG, Brevtype.INNVILGELSE -> {
+                false
+            }
+        }
+    }
+
+    private data class AnsattInfoMedRolle(val ansattInfo: AnsattInfo, val rolle: Rolle?)
 }
