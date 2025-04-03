@@ -36,7 +36,7 @@ class NorgGateway : EnhetGateway {
     }
 
     override fun hentOverordnetFylkesenhet(enhetsnummer: String): Enhet {
-        val uri = baseUri.resolve("/api/v1/enhet/$enhetsnummer/overordnet?organiseringsType=${EnhetsType.FYLKE}")
+        val uri = baseUri.resolve("/norg2/api/v1/enhet/$enhetsnummer/overordnet?organiseringsType=${EnhetsType.FYLKE}")
 
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
