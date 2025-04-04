@@ -224,6 +224,21 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
+    override fun lagreJournalpostFerdigstilt(id: BrevbestillingId, journalpostFerdigstilt: Boolean) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setBoolean(1, journalpostFerdigstilt)
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
+            }
+            setResultValidator {
+                require(1 == it)
+            }
+        }
+    }
+
     override fun lagreDistribusjonBestilling(
         id: BrevbestillingId,
         distribusjonBestillingId: DistribusjonBestillingId

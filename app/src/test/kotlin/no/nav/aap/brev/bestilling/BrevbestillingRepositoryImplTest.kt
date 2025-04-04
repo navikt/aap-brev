@@ -102,10 +102,15 @@ class BrevbestillingRepositoryImplTest {
                 bestilling.signaturer
             )
 
-            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = true)
+            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = false)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(journalpostId, bestilling.journalpostId)
+            assertTrue(bestilling.journalpostFerdigstilt == false)
+
+            brevbestillingRepository.lagreJournalpostFerdigstilt(bestilling.id, journalpostFerdigstilt = true)
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
+
             assertTrue(bestilling.journalpostFerdigstilt == true)
 
             brevbestillingRepository.lagreDistribusjonBestilling(bestilling.id, distribusjonBestillingId)

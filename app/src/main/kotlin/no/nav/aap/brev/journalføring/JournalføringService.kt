@@ -85,6 +85,7 @@ class JournalføringService(
         val journalpostId = checkNotNull(bestilling.journalpostId)
         if (bestilling.journalpostFerdigstilt != true) {
             journalføringGateway.ferdigstillJournalpost(journalpostId)
+            brevbestillingRepository.lagreJournalpostFerdigstilt(bestilling.id, true)
         }
     }
 
