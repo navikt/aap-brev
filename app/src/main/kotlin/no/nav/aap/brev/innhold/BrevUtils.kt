@@ -39,3 +39,11 @@ fun Brev.endreBlokkInnhold(endring: (BlokkInnhold) -> BlokkInnhold): Brev {
         })
     })
 }
+
+fun Brev.ikkeRedigerbartInnhold(): String {
+    return this.copy(
+        tekstbolker = this.tekstbolker.map { tekstbolk ->
+            tekstbolk.copy(innhold = tekstbolk.innhold.filter { !it.kanRedigeres })
+        }
+    ).toString()
+}

@@ -4,6 +4,7 @@ import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
+import no.nav.aap.brev.innhold.ikkeRedigerbartInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
@@ -94,10 +95,7 @@ class BrevbestillingService(
     }
 
     fun oppdaterBrev(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
-        val bestilling = brevbestillingRepository.hent(referanse)
-        if (bestilling.prosesseringStatus != ProsesseringStatus.BREVBESTILLING_LØST) {
-            throw ValideringsfeilException("Forsøkte å oppdatere brev i bestilling med prosesseringStatus=${bestilling.prosesseringStatus}")
-        }
+        validerOppdatering(referanse, oppdatertBrev)
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 
@@ -234,4 +232,15 @@ class BrevbestillingService(
         jobbRepository.leggTil(jobb)
     }
 
+    private fun validerOppdatering(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        if (bestilling.prosesseringStatus != ProsesseringStatus.BREVBESTILLING_LØST) {
+            throw ValideringsfeilException("Forsøkte å oppdatere brev i bestilling med prosesseringStatus=${bestilling.prosesseringStatus}")
+        }
+        checkNotNull(bestilling.brev)
+        if (bestilling.brev.ikkeRedigerbartInnhold() != oppdatertBrev.ikkeRedigerbartInnhold()) {
+//            throw ValideringsfeilException("Forsøkte å oppdatere deler av brevet som ikke er redigerbart")
+            log.warn("Forsøkte å oppdatere deler av brevet som ikke er redigerbart") // TODO midlertidig bare logging for testing
+        }
+    }
 }
