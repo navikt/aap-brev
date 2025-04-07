@@ -47,6 +47,8 @@ class OppdaterBestillingValideringTest {
                 vedlegg = emptySet(),
             ).referanse
 
+            brevbestillingRepository.oppdaterBrev(referanse, brev())
+
             brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.BREVBESTILLING_LØST)
 
             brevbestillingService.oppdaterBrev(referanse, brev())
