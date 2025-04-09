@@ -34,7 +34,7 @@ class SignaturService(
         brevtype: Brevtype,
         personinfo: Personinfo
     ): List<Signatur> {
-        return if (personinfo.harStrengtFortroligAdresse) {
+        return if (personinfo.harStrengtFortroligAdresse || sorterbareSignaturer.isEmpty()) {
             emptyList()
         } else {
             val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
