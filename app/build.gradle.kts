@@ -76,4 +76,5 @@ dependencies {
         }
     }
     testImplementation(project(":lib-test"))
+    testImplementation("io.mockk:mockk:1.13.17")
 }
