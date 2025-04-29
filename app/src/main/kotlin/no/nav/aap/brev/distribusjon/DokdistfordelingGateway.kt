@@ -4,6 +4,7 @@ import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest.Distribusjonsti
 import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest.Distribusjonstype
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.prometheus
 import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
@@ -20,6 +21,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
         responseHandler = HåndterConflictResponseHandler(),
+        prometheus = prometheus,
     )
 
     override fun distribuerJournalpost(journalpostId: JournalpostId, brevtype: Brevtype): DistribusjonBestillingId {

@@ -2,6 +2,7 @@ package no.nav.aap.brev.person
 
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.PersoninfoGateway
+import no.nav.aap.brev.prometheus
 import no.nav.aap.brev.util.graphql.GraphQLResponse
 import no.nav.aap.brev.util.graphql.GraphQLResponseHandler
 import no.nav.aap.brev.util.graphql.GraphqlRequest
@@ -24,7 +25,8 @@ class PdlGateway : PersoninfoGateway {
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
-        responseHandler = GraphQLResponseHandler()
+        responseHandler = GraphQLResponseHandler(),
+        prometheus = prometheus,
     )
 
     override fun hentPersoninfo(personIdent: String): Personinfo {

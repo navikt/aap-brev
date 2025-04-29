@@ -9,6 +9,7 @@ import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Dokument.Dokumen
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Innsynsregl
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.JournalpostType
 import no.nav.aap.brev.journalføring.OpprettJournalpostRequest.Sak
+import no.nav.aap.brev.prometheus
 import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
@@ -33,7 +34,8 @@ class DokarkivGateway : JournalføringGateway {
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
-        responseHandler = HåndterConflictResponseHandler()
+        responseHandler = HåndterConflictResponseHandler(),
+        prometheus = prometheus
     )
 
     override fun journalførBrev(

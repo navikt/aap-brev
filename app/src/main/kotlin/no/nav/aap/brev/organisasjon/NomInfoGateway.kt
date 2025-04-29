@@ -1,5 +1,6 @@
 package no.nav.aap.brev.organisasjon
 
+import no.nav.aap.brev.prometheus
 import no.nav.aap.brev.util.graphql.GraphQLResponse
 import no.nav.aap.brev.util.graphql.GraphQLResponseHandler
 import no.nav.aap.brev.util.graphql.GraphqlRequest
@@ -21,8 +22,8 @@ class NomInfoGateway : AnsattInfoGateway {
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
-        responseHandler = GraphQLResponseHandler()
-
+        responseHandler = GraphQLResponseHandler(),
+        prometheus = prometheus,
     )
 
     override fun hentAnsattInfo(navIdent: String): AnsattInfo {

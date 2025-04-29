@@ -14,7 +14,6 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
@@ -55,7 +54,6 @@ fun main() {
 }
 
 internal fun Application.server(dbConfig: DbConfig) {
-    val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
     commonKtorModule(prometheus, AzureConfig(), InfoModel(title = "AAP - Brev"))
 

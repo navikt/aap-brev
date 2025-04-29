@@ -2,6 +2,7 @@ package no.nav.aap.brev.arkivoppslag
 
 import dokumentinnhenting.util.graphql.asQuery
 import no.nav.aap.brev.journalføring.JournalpostId
+import no.nav.aap.brev.prometheus
 import no.nav.aap.brev.util.graphql.GraphQLResponse
 import no.nav.aap.brev.util.graphql.GraphQLResponseHandler
 import no.nav.aap.brev.util.graphql.GraphqlRequest
@@ -20,7 +21,8 @@ class SafGateway : ArkivoppslagGateway {
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
-        responseHandler = GraphQLResponseHandler()
+        responseHandler = GraphQLResponseHandler(),
+        prometheus = prometheus,
     )
 
     override fun hentJournalpost(journalpostId: JournalpostId): Journalpost {
