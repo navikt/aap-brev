@@ -24,7 +24,7 @@ import java.time.LocalDate
 class ProsesserStegServiceTest {
 
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
 
         @BeforeAll
         @JvmStatic

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 class BrevbestillingRepositoryImplTest {
 
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
     }
 
     @Test

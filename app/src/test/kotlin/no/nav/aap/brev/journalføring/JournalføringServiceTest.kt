@@ -22,7 +22,7 @@ import org.junit.jupiter.api.assertThrows
 class JournalføringServiceTest {
 
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
 
         @BeforeAll
         @JvmStatic
