@@ -101,7 +101,8 @@ private fun Application.module(dataSource: DataSource): Motor {
             dataSource = dataSource,
             antallKammer = 2,
             logInfoProvider = NoExtraLogInfoProvider,
-            jobber = listOf(ProsesserBrevbestillingJobbUtfører)
+            jobber = listOf(ProsesserBrevbestillingJobbUtfører),
+            prometheus = prometheus,
         )
 
     dataSource.transaction { dbConnection ->
