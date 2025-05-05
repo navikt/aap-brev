@@ -1,7 +1,7 @@
 package no.nav.aap.brev.organisasjon
 
-import io.ktor.http.URLBuilder
-import io.ktor.http.toURI
+import io.ktor.http.*
+import no.nav.aap.brev.prometheus
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
@@ -14,7 +14,10 @@ import java.net.URI
 class NorgGateway : EnhetGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.norg.url"))
     private val client =
-        RestClient.withDefaultResponseHandler(config = ClientConfig(), tokenProvider = NoTokenTokenProvider())
+        RestClient.withDefaultResponseHandler(
+            config = ClientConfig(), tokenProvider = NoTokenTokenProvider(),
+            prometheus
+        )
 
     override fun hentEnheter(enhetsnummer: List<String>): List<Enhet> {
         val uri = baseUri.resolve("/norg2/api/v1/enhet")

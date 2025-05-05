@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.prometheus
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
@@ -14,7 +15,8 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
     private val config = ClientConfig(scope = requiredConfigForKey("integrasjon.saksbehandling_pdfgen.scope"))
     private val client = RestClient.withDefaultResponseHandler(
         config = config,
-        tokenProvider = NoTokenTokenProvider()
+        tokenProvider = NoTokenTokenProvider(),
+        prometheus = prometheus,
     )
 
     override fun genererPdf(brev: PdfBrev): Pdf {

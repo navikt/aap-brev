@@ -8,6 +8,7 @@ import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.HentFaktaGrunnlagReque
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
 import no.nav.aap.brev.innhold.HentFagtagrunnlagGateway
 import no.nav.aap.brev.kontrakt.Status
+import no.nav.aap.brev.prometheus
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
@@ -22,7 +23,8 @@ class BehandlingsflytGateway : BestillerGateway, HentFagtagrunnlagGateway {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.behandlingsflyt.scope"))
     private val client = RestClient.withDefaultResponseHandler(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider
+        tokenProvider = ClientCredentialsTokenProvider,
+        prometheus = prometheus,
     )
 
     override fun oppdaterBrevStatus(brevbestilling: Brevbestilling, status: Status) {

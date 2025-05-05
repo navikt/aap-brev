@@ -3,6 +3,7 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.prometheus
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.Header
@@ -18,7 +19,8 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.brev_sanity_proxy.scope"))
     private val client = RestClient.withDefaultResponseHandler(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider
+        tokenProvider = ClientCredentialsTokenProvider,
+        prometheus = prometheus
     )
 
     override fun hentBrevmal(
