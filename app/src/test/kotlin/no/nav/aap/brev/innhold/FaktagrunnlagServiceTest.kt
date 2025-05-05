@@ -23,7 +23,7 @@ import java.time.Year
 
 class FaktagrunnlagServiceTest {
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
 
         @BeforeAll
         @JvmStatic

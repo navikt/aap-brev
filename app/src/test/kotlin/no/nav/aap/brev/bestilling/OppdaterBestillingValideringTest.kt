@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.EnumSource.Mode
 
 class OppdaterBestillingValideringTest {
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
 
         @BeforeAll
         @JvmStatic

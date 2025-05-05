@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 
 class LøsBrevbestillingServiceTest {
     companion object {
-        private val dataSource = InitTestDatabase.dataSource
+        private val dataSource = InitTestDatabase.freshDatabase()
 
         @BeforeAll
         @JvmStatic
