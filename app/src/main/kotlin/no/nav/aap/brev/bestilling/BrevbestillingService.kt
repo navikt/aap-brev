@@ -160,7 +160,7 @@ class BrevbestillingService(
                     "$feilmelding: Fant ikke dokument i journalpost."
                 }
 
-                valider(!Miljø.erDev() && dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
+                valider(Miljø.erDev() || dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
                     "$feilmelding: Bruker har ikke tilgang til dokumentet."
                 }
             }
