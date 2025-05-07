@@ -68,7 +68,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                         tittelJournalpost = request.tittel,
                         tittelBrev = request.tittel,
                         brevkode = request.brevkode,
-                        overstyrInnsynsregel = !Miljø.erDev(),
+                        overstyrInnsynsregel = true,
                     ),
                     pdf = pdf,
                     forsøkFerdigstill = true,

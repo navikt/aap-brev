@@ -160,9 +160,10 @@ class BrevbestillingService(
                     "$feilmelding: Fant ikke dokument i journalpost."
                 }
 
-                valider(Miljø.erDev() || dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
-                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
-                }
+                // Må skru av følgende valideringen midlertidig fordi overstyrInnsynsregler med VISES_MASKINELT_GODKJENT per nå ikke har effekt
+//                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
+//                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
+//                }
             }
         }
     }
