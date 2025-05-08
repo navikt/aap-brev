@@ -183,7 +183,6 @@ class BestillingValideringTest {
     }
 
     @Test
-    @Disabled("Midlertidig avskrudd")
     fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()

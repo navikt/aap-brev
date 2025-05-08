@@ -13,7 +13,6 @@ import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
@@ -160,10 +159,9 @@ class BrevbestillingService(
                     "$feilmelding: Fant ikke dokument i journalpost."
                 }
 
-                // Må skru av følgende valideringen midlertidig fordi overstyrInnsynsregler med VISES_MASKINELT_GODKJENT per nå ikke har effekt
-//                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
-//                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
-//                }
+                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
+                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
+                }
             }
         }
     }
