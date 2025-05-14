@@ -1,8 +1,6 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.innhold.erFullstendig
-import no.nav.aap.brev.innhold.harFaktagrunnlag
-import no.nav.aap.brev.innhold.kanRedigeres
+import no.nav.aap.brev.innhold.kanFerdigstillesAutomatisk
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -39,9 +37,6 @@ class LøsBrevbestillingService(
     }
 
     private fun skalFerdigstilles(brev: Brev): Boolean {
-        return brev.kanSendesAutomatisk == true &&
-                !brev.harFaktagrunnlag() &&
-                brev.erFullstendig() &&
-                !brev.kanRedigeres()
+        return brev.kanFerdigstillesAutomatisk()
     }
 }

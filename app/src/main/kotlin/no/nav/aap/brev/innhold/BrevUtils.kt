@@ -28,6 +28,12 @@ fun Brev.kanRedigeres(): Boolean =
         .flatMap { it.innhold }
         .any { it.kanRedigeres }
 
+fun Brev.kanFerdigstillesAutomatisk(): Boolean =
+    kanSendesAutomatisk == true &&
+            !harFaktagrunnlag() &&
+            erFullstendig() &&
+            !kanRedigeres()
+
 fun Brev.endreBlokkInnhold(endring: (BlokkInnhold) -> BlokkInnhold): Brev {
     return copy(tekstbolker = tekstbolker.map { tekstbolk ->
         tekstbolk.copy(innhold = tekstbolk.innhold.map { innhold ->
