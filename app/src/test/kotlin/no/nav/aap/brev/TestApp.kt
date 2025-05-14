@@ -6,10 +6,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.komponenter.config.configForKey
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
-import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 fun main() {
     var jdbcUrl = configForKey("JDBC_URL")

@@ -19,6 +19,7 @@ import no.nav.aap.brev.journalføring.SignaturService
 import no.nav.aap.brev.kontrakt.AvbrytBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.BestillBrevRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
+import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
@@ -74,6 +75,45 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
 
                         respond(BestillBrevResponse(bestillingResultat.brevbestilling.referanse.referanse), httpStatusCode)
                     }
+                }
+            }
+        }
+        route("/v2/bestill") {
+            authorizedPost<Unit, BestillBrevResponse, BestillBrevV2Request>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.SAKSNUMMER.key, request.saksnummer).use {
+                    MDC.putCloseable(MDCNøkler.BEHANDLING_REFERANSE.key, request.behandlingReferanse.toString())
+                        .use {
+                            val bestillingResultat = dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection).opprettBestillingV2(
+                                    saksnummer = Saksnummer(request.saksnummer),
+                                    brukerIdent = request.brukerIdent,
+                                    behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
+                                    unikReferanse = UnikReferanse(request.unikReferanse),
+                                    brevtype = request.brevtype,
+                                    språk = request.sprak,
+                                    faktagrunnlag = request.faktagrunnlag,
+                                    vedlegg = request.vedlegg.map {
+                                        Vedlegg(
+                                            JournalpostId(it.journalpostId),
+                                            DokumentInfoId(it.dokumentInfoId)
+                                        )
+                                    }.toSet(),
+                                    ferdigstillAutomatisk = request.ferdigstillAutomatisk,
+                                )
+                            }
+                            val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
+                                HttpStatusCode.Conflict
+                            } else {
+                                HttpStatusCode.Created
+                            }
+
+                            respond(
+                                BestillBrevResponse(
+                                    bestillingResultat.brevbestilling.referanse.referanse,
+                                ), httpStatusCode
+                            )
+
+                        }
                 }
             }
         }

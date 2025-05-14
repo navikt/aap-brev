@@ -1,8 +1,8 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrukerIdent
@@ -11,25 +11,13 @@ import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class BestillingDuplikathåndteringTest {
-
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
+class BestillingDuplikathåndteringTest : IntegrationTest() {
 
     @Test
     fun `håndterer duplikat bestilling`() {
@@ -43,7 +31,7 @@ class BestillingDuplikathåndteringTest {
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
         )
-        dataSource.transaction { connection ->
+        val referanse = dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
             val resultatFørste = brevbestillingService.opprettBestillingV1(
@@ -69,7 +57,11 @@ class BestillingDuplikathåndteringTest {
             )
 
             assertTrue(resultatAndre.alleredeOpprettet)
+
+            resultatFørste.brevbestilling.referanse
         }
+
+        assertAntallJobber(referanse, 1)
     }
 
     @Test

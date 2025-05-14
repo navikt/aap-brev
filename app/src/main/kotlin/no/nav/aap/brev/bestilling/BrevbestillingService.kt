@@ -3,10 +3,13 @@ package no.nav.aap.brev.bestilling
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.innhold.BrevinnholdService
+import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
 import no.nav.aap.brev.innhold.ikkeRedigerbartInnhold
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
@@ -21,6 +24,8 @@ class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val jobbRepository: FlytJobbRepository,
     private val arkivoppslagGateway: ArkivoppslagGateway,
+    private val brevinnholdService: BrevinnholdService,
+    private val faktagrunnlagService: FaktagrunnlagService,
 ) {
 
     companion object {
@@ -29,6 +34,8 @@ class BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
                 jobbRepository = FlytJobbRepository(connection),
                 arkivoppslagGateway = SafGateway(),
+                brevinnholdService = BrevinnholdService.konstruer(connection),
+                faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
             )
         }
     }
@@ -57,6 +64,54 @@ class BrevbestillingService(
             leggTilJobb(resultat.brevbestilling)
         }
         return resultat
+    }
+
+    fun opprettBestillingV2(
+        saksnummer: Saksnummer,
+        brukerIdent: String?,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        faktagrunnlag: Set<Faktagrunnlag>,
+        vedlegg: Set<Vedlegg>,
+        ferdigstillAutomatisk: Boolean,
+    ): OpprettBrevbestillingResultat {
+        val resultat = opprettBestilling(
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            brevtype = brevtype,
+            språk = språk,
+            vedlegg = vedlegg,
+        )
+
+        if (resultat.alleredeOpprettet) {
+            return resultat
+        }
+
+        val referanse = resultat.brevbestilling.referanse
+
+        brevinnholdService.hentOgLagre(referanse)
+
+        faktagrunnlagService.fyllInnFaktagrunnlag(referanse, faktagrunnlag)
+
+        brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.BREVBESTILLING_LØST)
+
+        if (ferdigstillAutomatisk) {
+            val brev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
+            if (brev.kanSendesAutomatisk ?: false) {
+                leggTilJobb(resultat.brevbestilling)
+            } else {
+                throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
+            }
+        }
+
+        return OpprettBrevbestillingResultat(
+            brevbestilling = brevbestillingRepository.hent(referanse),
+            alleredeOpprettet = false
+        )
     }
 
     private fun opprettBestilling(

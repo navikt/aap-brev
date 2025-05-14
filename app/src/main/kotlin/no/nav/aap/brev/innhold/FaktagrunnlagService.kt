@@ -40,6 +40,13 @@ class FaktagrunnlagService(
             return
         }
 
+        fyllInnFaktagrunnlag(brevbestillingReferanse, faktagrunnlag)
+    }
+
+    fun fyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
+        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        val brev = checkNotNull(bestilling.brev)
+
         val faktagrunnlagTekst = faktagrunnlagTilTekst(faktagrunnlag, bestilling.språk)
         val oppdatertBrev = brev.endreBlokkInnhold { erstattFaktagrunnlagMedTekst(it, faktagrunnlagTekst) }
 
