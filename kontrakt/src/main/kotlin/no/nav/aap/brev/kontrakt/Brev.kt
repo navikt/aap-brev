@@ -9,6 +9,7 @@ import java.util.UUID
 data class Brev(
     val kanSendesAutomatisk: Boolean?,
     val overskrift: String?,
+    val kanOverstyreBrevtittel: Boolean?,
     val journalpostTittel: String?,
     val tekstbolker: List<Tekstbolk>,
 )
