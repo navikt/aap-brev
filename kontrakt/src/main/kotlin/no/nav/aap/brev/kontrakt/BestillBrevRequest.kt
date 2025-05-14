@@ -11,5 +11,3 @@ data class BestillBrevRequest(
     val sprak: Språk,
     val vedlegg: Set<Vedlegg> = emptySet(),
 )
-
-data class Vedlegg(val journalpostId: String, val dokumentInfoId: String)
