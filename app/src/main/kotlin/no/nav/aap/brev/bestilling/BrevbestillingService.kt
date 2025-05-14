@@ -53,7 +53,9 @@ class BrevbestillingService(
             språk = språk,
             vedlegg = vedlegg,
         )
-        leggTilJobb(resultat.brevbestilling)
+        if (!resultat.alleredeOpprettet) {
+            leggTilJobb(resultat.brevbestilling)
+        }
         return resultat
     }
 
