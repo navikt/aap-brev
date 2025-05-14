@@ -2,7 +2,6 @@ package no.nav.aap.brev.prosessering.steg
 
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import org.slf4j.LoggerFactory
 
 class HentInnholdSteg(
     private val brevinnholdService: BrevinnholdService,
