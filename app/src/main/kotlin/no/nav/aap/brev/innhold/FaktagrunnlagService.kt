@@ -1,13 +1,13 @@
 package no.nav.aap.brev.innhold
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
+import no.nav.aap.brev.kontrakt.Faktagrunnlag
+import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection

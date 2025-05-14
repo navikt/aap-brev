@@ -1,12 +1,14 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.BrevbestillingLøsningStatus
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag as BehandlingsflytFaktagrunnlag
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagDto
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
+import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType as BehandlingsflytFaktagrunnlagType
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.HentFaktaGrunnlagRequest
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.LøsBrevbestillingDto
 import no.nav.aap.brev.innhold.HentFagtagrunnlagGateway
+import no.nav.aap.brev.kontrakt.Faktagrunnlag
+import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prometheus
 import no.nav.aap.komponenter.config.requiredConfigForKey
@@ -59,7 +61,7 @@ class BehandlingsflytGateway : BestillerGateway, HentFagtagrunnlagGateway {
         val httpRequest = PostRequest(
             body = HentFaktaGrunnlagRequest(
                 no.nav.aap.behandlingsflyt.kontrakt.behandling.BehandlingReferanse(behandlingReferanse.referanse),
-                faktagrunnlag
+                faktagrunnlag.map { it.tilBehandlingsflytType() }.toSet()
             ),
             additionalHeaders = listOf(
                 Header("Accept", "application/json")
@@ -68,6 +70,29 @@ class BehandlingsflytGateway : BestillerGateway, HentFagtagrunnlagGateway {
 
         val response: FaktagrunnlagDto = checkNotNull(client.post(uri = uri, request = httpRequest))
 
-        return response.faktagrunnlag.toSet()
+        return response.faktagrunnlag.map { it.fraBehandlingsflytType() }.toSet()
+    }
+
+    private fun FaktagrunnlagType.tilBehandlingsflytType(): BehandlingsflytFaktagrunnlagType {
+        return when (this) {
+            FaktagrunnlagType.FRIST_DATO_11_7 -> BehandlingsflytFaktagrunnlagType.FRIST_DATO_11_7
+            FaktagrunnlagType.GRUNNLAG_BEREGNING -> BehandlingsflytFaktagrunnlagType.GRUNNLAG_BEREGNING
+        }
+    }
+
+    private fun BehandlingsflytFaktagrunnlag.fraBehandlingsflytType(): Faktagrunnlag {
+        return when (this) {
+            is BehandlingsflytFaktagrunnlag.FristDato11_7 -> Faktagrunnlag.FristDato11_7(
+                frist
+            )
+
+            is BehandlingsflytFaktagrunnlag.GrunnlagBeregning -> Faktagrunnlag.GrunnlagBeregning(
+                inntekterPerÅr.map { it.fraBehandlingsflytType() }
+            )
+        }
+    }
+
+    private fun BehandlingsflytFaktagrunnlag.GrunnlagBeregning.InntektPerÅr.fraBehandlingsflytType(): Faktagrunnlag.GrunnlagBeregning.InntektPerÅr {
+        return Faktagrunnlag.GrunnlagBeregning.InntektPerÅr(år = år, inntekt = inntekt)
     }
 }
