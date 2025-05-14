@@ -37,7 +37,7 @@ class OppdaterBestillingValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -45,7 +45,7 @@ class OppdaterBestillingValideringTest {
                 brevtype = randomBrevtype(),
                 språk = randomSpråk(),
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevbestillingRepository.oppdaterBrev(referanse, brev())
 
@@ -64,7 +64,7 @@ class OppdaterBestillingValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -72,7 +72,7 @@ class OppdaterBestillingValideringTest {
                 brevtype = randomBrevtype(),
                 språk = randomSpråk(),
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevbestillingRepository.oppdaterProsesseringStatus(referanse, status)
 

@@ -97,7 +97,7 @@ class FerdigstillValideringTest {
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -105,7 +105,7 @@ class FerdigstillValideringTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevinnholdService.hentOgLagre(referanse)
             brevbestillingRepository.oppdaterBrev(referanse, brev)

@@ -47,7 +47,7 @@ class BestillingValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -55,7 +55,7 @@ class BestillingValideringTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-            ).referanse
+            ).brevbestilling.referanse
             assertNotNull(brevbestillingRepository.hent(referanse))
         }
     }
@@ -212,7 +212,7 @@ class BestillingValideringTest {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val exception = assertThrows<ValideringsfeilException> {
-                brevbestillingService.opprettBestilling(
+                brevbestillingService.opprettBestillingV1(
                     saksnummer = saksnummer,
                     brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = randomBehandlingReferanse(),

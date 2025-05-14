@@ -135,7 +135,7 @@ class ProsesserStegServiceTest {
     ): BrevbestillingReferanse {
         return dataSource.transaction { connection ->
             BrevbestillingService.konstruer(connection)
-                .opprettBestilling(
+                .opprettBestillingV1(
                     saksnummer = randomSaksnummer(),
                     brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = behandlingReferanse,
@@ -143,7 +143,7 @@ class ProsesserStegServiceTest {
                     brevtype = brevtype,
                     språk = randomSpråk(),
                     vedlegg = emptySet(),
-                ).referanse
+                ).brevbestilling.referanse
         }
     }
 }

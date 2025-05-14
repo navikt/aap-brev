@@ -46,7 +46,7 @@ class BestillingDuplikathåndteringTest {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            val resultatFørste = brevbestillingService.opprettBestilling(
+            val resultatFørste = brevbestillingService.opprettBestillingV1(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
@@ -58,7 +58,7 @@ class BestillingDuplikathåndteringTest {
 
             assertFalse(resultatFørste.alleredeOpprettet)
 
-            val resultatAndre = brevbestillingService.opprettBestilling(
+            val resultatAndre = brevbestillingService.opprettBestillingV1(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
@@ -88,7 +88,7 @@ class BestillingDuplikathåndteringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
@@ -96,7 +96,7 @@ class BestillingDuplikathåndteringTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevbestillingRepository.hent(referanse)
         }
@@ -153,7 +153,7 @@ class BestillingDuplikathåndteringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
             val exception = assertThrows<IllegalStateException> {
-                brevbestillingService.opprettBestilling(
+                brevbestillingService.opprettBestillingV1(
                     saksnummer = endretBestilling.saksnummer,
                     brukerIdent = endretBestilling.brukerIdent,
                     behandlingReferanse = endretBestilling.behandlingReferanse,

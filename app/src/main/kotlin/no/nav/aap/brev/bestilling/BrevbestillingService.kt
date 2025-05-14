@@ -35,7 +35,29 @@ class BrevbestillingService(
 
     private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
 
-    fun opprettBestilling(
+    fun opprettBestillingV1(
+        saksnummer: Saksnummer,
+        brukerIdent: String?,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        vedlegg: Set<Vedlegg>,
+    ): OpprettBrevbestillingResultat {
+        val resultat = opprettBestilling(
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            brevtype = brevtype,
+            språk = språk,
+            vedlegg = vedlegg,
+        )
+        leggTilJobb(resultat.brevbestilling)
+        return resultat
+    }
+
+    private fun opprettBestilling(
         saksnummer: Saksnummer,
         brukerIdent: String?,
         behandlingReferanse: BehandlingReferanse,
@@ -59,8 +81,7 @@ class BrevbestillingService(
             ) {
                 log.info("Fant eksisterende bestilling med referanse=${eksisterendeBestilling.referanse.referanse}")
                 return OpprettBrevbestillingResultat(
-                    id = eksisterendeBestilling.id,
-                    referanse = eksisterendeBestilling.referanse,
+                    brevbestilling = eksisterendeBestilling,
                     alleredeOpprettet = true
                 )
             } else {
@@ -80,12 +101,9 @@ class BrevbestillingService(
             vedlegg = vedlegg,
         )
 
-        leggTilJobb(bestilling)
-
         log.info("Bestilling opprettet med referanse=${bestilling.referanse.referanse}")
         return OpprettBrevbestillingResultat(
-            id = bestilling.id,
-            referanse = bestilling.referanse,
+            brevbestilling = bestilling,
             alleredeOpprettet = false
         )
     }

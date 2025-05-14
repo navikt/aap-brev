@@ -41,7 +41,7 @@ class FaktagrunnlagServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse =
-                brevbestillingService.opprettBestilling(
+                brevbestillingService.opprettBestillingV1(
                     saksnummer = randomSaksnummer(),
                     brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = behandlingReferanse,
@@ -49,7 +49,7 @@ class FaktagrunnlagServiceTest {
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     vedlegg = emptySet(),
-                ).referanse
+                ).brevbestilling.referanse
 
             faktagrunnlagForBehandling(
                 behandlingReferanse, setOf(

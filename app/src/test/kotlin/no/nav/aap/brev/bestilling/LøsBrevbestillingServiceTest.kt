@@ -99,7 +99,7 @@ class LøsBrevbestillingServiceTest {
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -107,7 +107,7 @@ class LøsBrevbestillingServiceTest {
                 brevtype = randomBrevtype(),
                 språk = randomSpråk(),
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevbestillingRepository.oppdaterBrev(
                 referanse, brev

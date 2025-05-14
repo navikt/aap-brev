@@ -44,7 +44,7 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -52,7 +52,7 @@ class DistribusjonServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
@@ -79,7 +79,7 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -87,7 +87,7 @@ class DistribusjonServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
@@ -112,7 +112,7 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -120,7 +120,7 @@ class DistribusjonServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
@@ -148,7 +148,7 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -156,7 +156,7 @@ class DistribusjonServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)

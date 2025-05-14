@@ -40,7 +40,7 @@ class JournalføringServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -48,7 +48,7 @@ class JournalføringServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
@@ -70,7 +70,7 @@ class JournalføringServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -78,7 +78,7 @@ class JournalføringServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val exception = assertThrows<IllegalStateException> {
                 journalføringService.journalførBrevbestilling(referanse)
@@ -94,7 +94,7 @@ class JournalføringServiceTest {
             val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -102,7 +102,7 @@ class JournalføringServiceTest {
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             brevinnholdService.hentOgLagre(referanse)
 
@@ -122,7 +122,7 @@ class JournalføringServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -130,7 +130,7 @@ class JournalføringServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
@@ -162,7 +162,7 @@ class JournalføringServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestilling(
+            val referanse = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -170,7 +170,7 @@ class JournalføringServiceTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).referanse
+            ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
