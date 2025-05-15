@@ -6,6 +6,7 @@ import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
@@ -39,9 +40,14 @@ class FerdigstillValideringTest {
     @Test
     fun `ferdigstilling går igjennom dersom ingen valideringsfeil`() {
         val referanse =
-            gittBrevMed(brev = brev(medFaktagrunnlag = emptyList()), status = ProsesseringStatus.BREVBESTILLING_LØST)
+            gittBrevMed(
+                brev = brev(medFaktagrunnlag = emptyList()),
+                status = Status.UNDER_ARBEID,
+                prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
+            )
         assertAntallJobber(referanse, 1)
         ferdigstill(referanse)
+        assertStatus(referanse, Status.FERDIGSTILT)
         assertAntallJobber(referanse, 2)
     }
 
@@ -50,7 +56,8 @@ class FerdigstillValideringTest {
         val referanse =
             gittBrevMed(
                 brev = brev(medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi)),
-                status = ProsesseringStatus.BREVBESTILLING_LØST
+                status = Status.UNDER_ARBEID,
+                prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             )
         assertAntallJobber(referanse, 1)
         val exception = assertThrows<ValideringsfeilException> {
@@ -59,6 +66,7 @@ class FerdigstillValideringTest {
         assertThat(exception.message).endsWith(
             "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${FaktagrunnlagType.FRIST_DATO_11_7.verdi}."
         )
+        assertStatus(referanse, Status.UNDER_ARBEID)
         assertAntallJobber(referanse, 1)
     }
 
@@ -66,8 +74,12 @@ class FerdigstillValideringTest {
     @EnumSource(
         ProsesseringStatus::class, names = ["STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "AVBRUTT"]
     )
-    fun `ferdigstill med status før BREVBESTILLING_LØST eller AVBRUTT feiler`(status: ProsesseringStatus) {
-        val referanse = gittBrevMed(brev = brev(), status = status)
+    fun `ferdigstill med status før BREVBESTILLING_LØST eller med status AVBRUTT feiler`(status: ProsesseringStatus) {
+        val referanse = gittBrevMed(
+            brev = brev(),
+            status = Status.UNDER_ARBEID,
+            prosesseringStatus = status
+        )
         assertAntallJobber(referanse, 1)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
@@ -75,6 +87,7 @@ class FerdigstillValideringTest {
         assertThat(exception.message).endsWith(
             "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$status"
         )
+        assertStatus(referanse, Status.UNDER_ARBEID)
         assertAntallJobber(referanse, 1)
     }
 
@@ -85,19 +98,28 @@ class FerdigstillValideringTest {
         ]
     )
     fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {
-        val referanse = gittBrevMed(brev = brev(), status = status)
+        val referanse = gittBrevMed(
+            brev = brev(),
+            status = Status.FERDIGSTILT,
+            prosesseringStatus = status
+        )
         assertAntallJobber(referanse, 1)
         ferdigstill(referanse)
+        assertStatus(referanse, Status.FERDIGSTILT)
         assertAntallJobber(referanse, 1)
     }
 
-    private fun gittBrevMed(brev: Brev, status: ProsesseringStatus): BrevbestillingReferanse {
+    private fun gittBrevMed(
+        brev: Brev,
+        status: Status,
+        prosesseringStatus: ProsesseringStatus
+    ): BrevbestillingReferanse {
         return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val bestilling = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -105,13 +127,22 @@ class FerdigstillValideringTest {
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
                 vedlegg = emptySet(),
-            ).brevbestilling.referanse
+            ).brevbestilling
 
-            brevinnholdService.hentOgLagre(referanse)
-            brevbestillingRepository.oppdaterBrev(referanse, brev)
-            brevbestillingRepository.oppdaterProsesseringStatus(referanse, status)
+            brevinnholdService.hentOgLagre(bestilling.referanse)
+            brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+            brevbestillingRepository.oppdaterProsesseringStatus(bestilling.referanse, prosesseringStatus)
+            brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 
-            referanse
+            bestilling.referanse
+        }
+    }
+
+    private fun assertStatus(referanse: BrevbestillingReferanse, status: Status) {
+        dataSource.transaction { connection ->
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+            val bestilling = brevbestillingRepository.hent(referanse)
+            assertThat(bestilling.status).isEqualTo(status)
         }
     }
 

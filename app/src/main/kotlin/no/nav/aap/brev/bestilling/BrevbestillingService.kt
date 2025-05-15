@@ -12,6 +12,7 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -60,10 +61,18 @@ class BrevbestillingService(
             språk = språk,
             vedlegg = vedlegg,
         )
-        if (!resultat.alleredeOpprettet) {
-            leggTilJobb(resultat.brevbestilling)
+
+        if (resultat.alleredeOpprettet) {
+            return resultat
         }
-        return resultat
+
+        brevbestillingRepository.oppdaterStatus(resultat.brevbestilling.id, Status.REGISTRERT)
+        leggTilJobb(resultat.brevbestilling)
+
+        return OpprettBrevbestillingResultat(
+            brevbestilling = brevbestillingRepository.hent(resultat.brevbestilling.referanse),
+            alleredeOpprettet = false
+        )
     }
 
     fun opprettBestillingV2(
@@ -91,25 +100,30 @@ class BrevbestillingService(
             return resultat
         }
 
-        val referanse = resultat.brevbestilling.referanse
+        val bestillingId = resultat.brevbestilling.id
+        val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagre(referanse)
+        brevinnholdService.hentOgLagre(bestillingReferanse)
 
-        faktagrunnlagService.fyllInnFaktagrunnlag(referanse, faktagrunnlag)
+        faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
-        brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.BREVBESTILLING_LØST)
+        brevbestillingRepository.oppdaterProsesseringStatus(bestillingReferanse, ProsesseringStatus.BREVBESTILLING_LØST)
 
         if (ferdigstillAutomatisk) {
-            val brev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
-            if (brev.kanSendesAutomatisk ?: false) {
+            val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
+            if (oppdatertBrev.kanSendesAutomatisk ?: false) {
+                log.info("Ferdigstiller brev automatisk")
+                brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
                 throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
             }
+        } else {
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 
         return OpprettBrevbestillingResultat(
-            brevbestilling = brevbestillingRepository.hent(referanse),
+            brevbestilling = brevbestillingRepository.hent(bestillingReferanse),
             alleredeOpprettet = false
         )
     }
@@ -191,6 +205,8 @@ class BrevbestillingService(
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
         }
 
+        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
+
         leggTilJobb(bestilling)
     }
 
@@ -201,6 +217,7 @@ class BrevbestillingService(
             "Kan ikke avbryte brevbestilling med status ${bestilling.prosesseringStatus}"
         }
 
+        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.AVBRUTT)
         brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
     }
 

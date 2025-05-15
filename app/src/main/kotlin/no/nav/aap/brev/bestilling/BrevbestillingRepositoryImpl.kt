@@ -9,6 +9,7 @@ import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
@@ -105,6 +106,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             unikReferanse = UnikReferanse(row.getString("UNIK_REFERANSE")),
             brevtype = row.getEnum("BREVTYPE"),
             språk = row.getEnum("SPRAK"),
+            status = row.getEnumOrNull("STATUS"),
             prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
             journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
             journalpostFerdigstilt = row.getBooleanOrNull("JOURNALPOST_FERDIGSTILT"),
@@ -200,6 +202,21 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setString(2, it.navIdent)
                 setEnumName(3, it.rolle)
                 setInt(4, it.sorteringsnøkkel)
+            }
+        }
+    }
+
+    override fun oppdaterStatus(id: BrevbestillingId, status: Status) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET STATUS = ?, OPPDATERT_TID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setEnumName(1, status)
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
+            }
+            setResultValidator {
+                require(1 == it)
             }
         }
     }
