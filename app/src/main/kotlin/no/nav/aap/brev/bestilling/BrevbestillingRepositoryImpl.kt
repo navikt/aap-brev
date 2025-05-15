@@ -208,11 +208,12 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun oppdaterStatus(id: BrevbestillingId, status: Status) {
         connection.execute(
-            "UPDATE BREVBESTILLING SET STATUS = ? WHERE ID = ?"
+            "UPDATE BREVBESTILLING SET STATUS = ?, OPPDATERT_TID = ? WHERE ID = ?"
         ) {
             setParams {
                 setEnumName(1, status)
-                setLong(2, id.id)
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
             }
             setResultValidator {
                 require(1 == it)
