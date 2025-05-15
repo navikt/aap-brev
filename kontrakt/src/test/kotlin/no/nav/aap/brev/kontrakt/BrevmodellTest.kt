@@ -31,6 +31,7 @@ class BrevmodellTest {
         {
           "kanSendesAutomatisk": true,
           "overskrift": "H1 overskrift",
+          "kanOverstyreBrevtittel": false,
           "journalpostTittel": "Journalpost tittel",
           "tekstbolker": [
             {
@@ -76,6 +77,7 @@ class BrevmodellTest {
    {
           "kanSendesAutomatisk": true,
           "overskrift": null,
+          "kanOverstyreBrevtittel": null,
           "journalpostTittel": null,
           "tekstbolker": [
             {
