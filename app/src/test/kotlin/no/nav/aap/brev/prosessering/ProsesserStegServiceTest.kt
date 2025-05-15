@@ -4,7 +4,9 @@ import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilLøsBestillingFor
@@ -16,9 +18,11 @@ import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 
 class ProsesserStegServiceTest {
@@ -77,7 +81,7 @@ class ProsesserStegServiceTest {
     }
 
     @Test
-    fun `stopper prosessering på et steg med resultat stopp, og prosesserer videre fra neste steg ved ny prosessering prosessering`() {
+    fun `stopper prosessering på et steg med resultat stopp, og prosesserer videre fra neste steg ved ny prosessering prosessering etter ferdigstilling`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
@@ -90,12 +94,49 @@ class ProsesserStegServiceTest {
                 ProsesseringStatus.BREVBESTILLING_LØST,
                 brevbestillingService.hent(referanse).prosesseringStatus
             )
+            assertEquals(
+                Status.UNDER_ARBEID,
+                brevbestillingService.hent(referanse).status
+            )
 
+            brevbestillingService.ferdigstill(referanse, emptyList())
             prosesserStegService.prosesserBestilling(referanse)
 
             assertEquals(
                 ProsesseringStatus.FERDIG,
                 brevbestillingService.hent(referanse).prosesseringStatus
+            )
+            assertEquals(
+                Status.FERDIGSTILT,
+                brevbestillingService.hent(referanse).status
+            )
+        }
+    }
+
+    @Test
+    fun `stopper prosessering på et steg med resultat stopp, og feiler ved prosesserer videre fra neste steg dersom bestilling ikke er ferdigstilt`() {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val prosesserStegService = ProsesserStegService.konstruer(connection)
+
+            val referanse = opprettBestilling(brevtype = Brevtype.INNVILGELSE)
+
+            prosesserStegService.prosesserBestilling(referanse)
+
+            assertEquals(
+                ProsesseringStatus.BREVBESTILLING_LØST,
+                brevbestillingService.hent(referanse).prosesseringStatus
+            )
+            assertEquals(
+                Status.UNDER_ARBEID,
+                brevbestillingService.hent(referanse).status
+            )
+
+            val exception = assertThrows<IllegalStateException> {
+                prosesserStegService.prosesserBestilling(referanse)
+            }
+            assertThat(exception.message).isEqualTo(
+                "Kan ikke fortsette ferdigstilling av bestilling med referanse: ${referanse.referanse} i status ${Status.UNDER_ARBEID}"
             )
         }
     }
@@ -130,8 +171,9 @@ class ProsesserStegServiceTest {
         }
     }
 
-    private fun opprettBestilling(behandlingReferanse: BehandlingReferanse = randomBehandlingReferanse(),
-                                  brevtype: Brevtype = randomBrevtype()
+    private fun opprettBestilling(
+        behandlingReferanse: BehandlingReferanse = randomBehandlingReferanse(),
+        brevtype: Brevtype = randomBrevtype()
     ): BrevbestillingReferanse {
         return dataSource.transaction { connection ->
             BrevbestillingService.konstruer(connection)

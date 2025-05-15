@@ -4,6 +4,7 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
@@ -45,7 +46,7 @@ class BrevbestillingRepositoryImplTest {
             val brev = brev()
             val signaturNavIdent1 = randomNavIdent()
             val signaturNavIdent2 = randomNavIdent()
-            val signaturer = listOf<SignaturGrunnlag>(
+            val signaturer = listOf(
                 SignaturGrunnlag(signaturNavIdent1, null),
                 SignaturGrunnlag(signaturNavIdent2, Rolle.KVALITETSSIKRER),
             )
@@ -71,6 +72,7 @@ class BrevbestillingRepositoryImplTest {
             assertEquals(språk, bestilling.språk)
             assertEquals(vedlegg, bestilling.vedlegg)
             assertNull(bestilling.brev)
+            assertNull(bestilling.status)
             assertNull(bestilling.prosesseringStatus)
             assertNull(bestilling.journalpostId)
             assertNull(bestilling.journalpostFerdigstilt)
@@ -80,6 +82,14 @@ class BrevbestillingRepositoryImplTest {
 
             assertEquals(brev, bestilling.brev)
 
+            brevbestillingRepository.oppdaterStatus(
+                bestilling.id,
+                Status.UNDER_ARBEID
+            )
+            bestilling = brevbestillingRepository.hent(bestilling.referanse)
+
+            assertEquals(Status.UNDER_ARBEID, bestilling.status)
+
             brevbestillingRepository.oppdaterProsesseringStatus(
                 bestilling.referanse,
                 ProsesseringStatus.FAKTAGRUNNLAG_HENTET
@@ -87,7 +97,6 @@ class BrevbestillingRepositoryImplTest {
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
-
 
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)

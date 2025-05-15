@@ -2,7 +2,7 @@ package no.nav.aap.brev.kontrakt
 
 enum class Status {
     /**
-     * Brevbestillingen er mottatt og registrert.
+     * Brevbestillingen er mottatt og registrert. Ikke relevant for V2 API
      */
     REGISTRERT,
 
@@ -15,8 +15,8 @@ enum class Status {
     /**
      * Brevet er ferdig redigert av saksbehandler og kan
      * journalføres og distribueres. Eventuelt har bestillingen
-     * gått direkte fra status `REGISTRERT` dersom det ikke er
-     * behov for manuell redigering av saksbehandler.
+     * gått direkte til denne statusen eller fra status `REGISTRERT`,
+     * dersom det ikke er behov for manuell redigering av saksbehandler.
      */
     FERDIGSTILT,
 

@@ -119,7 +119,10 @@ class LøsBrevbestillingServiceTest {
     fun assertLøsBestillingStatus(referanse: BrevbestillingReferanse, status: Status) {
         dataSource.transaction { connection ->
             val løsBrevbestillingService = LøsBrevbestillingService.konstruer(connection)
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
             assertEquals(status, løsBrevbestillingService.løsBestilling(referanse))
+            assertEquals(status, brevbestillingRepository.hent(referanse).status)
         }
     }
 }

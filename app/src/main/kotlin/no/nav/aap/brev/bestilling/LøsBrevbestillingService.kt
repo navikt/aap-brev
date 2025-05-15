@@ -23,12 +23,13 @@ class LøsBrevbestillingService(
         val bestilling = brevbestillingRepository.hent(referanse)
         checkNotNull(bestilling.brev)
 
-        val skalFerigstilles = skalFerdigstilles(bestilling.brev)
+        val skalFerigstilles = skalFerdigstillesAutomatisk(bestilling.brev)
         val status = if (skalFerigstilles) {
             Status.FERDIGSTILT
         } else {
             Status.UNDER_ARBEID
         }
+        brevbestillingRepository.oppdaterStatus(bestilling.id, status)
         bestillerGateway.oppdaterBrevStatus(
             bestilling,
             status
@@ -36,7 +37,7 @@ class LøsBrevbestillingService(
         return status
     }
 
-    private fun skalFerdigstilles(brev: Brev): Boolean {
+    private fun skalFerdigstillesAutomatisk(brev: Brev): Boolean {
         return brev.kanFerdigstillesAutomatisk()
     }
 }

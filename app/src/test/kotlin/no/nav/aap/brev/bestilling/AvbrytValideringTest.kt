@@ -1,6 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.randomBehandlingReferanse
@@ -35,30 +36,33 @@ class AvbrytValideringTest {
     @Test
     fun `avbryt går igjennom fra gydlig status`() {
         val referanse =
-            gittBrevMed(status = ProsesseringStatus.BREVBESTILLING_LØST)
+            gittBrevMed(status = Status.UNDER_ARBEID, prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST)
         avbryt(referanse)
-        assertStatus(referanse, ProsesseringStatus.AVBRUTT)
+        assertStatus(referanse, Status.AVBRUTT, ProsesseringStatus.AVBRUTT)
     }
 
     @ParameterizedTest
     @EnumSource(ProsesseringStatus::class, mode = Mode.EXCLUDE, names = ["BREVBESTILLING_LØST"])
     fun `avbryt feiler fra andre statuser enn BREVBESTILLING_LØST`(status: ProsesseringStatus) {
-        val referanse = gittBrevMed(status = status)
+        val referanse = gittBrevMed(status = Status.FERDIGSTILT, prosesseringStatus = status)
         val exception = assertThrows<ValideringsfeilException> {
             avbryt(referanse)
         }
         assertThat(exception.message).endsWith(
             "Kan ikke avbryte brevbestilling med status $status"
         )
-        assertStatus(referanse, status)
+        assertStatus(referanse, Status.FERDIGSTILT, status)
     }
 
-    private fun gittBrevMed(status: ProsesseringStatus): BrevbestillingReferanse {
+    private fun gittBrevMed(
+        status: Status,
+        prosesseringStatus: ProsesseringStatus
+    ): BrevbestillingReferanse {
         return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val bestilling = brevbestillingService.opprettBestillingV1(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
@@ -66,11 +70,12 @@ class AvbrytValideringTest {
                 brevtype = randomBrevtype(),
                 språk = randomSpråk(),
                 vedlegg = emptySet(),
-            ).brevbestilling.referanse
+            ).brevbestilling
 
-            brevbestillingRepository.oppdaterProsesseringStatus(referanse, status)
+            brevbestillingRepository.oppdaterProsesseringStatus(bestilling.referanse, prosesseringStatus)
+            brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 
-            referanse
+            bestilling.referanse
         }
     }
 
@@ -80,11 +85,16 @@ class AvbrytValideringTest {
         }
     }
 
-    private fun assertStatus(referanse: BrevbestillingReferanse, forventetProsesseringStatus: ProsesseringStatus) {
+    private fun assertStatus(
+        referanse: BrevbestillingReferanse,
+        forventetStatus: Status,
+        forventetProsesseringStatus: ProsesseringStatus
+    ) {
         return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val bestilling = brevbestillingService.hent(referanse)
 
+            assertThat(bestilling.status).isEqualTo(forventetStatus)
             assertThat(bestilling.prosesseringStatus).isEqualTo(forventetProsesseringStatus)
         }
     }
