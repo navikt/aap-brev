@@ -100,30 +100,30 @@ class BrevbestillingService(
             return resultat
         }
 
-        val bestilling = resultat.brevbestilling
-        val referanse = bestilling.referanse
+        val bestillingId = resultat.brevbestilling.id
+        val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagre(referanse)
+        brevinnholdService.hentOgLagre(bestillingReferanse)
 
-        faktagrunnlagService.fyllInnFaktagrunnlag(referanse, faktagrunnlag)
+        faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
-        brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.BREVBESTILLING_LØST)
+        brevbestillingRepository.oppdaterProsesseringStatus(bestillingReferanse, ProsesseringStatus.BREVBESTILLING_LØST)
 
         if (ferdigstillAutomatisk) {
-            val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(referanse).brev)
+            val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanSendesAutomatisk ?: false) {
                 log.info("Ferdigstiller brev automatisk")
-                brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
+                brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
                 throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
             }
         } else {
-            brevbestillingRepository.oppdaterStatus(bestilling.id, Status.UNDER_ARBEID)
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 
         return OpprettBrevbestillingResultat(
-            brevbestilling = brevbestillingRepository.hent(referanse),
+            brevbestilling = brevbestillingRepository.hent(bestillingReferanse),
             alleredeOpprettet = false
         )
     }
