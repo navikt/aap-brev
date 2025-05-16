@@ -14,7 +14,7 @@ class FerdigstillService(private val brevbestillingRepository: BrevbestillingRep
 
     fun validerFerdigstilling(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        check(bestilling.status == Status.FERDIGSTILT || bestilling.status == null) { // TODO midlertidlig tillat null
+        check(bestilling.status == Status.FERDIGSTILT) {
             "Kan ikke fortsette ferdigstilling av bestilling med referanse: ${referanse.referanse} i status ${bestilling.status}"
         }
     }
