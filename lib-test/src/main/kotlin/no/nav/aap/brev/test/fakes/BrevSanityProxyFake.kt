@@ -21,12 +21,14 @@ import kotlin.String
 fun brev(
     medFaktagrunnlag: List<String> = emptyList(),
     kanSendesAutomatisk: Boolean = false,
+    kanOverstyreBrevtittel: Boolean = false,
     kanRedigeres: Boolean = true,
     erFullstendig: Boolean = false,
 ): Brev {
     return Brev(
         kanSendesAutomatisk = kanSendesAutomatisk,
         overskrift = "Overskrift - Brev",
+        kanOverstyreBrevtittel = kanOverstyreBrevtittel,
         journalpostTittel = "Journalpost - tittel",
         tekstbolker = listOf(
             Tekstbolk(
