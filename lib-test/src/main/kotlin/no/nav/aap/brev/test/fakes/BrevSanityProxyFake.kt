@@ -79,6 +79,9 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.INNVILGELSE -> brev()
                 Brevtype.AVSLAG -> brev()
                 Brevtype.VEDTAK_ENDRING -> brev()
+                Brevtype.KLAGE_AVVIST -> brev()
+                Brevtype.KLAGE_OPPRETTHOLDELSE -> brev()
+                Brevtype.KLAGE_TRUKKET -> brev()
                 Brevtype.VARSEL_OM_BESTILLING -> brev(
                     medFaktagrunnlag = emptyList(),
                     kanSendesAutomatisk = true,

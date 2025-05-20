@@ -36,13 +36,17 @@ class DokdistfordelingGateway : DistribusjonGateway {
             body = request
         )
         val uri = baseUri.resolve("/rest/v1/distribuerjournalpost")
-        val response = checkNotNull(client.post<DistribuerJournalpostRequest, DistribuerJournalpostResponse>(uri, httpRequest))
+        val response =
+            checkNotNull(client.post<DistribuerJournalpostRequest, DistribuerJournalpostResponse>(uri, httpRequest))
         return DistribusjonBestillingId(response.bestillingsId)
     }
 
     private fun utledDistribusjonstype(brevtype: Brevtype): Distribusjonstype {
         return when (brevtype) {
-            Brevtype.INNVILGELSE, Brevtype.AVSLAG, Brevtype.VEDTAK_ENDRING -> Distribusjonstype.VEDTAK
+            Brevtype.INNVILGELSE, Brevtype.AVSLAG, Brevtype.VEDTAK_ENDRING, Brevtype.KLAGE_AVVIST,
+            Brevtype.KLAGE_OPPRETTHOLDELSE,
+            Brevtype.KLAGE_TRUKKET -> Distribusjonstype.VEDTAK
+
             Brevtype.VARSEL_OM_BESTILLING -> Distribusjonstype.ANNET
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> Distribusjonstype.VIKTIG // TODO, er det riktig?
             Brevtype.FORVALTNINGSMELDING -> Distribusjonstype.ANNET // TODO, er det riktig?
@@ -60,6 +64,7 @@ data class DistribuerJournalpostRequest(
     enum class Distribusjonstype {
         VEDTAK, VIKTIG, ANNET
     }
+
     enum class Distribusjonstidspunkt {
         UMIDDELBART, KJERNETID
     }
