@@ -13,5 +13,6 @@ data class JournalførBehandlerBestillingRequest(
     val tittel: String,
     val brevAvsnitt: List<String>,
     val dato: LocalDate,
-    val bestillerNavIdent: String
+    val bestillerNavIdent: String,
+    val overstyrInnsynsregel: Boolean = true
 )
