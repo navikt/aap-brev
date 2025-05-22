@@ -8,29 +8,29 @@ import java.util.UUID
 
 data class Brev(
     val kanSendesAutomatisk: Boolean?,
-    val overskrift: String?,
+    val overskrift: String?, // H1
     val kanOverstyreBrevtittel: Boolean?,
     val journalpostTittel: String?,
-    val tekstbolker: List<Tekstbolk>,
+    val tekstbolker: List<Tekstbolk>, // tekster med valgfri overskrift (H2)
 )
 
 data class Tekstbolk(
     val id: UUID,
-    val overskrift: String?,
-    val innhold: List<Innhold>,
+    val overskrift: String?, // H2
+    val innhold: List<Innhold>, // tekster med valgfri overskrift (H3)
 )
 
 data class Innhold(
     val id: UUID,
-    val overskrift: String?,
-    val blokker: List<Blokk>,
+    val overskrift: String?,  // H3
+    val blokker: List<Blokk>, // avsnitt eller punktliste
     val kanRedigeres: Boolean,
     val erFullstendig: Boolean,
 )
 
 data class Blokk(
     val id: UUID,
-    val innhold: List<BlokkInnhold>,
+    val innhold: List<BlokkInnhold>, // formattert tekst og faktagrunnlag
     val type: BlokkType,
 )
 
