@@ -14,5 +14,5 @@ data class JournalførBehandlerBestillingRequest(
     val brevAvsnitt: List<String>,
     val dato: LocalDate,
     val bestillerNavIdent: String,
-    val overstyrInnsynsregel: Boolean = true
+    val overstyrInnsynsregel: Boolean
 )
