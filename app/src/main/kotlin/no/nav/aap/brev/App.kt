@@ -40,13 +40,14 @@ class App
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e ->
-        LOGGER.error("Uhåndtert feil. Se sikker logg for detaljer.")
         SECURE_LOGGER.error("Uhåndtert feil", e)
+        LOGGER.error("Uhåndert feil. Se sikker logg for stacktrace")
     }
 
+    val serverPort = System.getenv("HTTP_PORT")?.toInt() ?: 8080
     embeddedServer(Netty, configure = {
         connector {
-            port = 8080
+            port = serverPort
         }
     }) {
         server(DbConfig())

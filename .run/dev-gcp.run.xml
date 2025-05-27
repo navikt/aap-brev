@@ -1,0 +1,55 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dev-gcp" type="KtorApplicationConfigurationType" factoryName="Ktor">
+    <envs>
+      <env name="NAIS_APP_NAME" value="brev" />
+      <!-- Bruker DEV-GCP for å få mocket versjon av NOM-integrasjonen -->
+      <env name="NAIS_CLUSTER_NAME" value="DEV-GCP" />
+      <env name="NAIS_DATABASE_BREV_BREV_JDBC_URL" value="jdbc:postgresql://localhost:5440/postgres?user=postgres" />
+      <env name="HTTP_PORT" value="8090" />
+      <env name="INTEGRASJON_TILGANG_URL" value="https://aap-tilgang.intern.dev.nav.no" />
+      <env name="INTEGRASJON_TILGANG_SCOPE" value="api://dev-gcp.aap.tilgang/.default" />
+      <env name="INTEGRASJON_TILGANG_AZP" value="0612f13d-08fb-44ff-a5ac-1233e2fec0fc" />
+      <env name="INTEGRASJON_BEHANDLINGSFLYT_URL" value="https://aap-behandlingsflyt.intern.dev.nav.no" />
+      <env name="INTEGRASJON_BEHANDLINGSFLYT_SCOPE" value="api://dev-gcp.aap.behandlingsflyt/.default" />
+      <env name="INTEGRASJON_BREV_SANITY_PROXY_URL" value="https://aap-brev-sanity-proxy.intern.dev.nav.no" />
+      <env name="INTEGRASJON_BREV_SANITY_PROXY_SCOPE" value="api://dev-gcp.aap.brev-sanity-proxy/.default" />
+      <env name="INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL" value="https://aap-saksbehandling-pdfgen.intern.dev.nav.no" />
+      <env name="INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE" value="api://dev-gcp.aap.saksbehandling-pdfgen/.default" />
+      <env name="INTEGRASJON_DOKARKIV_URL" value="https://dokarkiv-q2.dev-fss-pub.nais.io" />
+      <env name="INTEGRASJON_DOKARKIV_SCOPE" value="api://dev-fss.teamdokumenthandtering.dokarkiv/.default" />
+      <env name="INTEGRASJON_DOKDISTFORDELING_URL" value="https://dokdistfordeling.dev-fss-pub.nais.io" />
+      <env name="INTEGRASJON_SAF_URL_GRAPHQL" value="https://saf-q2.dev-fss-pub.nais.io/graphql" />
+      <env name="INTEGRASJON_SAF_SCOPE" value="api://dev-fss.teamdokumenthandtering.saf/.default" />
+      <env name="INTEGRASJON_NOM_URL" value="https://nom-api.intern.dev.nav.no/graphql" />
+      <env name="INTEGRASJON_NOM_SCOPE" value="api://dev-gcp.nom.nom-api/.default" />
+      <env name="INTEGRASJON_NORG_URL" value="https://norg2.dev-fss-pub.nais.io" />
+      <env name="INTEGRASJON_PDL_URL" value="https://pdl-api.dev-fss-pub.nais.io/graphql" />
+      <env name="INTEGRASJON_PDL_SCOPE" value="api://dev-fss.pdl.pdl-api/.default" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="no.nav.aap.brev.AppKt" />
+    <module name="brev.app.main" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="true" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        <ENTRY IS_ENABLED="true" PARSER="env" IS_EXECUTABLE="false" PATH=".env.dev-gcp" />
+      </ENTRIES>
+    </extension>
+    <option name="alternativeJrePath" />
+    <option name="alternativeJrePathEnabled" value="false" />
+    <option name="includeProvidedScope" value="false" />
+    <option name="mainClass" value="no.nav.aap.behandlingsflyt.AppKt" />
+    <option name="passParentEnvs" value="true" />
+    <option name="programParameters" value="" />
+    <option name="shortenCommandLine" />
+    <option name="vmParameters" />
+    <option name="workingDirectory" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
