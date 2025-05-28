@@ -66,7 +66,8 @@ class SignaturService(
 
     private fun brukEnhetsTypeNavn(brevtype: Brevtype): Boolean {
         return when (brevtype) {
-            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING -> {
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING,
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> {
                 true
             }
 

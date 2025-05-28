@@ -48,7 +48,10 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.KLAGE_TRUKKET -> Distribusjonstype.VEDTAK
 
             Brevtype.VARSEL_OM_BESTILLING -> Distribusjonstype.ANNET
-            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> Distribusjonstype.VIKTIG // TODO, er det riktig?
+
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> Distribusjonstype.VIKTIG // TODO, er det riktig?
+
             Brevtype.FORVALTNINGSMELDING -> Distribusjonstype.ANNET // TODO, er det riktig?
         }
     }
