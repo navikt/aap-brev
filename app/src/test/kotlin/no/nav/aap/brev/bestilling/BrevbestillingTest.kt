@@ -83,10 +83,52 @@ class BrevbestillingTest : IntegrationTest() {
     }
 
     @Test
-    fun `feiler ved bestilling bestill som skal ferdigstilles automatisk dersom brevet ikke kan sendes automatisk`() {
+    fun `feiler ved bestilling som skal ferdigstilles automatisk dersom brevet ikke kan sendes automatisk`() {
         val exception = assertThrows<ValideringsfeilException> {
             opprettBrevbestilling(
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
+                ferdigstillAutomatisk = true,
+                faktagrunnlag = setOf(Faktagrunnlag.FristDato11_7(frist = LocalDate.now())),
+            )
+        }
+        assertThat(exception.message).isEqualTo(
+            "Kan ikke ferdigstille brev automatisk"
+        )
+    }
+
+    @Test
+    fun `feiler ved bestilling som skal ferdigstilles automatisk dersom brevet kan sendes automatisk men har faktagrunnlag`() {
+        val exception = assertThrows<ValideringsfeilException> {
+            opprettBrevbestilling(
+                brevtype = Brevtype.KLAGE_AVVIST,
+                ferdigstillAutomatisk = true,
+                faktagrunnlag = setOf(Faktagrunnlag.FristDato11_7(frist = LocalDate.now())),
+            )
+        }
+        assertThat(exception.message).isEqualTo(
+            "Kan ikke ferdigstille brev automatisk"
+        )
+    }
+
+    @Test
+    fun `feiler ved bestilling som skal ferdigstilles automatisk dersom brevet kan sendes automatisk men er ikke fullstendig`() {
+        val exception = assertThrows<ValideringsfeilException> {
+            opprettBrevbestilling(
+                brevtype = Brevtype.KLAGE_TRUKKET,
+                ferdigstillAutomatisk = true,
+                faktagrunnlag = setOf(Faktagrunnlag.FristDato11_7(frist = LocalDate.now())),
+            )
+        }
+        assertThat(exception.message).isEqualTo(
+            "Kan ikke ferdigstille brev automatisk"
+        )
+    }
+
+    @Test
+    fun `feiler ved bestilling som skal ferdigstilles automatisk dersom brevet kan sendes automatisk men innhold kan redigeres`() {
+        val exception = assertThrows<ValideringsfeilException> {
+            opprettBrevbestilling(
+                brevtype = Brevtype.KLAGE_OPPRETTHOLDELSE,
                 ferdigstillAutomatisk = true,
                 faktagrunnlag = setOf(Faktagrunnlag.FristDato11_7(frist = LocalDate.now())),
             )

@@ -7,6 +7,7 @@ import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
 import no.nav.aap.brev.innhold.ikkeRedigerbartInnhold
+import no.nav.aap.brev.innhold.kanFerdigstillesAutomatisk
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -111,7 +112,7 @@ class BrevbestillingService(
 
         if (ferdigstillAutomatisk) {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
-            if (oppdatertBrev.kanSendesAutomatisk ?: false) {
+            if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
                 log.info("Ferdigstiller brev automatisk")
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
