@@ -62,7 +62,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:6.3.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.9.1")
-    implementation("org.postgresql:postgresql:42.7.6")
+    implementation("org.postgresql:postgresql:42.7.7")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersjon")
