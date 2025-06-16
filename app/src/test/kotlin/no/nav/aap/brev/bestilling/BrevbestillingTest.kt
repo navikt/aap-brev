@@ -7,11 +7,6 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import no.nav.aap.brev.test.randomBehandlingReferanse
-import no.nav.aap.brev.test.randomBrevtype
-import no.nav.aap.brev.test.randomBrukerIdent
-import no.nav.aap.brev.test.randomSaksnummer
-import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import org.assertj.core.api.Assertions.assertThat
@@ -22,23 +17,12 @@ import java.time.LocalDate
 class BrevbestillingTest : IntegrationTest() {
 
     @Test
-    fun `oppretter bestilling og legger til jobb for videre prosessering`() {
-        val resultat =dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
-            brevbestillingService.opprettBestillingV1(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = randomUnikReferanse(),
-                brevtype = randomBrevtype(),
-                språk = randomSpråk(),
-                vedlegg = emptySet(),
-            )
-        }
-        assertThat(resultat.brevbestilling.brev).isNull()
-        assertThat(resultat.brevbestilling.status).isEqualTo(Status.REGISTRERT)
-        assertThat(resultat.brevbestilling.prosesseringStatus).isNull()
-        assertAntallJobber(resultat.brevbestilling.referanse, 1)
+    fun `oppretter bestilling`() {
+        val resultat = opprettBrevbestilling()
+        assertThat(resultat.brevbestilling.brev).isNotNull
+        assertThat(resultat.brevbestilling.status).isEqualTo(Status.UNDER_ARBEID)
+        assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
+        assertAntallJobber(resultat.brevbestilling.referanse, 0)
         assertThat(resultat.alleredeOpprettet).isFalse
     }
 
@@ -84,16 +68,22 @@ class BrevbestillingTest : IntegrationTest() {
 
     @Test
     fun `feiler ved bestilling som skal ferdigstilles automatisk dersom brevet ikke kan sendes automatisk`() {
+        val unikReferanse: UnikReferanse = randomUnikReferanse()
         val exception = assertThrows<ValideringsfeilException> {
             opprettBrevbestilling(
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
                 ferdigstillAutomatisk = true,
                 faktagrunnlag = setOf(Faktagrunnlag.FristDato11_7(frist = LocalDate.now())),
+                unikReferanse = unikReferanse,
             )
         }
         assertThat(exception.message).isEqualTo(
             "Kan ikke ferdigstille brev automatisk"
         )
+        dataSource.transaction { connection ->
+            val bestilling = BrevbestillingRepositoryImpl(connection).hent(unikReferanse)
+            assertThat(bestilling).isNull()
+        }
     }
 
     @Test

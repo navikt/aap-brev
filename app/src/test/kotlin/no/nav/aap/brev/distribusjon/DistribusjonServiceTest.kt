@@ -44,14 +44,16 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
@@ -79,14 +81,16 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
@@ -112,14 +116,16 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
@@ -148,14 +154,16 @@ class DistribusjonServiceTest {
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()

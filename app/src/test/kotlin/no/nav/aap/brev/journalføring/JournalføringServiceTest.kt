@@ -1,8 +1,6 @@
 package no.nav.aap.brev.journalføring
 
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
@@ -35,27 +33,23 @@ class JournalføringServiceTest {
     fun `journalfører brevet og lagrer journalpostId`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -70,15 +64,28 @@ class JournalføringServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
+
+            // TODO slett brev med custom sql eller slett testen
+
+            connection.execute(
+                "UPDATE BREVBESTILLING SET BREV = ?::jsonb WHERE REFERANSE = ?"
+            ) {
+                setParams {
+                    setString(1, null)
+                    setUUID(2, referanse.referanse)
+                }
+            }
 
             val exception = assertThrows<IllegalStateException> {
                 journalføringService.journalførBrevbestilling(referanse)
@@ -91,20 +98,19 @@ class JournalføringServiceTest {
     fun `validering feiler dersom brevet inneholder manglende faktagrunnlag`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
-
-            brevinnholdService.hentOgLagre(referanse)
 
             val exception = assertThrows<IllegalStateException> {
                 journalføringService.journalførBrevbestilling(referanse)
@@ -117,27 +123,23 @@ class JournalføringServiceTest {
     fun `validering feiler dersom brevet allerede er journalført`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 
@@ -157,27 +159,23 @@ class JournalføringServiceTest {
     fun `håndterer respons med http status 409 pga allerede journalført`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
-
-            brevinnholdService.hentOgLagre(referanse)
-
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             journalføringService.journalførBrevbestilling(referanse)
 

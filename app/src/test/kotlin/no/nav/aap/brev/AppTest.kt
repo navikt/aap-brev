@@ -3,7 +3,7 @@ package no.nav.aap.brev
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.aap.brev.kontrakt.BestillBrevRequest
+import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
@@ -62,15 +62,18 @@ class AppTest {
     fun `bestiller brev`() {
         assertDoesNotThrow {
             restClient.post<_, Unit>(
-                uri = URI.create("http://localhost:8080/").resolve("/api/bestill"),
+                uri = URI.create("http://localhost:8080/").resolve("/api/v2/bestill"),
                 request = PostRequest(
-                    body = BestillBrevRequest(
+                    body = BestillBrevV2Request(
                         saksnummer = "SAK123",
                         brukerIdent = randomBrukerIdent(),
                         behandlingReferanse = UUID.randomUUID(),
                         brevtype = Brevtype.INNVILGELSE,
                         unikReferanse = UUID.randomUUID().toString(),
-                        sprak = Språk.NB
+                        sprak = Språk.NB,
+                        faktagrunnlag = emptySet(),
+                        ferdigstillAutomatisk = false,
+                        vedlegg = emptySet()
                     )
                 )
             )

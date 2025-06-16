@@ -41,14 +41,16 @@ class FaktagrunnlagServiceTest {
 
             val behandlingReferanse = randomBehandlingReferanse()
             val referanse =
-                brevbestillingService.opprettBestillingV1(
+                brevbestillingService.opprettBestillingV2(
                     saksnummer = randomSaksnummer(),
                     brukerIdent = randomBrukerIdent(),
                     behandlingReferanse = behandlingReferanse,
                     unikReferanse = randomUnikReferanse(),
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
+                    faktagrunnlag = emptySet(),
                     vedlegg = emptySet(),
+                    ferdigstillAutomatisk = false,
                 ).brevbestilling.referanse
 
             faktagrunnlagForBehandling(
