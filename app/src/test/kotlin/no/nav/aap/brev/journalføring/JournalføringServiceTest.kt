@@ -76,8 +76,6 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
-            // TODO slett brev med custom sql eller slett testen
-
             connection.execute(
                 "UPDATE BREVBESTILLING SET BREV = ?::jsonb WHERE REFERANSE = ?"
             ) {
