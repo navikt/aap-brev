@@ -55,7 +55,7 @@ dependencies {
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
     implementation("no.nav.aap.tilgang:plugin-kontrakt:$tilgangVersjon")
 
-    implementation("no.nav:ktor-openapi-generator:1.0.112")
+    implementation("no.nav:ktor-openapi-generator:1.0.113")
 
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
