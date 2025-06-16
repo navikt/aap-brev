@@ -45,10 +45,10 @@ class FerdigstillValideringTest {
                 status = Status.UNDER_ARBEID,
                 prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             )
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
         ferdigstill(referanse)
         assertStatus(referanse, Status.FERDIGSTILT)
-        assertAntallJobber(referanse, 2)
+        assertAntallJobber(referanse, 1)
     }
 
     @Test
@@ -59,7 +59,7 @@ class FerdigstillValideringTest {
                 status = Status.UNDER_ARBEID,
                 prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             )
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
         }
@@ -67,7 +67,7 @@ class FerdigstillValideringTest {
             "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${FaktagrunnlagType.FRIST_DATO_11_7.verdi}."
         )
         assertStatus(referanse, Status.UNDER_ARBEID)
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
     }
 
     @ParameterizedTest
@@ -80,7 +80,7 @@ class FerdigstillValideringTest {
             status = Status.UNDER_ARBEID,
             prosesseringStatus = status
         )
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
         }
@@ -88,7 +88,7 @@ class FerdigstillValideringTest {
             "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$status"
         )
         assertStatus(referanse, Status.UNDER_ARBEID)
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
     }
 
     @ParameterizedTest
@@ -103,10 +103,10 @@ class FerdigstillValideringTest {
             status = Status.FERDIGSTILT,
             prosesseringStatus = status
         )
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
         ferdigstill(referanse)
         assertStatus(referanse, Status.FERDIGSTILT)
-        assertAntallJobber(referanse, 1)
+        assertAntallJobber(referanse, 0)
     }
 
     private fun gittBrevMed(
@@ -119,14 +119,16 @@ class FerdigstillValideringTest {
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
             val brevinnholdService = BrevinnholdService.konstruer(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV1(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling
 
             brevinnholdService.hentOgLagre(bestilling.referanse)

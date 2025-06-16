@@ -44,38 +44,6 @@ class BrevbestillingService(
 
     private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
 
-    fun opprettBestillingV1(
-        saksnummer: Saksnummer,
-        brukerIdent: String?,
-        behandlingReferanse: BehandlingReferanse,
-        unikReferanse: UnikReferanse,
-        brevtype: Brevtype,
-        språk: Språk,
-        vedlegg: Set<Vedlegg>,
-    ): OpprettBrevbestillingResultat {
-        val resultat = opprettBestilling(
-            saksnummer = saksnummer,
-            brukerIdent = brukerIdent,
-            behandlingReferanse = behandlingReferanse,
-            unikReferanse = unikReferanse,
-            brevtype = brevtype,
-            språk = språk,
-            vedlegg = vedlegg,
-        )
-
-        if (resultat.alleredeOpprettet) {
-            return resultat
-        }
-
-        brevbestillingRepository.oppdaterStatus(resultat.brevbestilling.id, Status.REGISTRERT)
-        leggTilJobb(resultat.brevbestilling)
-
-        return OpprettBrevbestillingResultat(
-            brevbestilling = brevbestillingRepository.hent(resultat.brevbestilling.referanse),
-            alleredeOpprettet = false
-        )
-    }
-
     fun opprettBestillingV2(
         saksnummer: Saksnummer,
         brukerIdent: String?,

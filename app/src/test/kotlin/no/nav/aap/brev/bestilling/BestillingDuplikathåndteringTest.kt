@@ -31,37 +31,37 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
         )
-        val referanse = dataSource.transaction { connection ->
+        dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            val resultatFørste = brevbestillingService.opprettBestillingV1(
+            val resultatFørste = brevbestillingService.opprettBestillingV2(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                ferdigstillAutomatisk = false,
             )
 
             assertFalse(resultatFørste.alleredeOpprettet)
 
-            val resultatAndre = brevbestillingService.opprettBestillingV1(
+            val resultatAndre = brevbestillingService.opprettBestillingV2(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                ferdigstillAutomatisk = false,
             )
 
             assertTrue(resultatAndre.alleredeOpprettet)
-
-            resultatFørste.brevbestilling.referanse
         }
-
-        assertAntallJobber(referanse, 1)
     }
 
     @Test
@@ -80,14 +80,16 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV1(
+            val referanse = brevbestillingService.opprettBestillingV2(
                 saksnummer = saksnummer,
                 brukerIdent = brukerIdent,
                 behandlingReferanse = behandlingReferanse,
                 unikReferanse = unikReferanse,
                 brevtype = Brevtype.INNVILGELSE,
                 språk = Språk.NB,
+                faktagrunnlag = emptySet(),
                 vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                ferdigstillAutomatisk = false,
             ).brevbestilling.referanse
 
             brevbestillingRepository.hent(referanse)
@@ -145,14 +147,16 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
             val exception = assertThrows<IllegalStateException> {
-                brevbestillingService.opprettBestillingV1(
+                brevbestillingService.opprettBestillingV2(
                     saksnummer = endretBestilling.saksnummer,
                     brukerIdent = endretBestilling.brukerIdent,
                     behandlingReferanse = endretBestilling.behandlingReferanse,
                     unikReferanse = endretBestilling.unikReferanse,
                     brevtype = endretBestilling.brevtype,
                     språk = endretBestilling.språk,
+                    faktagrunnlag = emptySet(),
                     vedlegg = endretBestilling.vedlegg,
+                    ferdigstillAutomatisk = false,
                 )
             }
 

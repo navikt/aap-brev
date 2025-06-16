@@ -62,14 +62,16 @@ class AvbrytValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV1(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = randomBehandlingReferanse(),
                 unikReferanse = randomUnikReferanse(),
                 brevtype = randomBrevtype(),
                 språk = randomSpråk(),
+                faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
+                ferdigstillAutomatisk = false,
             ).brevbestilling
 
             brevbestillingRepository.oppdaterProsesseringStatus(bestilling.referanse, prosesseringStatus)

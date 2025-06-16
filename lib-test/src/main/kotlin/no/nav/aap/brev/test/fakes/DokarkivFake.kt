@@ -14,6 +14,10 @@ import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.*
 
+private val feilJournalføringFor = mutableSetOf<UUID>()
+fun feilJournalføringFor(bestilling: BrevbestillingReferanse) {
+    feilJournalføringFor.add(bestilling.referanse)
+}
 private val referanseTilJournalpost = mutableMapOf<BrevbestillingReferanse, JournalpostId>()
 private val referanseTilJournalpostFinnesAllerede = mutableMapOf<BrevbestillingReferanse, Boolean>()
 
@@ -31,6 +35,9 @@ fun Application.dokarkivFake() {
     routing {
         post("/rest/journalpostapi/v1/journalpost") {
             val request = DefaultJsonMapper.fromJson<OpprettJournalpostRequest>(call.receiveText())
+            if (feilJournalføringFor.contains(request.eksternReferanseId)) {
+                call.respond(HttpStatusCode.InternalServerError)
+            }
             val journalpostId = referanseTilJournalpost.get(BrevbestillingReferanse(request.eksternReferanseId))
                 ?: randomJournalpostId()
             val status =
