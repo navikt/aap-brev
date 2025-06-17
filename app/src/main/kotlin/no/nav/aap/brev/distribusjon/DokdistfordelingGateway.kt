@@ -43,16 +43,21 @@ class DokdistfordelingGateway : DistribusjonGateway {
 
     private fun utledDistribusjonstype(brevtype: Brevtype): Distribusjonstype {
         return when (brevtype) {
-            Brevtype.INNVILGELSE, Brevtype.AVSLAG, Brevtype.VEDTAK_ENDRING, Brevtype.KLAGE_AVVIST,
-            Brevtype.KLAGE_OPPRETTHOLDELSE,
-            Brevtype.KLAGE_TRUKKET -> Distribusjonstype.VEDTAK
+            Brevtype.INNVILGELSE,
+            Brevtype.AVSLAG,
+            Brevtype.VEDTAK_ENDRING,
+            Brevtype.KLAGE_AVVIST, // TODO, er det riktig?
+            Brevtype.KLAGE_TRUKKET // TODO, er det riktig?
+                -> Distribusjonstype.VEDTAK
 
-            Brevtype.VARSEL_OM_BESTILLING -> Distribusjonstype.ANNET
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, // TODO, er det riktig?
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV // TODO, er det riktig?
+                -> Distribusjonstype.VIKTIG
 
-            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
-            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> Distribusjonstype.VIKTIG // TODO, er det riktig?
-
-            Brevtype.FORVALTNINGSMELDING -> Distribusjonstype.ANNET // TODO, er det riktig?
+            Brevtype.VARSEL_OM_BESTILLING,
+            Brevtype.FORVALTNINGSMELDING,
+            Brevtype.KLAGE_OPPRETTHOLDELSE
+                -> Distribusjonstype.ANNET
         }
     }
 }
