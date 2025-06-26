@@ -3,6 +3,7 @@ package no.nav.aap.brev.distribusjon
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.OpprettetJournalpost
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class DistribusjonService(
@@ -16,21 +17,20 @@ class DistribusjonService(
         }
     }
 
-    fun distribuerBrev(brevbestillingReferanse: BrevbestillingReferanse) {
-        val brevbestilling = brevbestillingRepository.hent(brevbestillingReferanse)
-
-        checkNotNull(brevbestilling.journalpostId) {
-            "Kan ikke distribuere en bestilling som ikke er journalført."
-        }
-
-        check(brevbestilling.distribusjonBestillingId == null) {
+    fun distribuerBrev(journalpost: OpprettetJournalpost) {
+        check(journalpost.distribusjonBestillingId == null) {
             "Brevet er allerede distribuert."
         }
+        check(journalpost.ferdigstilt) {
+            "Kan ikke distribuere en bestilling som ikke er journalført."
+        }
+        val brevbestilling = brevbestillingRepository.hent(journalpost.brevbestillingId)
 
         val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
-            brevbestilling.journalpostId,
-            brevbestilling.brevtype
+            journalpost.journalpostId,
+            brevbestilling.brevtype,
+            journalpost.mottaker
         )
-        brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
+        brevbestillingRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
     }
 }

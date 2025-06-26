@@ -5,9 +5,9 @@ import java.util.UUID
 
 data class JournalføringData(
     val brukerFnr: String,
-    val mottakerIdent: String,
+    val mottakerIdent: String?,
     val mottakerNavn: String?,
-    val mottakerType: MottakerType,
+    val mottakerType: MottakerType?,
     val saksnummer: Saksnummer,
     val eksternReferanseId: UUID,
     val tittelJournalpost: String,
@@ -16,6 +16,18 @@ data class JournalføringData(
     val overstyrInnsynsregel: Boolean,
 ) {
     enum class MottakerType {
-        FNR, HPRNR
+        FNR, HPRNR, ORGNR, UTL_ORG
+    }
+
+    init {
+        require(mottakerNavn != null || mottakerType == MottakerType.FNR) {
+            "MottakerNavn må være satt dersom MottakerType ikke er FNR."
+        }
+        require(
+            (mottakerType != null && mottakerIdent != null)
+                    || (mottakerType == null && mottakerIdent == null)
+        ) {
+            "MottakerType og MottakerIdent må være satt sammen, eller begge må være null"
+        }
     }
 }

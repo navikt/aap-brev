@@ -31,7 +31,7 @@ interface JournalpostRepository {
 class JournalpostRepositoryImpl(private val connection: DBConnection) : JournalpostRepository {
     override fun hentHvisEksisterer(mottakerId: Long): OpprettetJournalpost? {
         val query = """
-            SELECT * FROM OPPRETTET_JOURNALPOST
+            SELECT JOURNALPOST_ID, MOTTAKER.ID AS MOTTAKER_ID, IDENT_TYPE, IDENT, FERDIGSTILT, NAVN_OG_ADRESSE, BREVBESTILLING_ID, DISTRIBUSJON_BESTILLING_ID FROM OPPRETTET_JOURNALPOST
             INNER JOIN MOTTAKER ON OPPRETTET_JOURNALPOST.MOTTAKER_ID = MOTTAKER.ID
             WHERE MOTTAKER_ID = ?
         """.trimIndent()
@@ -45,7 +45,7 @@ class JournalpostRepositoryImpl(private val connection: DBConnection) : Journalp
 
     override fun hentAlleFor(bestillingsreferanse: BrevbestillingReferanse): List<OpprettetJournalpost> {
         val query = """
-            SELECT OJ.*, M.ID, M.BREVBESTILLING_ID, M.IDENT_TYPE, M.IDENT, M.NAVN_OG_ADRESSE, OJ.DISTRIBUSJON_BESTILLING_ID
+            SELECT OJ.*, M.ID as MOTTAKER_ID, M.BREVBESTILLING_ID, M.IDENT_TYPE, M.IDENT, M.NAVN_OG_ADRESSE, OJ.DISTRIBUSJON_BESTILLING_ID
             FROM OPPRETTET_JOURNALPOST OJ
             INNER JOIN MOTTAKER M ON OJ.MOTTAKER_ID = M.ID
             INNER JOIN BREVBESTILLING B ON M.BREVBESTILLING_ID = B.ID
@@ -105,7 +105,7 @@ class JournalpostRepositoryImpl(private val connection: DBConnection) : Journalp
         return OpprettetJournalpost(
             journalpostId = JournalpostId(row.getString("JOURNALPOST_ID")),
             mottaker = Mottaker(
-                id = row.getLong("ID"),
+                id = row.getLong("MOTTAKER_ID"),
                 identType = row.getEnumOrNull("IDENT_TYPE"),
                 ident = row.getStringOrNull("IDENT"),
                 navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")

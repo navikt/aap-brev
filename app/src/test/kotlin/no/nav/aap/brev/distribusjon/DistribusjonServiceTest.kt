@@ -1,6 +1,11 @@
 package no.nav.aap.brev.distribusjon
 
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.IdentType
+import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
+import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
+import no.nav.aap.brev.bestilling.OpprettetJournalpost
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.journalføring.JournalføringService
@@ -42,9 +47,11 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val journalpostRepository = JournalpostRepositoryImpl(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -54,7 +61,10 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
+            val referanse = bestilling.referanse
+            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            val mottakere = mottakerRepository.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
@@ -64,11 +74,13 @@ class DistribusjonServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
-            journalføringService.journalførBrevbestilling(referanse)
-            distribusjonService.distribuerBrev(referanse)
+            journalføringService.journalførBrevbestilling(referanse, mottakere)
 
-            val bestilling = brevbestillingService.hent(referanse)
-            assertEquals(forventetDistribusjonBestillingId, bestilling.distribusjonBestillingId)
+            val journalpost = journalpostRepository.hentAlleFor(referanse).first()
+            distribusjonService.distribuerBrev(journalpost)
+
+            val oppdatertJournalpost = journalpostRepository.hentAlleFor(bestilling.referanse).first()
+            assertEquals(forventetDistribusjonBestillingId, oppdatertJournalpost.distribusjonBestillingId)
         }
     }
 
@@ -76,12 +88,10 @@ class DistribusjonServiceTest {
     fun `validering feiler dersom brevet ikke er journalført`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -91,16 +101,23 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
 
-            val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
+            // Kan ikke se at joark noen gang kalles her - selv før endringene?
+//            val journalpostId = randomJournalpostId()
+//            journalpostForBestilling(referanse, journalpostId)
 
             val exception = assertThrows<IllegalStateException> {
-                distribusjonService.distribuerBrev(referanse)
+                distribusjonService.distribuerBrev(
+                    OpprettetJournalpost(
+                        journalpostId = randomJournalpostId(),
+                        mottaker = mottakere(randomBrukerIdent()).first(),
+                        ferdigstilt = false,
+                        distribusjonBestillingId = null,
+                        brevbestillingId = bestilling.id,
+                        vedlegg = emptySet()
+                    )
+                )
             }
             assertEquals(exception.message, "Kan ikke distribuere en bestilling som ikke er journalført.")
         }
@@ -110,13 +127,10 @@ class DistribusjonServiceTest {
     fun `validering feiler dersom brevet allerede er distribuert`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
-            val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -126,18 +140,19 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
-
-            val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
-            journalføringService.journalførBrevbestilling(referanse)
-            distribusjonService.distribuerBrev(referanse)
+            ).brevbestilling
 
             val exception = assertThrows<IllegalStateException> {
-                distribusjonService.distribuerBrev(referanse)
+                distribusjonService.distribuerBrev(
+                    OpprettetJournalpost(
+                        journalpostId = randomJournalpostId(),
+                        mottaker = mottakere(randomBrukerIdent()).first(),
+                        ferdigstilt = true,
+                        distribusjonBestillingId = randomDistribusjonBestillingId(),
+                        brevbestillingId = bestilling.id,
+                        vedlegg = emptySet()
+                    )
+                )
             }
             assertEquals(exception.message, "Brevet er allerede distribuert.")
         }
@@ -152,9 +167,11 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val journalpostRepository = JournalpostRepositoryImpl(connection)
+            val mottakerRepostory = MottakerRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -164,7 +181,10 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
+            val referanse = bestilling.referanse
+            mottakerRepostory.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            val mottakere = mottakerRepostory.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, journalpostId)
@@ -178,12 +198,28 @@ class DistribusjonServiceTest {
 
             brevinnholdService.hentOgLagre(referanse)
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
-            journalføringService.journalførBrevbestilling(referanse)
-            distribusjonService.distribuerBrev(referanse)
+            journalføringService.journalførBrevbestilling(referanse, mottakere)
 
-            val bestilling = brevbestillingService.hent(referanse)
-            assertEquals(forventetDistribusjonBestillingId, bestilling.distribusjonBestillingId)
+            val journalposter = journalpostRepository.hentAlleFor(referanse)
+            
+            journalposter.forEach {
+                distribusjonService.distribuerBrev(it)
+            }
+
+            val journalpost = journalpostRepository.hentAlleFor(referanse).first()
+
+            assertEquals(forventetDistribusjonBestillingId, journalpost.distribusjonBestillingId)
         }
 
+    }
+
+    private fun mottakere(ident: String?): List<Mottaker> {
+        requireNotNull(ident) { "Denne hjelpemetoden støtter ikke null" }
+        return listOf(
+            Mottaker(
+                ident = ident,
+                identType = IdentType.FNR,
+            )
+        )
     }
 }

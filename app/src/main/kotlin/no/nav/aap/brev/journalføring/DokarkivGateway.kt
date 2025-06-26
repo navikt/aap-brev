@@ -108,6 +108,9 @@ class DokarkivGateway : JournalføringGateway {
                 idType = when (journalføringData.mottakerType) {
                     JournalføringData.MottakerType.FNR -> AvsenderMottaker.IdType.FNR
                     JournalføringData.MottakerType.HPRNR -> AvsenderMottaker.IdType.HPRNR
+                    JournalføringData.MottakerType.ORGNR -> AvsenderMottaker.IdType.ORGNR
+                    JournalføringData.MottakerType.UTL_ORG -> AvsenderMottaker.IdType.UTL_ORG
+                    null -> null
                 },
                 navn = journalføringData.mottakerNavn
             ),
