@@ -1,7 +1,10 @@
 package no.nav.aap.brev.api
 
 import no.nav.aap.brev.bestilling.Brevbestilling
+import no.nav.aap.brev.bestilling.IdentType
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
+import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 
@@ -32,5 +35,27 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
         ProsesseringStatus.JOURNALPOST_FERDIGSTILT,
         ProsesseringStatus.DISTRIBUERT,
         ProsesseringStatus.FERDIG -> Status.FERDIGSTILT
+
         ProsesseringStatus.AVBRUTT -> Status.AVBRUTT
     }
+
+internal fun MottakerDto.tilMottaker() = Mottaker(
+    ident = ident,
+    identType = when (identType) {
+        null -> null
+        else -> IdentType.valueOf(identType!!.name)
+    },
+    navnOgAdresse = navnOgAdresse?.let {
+        no.nav.aap.brev.bestilling.NavnOgAdresse(
+            navn = it.navn,
+            adresse = no.nav.aap.brev.bestilling.Adresse(
+                landkode = it.adresse.landkode,
+                adresselinje1 = it.adresse.adresselinje1,
+                adresselinje2 = it.adresse.adresselinje2,
+                adresselinje3 = it.adresse.adresselinje3,
+                postnummer = it.adresse.postnummer,
+                poststed = it.adresse.poststed
+            )
+        )
+    }
+)

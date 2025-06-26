@@ -11,6 +11,7 @@ import no.nav.aap.brev.innhold.kanFerdigstillesAutomatisk
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
+import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory
 
 class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
+    private val mottakerRepository: MottakerRepository,
     private val jobbRepository: FlytJobbRepository,
     private val arkivoppslagGateway: ArkivoppslagGateway,
     private val brevinnholdService: BrevinnholdService,
@@ -34,6 +36,7 @@ class BrevbestillingService(
         fun konstruer(connection: DBConnection): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                mottakerRepository = MottakerRepositoryImpl(connection),
                 jobbRepository = FlytJobbRepository(connection),
                 arkivoppslagGateway = SafGateway(),
                 brevinnholdService = BrevinnholdService.konstruer(connection),
@@ -82,6 +85,15 @@ class BrevbestillingService(
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
                 log.info("Ferdigstiller brev automatisk")
+                // TODO: Støtt flere mottakere for dette endepunktet
+                mottakerRepository.lagreMottakere(
+                    bestillingId, listOf(
+                        Mottaker(
+                            ident = brukerIdent,
+                            identType = IdentType.FNR
+                        )
+                    )
+                )
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
@@ -159,7 +171,8 @@ class BrevbestillingService(
 
     fun ferdigstill(
         referanse: BrevbestillingReferanse,
-        signaturer: List<SignaturGrunnlag>?
+        signaturer: List<SignaturGrunnlag>?,
+        mottakere: List<Mottaker>
     ) {
         val bestilling = hent(referanse)
 
@@ -173,6 +186,18 @@ class BrevbestillingService(
         if (signaturer != null) {
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
         }
+
+        mottakerRepository.lagreMottakere(
+            bestilling.id,
+            mottakere.ifEmpty {
+                listOf(
+                    Mottaker(
+                        ident = bestilling.brukerIdent,
+                        identType = IdentType.FNR
+                    )
+                ) // TODO: Er dette korrekt, eller kan det være HPRNR?
+            }
+        )
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
