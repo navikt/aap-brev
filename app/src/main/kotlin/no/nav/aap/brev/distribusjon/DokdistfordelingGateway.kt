@@ -46,14 +46,14 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.INNVILGELSE,
             Brevtype.AVSLAG,
             Brevtype.VEDTAK_ENDRING,
-            Brevtype.KLAGE_AVVIST, // TODO, er det riktig?
-            Brevtype.KLAGE_TRUKKET // TODO, er det riktig?
+            Brevtype.KLAGE_AVVIST,
                 -> Distribusjonstype.VEDTAK
 
-            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, // TODO, er det riktig?
-            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV // TODO, er det riktig?
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV
                 -> Distribusjonstype.VIKTIG
 
+            Brevtype.KLAGE_TRUKKET,
             Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.FORVALTNINGSMELDING,
             Brevtype.KLAGE_OPPRETTHOLDELSE
