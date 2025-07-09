@@ -32,6 +32,8 @@ class BrevbestillingRepositoryImplTest {
     fun `lagrer, henter og oppdaterer`() {
         dataSource.transaction { connection ->
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+            val journalpostRepository = JournalpostRepositoryImpl(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val saksnummer = randomSaksnummer()
             val brukerIdent = randomBrukerIdent()
@@ -99,6 +101,10 @@ class BrevbestillingRepositoryImplTest {
             assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
 
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
+            mottakerRepository.lagreMottakere(
+                bestilling.id,
+                listOf(Mottaker(ident = brukerIdent, identType = IdentType.FNR))
+            )
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(
@@ -111,21 +117,34 @@ class BrevbestillingRepositoryImplTest {
                 bestilling.signaturer
             )
 
-            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = false)
+            val mottaker = mottakerRepository.hentMottakere(bestilling.id).first()
+            journalpostRepository.lagreJournalpost(journalpostId, journalpostFerdigstilt = false, mottaker.id!!)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
+            
+            var journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
+            assertEquals(journalpostId, journalpost.journalpostId)
+            assertTrue(journalpost.ferdigstilt == false)
+            
+            // TODO: Midlertidig skriver til begge?
+            //assertEquals(journalpostId, bestilling.journalpostId)
+            //assertTrue(bestilling.journalpostFerdigstilt == false)
+            //
 
-            assertEquals(journalpostId, bestilling.journalpostId)
-            assertTrue(bestilling.journalpostFerdigstilt == false)
-
-            brevbestillingRepository.lagreJournalpostFerdigstilt(bestilling.id, journalpostFerdigstilt = true)
+            journalpostRepository.lagreJournalpostFerdigstilt(
+                journalpostId, ferdigstilt = true
+            )
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
+            journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
+            
+            //assertTrue(bestilling.journalpostFerdigstilt == true)
+            assertTrue(journalpost.ferdigstilt == true)
 
-            assertTrue(bestilling.journalpostFerdigstilt == true)
+            brevbestillingRepository.lagreDistribusjonBestilling(
+                journalpost.journalpostId, distribusjonBestillingId
+            )
+            journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
 
-            brevbestillingRepository.lagreDistribusjonBestilling(bestilling.id, distribusjonBestillingId)
-            bestilling = brevbestillingRepository.hent(bestilling.referanse)
-
-            assertEquals(distribusjonBestillingId, bestilling.distribusjonBestillingId)
+            assertEquals(distribusjonBestillingId, journalpost.distribusjonBestillingId)
 
             assertEquals(bestilling, brevbestillingRepository.hent(unikReferanse))
         }
