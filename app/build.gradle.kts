@@ -8,7 +8,7 @@ val junitVersjon = "5.13.1"
 
 plugins {
     id("brev.conventions")
-    id("io.ktor.plugin") version "3.2.1"
+    id("io.ktor.plugin") version "3.2.2"
 }
 
 application {
