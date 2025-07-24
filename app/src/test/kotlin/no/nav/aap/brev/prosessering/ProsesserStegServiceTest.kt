@@ -2,8 +2,12 @@ package no.nav.aap.brev.prosessering
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BehandlingReferanse
-import no.nav.aap.brev.bestilling.BrevbestillingReferanse
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
+
+import no.nav.aap.brev.bestilling.IdentType
+import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
@@ -42,11 +46,12 @@ class ProsesserStegServiceTest {
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = opprettBestilling(
+            val bestilling = opprettBestilling(
                 brevtype = Brevtype.VARSEL_OM_BESTILLING, // automatisk brev
-                ferdigstillAutomatisk = true,
                 behandlingReferanse = behandlingReferanse,
+                ferdigstillAutomatisk = true
             )
+            val referanse = bestilling.referanse
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.FristDato11_7(LocalDate.now())))
 
             prosesserStegService.prosesserBestilling(referanse)
@@ -60,16 +65,18 @@ class ProsesserStegServiceTest {
 
     @Test
     fun `lagrer prosesserte steg frem til det feiler`() {
-        val referanse = opprettBestilling(
+        val bestilling = opprettBestilling(
             brevtype = Brevtype.VARSEL_OM_BESTILLING, // automatisk brev
             ferdigstillAutomatisk = true
         )
-        feilJournalføringFor(bestilling = referanse)
+
+        val referanse = "${bestilling.referanse.referanse}-1"
+        feilJournalføringFor(referanse)
 
         try {
             dataSource.transaction { connection ->
                 val prosesserStegService = ProsesserStegService.konstruer(connection)
-                prosesserStegService.prosesserBestilling(referanse)
+                prosesserStegService.prosesserBestilling(bestilling.referanse)
             }
         } catch (_: Exception) {
         }
@@ -77,18 +84,18 @@ class ProsesserStegServiceTest {
         assertEquals(
             ProsesseringStatus.BREV_FERDIGSTILT,
             dataSource.transaction { connection ->
-                BrevbestillingService.konstruer(connection).hent(referanse).prosesseringStatus
+                BrevbestillingService.konstruer(connection).hent(bestilling.referanse).prosesseringStatus
             }
         )
     }
 
     @Test
     fun `stopper prosessering på et steg med resultat stopp, og prosesserer videre fra neste steg ved ny prosessering prosessering etter ferdigstilling`() {
-        dataSource.transaction { connection ->
+        val bestilling = dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val referanse = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val referanse = bestilling.referanse
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
@@ -98,19 +105,25 @@ class ProsesserStegServiceTest {
                 Status.UNDER_ARBEID,
                 brevbestillingService.hent(referanse).status
             )
+            bestilling
+        }
+        dataSource.transaction { connection ->
+            val prosesserStegService = ProsesserStegService.konstruer(connection)
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            brevbestillingService.ferdigstill(referanse, emptyList())
-            prosesserStegService.prosesserBestilling(referanse)
+            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), mottakere = mottakereLikBrukerIdent(bestilling))
+            prosesserStegService.prosesserBestilling(bestilling.referanse)
 
             assertEquals(
                 ProsesseringStatus.FERDIG,
-                brevbestillingService.hent(referanse).prosesseringStatus
+                brevbestillingService.hent(bestilling.referanse).prosesseringStatus
             )
             assertEquals(
                 Status.FERDIGSTILT,
-                brevbestillingService.hent(referanse).status
+                brevbestillingService.hent(bestilling.referanse).status
             )
         }
+
     }
 
     @Test
@@ -119,7 +132,8 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val referanse = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val referanse = bestilling.referanse
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
@@ -129,6 +143,7 @@ class ProsesserStegServiceTest {
                 Status.UNDER_ARBEID,
                 brevbestillingService.hent(referanse).status
             )
+            opprettMottakere(bestilling)
 
             val exception = assertThrows<IllegalStateException> {
                 prosesserStegService.prosesserBestilling(referanse)
@@ -145,7 +160,8 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val referanse = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
+            val referanse = bestilling.referanse
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
@@ -182,7 +198,7 @@ class ProsesserStegServiceTest {
         brevtype: Brevtype,
         ferdigstillAutomatisk: Boolean,
         behandlingReferanse: BehandlingReferanse = randomBehandlingReferanse(),
-    ): BrevbestillingReferanse {
+    ): Brevbestilling {
         return dataSource.transaction { connection ->
             BrevbestillingService.konstruer(connection)
                 .opprettBestillingV2(
@@ -195,7 +211,28 @@ class ProsesserStegServiceTest {
                     faktagrunnlag = emptySet(),
                     vedlegg = emptySet(),
                     ferdigstillAutomatisk = ferdigstillAutomatisk,
-                ).brevbestilling.referanse
+                ).brevbestilling
         }
+    }
+
+    private fun opprettMottakere(
+        bestilling: Brevbestilling
+    ) {
+        return dataSource.transaction { connection ->
+            MottakerRepositoryImpl(connection).lagreMottakere(
+                bestilling.id, mottakereLikBrukerIdent(bestilling)
+            )
+        }
+    }
+
+    private fun mottakereLikBrukerIdent(brevbestilling: Brevbestilling): List<Mottaker> {
+        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
+        return listOf(
+            Mottaker(
+                ident = brevbestilling.brukerIdent,
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
+            )
+        )
     }
 }
