@@ -1,14 +1,11 @@
 package no.nav.aap.brev.journalføring
 
-import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
-import java.util.UUID
-
 data class OpprettJournalpostRequest(
     val avsenderMottaker: AvsenderMottaker,
     val behandlingstema: String?,
     val bruker: Bruker,
     val dokumenter: List<Dokument>,
-    val eksternReferanseId: UUID,
+    val eksternReferanseId: String,
     val journalfoerendeEnhet: String,
     val journalposttype: JournalpostType,
     val sak: Sak,

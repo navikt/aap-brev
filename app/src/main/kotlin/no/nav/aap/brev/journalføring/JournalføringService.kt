@@ -79,7 +79,7 @@ class JournalføringService(
             mottakerType = mottaker.identType?.let { MottakerType.valueOf(it.name) },
             mottakerNavn = mottaker.navnOgAdresse?.navn,
             saksnummer = bestilling.saksnummer,
-            eksternReferanseId = bestilling.referanse.referanse, // TODO: Hva gjør egentlig denne?
+            eksternReferanseId = mottaker.bestillingMottakerReferanse,
             tittelJournalpost = checkNotNull(value = bestilling.brev.journalpostTittel ?: bestilling.brev.overskrift),
             tittelBrev = checkNotNull(value = bestilling.brev.overskrift),
             brevkode = bestilling.brevtype.name,

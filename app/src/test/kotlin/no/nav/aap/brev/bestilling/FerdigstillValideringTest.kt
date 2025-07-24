@@ -186,7 +186,7 @@ class FerdigstillValideringTest {
             Mottaker(
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = "${bestilling.referanse}-1",
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1",
             )
         )
     }

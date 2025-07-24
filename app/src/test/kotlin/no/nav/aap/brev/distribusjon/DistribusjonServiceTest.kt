@@ -68,7 +68,7 @@ class DistribusjonServiceTest {
             val mottakere = mottakerRepository.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(mottakere.first().bestillingMottakerReferanse, journalpostId)
 
             val forventetDistribusjonBestillingId = randomDistribusjonBestillingId()
             distribusjonBestillingIdForJournalpost(journalpostId, forventetDistribusjonBestillingId)
@@ -190,7 +190,7 @@ class DistribusjonServiceTest {
             val mottakere = mottakerRepostory.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(mottakere.first().bestillingMottakerReferanse, journalpostId)
 
             val forventetDistribusjonBestillingId = randomDistribusjonBestillingId()
             distribusjonBestillingIdForJournalpost(

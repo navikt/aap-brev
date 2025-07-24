@@ -59,17 +59,18 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
 
-            val referanse = bestilling.referanse
             mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
-
+            val mottakere = mottakerRepository.hentMottakere(bestilling.referanse)
+            
+            val referanse = mottakere.first().bestillingMottakerReferanse
+            
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
+            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(bestilling.referanse)
 
-            val mottakere = mottakerRepository.hentMottakere(referanse)
-            journalføringService.journalførBrevbestilling(referanse, mottakere)
-            val journalposter = journalpostRepository.hentAlleFor(referanse)
+            journalføringService.journalførBrevbestilling(bestilling.referanse, mottakere)
+            val journalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
 
             assertEquals(forventetJournalpostId, journalposter.first().journalpostId)
         }
@@ -162,20 +163,23 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
 
-            val referanse = bestilling.referanse
+            
             val forventetJournalpostId = randomJournalpostId()
+            
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
+            val mottakere = mottakerRepository.hentMottakere(bestilling.referanse)
+
+            val referanse = mottakere.first().bestillingMottakerReferanse
+
             journalpostForBestilling(referanse, forventetJournalpostId)
 
-            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
-            val mottakere = mottakerRepository.hentMottakere(referanse)
+            journalføringService.journalførBrevbestilling(bestilling.referanse, mottakere)
 
-            journalføringService.journalførBrevbestilling(referanse, mottakere)
-
-            val journalpost = journalpostRepository.hentAlleFor(referanse).single()
+            val journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
             assertEquals(forventetJournalpostId, journalpost.journalpostId)
 
             val exception = assertThrows<IllegalStateException> {
-                journalføringService.journalførBrevbestilling(referanse, mottakere)
+                journalføringService.journalførBrevbestilling(bestilling.referanse, mottakere)
             }
 
             assertEquals(exception.message, "Kan ikke journalføre brev for bestilling som allerede er journalført.")
@@ -191,7 +195,7 @@ class JournalføringServiceTest {
             val behandlingReferanse = randomBehandlingReferanse()
             val mottakerRepository = MottakerRepositoryImpl(connection)
             val journalpostRepository = JournalpostRepositoryImpl(connection)
-       
+
             val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
@@ -205,11 +209,15 @@ class JournalføringServiceTest {
             ).brevbestilling
             val referanse = bestilling.referanse
             mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
+            val mottakere = mottakerRepository.hentMottakere(referanse)
 
             val forventetJournalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
+            journalpostForBestilling(
+                mottakere.first().bestillingMottakerReferanse,
+                forventetJournalpostId,
+                finnesAllerede = true
+            )
 
-            val mottakere = mottakerRepository.hentMottakere(referanse)
             journalføringService.journalførBrevbestilling(referanse, mottakere)
 
             val journalpost = journalpostRepository.hentAlleFor(referanse).single()

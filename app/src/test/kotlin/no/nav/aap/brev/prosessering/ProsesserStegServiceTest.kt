@@ -70,13 +70,13 @@ class ProsesserStegServiceTest {
             ferdigstillAutomatisk = true
         )
 
-        val referanse = bestilling.referanse
-        feilJournalføringFor(bestilling = referanse)
+        val referanse = "${bestilling.referanse.referanse}-1"
+        feilJournalføringFor(referanse)
 
         try {
             dataSource.transaction { connection ->
                 val prosesserStegService = ProsesserStegService.konstruer(connection)
-                prosesserStegService.prosesserBestilling(referanse)
+                prosesserStegService.prosesserBestilling(bestilling.referanse)
             }
         } catch (_: Exception) {
         }
@@ -84,7 +84,7 @@ class ProsesserStegServiceTest {
         assertEquals(
             ProsesseringStatus.BREV_FERDIGSTILT,
             dataSource.transaction { connection ->
-                BrevbestillingService.konstruer(connection).hent(referanse).prosesseringStatus
+                BrevbestillingService.konstruer(connection).hent(bestilling.referanse).prosesseringStatus
             }
         )
     }

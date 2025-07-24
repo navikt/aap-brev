@@ -14,15 +14,15 @@ import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.util.*
 
-private val feilJournalføringFor = mutableSetOf<UUID>()
-fun feilJournalføringFor(bestilling: BrevbestillingReferanse) {
-    feilJournalføringFor.add(bestilling.referanse)
+private val feilJournalføringFor = mutableSetOf<String>()
+fun feilJournalføringFor(eksternReferanse: String) {
+    feilJournalføringFor.add(eksternReferanse)
 }
-private val referanseTilJournalpost = mutableMapOf<BrevbestillingReferanse, JournalpostId>()
-private val referanseTilJournalpostFinnesAllerede = mutableMapOf<BrevbestillingReferanse, Boolean>()
+private val referanseTilJournalpost = mutableMapOf<String, JournalpostId>()
+private val referanseTilJournalpostFinnesAllerede = mutableMapOf<String, Boolean>()
 
 fun journalpostForBestilling(
-    referanse: BrevbestillingReferanse,
+    referanse: String,
     journalpostId: JournalpostId,
     finnesAllerede: Boolean = false
 ) {
@@ -38,11 +38,11 @@ fun Application.dokarkivFake() {
             if (feilJournalføringFor.contains(request.eksternReferanseId)) {
                 call.respond(HttpStatusCode.InternalServerError)
             }
-            val journalpostId = referanseTilJournalpost.get(BrevbestillingReferanse(request.eksternReferanseId))
+            val journalpostId = referanseTilJournalpost.get(request.eksternReferanseId)
                 ?: randomJournalpostId()
             val status =
                 if (referanseTilJournalpostFinnesAllerede
-                        .getOrDefault(BrevbestillingReferanse(request.eksternReferanseId), false)
+                        .getOrDefault(request.eksternReferanseId, false)
                 ) {
                     HttpStatusCode.Conflict
                 } else {

@@ -9,7 +9,7 @@ data class JournalføringData(
     val mottakerNavn: String?,
     val mottakerType: MottakerType?,
     val saksnummer: Saksnummer,
-    val eksternReferanseId: UUID,
+    val eksternReferanseId: String,
     val tittelJournalpost: String,
     val tittelBrev: String,
     val brevkode: String,
