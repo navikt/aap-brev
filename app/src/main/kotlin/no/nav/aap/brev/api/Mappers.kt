@@ -7,6 +7,7 @@ import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
+import java.util.UUID
 
 fun Brevbestilling.tilResponse(): BrevbestillingResponse =
     BrevbestillingResponse(
@@ -39,12 +40,13 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
         ProsesseringStatus.AVBRUTT -> Status.AVBRUTT
     }
 
-internal fun MottakerDto.tilMottaker() = Mottaker(
+internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mottaker(
     ident = ident,
     identType = when (identType) {
         null -> null
         else -> IdentType.valueOf(identType!!.name)
     },
+    bestillingMottakerReferanse = "$bestillingReferanse-${index + 1}",
     navnOgAdresse = navnOgAdresse?.let {
         no.nav.aap.brev.bestilling.NavnOgAdresse(
             navn = it.navn,
@@ -59,3 +61,10 @@ internal fun MottakerDto.tilMottaker() = Mottaker(
         )
     }
 )
+
+internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.mapIndexed { index, mottaker ->
+    mottaker.tilMottaker(
+        bestillingReferanse = bestillingReferanse,
+        index = index
+    )
+}

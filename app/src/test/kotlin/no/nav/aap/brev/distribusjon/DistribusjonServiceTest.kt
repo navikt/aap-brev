@@ -1,5 +1,6 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
@@ -63,7 +64,7 @@ class DistribusjonServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
             val mottakere = mottakerRepository.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
@@ -111,7 +112,7 @@ class DistribusjonServiceTest {
                 distribusjonService.distribuerBrev(
                     OpprettetJournalpost(
                         journalpostId = randomJournalpostId(),
-                        mottaker = mottakere(randomBrukerIdent()).first(),
+                        mottaker = mottakereLikBrukerIdent(bestilling).first(),
                         ferdigstilt = false,
                         distribusjonBestillingId = null,
                         brevbestillingId = bestilling.id,
@@ -146,7 +147,7 @@ class DistribusjonServiceTest {
                 distribusjonService.distribuerBrev(
                     OpprettetJournalpost(
                         journalpostId = randomJournalpostId(),
-                        mottaker = mottakere(randomBrukerIdent()).first(),
+                        mottaker = mottakereLikBrukerIdent(bestilling).first(),
                         ferdigstilt = true,
                         distribusjonBestillingId = randomDistribusjonBestillingId(),
                         brevbestillingId = bestilling.id,
@@ -183,7 +184,9 @@ class DistribusjonServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            mottakerRepostory.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            
+            // Evt. kall ferdigstill?
+            mottakerRepostory.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
             val mottakere = mottakerRepostory.hentMottakere(referanse)
 
             val journalpostId = randomJournalpostId()
@@ -201,7 +204,7 @@ class DistribusjonServiceTest {
             journalføringService.journalførBrevbestilling(referanse, mottakere)
 
             val journalposter = journalpostRepository.hentAlleFor(referanse)
-            
+
             journalposter.forEach {
                 distribusjonService.distribuerBrev(it)
             }
@@ -213,12 +216,23 @@ class DistribusjonServiceTest {
 
     }
 
-    private fun mottakere(ident: String?): List<Mottaker> {
-        requireNotNull(ident) { "Denne hjelpemetoden støtter ikke null" }
+    private fun opprettMottakereLikBrukerIdent(
+        bestilling: Brevbestilling
+    ) {
+        return dataSource.transaction { connection ->
+            MottakerRepositoryImpl(connection).lagreMottakere(
+                bestilling.id, mottakereLikBrukerIdent(bestilling)
+            )
+        }
+    }
+
+    private fun mottakereLikBrukerIdent(brevbestilling: Brevbestilling): List<Mottaker> {
+        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
         return listOf(
             Mottaker(
-                ident = ident,
+                ident = brevbestilling.brukerIdent,
                 identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
             )
         )
     }

@@ -1,10 +1,11 @@
 create table MOTTAKER
 (
-    ID                BIGSERIAL NOT NULL PRIMARY KEY,
-    BREVBESTILLING_ID BIGINT    NOT NULL REFERENCES BREVBESTILLING (ID),
-    IDENT             VARCHAR(20),
-    IDENT_TYPE        VARCHAR(20),
-    NAVN_OG_ADRESSE   jsonb,
+    ID                            BIGSERIAL   NOT NULL PRIMARY KEY,
+    BREVBESTILLING_ID             BIGINT      NOT NULL REFERENCES BREVBESTILLING (ID),
+    BESTILLING_MOTTAKER_REFERANSE TEXT UNIQUE NOT NULL, -- Ekstern referanse ved opprettelse av journalpost for mottaker
+    IDENT                         VARCHAR(20),
+    IDENT_TYPE                    VARCHAR(20),
+    NAVN_OG_ADRESSE               jsonb,
     CONSTRAINT IDENT_ELLER_NAVN_OG_ADRESSE CHECK (
         (IDENT IS NOT NULL AND IDENT_TYPE IS NOT NULL AND NAVN_OG_ADRESSE IS NULL)
             OR

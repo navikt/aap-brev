@@ -3,7 +3,6 @@ package no.nav.aap.brev.prosessering
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.Brevbestilling
-import no.nav.aap.brev.bestilling.BrevbestillingId
 import no.nav.aap.brev.bestilling.BrevbestillingService
 
 import no.nav.aap.brev.bestilling.IdentType
@@ -112,7 +111,7 @@ class ProsesserStegServiceTest {
             val prosesserStegService = ProsesserStegService.konstruer(connection)
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), mottakere = mottakere(bestilling.brukerIdent))
+            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), mottakere = mottakereLikBrukerIdent(bestilling))
             prosesserStegService.prosesserBestilling(bestilling.referanse)
 
             assertEquals(
@@ -124,7 +123,7 @@ class ProsesserStegServiceTest {
                 brevbestillingService.hent(bestilling.referanse).status
             )
         }
-        
+
     }
 
     @Test
@@ -144,7 +143,7 @@ class ProsesserStegServiceTest {
                 Status.UNDER_ARBEID,
                 brevbestillingService.hent(referanse).status
             )
-            opprettMottakere(bestilling.id, bestilling.brukerIdent)
+            opprettMottakere(bestilling)
 
             val exception = assertThrows<IllegalStateException> {
                 prosesserStegService.prosesserBestilling(referanse)
@@ -217,22 +216,22 @@ class ProsesserStegServiceTest {
     }
 
     private fun opprettMottakere(
-        bestillingId: BrevbestillingId,
-        ident: String?
+        bestilling: Brevbestilling
     ) {
         return dataSource.transaction { connection ->
             MottakerRepositoryImpl(connection).lagreMottakere(
-                bestillingId, mottakere(ident)
+                bestilling.id, mottakereLikBrukerIdent(bestilling)
             )
         }
     }
 
-    private fun mottakere(ident: String?): List<Mottaker> {
-        requireNotNull(ident) { "Denne hjelpemetoden støtter ikke null" }
+    private fun mottakereLikBrukerIdent(brevbestilling: Brevbestilling): List<Mottaker> {
+        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
         return listOf(
             Mottaker(
-                ident = ident,
+                ident = brevbestilling.brukerIdent,
                 identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
             )
         )
     }

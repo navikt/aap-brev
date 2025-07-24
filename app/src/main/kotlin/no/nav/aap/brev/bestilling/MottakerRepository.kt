@@ -13,7 +13,7 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
 
     override fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
         val query = """
-            INSERT INTO MOTTAKER(BREVBESTILLING_ID, IDENT, IDENT_TYPE, NAVN_OG_ADRESSE) VALUES (?, ?, ?, ?::jsonb)
+            INSERT INTO MOTTAKER(BREVBESTILLING_ID, IDENT, IDENT_TYPE, NAVN_OG_ADRESSE, BESTILLING_MOTTAKER_REFERANSE) VALUES (?, ?, ?, ?::jsonb, ?)
         """.trimIndent()
         connection.executeBatch(query, mottakere) {
             setParams {
@@ -21,6 +21,7 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
                 setString(2, it.ident)
                 setEnumName(3, it.identType)
                 setString(4, it.navnOgAdresse?.let { n -> DefaultJsonMapper.toJson(n) })
+                setString(5, it.bestillingMottakerReferanse)
             }
         }
     }
@@ -39,7 +40,8 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
                     id = row.getLong("ID"),
                     ident = row.getStringOrNull("IDENT"),
                     identType = row.getEnumOrNull("IDENT_TYPE"),
-                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) }
+                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
+                    bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
                 )
             }
         }
@@ -59,7 +61,8 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
                     id = row.getLong("ID"),
                     ident = row.getStringOrNull("IDENT"),
                     identType = row.getEnumOrNull("IDENT_TYPE"),
-                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) }
+                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
+                    bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
                 )
             }
         }
@@ -70,7 +73,8 @@ data class Mottaker(
     val id: Long? = null,
     val ident: String? = null,
     val identType: IdentType? = null,
-    val navnOgAdresse: NavnOgAdresse? = null
+    val navnOgAdresse: NavnOgAdresse? = null,
+    val bestillingMottakerReferanse: String,
 ) {
     init {
         require(navnOgAdresse != null || identType == IdentType.FNR) {

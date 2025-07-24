@@ -90,7 +90,8 @@ class BrevbestillingService(
                     bestillingId, listOf(
                         Mottaker(
                             ident = brukerIdent,
-                            identType = IdentType.FNR
+                            identType = IdentType.FNR,
+                            bestillingMottakerReferanse = "${bestillingReferanse.referanse}-1"
                         )
                     )
                 )
@@ -193,9 +194,10 @@ class BrevbestillingService(
                 listOf(
                     Mottaker(
                         ident = bestilling.brukerIdent,
-                        identType = IdentType.FNR
+                        identType = IdentType.FNR,
+                        bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
                     )
-                ) // TODO: Er dette korrekt, eller kan det være HPRNR?
+                )
             }
         )
 
@@ -329,4 +331,5 @@ class BrevbestillingService(
             log.warn("Forsøkte å oppdatere deler av brevet som ikke er redigerbart") // TODO midlertidig bare logging for testing
         }
     }
+    
 }

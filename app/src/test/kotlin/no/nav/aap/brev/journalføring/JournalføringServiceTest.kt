@@ -1,5 +1,6 @@
 package no.nav.aap.brev.journalføring
 
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
@@ -59,7 +60,7 @@ class JournalføringServiceTest {
             ).brevbestilling
 
             val referanse = bestilling.referanse
-            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
@@ -93,7 +94,7 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
             val mottakere = mottakerRepository.hentMottakere(referanse)
 
             connection.execute(
@@ -132,7 +133,7 @@ class JournalføringServiceTest {
             val referanse = bestilling.referanse
 
             val exception = assertThrows<IllegalStateException> {
-                journalføringService.journalførBrevbestilling(referanse, mottakere(bestilling.brukerIdent))
+                journalføringService.journalførBrevbestilling(referanse, mottakereLikBrukerIdent(bestilling))
             }
             assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag FRIST_DATO_11_7.")
         }
@@ -165,7 +166,7 @@ class JournalføringServiceTest {
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId)
 
-            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
             val mottakere = mottakerRepository.hentMottakere(referanse)
 
             journalføringService.journalførBrevbestilling(referanse, mottakere)
@@ -203,7 +204,7 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            mottakerRepository.lagreMottakere(bestilling.id, mottakere(bestilling.brukerIdent))
+            mottakerRepository.lagreMottakere(bestilling.id, mottakereLikBrukerIdent(bestilling))
 
             val forventetJournalpostId = randomJournalpostId()
             journalpostForBestilling(referanse, forventetJournalpostId, finnesAllerede = true)
@@ -216,12 +217,13 @@ class JournalføringServiceTest {
         }
     }
 
-    private fun mottakere(ident: String?): List<Mottaker> {
-        requireNotNull(ident) { "Denne hjelpemetoden støtter ikke null" }
+    private fun mottakereLikBrukerIdent(brevbestilling: Brevbestilling): List<Mottaker> {
+        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
         return listOf(
             Mottaker(
-                ident = ident,
+                ident = brevbestilling.brukerIdent,
                 identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
             )
         )
     }

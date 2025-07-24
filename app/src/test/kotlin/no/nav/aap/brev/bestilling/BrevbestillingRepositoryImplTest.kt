@@ -103,7 +103,13 @@ class BrevbestillingRepositoryImplTest {
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
             mottakerRepository.lagreMottakere(
                 bestilling.id,
-                listOf(Mottaker(ident = brukerIdent, identType = IdentType.FNR))
+                listOf(
+                    Mottaker(
+                        ident = brukerIdent,
+                        identType = IdentType.FNR,
+                        bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
+                    )
+                )
             )
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
@@ -120,11 +126,11 @@ class BrevbestillingRepositoryImplTest {
             val mottaker = mottakerRepository.hentMottakere(bestilling.id).first()
             journalpostRepository.lagreJournalpost(journalpostId, journalpostFerdigstilt = false, mottaker.id!!)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
-            
+
             var journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
             assertEquals(journalpostId, journalpost.journalpostId)
             assertTrue(journalpost.ferdigstilt == false)
-            
+
             // TODO: Midlertidig skriver til begge?
             //assertEquals(journalpostId, bestilling.journalpostId)
             //assertTrue(bestilling.journalpostFerdigstilt == false)
@@ -135,7 +141,7 @@ class BrevbestillingRepositoryImplTest {
             )
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
             journalpost = journalpostRepository.hentAlleFor(bestilling.referanse).single()
-            
+
             //assertTrue(bestilling.journalpostFerdigstilt == true)
             assertTrue(journalpost.ferdigstilt == true)
 

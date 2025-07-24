@@ -46,7 +46,7 @@ class FerdigstillValideringTest {
                 prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             )
         assertAntallJobber(bestilling.referanse, 0)
-        ferdigstill(bestilling.referanse, mottakere(bestilling.brukerIdent))
+        ferdigstill(bestilling.referanse, mottakere(bestilling))
         assertStatus(bestilling.referanse, Status.FERDIGSTILT)
         assertAntallJobber(bestilling.referanse, 1)
     }
@@ -61,7 +61,7 @@ class FerdigstillValideringTest {
             )
         assertAntallJobber(bestilling.referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
-            ferdigstill(bestilling.referanse, mottakere(bestilling.brukerIdent))
+            ferdigstill(bestilling.referanse, mottakere(bestilling))
         }
         assertThat(exception.message).endsWith(
             "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${FaktagrunnlagType.FRIST_DATO_11_7.verdi}."
@@ -82,7 +82,7 @@ class FerdigstillValideringTest {
         )
         assertAntallJobber(bestilling.referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
-            ferdigstill(bestilling.referanse, mottakere(bestilling.brukerIdent))
+            ferdigstill(bestilling.referanse, mottakere(bestilling))
         }
         assertThat(exception.message).endsWith(
             "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$status"
@@ -104,8 +104,9 @@ class FerdigstillValideringTest {
             status = Status.FERDIGSTILT,
             prosesseringStatus = status
         )
+        
         assertAntallJobber(bestilling.referanse, 0)
-        ferdigstill(bestilling.referanse, listOf(Mottaker(ident = bestilling.brukerIdent, identType = IdentType.FNR)))
+        ferdigstill(bestilling.referanse, mottakere(bestilling))
         assertStatus(bestilling.referanse, Status.FERDIGSTILT)
         assertAntallJobber(bestilling.referanse, 0)
     }
@@ -179,12 +180,13 @@ class FerdigstillValideringTest {
         }
     }
 
-    private fun mottakere(ident: String?): List<Mottaker> {
-        requireNotNull(ident) { "Denne hjelpemetoden støtter ikke null" }
+    private fun mottakere(bestilling: Brevbestilling): List<Mottaker> {
+        requireNotNull(bestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
         return listOf(
             Mottaker(
-                ident = ident,
+                ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${bestilling.referanse}-1",
             )
         )
     }

@@ -4,11 +4,7 @@ data class MottakerDto(
     val ident: String? = null,
     val identType: IdentType? = null,
     val navnOgAdresse: NavnOgAdresse? = null,
-) {
-    init {
-        
-    }
-}
+)
 
 data class NavnOgAdresse(
     val navn: String,

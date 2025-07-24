@@ -8,6 +8,7 @@ import io.ktor.http.*
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.PdfService
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.UnikReferanse
@@ -25,6 +26,7 @@ import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
+import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
@@ -34,6 +36,7 @@ import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
 import org.slf4j.MDC
+import java.util.UUID
 import javax.sql.DataSource
 
 
@@ -138,7 +141,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                             .ferdigstill(
                                 referanse = BrevbestillingReferanse(request.referanse),
                                 signaturer = request.signaturer,
-                                mottakere = request.mottakere.map { it.tilMottaker() }
+                                mottakere = request.mottakere.tilMottakere(request.referanse)
                             )
                     }
                     respond("{}", HttpStatusCode.Accepted)
