@@ -40,9 +40,14 @@ class MottakerRepositoryImplTest : IntegrationTest() {
                 listOf(mottaker1, mottaker2)
             )
 
-            val mottakere = mottakerRepository.hentMottakere(bestilling.id)
+            assertThat(
+                mottakerRepository.hentMottakere(bestilling.id).map { it.copy(id = null) }).containsExactlyInAnyOrder(mottaker1,
+                mottaker2
+            )
 
-            assertThat(mottakere.map { it.copy(id = null) }).containsExactlyInAnyOrder(mottaker1, mottaker2)
+            assertThat(
+                mottakerRepository.hentMottakere(bestilling.referanse)
+                    .map { it.copy(id = null) }).containsExactlyInAnyOrder(mottaker1, mottaker2)
         }
     }
 }
