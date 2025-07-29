@@ -1,9 +1,13 @@
 package no.nav.aap.brev.api
 
 import no.nav.aap.brev.bestilling.Brevbestilling
+import no.nav.aap.brev.bestilling.IdentType
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
+import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
+import java.util.UUID
 
 fun Brevbestilling.tilResponse(): BrevbestillingResponse =
     BrevbestillingResponse(
@@ -34,3 +38,32 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
         ProsesseringStatus.FERDIG -> Status.FERDIGSTILT
         ProsesseringStatus.AVBRUTT -> Status.AVBRUTT
     }
+
+internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mottaker(
+    ident = ident,
+    identType = when (identType) {
+        null -> null
+        else -> IdentType.valueOf(identType!!.name)
+    },
+    bestillingMottakerReferanse = "$bestillingReferanse-${index + 1}",
+    navnOgAdresse = navnOgAdresse?.let {
+        no.nav.aap.brev.bestilling.NavnOgAdresse(
+            navn = it.navn,
+            adresse = no.nav.aap.brev.bestilling.Adresse(
+                landkode = it.adresse.landkode,
+                adresselinje1 = it.adresse.adresselinje1,
+                adresselinje2 = it.adresse.adresselinje2,
+                adresselinje3 = it.adresse.adresselinje3,
+                postnummer = it.adresse.postnummer,
+                poststed = it.adresse.poststed
+            )
+        )
+    }
+)
+
+internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.mapIndexed { index, mottaker ->
+    mottaker.tilMottaker(
+        bestillingReferanse = bestillingReferanse,
+        index = index
+    )
+}

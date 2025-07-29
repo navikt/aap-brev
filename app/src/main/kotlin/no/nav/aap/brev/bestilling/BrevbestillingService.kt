@@ -21,9 +21,11 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
+import kotlin.collections.ifEmpty
 
 class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
+    private val mottakerRepository: MottakerRepository,
     private val jobbRepository: FlytJobbRepository,
     private val arkivoppslagGateway: ArkivoppslagGateway,
     private val brevinnholdService: BrevinnholdService,
@@ -34,6 +36,7 @@ class BrevbestillingService(
         fun konstruer(connection: DBConnection): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                mottakerRepository = MottakerRepositoryImpl(connection),
                 jobbRepository = FlytJobbRepository(connection),
                 arkivoppslagGateway = SafGateway(),
                 brevinnholdService = BrevinnholdService.konstruer(connection),
@@ -46,7 +49,7 @@ class BrevbestillingService(
 
     fun opprettBestillingV2(
         saksnummer: Saksnummer,
-        brukerIdent: String?,
+        brukerIdent: String,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -82,6 +85,10 @@ class BrevbestillingService(
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
                 log.info("Ferdigstiller brev automatisk")
+                mottakerRepository.lagreMottakere(
+                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+                )
+
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
@@ -159,7 +166,8 @@ class BrevbestillingService(
 
     fun ferdigstill(
         referanse: BrevbestillingReferanse,
-        signaturer: List<SignaturGrunnlag>?
+        signaturer: List<SignaturGrunnlag>?,
+        mottakere: List<Mottaker>
     ) {
         val bestilling = hent(referanse)
 
@@ -176,6 +184,13 @@ class BrevbestillingService(
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
+        mottakerRepository.lagreMottakere(
+            bestilling.id,
+            mottakere.ifEmpty {
+                listOf(brukerTilMottaker(bestilling))
+            }
+        )
+
         leggTilJobb(bestilling)
     }
 
@@ -188,6 +203,14 @@ class BrevbestillingService(
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.AVBRUTT)
         brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
+    }
+
+    private fun brukerTilMottaker(brevbestilling: Brevbestilling): Mottaker {
+        return Mottaker(
+            ident = brevbestilling.brukerIdent,
+            identType = IdentType.FNR,
+            bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1"
+        )
     }
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {

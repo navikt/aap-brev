@@ -137,7 +137,8 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         BrevbestillingService.konstruer(connection)
                             .ferdigstill(
                                 referanse = BrevbestillingReferanse(request.referanse),
-                                signaturer = request.signaturer
+                                signaturer = request.signaturer,
+                                mottakere = request.mottakere.tilMottakere(request.referanse)
                             )
                     }
                     respond("{}", HttpStatusCode.Accepted)
