@@ -12,6 +12,8 @@ interface MottakerRepository {
 class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRepository {
 
     override fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
+        val eksisterendeMottakere = hentMottakere(brevbestillingId)
+        if (eksisterendeMottakere.isNotEmpty()) return
         val query = """
             INSERT INTO MOTTAKER(BREVBESTILLING_ID, IDENT, IDENT_TYPE, NAVN_OG_ADRESSE, BESTILLING_MOTTAKER_REFERANSE) VALUES (?, ?, ?, ?::jsonb, ?)
         """.trimIndent()
