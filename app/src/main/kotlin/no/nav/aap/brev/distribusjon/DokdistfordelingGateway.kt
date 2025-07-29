@@ -1,5 +1,6 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest.Distribusjonstidspunkt
 import no.nav.aap.brev.distribusjon.DistribuerJournalpostRequest.Distribusjonstype
 import no.nav.aap.brev.journalføring.JournalpostId
@@ -24,13 +25,18 @@ class DokdistfordelingGateway : DistribusjonGateway {
         prometheus = prometheus,
     )
 
-    override fun distribuerJournalpost(journalpostId: JournalpostId, brevtype: Brevtype): DistribusjonBestillingId {
+    override fun distribuerJournalpost(
+        journalpostId: JournalpostId,
+        brevtype: Brevtype,
+        mottaker: Mottaker
+    ): DistribusjonBestillingId {
         val request = DistribuerJournalpostRequest(
             journalpostId = journalpostId.id,
             bestillendeFagsystem = "KELVIN",
             dokumentProdApp = "KELVIN",
             distribusjonstype = utledDistribusjonstype(brevtype),
-            distribusjonstidspunkt = Distribusjonstidspunkt.KJERNETID
+            distribusjonstidspunkt = Distribusjonstidspunkt.KJERNETID,
+            postadresse = mottaker.adresse()
         )
         val httpRequest = PostRequest(
             body = request
@@ -67,7 +73,8 @@ data class DistribuerJournalpostRequest(
     val bestillendeFagsystem: String,
     val dokumentProdApp: String,
     val distribusjonstype: Distribusjonstype,
-    val distribusjonstidspunkt: Distribusjonstidspunkt
+    val distribusjonstidspunkt: Distribusjonstidspunkt,
+    val postadresse: DokdistAdresse? = null,
 ) {
     enum class Distribusjonstype {
         VEDTAK, VIKTIG, ANNET
@@ -75,6 +82,40 @@ data class DistribuerJournalpostRequest(
 
     enum class Distribusjonstidspunkt {
         UMIDDELBART, KJERNETID
+    }
+}
+
+data class DokdistAdresse(
+    val adresseType: AdresseType,
+    val adresselinje1: String,
+    val adresselinje2: String? = null,
+    val adresselinje3: String? = null,
+    val postnummer: String? = null,
+    val poststed: String? = null,
+    val land: String
+)
+
+enum class AdresseType {
+    norskPostadresse, utenlandskPostadresse
+}
+
+internal fun Mottaker.adresse(): DokdistAdresse? {
+    if (this.navnOgAdresse == null) {
+        return null
+    }
+    val adressetype = if (this.navnOgAdresse.adresse.landkode == "NOR")
+        AdresseType.norskPostadresse else AdresseType.utenlandskPostadresse
+
+    this.navnOgAdresse.adresse.let { adresse ->
+        return DokdistAdresse(
+            adresseType = adressetype,
+            adresselinje1 = adresse.adresselinje1,
+            adresselinje2 = adresse.adresselinje2,
+            adresselinje3 = adresse.adresselinje3,
+            postnummer = adresse.postnummer,
+            poststed = adresse.poststed,
+            land = adresse.landkode
+        )
     }
 }
 

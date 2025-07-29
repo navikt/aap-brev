@@ -64,7 +64,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi() {
                         mottakerNavn = request.mottakerNavn,
                         mottakerType = MottakerType.HPRNR,
                         saksnummer = Saksnummer(request.saksnummer),
-                        eksternReferanseId = request.eksternReferanseId,
+                        eksternReferanseId = request.eksternReferanseId.toString(),
                         tittelJournalpost = request.tittel,
                         tittelBrev = request.tittel,
                         brevkode = request.brevkode,

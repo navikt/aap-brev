@@ -36,6 +36,7 @@ fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
         ProsesseringStatus.JOURNALPOST_FERDIGSTILT,
         ProsesseringStatus.DISTRIBUERT,
         ProsesseringStatus.FERDIG -> Status.FERDIGSTILT
+
         ProsesseringStatus.AVBRUTT -> Status.AVBRUTT
     }
 

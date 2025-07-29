@@ -327,4 +327,5 @@ class BrevbestillingService(
             log.warn("Forsøkte å oppdatere deler av brevet som ikke er redigerbart") // TODO midlertidig bare logging for testing
         }
     }
+
 }

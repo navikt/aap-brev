@@ -18,7 +18,7 @@ data class PdfBrev(
         val identType: IdentType
     ) {
         enum class IdentType {
-            FNR, HPRNR
+            FNR, HPRNR, ORGNR, UTL_ORG
         }
     }
 

@@ -79,6 +79,18 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
+    override fun hent(id: BrevbestillingId): Brevbestilling {
+        return connection.queryFirst(
+            "SELECT * FROM BREVBESTILLING WHERE ID = ?"
+        ) {
+            setParams {
+                setLong(1, id.id)
+            }
+            setRowMapper { row -> mapBestilling(row) }
+        }
+    }
+
+
     override fun hent(referanse: BrevbestillingReferanse): Brevbestilling {
         return connection.queryFirst(
             "SELECT * FROM BREVBESTILLING WHERE REFERANSE = ?"
@@ -212,59 +224,6 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         ) {
             setParams {
                 setEnumName(1, status)
-                setLocalDateTime(2, LocalDateTime.now())
-                setLong(3, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreJournalpost(
-        id: BrevbestillingId,
-        journalpostId: JournalpostId,
-        journalpostFerdigstilt: Boolean
-    ) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ?, JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setString(1, journalpostId.id)
-                setBoolean(2, journalpostFerdigstilt)
-                setLocalDateTime(3, LocalDateTime.now())
-                setLong(4, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreJournalpostFerdigstilt(id: BrevbestillingId, journalpostFerdigstilt: Boolean) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setBoolean(1, journalpostFerdigstilt)
-                setLocalDateTime(2, LocalDateTime.now())
-                setLong(3, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreDistribusjonBestilling(
-        id: BrevbestillingId,
-        distribusjonBestillingId: DistribusjonBestillingId
-    ) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET DISTRIBUSJON_BESTILLING_ID = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setString(1, distribusjonBestillingId.id)
                 setLocalDateTime(2, LocalDateTime.now())
                 setLong(3, id.id)
             }
