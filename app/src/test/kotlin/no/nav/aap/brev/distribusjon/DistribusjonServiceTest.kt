@@ -1,6 +1,10 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.IdentType
+import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.journalføring.JournalføringService
@@ -42,9 +46,10 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -54,12 +59,19 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
+            val referanse = bestilling.referanse
+
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
+            mottakerRepository.lagreMottakere(
+                bestilling.id,
+                mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
+            )
 
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(bestillingMottakerReferanse, journalpostId)
 
-            val forventetDistribusjonBestillingId = randomDistribusjonBestillingId()
+            val forventetDistribusjonBestillingId = DistribusjonBestillingId("05bd2cc0-a94f-4d4a-b404-a8ea0814e7e9")
             distribusjonBestillingIdForJournalpost(journalpostId, forventetDistribusjonBestillingId)
 
             brevinnholdService.hentOgLagre(referanse)
@@ -67,8 +79,10 @@ class DistribusjonServiceTest {
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
-            val bestilling = brevbestillingService.hent(referanse)
-            assertEquals(forventetDistribusjonBestillingId, bestilling.distribusjonBestillingId)
+            assertEquals(
+                forventetDistribusjonBestillingId,
+                brevbestillingService.hent(referanse).distribusjonBestillingId
+            )
         }
     }
 
@@ -94,7 +108,7 @@ class DistribusjonServiceTest {
             ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(referanse.referanse.toString(), journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
@@ -114,9 +128,10 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -126,10 +141,17 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
+            val referanse = bestilling.referanse
+
+
+            mottakerRepository.lagreMottakere(
+                bestilling.id,
+                mottakereLikBrukerIdent(bestilling, "${bestilling.referanse.referanse}-1")
+            )
 
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(referanse.referanse.toString(), journalpostId)
 
             brevinnholdService.hentOgLagre(referanse)
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
@@ -152,9 +174,10 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
+            val bestilling = brevbestillingService.opprettBestillingV2(
                 saksnummer = randomSaksnummer(),
                 brukerIdent = randomBrukerIdent(),
                 behandlingReferanse = behandlingReferanse,
@@ -164,10 +187,17 @@ class DistribusjonServiceTest {
                 faktagrunnlag = emptySet(),
                 vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            ).brevbestilling
+            val referanse = bestilling.referanse
 
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse, journalpostId)
+            journalpostForBestilling(bestillingMottakerReferanse, journalpostId)
+
+            mottakerRepository.lagreMottakere(
+                bestilling.id,
+                mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
+            )
 
             val forventetDistribusjonBestillingId = randomDistribusjonBestillingId()
             distribusjonBestillingIdForJournalpost(
@@ -181,9 +211,25 @@ class DistribusjonServiceTest {
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
-            val bestilling = brevbestillingService.hent(referanse)
-            assertEquals(forventetDistribusjonBestillingId, bestilling.distribusjonBestillingId)
+            assertEquals(
+                forventetDistribusjonBestillingId,
+                brevbestillingService.hent(referanse).distribusjonBestillingId
+            )
         }
-
     }
+
+    private fun mottakereLikBrukerIdent(
+        brevbestilling: Brevbestilling,
+        bestillingMottakerReferanse: String
+    ): List<Mottaker> {
+        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
+        return listOf(
+            Mottaker(
+                ident = brevbestilling.brukerIdent,
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = bestillingMottakerReferanse,
+            )
+        )
+    }
+
 }

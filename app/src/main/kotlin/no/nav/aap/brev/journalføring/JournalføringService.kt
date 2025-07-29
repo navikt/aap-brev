@@ -4,7 +4,14 @@ import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.JournalpostRepository
+import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
+import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.MottakerRepository
+import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
+import no.nav.aap.brev.bestilling.Pdf
 import no.nav.aap.brev.bestilling.PdfService
+import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.journalføring.JournalføringData.MottakerType
 import no.nav.aap.brev.person.PdlGateway
@@ -15,6 +22,8 @@ class JournalføringService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
     private val journalføringGateway: JournalføringGateway,
+    private val journalpostRepository: JournalpostRepository,
+    private val mottakerRepository: MottakerRepository,
 ) {
 
     companion object {
@@ -24,6 +33,8 @@ class JournalføringService(
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
                 personinfoGateway = PdlGateway(),
                 journalføringGateway = DokarkivGateway(),
+                journalpostRepository = JournalpostRepositoryImpl(connection),
+                mottakerRepository = MottakerRepositoryImpl(connection),
             )
         }
     }
@@ -31,12 +42,11 @@ class JournalføringService(
     fun journalførBrevbestilling(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
 
-        checkNotNull(bestilling.brev) {
-            "Kan ikke journalføre bestilling uten brev."
+        val mottakere = mottakerRepository.hentMottakere(referanse)
+        require(mottakere.isNotEmpty()) {
+            "Det må være minst én mottaker for å kunne journalføre brevbestilling."
         }
-        check(bestilling.journalpostId == null) {
-            "Kan ikke journalføre brev for bestilling som allerede er journalført."
-        }
+
         check(bestilling.brukerIdent != null) {
             "Kan ikke journalføre brev for bestilling der brukerIdent er null"
         }
@@ -45,13 +55,35 @@ class JournalføringService(
 
         val pdf = pdfService.genererPdfForJournalføring(bestilling, personinfo)
 
+        mottakere.forEach { mottaker ->
+            journalførBrevbestilling(bestilling, mottaker, personinfo, pdf)
+        }
+    }
+
+    private fun journalførBrevbestilling(
+        bestilling: Brevbestilling,
+        mottaker: Mottaker,
+        personinfo: Personinfo,
+        pdf: Pdf
+    ) {
+        checkNotNull(bestilling.brev) {
+            "Kan ikke journalføre bestilling uten brev."
+        }
+        requireNotNull(mottaker.id) {
+            "Mottaker må være lagret i databasen før journalføring"
+        }
+        val journalpost = journalpostRepository.hentHvisEksisterer(mottaker.id)
+        if (journalpost != null) {
+            // Journalpost finnes allerede, ingenting å gjøre
+            return
+        }
         val journalføringData = JournalføringData(
             brukerFnr = personinfo.personIdent,
-            mottakerIdent = personinfo.personIdent,
-            mottakerType = MottakerType.FNR,
-            mottakerNavn = null,
+            mottakerIdent = mottaker.ident,
+            mottakerType = mottaker.identType?.let { MottakerType.valueOf(it.name) },
+            mottakerNavn = mottaker.navnOgAdresse?.navn,
             saksnummer = bestilling.saksnummer,
-            eksternReferanseId = bestilling.referanse.referanse,
+            eksternReferanseId = mottaker.bestillingMottakerReferanse,
             tittelJournalpost = checkNotNull(value = bestilling.brev.journalpostTittel ?: bestilling.brev.overskrift),
             tittelBrev = checkNotNull(value = bestilling.brev.overskrift),
             brevkode = bestilling.brevtype.name,
@@ -64,6 +96,14 @@ class JournalføringService(
             pdf = pdf,
             forsøkFerdigstill = forsøkFerdigstill,
         )
+
+        journalpostRepository.lagreJournalpost(
+            response.journalpostId,
+            response.journalpostferdigstilt,
+            mottakerId = mottaker.id
+        )
+
+        // midlertidig for bakoverkompabilitet
         brevbestillingRepository.lagreJournalpost(
             bestilling.id,
             response.journalpostId,
@@ -73,19 +113,22 @@ class JournalføringService(
 
     fun tilknyttVedlegg(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        val journalpostId = checkNotNull(bestilling.journalpostId)
         val vedlegg = bestilling.vedlegg
-        if (vedlegg.isNotEmpty()) {
-            journalføringGateway.tilknyttVedlegg(journalpostId, vedlegg)
+        if (vedlegg.isEmpty()) return
+
+        val journalposter = journalpostRepository.hentAlleFor(referanse)
+        journalposter.forEach {
+            journalføringGateway.tilknyttVedlegg(it.journalpostId, vedlegg)
         }
     }
 
     fun ferdigstillJournalpost(referanse: BrevbestillingReferanse) {
-        val bestilling = brevbestillingRepository.hent(referanse)
-        val journalpostId = checkNotNull(bestilling.journalpostId)
-        if (bestilling.journalpostFerdigstilt != true) {
-            journalføringGateway.ferdigstillJournalpost(journalpostId)
-            brevbestillingRepository.lagreJournalpostFerdigstilt(bestilling.id, true)
+        val journalposter = journalpostRepository.hentAlleFor(referanse)
+        journalposter.forEach { journalpost ->
+            if (!journalpost.ferdigstilt) {
+                journalføringGateway.ferdigstillJournalpost(journalpost.journalpostId)
+                journalpostRepository.lagreJournalpostFerdigstilt(journalpost.journalpostId, true)
+            }
         }
     }
 

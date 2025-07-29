@@ -1,13 +1,11 @@
 package no.nav.aap.brev.journalføring
 
-import java.util.UUID
-
 data class OpprettJournalpostRequest(
     val avsenderMottaker: AvsenderMottaker,
     val behandlingstema: String?,
     val bruker: Bruker,
     val dokumenter: List<Dokument>,
-    val eksternReferanseId: UUID,
+    val eksternReferanseId: String,
     val journalfoerendeEnhet: String,
     val journalposttype: JournalpostType,
     val sak: Sak,
@@ -17,10 +15,22 @@ data class OpprettJournalpostRequest(
     val overstyrInnsynsregler: Innsynsregl?,
 ) {
     data class AvsenderMottaker(
-        val id: String,
-        val idType: IdType,
+        val id: String? = null,
+        val idType: IdType? = null,
         val navn: String? = null
     ) {
+        init {
+            require(navn != null || idType == IdType.FNR) {
+                "MottakerNavn må være satt dersom MottakerType ikke er FNR."
+            }
+            require(
+                (idType != null && id != null)
+                        || (idType == null && id == null)
+            ) {
+                "IdType og id må være satt sammen, eller begge må være null"
+            }
+        }
+
         enum class IdType {
             FNR,
             ORGNR,
