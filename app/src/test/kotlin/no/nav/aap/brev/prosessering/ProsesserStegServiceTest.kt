@@ -1,43 +1,22 @@
 package no.nav.aap.brev.prosessering
 
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
-import no.nav.aap.brev.bestilling.BehandlingReferanse
-import no.nav.aap.brev.bestilling.Brevbestilling
+import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.BrevbestillingService
-
-import no.nav.aap.brev.bestilling.IdentType
-import no.nav.aap.brev.bestilling.Mottaker
-import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
 import no.nav.aap.brev.test.fakes.feilJournalføringFor
 import no.nav.aap.brev.test.randomBehandlingReferanse
-import no.nav.aap.brev.test.randomBrukerIdent
-import no.nav.aap.brev.test.randomSaksnummer
-import no.nav.aap.brev.test.randomSpråk
-import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 
-class ProsesserStegServiceTest {
+class ProsesserStegServiceTest : IntegrationTest() {
 
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
 
     @Test
     fun `prosesserer gjennom stegene`() {
@@ -46,11 +25,11 @@ class ProsesserStegServiceTest {
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val bestilling = opprettBestilling(
+            val bestilling = opprettBrevbestilling(
                 brevtype = Brevtype.VARSEL_OM_BESTILLING, // automatisk brev
+                ferdigstillAutomatisk = true,
                 behandlingReferanse = behandlingReferanse,
-                ferdigstillAutomatisk = true
-            )
+            ).brevbestilling
             val referanse = bestilling.referanse
             faktagrunnlagForBehandling(behandlingReferanse, setOf(Faktagrunnlag.FristDato11_7(LocalDate.now())))
 
@@ -65,18 +44,17 @@ class ProsesserStegServiceTest {
 
     @Test
     fun `lagrer prosesserte steg frem til det feiler`() {
-        val bestilling = opprettBestilling(
+        val referanse = opprettBrevbestilling(
             brevtype = Brevtype.VARSEL_OM_BESTILLING, // automatisk brev
             ferdigstillAutomatisk = true
-        )
+        ).brevbestilling.referanse
 
-        val referanse = "${bestilling.referanse.referanse}-1"
-        feilJournalføringFor(referanse)
+        feilJournalføringFor("${referanse.referanse}-1")
 
         try {
             dataSource.transaction { connection ->
                 val prosesserStegService = ProsesserStegService.konstruer(connection)
-                prosesserStegService.prosesserBestilling(bestilling.referanse)
+                prosesserStegService.prosesserBestilling(referanse)
             }
         } catch (_: Exception) {
         }
@@ -84,7 +62,7 @@ class ProsesserStegServiceTest {
         assertEquals(
             ProsesseringStatus.BREV_FERDIGSTILT,
             dataSource.transaction { connection ->
-                BrevbestillingService.konstruer(connection).hent(bestilling.referanse).prosesseringStatus
+                BrevbestillingService.konstruer(connection).hent(referanse).prosesseringStatus
             }
         )
     }
@@ -94,16 +72,16 @@ class ProsesserStegServiceTest {
         val bestilling = dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
-            val referanse = bestilling.referanse
+            val bestilling =
+                opprettBrevbestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false).brevbestilling
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
-                brevbestillingService.hent(referanse).prosesseringStatus
+                brevbestillingService.hent(bestilling.referanse).prosesseringStatus
             )
             assertEquals(
                 Status.UNDER_ARBEID,
-                brevbestillingService.hent(referanse).status
+                brevbestillingService.hent(bestilling.referanse).status
             )
             bestilling
         }
@@ -111,7 +89,11 @@ class ProsesserStegServiceTest {
             val prosesserStegService = ProsesserStegService.konstruer(connection)
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), mottakere = mottakereLikBrukerIdent(bestilling))
+            brevbestillingService.ferdigstill(
+                referanse = bestilling.referanse,
+                signaturer = emptyList(),
+                mottakere = emptyList()
+            )
             prosesserStegService.prosesserBestilling(bestilling.referanse)
 
             assertEquals(
@@ -132,8 +114,10 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
-            val referanse = bestilling.referanse
+            val referanse = opprettBrevbestilling(
+                brevtype = Brevtype.INNVILGELSE,
+                ferdigstillAutomatisk = false
+            ).brevbestilling.referanse
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
@@ -143,7 +127,6 @@ class ProsesserStegServiceTest {
                 Status.UNDER_ARBEID,
                 brevbestillingService.hent(referanse).status
             )
-            opprettMottakere(bestilling)
 
             val exception = assertThrows<IllegalStateException> {
                 prosesserStegService.prosesserBestilling(referanse)
@@ -160,8 +143,10 @@ class ProsesserStegServiceTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val prosesserStegService = ProsesserStegService.konstruer(connection)
 
-            val bestilling = opprettBestilling(brevtype = Brevtype.INNVILGELSE, ferdigstillAutomatisk = false)
-            val referanse = bestilling.referanse
+            val referanse = opprettBrevbestilling(
+                brevtype = Brevtype.INNVILGELSE,
+                ferdigstillAutomatisk = false
+            ).brevbestilling.referanse
 
             assertEquals(
                 ProsesseringStatus.BREVBESTILLING_LØST,
@@ -192,47 +177,5 @@ class ProsesserStegServiceTest {
                 }
             ).isNull()
         }
-    }
-
-    private fun opprettBestilling(
-        brevtype: Brevtype,
-        ferdigstillAutomatisk: Boolean,
-        behandlingReferanse: BehandlingReferanse = randomBehandlingReferanse(),
-    ): Brevbestilling {
-        return dataSource.transaction { connection ->
-            BrevbestillingService.konstruer(connection)
-                .opprettBestillingV2(
-                    saksnummer = randomSaksnummer(),
-                    brukerIdent = randomBrukerIdent(),
-                    behandlingReferanse = behandlingReferanse,
-                    unikReferanse = randomUnikReferanse(),
-                    brevtype = brevtype,
-                    språk = randomSpråk(),
-                    faktagrunnlag = emptySet(),
-                    vedlegg = emptySet(),
-                    ferdigstillAutomatisk = ferdigstillAutomatisk,
-                ).brevbestilling
-        }
-    }
-
-    private fun opprettMottakere(
-        bestilling: Brevbestilling
-    ) {
-        return dataSource.transaction { connection ->
-            MottakerRepositoryImpl(connection).lagreMottakere(
-                bestilling.id, mottakereLikBrukerIdent(bestilling)
-            )
-        }
-    }
-
-    private fun mottakereLikBrukerIdent(brevbestilling: Brevbestilling): List<Mottaker> {
-        requireNotNull(brevbestilling.brukerIdent) { "Denne hjelpemetoden støtter ikke null" }
-        return listOf(
-            Mottaker(
-                ident = brevbestilling.brukerIdent,
-                identType = IdentType.FNR,
-                bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
-            )
-        )
     }
 }

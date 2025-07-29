@@ -11,7 +11,6 @@ import no.nav.aap.brev.innhold.kanFerdigstillesAutomatisk
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
-import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
@@ -22,6 +21,7 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
+import kotlin.collections.ifEmpty
 
 class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
@@ -49,7 +49,7 @@ class BrevbestillingService(
 
     fun opprettBestillingV2(
         saksnummer: Saksnummer,
-        brukerIdent: String?,
+        brukerIdent: String,
         behandlingReferanse: BehandlingReferanse,
         unikReferanse: UnikReferanse,
         brevtype: Brevtype,
@@ -85,16 +85,10 @@ class BrevbestillingService(
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
                 log.info("Ferdigstiller brev automatisk")
-                // TODO: Støtt flere mottakere for dette endepunktet
                 mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(
-                        Mottaker(
-                            ident = brukerIdent,
-                            identType = IdentType.FNR,
-                            bestillingMottakerReferanse = "${bestillingReferanse.referanse}-1"
-                        )
-                    )
+                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
                 )
+
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
@@ -188,20 +182,14 @@ class BrevbestillingService(
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
         }
 
+        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
+
         mottakerRepository.lagreMottakere(
             bestilling.id,
             mottakere.ifEmpty {
-                listOf(
-                    Mottaker(
-                        ident = bestilling.brukerIdent,
-                        identType = IdentType.FNR,
-                        bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
-                    )
-                )
+                listOf(brukerTilMottaker(bestilling))
             }
         )
-
-        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
         leggTilJobb(bestilling)
     }
@@ -215,6 +203,14 @@ class BrevbestillingService(
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.AVBRUTT)
         brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
+    }
+
+    private fun brukerTilMottaker(brevbestilling: Brevbestilling): Mottaker {
+        return Mottaker(
+            ident = brevbestilling.brukerIdent,
+            identType = IdentType.FNR,
+            bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1"
+        )
     }
 
     private fun validerBestilling(saksnummer: Saksnummer, vedlegg: Set<Vedlegg>) {
@@ -331,5 +327,5 @@ class BrevbestillingService(
             log.warn("Forsøkte å oppdatere deler av brevet som ikke er redigerbart") // TODO midlertidig bare logging for testing
         }
     }
-    
+
 }

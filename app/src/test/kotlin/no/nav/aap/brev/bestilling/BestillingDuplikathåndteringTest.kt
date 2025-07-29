@@ -149,7 +149,7 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             val exception = assertThrows<IllegalStateException> {
                 brevbestillingService.opprettBestillingV2(
                     saksnummer = endretBestilling.saksnummer,
-                    brukerIdent = endretBestilling.brukerIdent,
+                    brukerIdent = endretBestilling.brukerIdent!!,
                     behandlingReferanse = endretBestilling.behandlingReferanse,
                     unikReferanse = endretBestilling.unikReferanse,
                     brevtype = endretBestilling.brevtype,

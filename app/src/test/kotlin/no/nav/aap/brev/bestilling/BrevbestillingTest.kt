@@ -52,6 +52,15 @@ class BrevbestillingTest : IntegrationTest() {
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.FERDIGSTILT)
         assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
         assertAntallJobber(resultat.brevbestilling.referanse, 1)
+        dataSource.transaction { connection ->
+            val mottakerRepository = MottakerRepositoryImpl(connection)
+            val mottakere = mottakerRepository.hentMottakere(resultat.brevbestilling.id)
+            assertThat(mottakere).hasSize(1)
+            assertThat(mottakere).allSatisfy {
+                assertThat(it.ident).isEqualTo(resultat.brevbestilling.brukerIdent)
+                assertThat(it.identType).isEqualTo(IdentType.FNR)
+            }
+        }
     }
 
     @Test

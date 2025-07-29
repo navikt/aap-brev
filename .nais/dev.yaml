@@ -8,10 +8,8 @@ metadata:
     sub: brev
 spec:
   image: {{image}}
-  {{#if isdev}}
   ingresses:
     - "https://aap-brev.intern.dev.nav.no"
-  {{/if}}
   replicas:
     cpuThresholdPercentage: 90
     max: 2
