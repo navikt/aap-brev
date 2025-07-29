@@ -44,17 +44,17 @@ class ProsesserStegServiceTest : IntegrationTest() {
 
     @Test
     fun `lagrer prosesserte steg frem til det feiler`() {
-        val referanse = opprettBrevbestilling(
+        val bestilling = opprettBrevbestilling(
             brevtype = Brevtype.VARSEL_OM_BESTILLING, // automatisk brev
             ferdigstillAutomatisk = true
-        ).brevbestilling.referanse
+        ).brevbestilling
 
-        feilJournalføringFor("${referanse.referanse.toString()}-1")
+        feilJournalføringFor("${bestilling.unikReferanse.referanse}-1")
 
         try {
             dataSource.transaction { connection ->
                 val prosesserStegService = ProsesserStegService.konstruer(connection)
-                prosesserStegService.prosesserBestilling(referanse)
+                prosesserStegService.prosesserBestilling(bestilling.referanse)
             }
         } catch (_: Exception) {
         }
@@ -62,7 +62,7 @@ class ProsesserStegServiceTest : IntegrationTest() {
         assertEquals(
             ProsesseringStatus.BREV_FERDIGSTILT,
             dataSource.transaction { connection ->
-                BrevbestillingService.konstruer(connection).hent(referanse).prosesseringStatus
+                BrevbestillingService.konstruer(connection).hent(bestilling.referanse).prosesseringStatus
             }
         )
     }

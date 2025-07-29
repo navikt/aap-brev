@@ -39,7 +39,7 @@ class JournalpostRepositoryImplTest {
             val mottaker1 = Mottaker(
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
+                bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
             )
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
