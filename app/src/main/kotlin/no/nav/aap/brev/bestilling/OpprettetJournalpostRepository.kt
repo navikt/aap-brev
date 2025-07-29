@@ -1,7 +1,6 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
-import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
@@ -14,7 +13,6 @@ data class OpprettetJournalpost(
     val brevbestillingId: BrevbestillingId,
     val ferdigstilt: Boolean,
     val distribusjonBestillingId: DistribusjonBestillingId?,
-    val vedlegg: Set<Vedlegg>,
 )
 
 interface JournalpostRepository {
@@ -26,6 +24,7 @@ interface JournalpostRepository {
         journalpostFerdigstilt: Boolean,
         mottakerId: Long
     )
+    fun lagreDistribusjonBestilling(journalpostId: JournalpostId, distribusjonBestillingId: DistribusjonBestillingId)
 }
 
 class JournalpostRepositoryImpl(private val connection: DBConnection) : JournalpostRepository {
@@ -101,6 +100,24 @@ class JournalpostRepositoryImpl(private val connection: DBConnection) : Journalp
         }
     }
 
+    override fun lagreDistribusjonBestilling(
+        journalpostId: JournalpostId,
+        distribusjonBestillingId: DistribusjonBestillingId
+    ) {
+        connection.execute(
+            "UPDATE OPPRETTET_JOURNALPOST SET DISTRIBUSJON_BESTILLING_ID = ? WHERE JOURNALPOST_ID = ?"
+        ) {
+            setParams {
+                setString(1, distribusjonBestillingId.id)
+                setString(2, journalpostId.id)
+            }
+            setResultValidator {
+                require(1 == it) { "Kunne ikke oppdatere distribusjon bestilling for journalpost med id ${journalpostId.id}" }
+            }
+        }
+    }
+
+
     private fun mapOpprettetJournalpost(row: Row): OpprettetJournalpost {
         return OpprettetJournalpost(
             journalpostId = JournalpostId(row.getString("JOURNALPOST_ID")),
@@ -115,26 +132,7 @@ class JournalpostRepositoryImpl(private val connection: DBConnection) : Journalp
             brevbestillingId = BrevbestillingId(row.getLong("BREVBESTILLING_ID")),
             ferdigstilt = row.getBoolean("FERDIGSTILT"),
             distribusjonBestillingId = row.getStringOrNull("DISTRIBUSJON_BESTILLING_ID")
-                ?.let { DistribusjonBestillingId(it) },
-            vedlegg = hentVedlegg(JournalpostId(row.getString("JOURNALPOST_ID"))).toSet()
+                ?.let { DistribusjonBestillingId(it) }
         )
-    }
-
-    private fun hentVedlegg(journalpostId: JournalpostId): List<Vedlegg> {
-        val vedleggQuery = """
-            SELECT * FROM VEDLEGG WHERE JOURNALPOST_ID = ?
-        """.trimIndent()
-
-        return connection.queryList(vedleggQuery) {
-            setParams {
-                setString(1, journalpostId.id)
-            }
-            setRowMapper {
-                Vedlegg(
-                    journalpostId = JournalpostId(it.getString("JOURNALPOST_ID")),
-                    dokumentInfoId = DokumentInfoId(it.getString("DOKUMENT_INFO_ID")),
-                )
-            }
-        }
     }
 }

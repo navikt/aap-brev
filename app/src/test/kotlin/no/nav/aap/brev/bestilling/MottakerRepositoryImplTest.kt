@@ -1,19 +1,38 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
+import no.nav.aap.brev.test.randomBehandlingReferanse
+import no.nav.aap.brev.test.randomBrevtype
 import no.nav.aap.brev.test.randomBrukerIdent
+import no.nav.aap.brev.test.randomSaksnummer
+import no.nav.aap.brev.test.randomSpråk
+import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class MottakerRepositoryImplTest : IntegrationTest() {
+class MottakerRepositoryImplTest  {
+
+    companion object {
+        private val dataSource = InitTestDatabase.freshDatabase()
+    }
 
     @Test
     fun `lagrer og henter`() {
-        val bestilling = opprettBrevbestilling().brevbestilling
         dataSource.transaction { connection ->
-
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
             val mottakerRepository = MottakerRepositoryImpl(connection)
+
+            val bestilling = brevbestillingRepository.opprettBestilling(
+                saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
+                behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = randomUnikReferanse(),
+                brevtype = randomBrevtype(),
+                språk = randomSpråk(),
+                vedlegg = emptySet()
+            )
 
             val brukerIdent = randomBrukerIdent()
 

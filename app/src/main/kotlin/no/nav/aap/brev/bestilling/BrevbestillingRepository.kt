@@ -41,6 +41,4 @@ interface BrevbestillingRepository {
     fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>)
     
     fun oppdaterStatus(id: BrevbestillingId, status: Status)
-
-    fun lagreDistribusjonBestilling(journalpostId: JournalpostId, distribusjonBestillingId: DistribusjonBestillingId)
 }

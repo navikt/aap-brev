@@ -232,23 +232,4 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             }
         }
     }
-
-
-    // TODO: Flytt til journalpostrepo
-    override fun lagreDistribusjonBestilling(
-        journalpostId: JournalpostId,
-        distribusjonBestillingId: DistribusjonBestillingId
-    ) {
-        connection.execute(
-            "UPDATE OPPRETTET_JOURNALPOST SET DISTRIBUSJON_BESTILLING_ID = ? WHERE JOURNALPOST_ID = ?"
-        ) {
-            setParams {
-                setString(1, distribusjonBestillingId.id)
-                setString(2, journalpostId.id)
-            }
-            setResultValidator {
-                require(1 == it) { "Kunne ikke oppdatere distribusjon bestilling for journalpost med id ${journalpostId.id}" }
-            }
-        }
-    }
 }
