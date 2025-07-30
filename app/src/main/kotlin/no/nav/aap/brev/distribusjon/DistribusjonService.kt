@@ -9,7 +9,7 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class DistribusjonService(
     private val brevbestillingRepository: BrevbestillingRepository,
-    private val opprettJournalpostRepository: JournalpostRepository,
+    private val journalpostRepository: JournalpostRepository,
     private val distribusjonGateway: DistribusjonGateway,
 ) {
 
@@ -23,8 +23,8 @@ class DistribusjonService(
         }
     }
 
-    fun distribuerBrev(brevbestillingReferanse: BrevbestillingReferanse) {
-        val brevbestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+    fun distribuerBrev(referanse: BrevbestillingReferanse) {
+        val brevbestilling = brevbestillingRepository.hent(referanse)
 
         checkNotNull(brevbestilling.journalpostId) {
             "Kan ikke distribuere en bestilling som ikke er journalført."
@@ -34,11 +34,25 @@ class DistribusjonService(
             "Brevet er allerede distribuert."
         }
 
-        val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
-            brevbestilling.journalpostId,
-            brevbestilling.brevtype
-        )
-        brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
-        opprettJournalpostRepository.lagreDistribusjonBestilling(brevbestilling.journalpostId, distribusjonBestillingId)
+        val journalposter = journalpostRepository.hentAlleFor(referanse)
+
+        check(journalposter.all { it.ferdigstilt }) {
+            "Feiltilstand: Det finnes journalposter for bestillingen som ikke er ferdigstilt."
+        }
+
+        journalposter
+            .filter { it.distribusjonBestillingId == null }
+            .forEach { journalpost ->
+                val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
+                    journalpost.journalpostId,
+                    brevbestilling.brevtype,
+                    journalpost.mottaker
+                )
+                // Midlertidig for bakoverkompabilitet
+                if (journalpost.mottaker.ident == brevbestilling.brukerIdent) {
+                    brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
+                }
+                journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
+            }
     }
 }
