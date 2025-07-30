@@ -169,20 +169,20 @@ class BrevbestillingService(
         signaturer: List<SignaturGrunnlag>?,
         mottakere: List<Mottaker>
     ) {
-        val bestilling = hent(referanse)
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
-        if (erBestillingAlleredeFerdigstilt(bestilling)) {
+        if (bestilling.status == Status.FERDIGSTILT) {
             log.warn("Forsøkte å ferdigstille allerede ferdigstilt bestilling.")
             return
         }
 
         validerFerdigstilling(bestilling)
 
+        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
+
         if (signaturer != null) {
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
         }
-
-        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
         mottakerRepository.lagreMottakere(
             bestilling.id,
@@ -250,12 +250,6 @@ class BrevbestillingService(
         }
     }
 
-    private fun erBestillingAlleredeFerdigstilt(bestilling: Brevbestilling): Boolean {
-        return bestilling.prosesseringStatus != null &&
-                bestilling.prosesseringStatus >= ProsesseringStatus.BREV_FERDIGSTILT &&
-                bestilling.prosesseringStatus != ProsesseringStatus.AVBRUTT
-    }
-
     private fun kanBestillingAvbrytes(bestilling: Brevbestilling): Boolean {
         return bestilling.prosesseringStatus != null &&
                 bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST
@@ -267,6 +261,10 @@ class BrevbestillingService(
 
         val feilmelding =
             "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
+
+        valider(bestilling.status == Status.UNDER_ARBEID) {
+            "$feilmelding: Bestillingen er i feil status for ferdigstilling, status=${bestilling.status}"
+        }
 
         valider(bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST) {
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, prosesseringStatus=${bestilling.prosesseringStatus}"

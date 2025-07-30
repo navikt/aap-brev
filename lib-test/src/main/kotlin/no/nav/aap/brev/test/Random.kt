@@ -8,6 +8,7 @@ import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.prosessering.ProsesseringStatus
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -45,4 +46,8 @@ fun randomBrevtype(): Brevtype {
 
 fun randomSpråk(): Språk {
     return Språk.entries.random()
+}
+
+fun randomProsesseringStatus(): ProsesseringStatus {
+    return ProsesseringStatus.entries.random()
 }
