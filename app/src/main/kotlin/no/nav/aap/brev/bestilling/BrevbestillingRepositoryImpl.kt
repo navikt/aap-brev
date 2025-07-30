@@ -119,10 +119,6 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             språk = row.getEnum("SPRAK"),
             status = row.getEnumOrNull("STATUS"),
             prosesseringStatus = row.getEnumOrNull("PROSESSERING_STATUS"),
-            journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
-            journalpostFerdigstilt = row.getBooleanOrNull("JOURNALPOST_FERDIGSTILT"),
-            distribusjonBestillingId = row.getStringOrNull("DISTRIBUSJON_BESTILLING_ID")
-                ?.let { DistribusjonBestillingId(it) },
             vedlegg = hentVedlegg(id).toSet(),
         )
     }

@@ -1,12 +1,10 @@
 package no.nav.aap.brev.distribusjon
 
 import no.nav.aap.brev.bestilling.Adresse
-import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
-import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.bestilling.NavnOgAdresse
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
@@ -103,17 +101,13 @@ class DistribusjonServiceTest {
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
-            assertEquals(
-                forventetDistribusjonBestillingId1,
-                brevbestillingService.hent(referanse).distribusjonBestillingId
-            )
             val oppdaterteJournalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
             assertThat(oppdaterteJournalposter).hasSize(2)
-            assertThat(oppdaterteJournalposter).anySatisfy {opprettetJournalpost ->
+            assertThat(oppdaterteJournalposter).anySatisfy { opprettetJournalpost ->
                 assertThat(opprettetJournalpost.journalpostId).isEqualTo(forventetJournalpostId1)
                 assertThat(opprettetJournalpost.distribusjonBestillingId).isEqualTo(forventetDistribusjonBestillingId1)
             }
-            assertThat(oppdaterteJournalposter).anySatisfy {opprettetJournalpost ->
+            assertThat(oppdaterteJournalposter).anySatisfy { opprettetJournalpost ->
                 assertThat(opprettetJournalpost.journalpostId).isEqualTo(forventetJournalpostId2)
                 assertThat(opprettetJournalpost.distribusjonBestillingId).isEqualTo(forventetDistribusjonBestillingId2)
             }
@@ -155,46 +149,6 @@ class DistribusjonServiceTest {
     }
 
     @Test
-    fun `validering feiler dersom brevet allerede er distribuert`() {
-        dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
-            val journalføringService = JournalføringService.konstruer(connection)
-            val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
-
-            val behandlingReferanse = randomBehandlingReferanse()
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling
-            val referanse = bestilling.referanse
-
-            val journalpostId = randomJournalpostId()
-            journalpostForBestilling(referanse.referanse.toString(), journalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
-            brevbestillingService.ferdigstill(referanse, emptyList(), emptyList())
-            journalføringService.journalførBrevbestilling(referanse)
-            distribusjonService.distribuerBrev(referanse)
-
-            val exception = assertThrows<IllegalStateException> {
-                distribusjonService.distribuerBrev(referanse)
-            }
-            assertEquals(exception.message, "Brevet er allerede distribuert.")
-        }
-
-    }
-
-    @Test
     fun `håndterer respons med http status 409 pga allerede distribuert`() {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
@@ -202,6 +156,7 @@ class DistribusjonServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
             val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
+            val journalpostRepository = JournalpostRepositoryImpl(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
             val bestilling = brevbestillingService.opprettBestillingV2(
@@ -234,10 +189,12 @@ class DistribusjonServiceTest {
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
 
-            assertEquals(
-                forventetDistribusjonBestillingId,
-                brevbestillingService.hent(referanse).distribusjonBestillingId
-            )
+            val oppdaterteJournalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
+            assertThat(oppdaterteJournalposter).hasSize(1)
+            assertThat(oppdaterteJournalposter).anySatisfy { opprettetJournalpost ->
+                assertThat(opprettetJournalpost.journalpostId).isEqualTo(journalpostId)
+                assertThat(opprettetJournalpost.distribusjonBestillingId).isEqualTo(forventetDistribusjonBestillingId)
+            }
         }
     }
 }

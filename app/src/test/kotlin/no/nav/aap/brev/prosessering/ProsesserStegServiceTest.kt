@@ -3,6 +3,7 @@ package no.nav.aap.brev.prosessering
 import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.Faktagrunnlag
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.test.fakes.faktagrunnlagForBehandling
@@ -173,9 +174,9 @@ class ProsesserStegServiceTest : IntegrationTest() {
 
             assertThat(
                 dataSource.transaction { connection ->
-                    BrevbestillingService.konstruer(connection).hent(referanse).journalpostId
+                    JournalpostRepositoryImpl(connection).hentAlleFor(referanse)
                 }
-            ).isNull()
+            ).isEmpty()
         }
     }
 }

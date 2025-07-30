@@ -9,7 +9,6 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrukerIdent
-import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.randomDokumentInfoId
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomNavIdent
@@ -19,7 +18,6 @@ import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class BrevbestillingRepositoryImplTest {
@@ -39,7 +37,7 @@ class BrevbestillingRepositoryImplTest {
             val unikReferanse = randomUnikReferanse()
             val brevtype = Brevtype.INNVILGELSE
             val språk = Språk.NB
-            val vedlegg = setOf<Vedlegg>(
+            val vedlegg = setOf(
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
@@ -51,7 +49,6 @@ class BrevbestillingRepositoryImplTest {
                 SignaturGrunnlag(signaturNavIdent2, Rolle.KVALITETSSIKRER),
             )
             val journalpostId = randomJournalpostId()
-            val distribusjonBestillingId = randomDistribusjonBestillingId()
 
             var bestilling =
                 brevbestillingRepository.opprettBestilling(
@@ -74,8 +71,6 @@ class BrevbestillingRepositoryImplTest {
             assertNull(bestilling.brev)
             assertNull(bestilling.status)
             assertNull(bestilling.prosesseringStatus)
-            assertNull(bestilling.journalpostId)
-            assertNull(bestilling.journalpostFerdigstilt)
 
             brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
@@ -113,19 +108,6 @@ class BrevbestillingRepositoryImplTest {
 
             brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = false)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
-
-            assertEquals(journalpostId, bestilling.journalpostId)
-            assertTrue(bestilling.journalpostFerdigstilt == false)
-
-            brevbestillingRepository.lagreJournalpostFerdigstilt(bestilling.id, journalpostFerdigstilt = true)
-            bestilling = brevbestillingRepository.hent(bestilling.referanse)
-
-            assertTrue(bestilling.journalpostFerdigstilt == true)
-
-            brevbestillingRepository.lagreDistribusjonBestilling(bestilling.id, distribusjonBestillingId)
-            bestilling = brevbestillingRepository.hent(bestilling.referanse)
-
-            assertEquals(distribusjonBestillingId, bestilling.distribusjonBestillingId)
 
             assertEquals(bestilling, brevbestillingRepository.hent(unikReferanse))
             assertEquals(

@@ -26,15 +26,12 @@ class DistribusjonService(
     fun distribuerBrev(referanse: BrevbestillingReferanse) {
         val brevbestilling = brevbestillingRepository.hent(referanse)
 
-        checkNotNull(brevbestilling.journalpostId) {
-            "Kan ikke distribuere en bestilling som ikke er journalført."
-        }
-
-        check(brevbestilling.distribusjonBestillingId == null) {
-            "Brevet er allerede distribuert."
-        }
 
         val journalposter = journalpostRepository.hentAlleFor(referanse)
+
+        check(journalposter.isNotEmpty()) {
+            "Kan ikke distribuere en bestilling som ikke er journalført."
+        }
 
         check(journalposter.all { it.ferdigstilt }) {
             "Feiltilstand: Det finnes journalposter for bestillingen som ikke er ferdigstilt."

@@ -1,11 +1,13 @@
 package no.nav.aap.brev.journalføring
 
+import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
+import no.nav.aap.brev.bestilling.NavnOgAdresse
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -18,6 +20,7 @@ import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -58,22 +61,44 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
 
-            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
-            mottakerRepository.lagreMottakere(
-                bestilling.id,
-                mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
+            val forventetJournalpostId1 = randomJournalpostId()
+            val forventetJournalpostId2 = randomJournalpostId()
+            val bestillingMottakerReferanse1 = "${bestilling.referanse.referanse}-1"
+            val bestillingMottakerReferanse2 = "${bestilling.referanse.referanse}-2"
+            journalpostForBestilling(bestillingMottakerReferanse1, forventetJournalpostId1)
+            journalpostForBestilling(bestillingMottakerReferanse2, forventetJournalpostId2)
+            val mottaker1 = Mottaker(
+                ident = bestilling.brukerIdent,
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = bestillingMottakerReferanse1
             )
-
-            val forventetJournalpostId = randomJournalpostId()
-            journalpostForBestilling(bestillingMottakerReferanse, forventetJournalpostId)
+            val mottaker2 = Mottaker(
+                navnOgAdresse = NavnOgAdresse(
+                    navn = "verge", adresse = Adresse(
+                        landkode = "NOR",
+                        adresselinje1 = "adresselinje1",
+                        adresselinje2 = "adresselinje2",
+                        adresselinje3 = "adresselinje3",
+                        postnummer = "postnummer",
+                        poststed = "poststed",
+                    )
+                ),
+                bestillingMottakerReferanse = bestillingMottakerReferanse2
+            )
+            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
 
             faktagrunnlagService.hentOgFyllInnFaktagrunnlag(bestilling.referanse)
 
             journalføringService.journalførBrevbestilling(bestilling.referanse)
             val journalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
 
-            assertEquals(forventetJournalpostId, brevbestillingService.hent(bestilling.referanse).journalpostId)
-            assertEquals(forventetJournalpostId, journalposter.first().journalpostId)
+            assertThat(journalposter).hasSize(2)
+            assertThat(journalposter).anySatisfy { opprettetJournalpost ->
+                assertThat(opprettetJournalpost.journalpostId).isEqualTo(forventetJournalpostId1)
+            }
+            assertThat(journalposter).anySatisfy { opprettetJournalpost ->
+                assertThat(opprettetJournalpost.journalpostId).isEqualTo(forventetJournalpostId2)
+            }
         }
     }
 
@@ -186,7 +211,6 @@ class JournalføringServiceTest {
 
             journalføringService.journalførBrevbestilling(referanse)
 
-            assertEquals(forventetJournalpostId, brevbestillingService.hent(referanse).journalpostId)
             val journalpost = journalpostRepository.hentAlleFor(referanse).single()
             assertEquals(forventetJournalpostId, journalpost.journalpostId)
         }
