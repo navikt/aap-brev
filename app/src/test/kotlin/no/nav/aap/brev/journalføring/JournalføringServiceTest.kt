@@ -59,7 +59,7 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
 
-            val bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             mottakerRepository.lagreMottakere(
                 bestilling.id,
                 mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
@@ -97,7 +97,7 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            val bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             mottakerRepository.lagreMottakere(
                 bestilling.id,
                 mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
@@ -139,7 +139,7 @@ class JournalføringServiceTest {
             ).brevbestilling
             mottakerRepository.lagreMottakere(
                 bestilling.id,
-                mottakereLikBrukerIdent(bestilling, "${bestilling.unikReferanse.referanse}-1")
+                mottakereLikBrukerIdent(bestilling, "${bestilling.referanse.referanse}-1")
             )
             val referanse = bestilling.referanse
             val exception = assertThrows<IllegalStateException> {
@@ -172,7 +172,7 @@ class JournalføringServiceTest {
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
-            val bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             mottakerRepository.lagreMottakere(
                 bestilling.id,
                 mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)

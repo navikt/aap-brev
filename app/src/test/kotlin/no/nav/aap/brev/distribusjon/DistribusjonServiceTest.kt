@@ -62,7 +62,7 @@ class DistribusjonServiceTest {
             ).brevbestilling
             val referanse = bestilling.referanse
 
-            val bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             mottakerRepository.lagreMottakere(
                 bestilling.id,
                 mottakereLikBrukerIdent(bestilling, bestillingMottakerReferanse)
@@ -147,7 +147,7 @@ class DistribusjonServiceTest {
 
             mottakerRepository.lagreMottakere(
                 bestilling.id,
-                mottakereLikBrukerIdent(bestilling, "${bestilling.unikReferanse.referanse}-1")
+                mottakereLikBrukerIdent(bestilling, "${bestilling.referanse.referanse}-1")
             )
 
             val journalpostId = randomJournalpostId()
@@ -190,7 +190,7 @@ class DistribusjonServiceTest {
             ).brevbestilling
             val referanse = bestilling.referanse
 
-            val bestillingMottakerReferanse = "${bestilling.unikReferanse.referanse}-1"
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(bestillingMottakerReferanse, journalpostId)
 

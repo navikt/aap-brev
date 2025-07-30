@@ -49,7 +49,7 @@ class ProsesserStegServiceTest : IntegrationTest() {
             ferdigstillAutomatisk = true
         ).brevbestilling
 
-        feilJournalføringFor("${bestilling.unikReferanse.referanse}-1")
+        feilJournalføringFor("${bestilling.referanse.referanse}-1")
 
         try {
             dataSource.transaction { connection ->
