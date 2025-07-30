@@ -1,6 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 
 interface MottakerRepository {
@@ -38,13 +39,7 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
                 setLong(1, brevbestillingId.id)
             }
             setRowMapper { row ->
-                Mottaker(
-                    id = row.getLong("ID"),
-                    ident = row.getStringOrNull("IDENT"),
-                    identType = row.getEnumOrNull("IDENT_TYPE"),
-                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
-                    bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
-                )
+                mapMottaker(row)
             }
         }
     }
@@ -59,15 +54,19 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
                 setUUID(1, brevbestillingReferanse.referanse)
             }
             setRowMapper { row ->
-                Mottaker(
-                    id = row.getLong("ID"),
-                    ident = row.getStringOrNull("IDENT"),
-                    identType = row.getEnumOrNull("IDENT_TYPE"),
-                    navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
-                    bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
-                )
+                mapMottaker(row)
             }
         }
+    }
+
+    private fun mapMottaker(row: Row): Mottaker {
+        return Mottaker(
+            id = row.getLong("ID"),
+            ident = row.getStringOrNull("IDENT"),
+            identType = row.getEnumOrNull("IDENT_TYPE"),
+            navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
+            bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
+        )
     }
 }
 
