@@ -90,6 +90,17 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
+    override fun hentForOppdatering(referanse: BrevbestillingReferanse): Brevbestilling {
+        return connection.queryFirst(
+            "SELECT * FROM BREVBESTILLING WHERE REFERANSE = ? FOR UPDATE"
+        ) {
+            setParams {
+                setUUID(1, referanse.referanse)
+            }
+            setRowMapper { row -> mapBestilling(row) }
+        }
+    }
+
     private fun mapBestilling(row: Row): Brevbestilling {
         val id = BrevbestillingId(row.getLong("ID"))
 

@@ -24,6 +24,8 @@ interface BrevbestillingRepository {
 
     fun hent(unikReferanse: UnikReferanse): Brevbestilling?
 
+    fun hentForOppdatering(referanse: BrevbestillingReferanse): Brevbestilling
+
     fun oppdaterBrev(
         referanse: BrevbestillingReferanse,
         brev: Brev,

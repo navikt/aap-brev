@@ -6,6 +6,8 @@ import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Rolle
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -45,6 +47,76 @@ class FerdigstillValideringTest : IntegrationTest() {
     }
 
     @Test
+    fun `ferdigstill feiler ikke dersom allerede ferdigstilt, men gjør ingen endring`() {
+        val bestilling = gittBrevMed(
+            brev = brev(),
+            status = Status.UNDER_ARBEID,
+            prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
+        )
+
+        val referanse = bestilling.referanse
+
+        assertStatus(
+            referanse,
+            Status.UNDER_ARBEID
+        )
+        assertAntallJobber(referanse, 0)
+
+        ferdigstill(
+            referanse = referanse,
+            signaturer = listOf(
+                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING)
+            ),
+            mottakere = listOf(
+                Mottaker(
+                    ident = bestilling.brukerIdent,
+                    identType = IdentType.FNR,
+                    bestillingMottakerReferanse = "ref"
+                )
+            )
+        )
+
+        val ferdigstiltBestilling = hentBestilling(referanse)
+        val mottakere = hentMottakere(referanse)
+        assertThat(ferdigstiltBestilling.status).isEqualTo(Status.FERDIGSTILT)
+        assertThat(ferdigstiltBestilling.signaturer).hasSize(1)
+        assertThat(mottakere).hasSize(1)
+        assertAntallJobber(referanse, 1)
+
+        ferdigstill(
+            referanse = referanse,
+            signaturer = listOf(
+                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING)
+            ),
+            mottakere = listOf(
+                Mottaker(
+                    ident = bestilling.brukerIdent,
+                    identType = IdentType.FNR,
+                    bestillingMottakerReferanse = "ref"
+                )
+            )
+        )
+
+        val bestillingEtterDuplikatFerdigstillKall = hentBestilling(referanse)
+        assertThat(bestillingEtterDuplikatFerdigstillKall.status).isEqualTo(Status.FERDIGSTILT)
+        assertThat(bestillingEtterDuplikatFerdigstillKall.signaturer).isEqualTo(ferdigstiltBestilling.signaturer)
+        assertThat(hentMottakere(referanse)).isEqualTo(mottakere)
+        assertAntallJobber(referanse, 1)
+    }
+
+    private fun hentBestilling(referanse: BrevbestillingReferanse): Brevbestilling {
+        return dataSource.transaction { connection ->
+            BrevbestillingRepositoryImpl(connection).hent(referanse)
+        }
+    }
+
+    private fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
+        return dataSource.transaction { connection ->
+            MottakerRepositoryImpl(connection).hentMottakere(referanse)
+        }
+    }
+
+    @Test
     fun `ferdigstilling feiler dersom brevet har faktagrunnlag`() {
         val referanse =
             gittBrevMed(
@@ -65,20 +137,20 @@ class FerdigstillValideringTest : IntegrationTest() {
 
     @ParameterizedTest
     @EnumSource(
-        ProsesseringStatus::class, names = ["STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "AVBRUTT"]
+        ProsesseringStatus::class, mode = Mode.EXCLUDE, names = ["BREVBESTILLING_LØST"]
     )
-    fun `ferdigstill med status før BREVBESTILLING_LØST eller med status AVBRUTT feiler`(status: ProsesseringStatus) {
+    fun `ferdigstill med annen prosessering-status enn BREVBESTILLING_LØST feiler`(prosesseringStatus: ProsesseringStatus) {
         val referanse = gittBrevMed(
             brev = brev(),
             status = Status.UNDER_ARBEID,
-            prosesseringStatus = status
+            prosesseringStatus = prosesseringStatus
         ).referanse
         assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
             ferdigstill(referanse)
         }
         assertThat(exception.message).endsWith(
-            "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$status"
+            "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$prosesseringStatus"
         )
 
         assertStatus(referanse, Status.UNDER_ARBEID)
@@ -87,20 +159,23 @@ class FerdigstillValideringTest : IntegrationTest() {
 
     @ParameterizedTest
     @EnumSource(
-        ProsesseringStatus::class, mode = Mode.EXCLUDE, names = [
-            "STARTET", "INNHOLD_HENTET", "FAKTAGRUNNLAG_HENTET", "BREVBESTILLING_LØST", "AVBRUTT"
-        ]
+        Status::class, mode = Mode.EXCLUDE, names = ["UNDER_ARBEID", "FERDIGSTILT"]
     )
-    fun `ferdigstill feiler ikke dersom status er etter BREVBESTILLING_LØST, men gjør ingen endring`(status: ProsesseringStatus) {
+    fun `ferdigstill med annen status enn UNDER_ARBEID og FERDIGSTILT feiler`(status: Status) {
         val referanse = gittBrevMed(
             brev = brev(),
-            status = Status.FERDIGSTILT,
-            prosesseringStatus = status
+            status = status,
+            prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
         ).referanse
-
         assertAntallJobber(referanse, 0)
-        ferdigstill(referanse)
-        assertStatus(referanse, Status.FERDIGSTILT)
+        val exception = assertThrows<ValideringsfeilException> {
+            ferdigstill(referanse)
+        }
+        assertThat(exception.message).endsWith(
+            "Bestillingen er i feil status for ferdigstilling, status=$status"
+        )
+
+        assertStatus(referanse, status)
         assertAntallJobber(referanse, 0)
     }
 
@@ -138,11 +213,15 @@ class FerdigstillValideringTest : IntegrationTest() {
         }
     }
 
-    private fun ferdigstill(referanse: BrevbestillingReferanse) {
+    private fun ferdigstill(
+        referanse: BrevbestillingReferanse,
+        signaturer: List<SignaturGrunnlag> = emptyList(),
+        mottakere: List<Mottaker> = emptyList()
+    ) {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
 
-            brevbestillingService.ferdigstill(referanse, null, emptyList())
+            brevbestillingService.ferdigstill(referanse, signaturer, mottakere)
         }
     }
 }
