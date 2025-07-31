@@ -44,7 +44,7 @@ class JournalpostRepositoryImplTest {
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
                     navn = "verge", adresse = Adresse(
-                        landkode = "NOR",
+                        landkode = "NO",
                         adresselinje1 = "adresselinje1",
                         adresselinje2 = "adresselinje2",
                         adresselinje3 = "adresselinje3",
