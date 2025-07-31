@@ -316,8 +316,8 @@ class BrevbestillingService(
 
     private fun validerOppdatering(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        if (bestilling.prosesseringStatus != ProsesseringStatus.BREVBESTILLING_LØST) {
-            throw ValideringsfeilException("Forsøkte å oppdatere brev i bestilling med prosesseringStatus=${bestilling.prosesseringStatus}")
+        if (bestilling.status != Status.UNDER_ARBEID) {
+            throw ValideringsfeilException("Forsøkte å oppdatere brev i bestilling med status=${bestilling.status}")
         }
         checkNotNull(bestilling.brev)
         if (bestilling.brev.ikkeRedigerbartInnhold() != oppdatertBrev.ikkeRedigerbartInnhold()) {

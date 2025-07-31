@@ -18,7 +18,7 @@ class BrevbestillingTest : IntegrationTest() {
 
     @Test
     fun `oppretter bestilling`() {
-        val resultat = opprettBrevbestilling()
+        val resultat = opprettBrevbestilling(ferdigstillAutomatisk = false)
         assertThat(resultat.brevbestilling.brev).isNotNull
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.UNDER_ARBEID)
         assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
@@ -139,7 +139,7 @@ class BrevbestillingTest : IntegrationTest() {
 
     @Test
     fun `gjør ingenting dersom bestillingen allerede er opprettet`() {
-        val resultat1 = opprettBrevbestilling()
+        val resultat1 = opprettBrevbestilling(ferdigstillAutomatisk = false)
 
         val resultat2 = opprettBrevbestilling(
             saksnummer = resultat1.brevbestilling.saksnummer,
