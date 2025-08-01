@@ -103,7 +103,7 @@ internal fun Mottaker.adresse(): DokdistAdresse? {
     if (this.navnOgAdresse == null) {
         return null
     }
-    val adressetype = if (this.navnOgAdresse.adresse.landkode == "NOR")
+    val adressetype = if (this.navnOgAdresse.adresse.landkode == "NO")
         AdresseType.norskPostadresse else AdresseType.utenlandskPostadresse
 
     this.navnOgAdresse.adresse.let { adresse ->

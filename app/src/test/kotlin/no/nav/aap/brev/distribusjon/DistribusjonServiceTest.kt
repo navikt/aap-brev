@@ -1,68 +1,41 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.NavnOgAdresse
-import no.nav.aap.brev.innhold.BrevinnholdService
-import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.journalføring.JournalføringService
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.distribusjonBestillingIdForJournalpost
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
-import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomDistribusjonBestillingId
 import no.nav.aap.brev.test.randomJournalpostId
-import no.nav.aap.brev.test.randomSaksnummer
-import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class DistribusjonServiceTest {
-
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
+class DistribusjonServiceTest : IntegrationTest() {
 
     @Test
     fun `distribuerer journalpost og lagrer distribusjon bestilling id`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
             val journalpostRepository = JournalpostRepositoryImpl(connection)
-
-            val behandlingReferanse = randomBehandlingReferanse()
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling
-            val referanse = bestilling.referanse
 
             val bestillingMottakerReferanse1 = "${bestilling.referanse.referanse}-1"
             val bestillingMottakerReferanse2 = "${bestilling.referanse.referanse}-2"
@@ -74,7 +47,7 @@ class DistribusjonServiceTest {
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
                     navn = "verge", adresse = Adresse(
-                        landkode = "NOR",
+                        landkode = "NO",
                         adresselinje1 = "adresselinje1",
                         adresselinje2 = "adresselinje2",
                         adresselinje3 = "adresselinje3",
@@ -95,8 +68,6 @@ class DistribusjonServiceTest {
             distribusjonBestillingIdForJournalpost(forventetJournalpostId1, forventetDistribusjonBestillingId1)
             distribusjonBestillingIdForJournalpost(forventetJournalpostId2, forventetDistribusjonBestillingId2)
 
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
             brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker1, mottaker2))
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
@@ -116,30 +87,17 @@ class DistribusjonServiceTest {
 
     @Test
     fun `validering feiler dersom brevet ikke er journalført`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val referanse = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling.referanse
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
-
-            val behandlingReferanse = randomBehandlingReferanse()
-            val referanse = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
 
             val journalpostId = randomJournalpostId()
             journalpostForBestilling(referanse.referanse.toString(), journalpostId)
-
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
 
             val exception = assertThrows<IllegalStateException> {
                 distribusjonService.distribuerBrev(referanse)
@@ -150,27 +108,18 @@ class DistribusjonServiceTest {
 
     @Test
     fun `håndterer respons med http status 409 pga allerede distribuert`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val distribusjonService = DistribusjonService.konstruer(connection)
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
             val journalpostRepository = JournalpostRepositoryImpl(connection)
-
-            val behandlingReferanse = randomBehandlingReferanse()
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling
-            val referanse = bestilling.referanse
 
             val bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
             val journalpostId = randomJournalpostId()
@@ -183,8 +132,6 @@ class DistribusjonServiceTest {
                 finnesAllerede = true
             )
 
-            brevinnholdService.hentOgLagre(referanse)
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(referanse)
             brevbestillingService.ferdigstill(referanse, emptyList(), emptyList())
             journalføringService.journalførBrevbestilling(referanse)
             distribusjonService.distribuerBrev(referanse)
