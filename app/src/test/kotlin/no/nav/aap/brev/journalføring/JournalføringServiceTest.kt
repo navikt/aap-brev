@@ -1,5 +1,6 @@
 package no.nav.aap.brev.journalføring
 
+import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
@@ -8,35 +9,17 @@ import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.bestilling.NavnOgAdresse
-import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
-import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomJournalpostId
-import no.nav.aap.brev.test.randomSaksnummer
-import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class JournalføringServiceTest {
-
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
+class JournalføringServiceTest : IntegrationTest() {
 
     @Test
     fun `journalfører brevet og lagrer journalpostId`() {
@@ -45,19 +28,11 @@ class JournalføringServiceTest {
             val journalføringService = JournalføringService.konstruer(connection)
 
             val behandlingReferanse = randomBehandlingReferanse()
-            val faktagrunnlagService = FaktagrunnlagService.konstruer(connection)
             val journalpostRepository = JournalpostRepositoryImpl(connection)
-            val mottakerRepository = MottakerRepositoryImpl(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
+            val bestilling = opprettBrevbestilling(
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
             ).brevbestilling
 
@@ -87,8 +62,6 @@ class JournalføringServiceTest {
             )
             brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
 
-            faktagrunnlagService.hentOgFyllInnFaktagrunnlag(bestilling.referanse)
-
             journalføringService.journalførBrevbestilling(bestilling.referanse)
             val journalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
 
@@ -105,19 +78,11 @@ class JournalføringServiceTest {
     @Test
     fun `validering feiler dersom bestillingen mangler brev`() {
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val mottakerRepository = MottakerRepositoryImpl(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = randomUnikReferanse(),
+            val bestilling = opprettBrevbestilling(
                 brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
@@ -146,19 +111,11 @@ class JournalføringServiceTest {
     @Test
     fun `validering feiler dersom brevet inneholder manglende faktagrunnlag`() {
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val mottakerRepository = MottakerRepositoryImpl(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
-                behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = randomUnikReferanse(),
+            val bestilling = opprettBrevbestilling(
                 brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             mottakerRepository.lagreMottakere(
@@ -178,21 +135,14 @@ class JournalføringServiceTest {
     @Test
     fun `håndterer respons med http status 409 pga allerede journalført`() {
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
             val behandlingReferanse = randomBehandlingReferanse()
             val mottakerRepository = MottakerRepositoryImpl(connection)
             val journalpostRepository = JournalpostRepositoryImpl(connection)
 
-            val bestilling = brevbestillingService.opprettBestillingV2(
-                saksnummer = randomSaksnummer(),
-                brukerIdent = randomBrukerIdent(),
+            val bestilling = opprettBrevbestilling(
                 behandlingReferanse = behandlingReferanse,
-                unikReferanse = randomUnikReferanse(),
                 brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = emptySet(),
                 ferdigstillAutomatisk = false,
             ).brevbestilling
             val referanse = bestilling.referanse
