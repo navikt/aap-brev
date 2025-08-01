@@ -9,7 +9,10 @@ class ProsesseringFlyt private constructor(
 ) {
 
     fun fraStatus(prosesseringStatus: ProsesseringStatus?): List<Steg> {
-        if (prosesseringStatus == null) {
+        if (prosesseringStatus == null ||
+            // Midlertidig etter fjerning av initielle steg
+            prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST
+        ) {
             return rekkefølge
         }
         if (prosesseringStatus == ProsesseringStatus.AVBRUTT) {

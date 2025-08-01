@@ -8,12 +8,8 @@ sealed interface Steg {
     fun konstruer(connection: DBConnection): Utfører
 
     sealed interface Utfører {
-        fun utfør(kontekst: Kontekst): Resultat
+        fun utfør(kontekst: Kontekst)
     }
 
     data class Kontekst(val referanse: BrevbestillingReferanse)
-
-    enum class Resultat {
-        FULLFØRT, STOPP
-    }
 }

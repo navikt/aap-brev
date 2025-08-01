@@ -4,7 +4,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.test.fakes.azureFake
-import no.nav.aap.brev.test.fakes.behandlingsflytFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
@@ -30,7 +29,6 @@ object Fakes : AutoCloseable {
             return
         }
         val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
-        val behandlingsflyt = embeddedServer(Netty, port = 0, module = { behandlingsflytFake() }).apply { start() }
         val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
         val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
@@ -43,7 +41,6 @@ object Fakes : AutoCloseable {
         servers.addAll(
             listOf(
                 azure,
-                behandlingsflyt,
                 tilgang,
                 brevSanityProxy,
                 pdfGen,
@@ -59,11 +56,6 @@ object Fakes : AutoCloseable {
         System.setProperty("azure.app.client.secret", "")
         System.setProperty("azure.openid.config.jwks.uri", "http://localhost:${azure.port()}/jwks")
         System.setProperty("azure.openid.config.issuer", "brev")
-
-        // Behandlingsflyt
-        System.setProperty("integrasjon.behandlingsflyt.url", "http://localhost:${behandlingsflyt.port()}")
-        System.setProperty("integrasjon.behandlingsflyt.scope", "scope")
-        System.setProperty("integrasjon.behandlingsflyt.azp", "azp")
 
         // Tilgang
         System.setProperty("integrasjon.tilgang.url", "http://localhost:${tilgang.port()}")
