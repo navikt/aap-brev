@@ -104,11 +104,13 @@ class JournalføringService(
         )
 
         // midlertidig for bakoverkompabilitet
-        brevbestillingRepository.lagreJournalpost(
-            bestilling.id,
-            response.journalpostId,
-            response.journalpostferdigstilt
-        )
+        if (journalføringData.mottakerIdent == bestilling.brukerIdent) {
+            brevbestillingRepository.lagreJournalpost(
+                bestilling.id,
+                response.journalpostId,
+                response.journalpostferdigstilt
+            )
+        }
     }
 
     fun tilknyttVedlegg(referanse: BrevbestillingReferanse) {
