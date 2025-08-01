@@ -36,7 +36,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
             dokumentProdApp = "KELVIN",
             distribusjonstype = utledDistribusjonstype(brevtype),
             distribusjonstidspunkt = Distribusjonstidspunkt.KJERNETID,
-            postadresse = mottaker.adresse()
+            adresse = mottaker.adresse()
         )
         val httpRequest = PostRequest(
             body = request
@@ -74,7 +74,7 @@ data class DistribuerJournalpostRequest(
     val dokumentProdApp: String,
     val distribusjonstype: Distribusjonstype,
     val distribusjonstidspunkt: Distribusjonstidspunkt,
-    val postadresse: DokdistAdresse? = null,
+    val adresse: DokdistAdresse? = null,
 ) {
     enum class Distribusjonstype {
         VEDTAK, VIKTIG, ANNET
