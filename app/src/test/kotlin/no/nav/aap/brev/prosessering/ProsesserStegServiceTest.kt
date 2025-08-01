@@ -74,10 +74,7 @@ class ProsesserStegServiceTest : IntegrationTest() {
                 ferdigstillAutomatisk = false
             ).brevbestilling.referanse
 
-            assertEquals(
-                ProsesseringStatus.BREVBESTILLING_LØST,
-                brevbestillingService.hent(referanse).prosesseringStatus
-            )
+            assertNull(brevbestillingService.hent(referanse).prosesseringStatus)
             assertEquals(
                 Status.UNDER_ARBEID,
                 brevbestillingService.hent(referanse).status
@@ -86,12 +83,20 @@ class ProsesserStegServiceTest : IntegrationTest() {
             brevbestillingService.avbryt(referanse)
 
             assertEquals(
+                Status.AVBRUTT,
+                brevbestillingService.hent(referanse).status
+            )
+            assertEquals(
                 ProsesseringStatus.AVBRUTT,
                 brevbestillingService.hent(referanse).prosesseringStatus
             )
 
             prosesserStegService.prosesserBestilling(referanse)
 
+            assertEquals(
+                Status.AVBRUTT,
+                brevbestillingService.hent(referanse).status
+            )
             assertEquals(
                 ProsesseringStatus.AVBRUTT,
                 brevbestillingService.hent(referanse).prosesseringStatus

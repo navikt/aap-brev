@@ -10,7 +10,6 @@ import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
-import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.komponenter.dbconnect.transaction
 import org.assertj.core.api.Assertions.assertThat
@@ -28,7 +27,6 @@ class FerdigstillValideringTest : IntegrationTest() {
             gittBrevMed(
                 brev = brev(medFaktagrunnlag = emptyList()),
                 status = Status.UNDER_ARBEID,
-                prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             )
         assertAntallJobber(brevbestilling.referanse, 0)
         ferdigstill(brevbestilling.referanse)
@@ -51,7 +49,6 @@ class FerdigstillValideringTest : IntegrationTest() {
         val bestilling = gittBrevMed(
             brev = brev(),
             status = Status.UNDER_ARBEID,
-            prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
         )
 
         val referanse = bestilling.referanse
@@ -122,7 +119,6 @@ class FerdigstillValideringTest : IntegrationTest() {
             gittBrevMed(
                 brev = brev(medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi)),
                 status = Status.UNDER_ARBEID,
-                prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
             ).referanse
         assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
@@ -137,35 +133,12 @@ class FerdigstillValideringTest : IntegrationTest() {
 
     @ParameterizedTest
     @EnumSource(
-        ProsesseringStatus::class, mode = Mode.EXCLUDE, names = ["BREVBESTILLING_LØST"]
-    )
-    fun `ferdigstill med annen prosessering-status enn BREVBESTILLING_LØST feiler`(prosesseringStatus: ProsesseringStatus) {
-        val referanse = gittBrevMed(
-            brev = brev(),
-            status = Status.UNDER_ARBEID,
-            prosesseringStatus = prosesseringStatus
-        ).referanse
-        assertAntallJobber(referanse, 0)
-        val exception = assertThrows<ValideringsfeilException> {
-            ferdigstill(referanse)
-        }
-        assertThat(exception.message).endsWith(
-            "Bestillingen er i feil status for ferdigstilling, prosesseringStatus=$prosesseringStatus"
-        )
-
-        assertStatus(referanse, Status.UNDER_ARBEID)
-        assertAntallJobber(referanse, 0)
-    }
-
-    @ParameterizedTest
-    @EnumSource(
         Status::class, mode = Mode.EXCLUDE, names = ["UNDER_ARBEID", "FERDIGSTILT"]
     )
     fun `ferdigstill med annen status enn UNDER_ARBEID og FERDIGSTILT feiler`(status: Status) {
         val referanse = gittBrevMed(
             brev = brev(),
             status = status,
-            prosesseringStatus = ProsesseringStatus.BREVBESTILLING_LØST
         ).referanse
         assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
@@ -182,7 +155,6 @@ class FerdigstillValideringTest : IntegrationTest() {
     private fun gittBrevMed(
         brev: Brev,
         status: Status,
-        prosesseringStatus: ProsesseringStatus
     ): Brevbestilling {
         return dataSource.transaction { connection ->
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
@@ -193,12 +165,11 @@ class FerdigstillValideringTest : IntegrationTest() {
                     språk = Språk.NB,
                     faktagrunnlag = emptySet(),
                     vedlegg = emptySet(),
-                    ferdigstillAutomatisk = false
+                    ferdigstillAutomatisk = false,
                 ).brevbestilling
 
             brevinnholdService.hentOgLagre(bestilling.referanse)
             brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
-            brevbestillingRepository.oppdaterProsesseringStatus(bestilling.referanse, prosesseringStatus)
             brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 
             bestilling

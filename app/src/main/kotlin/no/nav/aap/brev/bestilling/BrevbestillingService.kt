@@ -79,8 +79,6 @@ class BrevbestillingService(
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
-        brevbestillingRepository.oppdaterProsesseringStatus(bestillingReferanse, ProsesseringStatus.BREVBESTILLING_LØST)
-
         if (ferdigstillAutomatisk) {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
@@ -195,10 +193,10 @@ class BrevbestillingService(
     }
 
     fun avbryt(referanse: BrevbestillingReferanse) {
-        val bestilling = hent(referanse)
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
-        valider(kanBestillingAvbrytes(bestilling)) {
-            "Kan ikke avbryte brevbestilling med status ${bestilling.prosesseringStatus}"
+        valider(bestilling.status == Status.UNDER_ARBEID) {
+            "Kan ikke avbryte brevbestilling med status ${bestilling.status}"
         }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.AVBRUTT)
@@ -250,24 +248,14 @@ class BrevbestillingService(
         }
     }
 
-    private fun kanBestillingAvbrytes(bestilling: Brevbestilling): Boolean {
-        return bestilling.prosesseringStatus != null &&
-                bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST
-    }
-
     private fun validerFerdigstilling(bestilling: Brevbestilling) {
         checkNotNull(bestilling.brev)
-        checkNotNull(bestilling.prosesseringStatus)
 
         val feilmelding =
             "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
 
         valider(bestilling.status == Status.UNDER_ARBEID) {
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, status=${bestilling.status}"
-        }
-
-        valider(bestilling.prosesseringStatus == ProsesseringStatus.BREVBESTILLING_LØST) {
-            "$feilmelding: Bestillingen er i feil status for ferdigstilling, prosesseringStatus=${bestilling.prosesseringStatus}"
         }
 
         val faktagrunnlag = bestilling.brev.alleFaktagrunnlag()
