@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory
 
 class FerdigstillJournalpostSteg(val journalføringService: JournalføringService) : Steg.Utfører {
     private val log = LoggerFactory.getLogger(FerdigstillJournalpostSteg::class.java)
-    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
+    override fun utfør(kontekst: Steg.Kontekst) {
         log.info("FerdigstillJournalpostSteg")
         journalføringService.ferdigstillJournalpost(kontekst.referanse)
-        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {

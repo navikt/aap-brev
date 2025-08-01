@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory
 
 class DistribuerJournalpostSteg(val distribusjonService: DistribusjonService) : Steg.Utfører {
     private val log = LoggerFactory.getLogger(DistribuerJournalpostSteg::class.java)
-    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
+    override fun utfør(kontekst: Steg.Kontekst) {
         log.info("DistribuerJournalpostSteg")
         distribusjonService.distribuerBrev(kontekst.referanse)
-        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {

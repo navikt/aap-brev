@@ -1,46 +1,24 @@
 package no.nav.aap.brev.innhold
 
-import no.nav.aap.brev.bestilling.BehandlingsflytGateway
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
-import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class FaktagrunnlagService(
-    private val hentFagtagrunnlagGateway: HentFagtagrunnlagGateway,
     private val brevbestillingRepository: BrevbestillingRepository,
 ) {
     companion object {
         fun konstruer(connection: DBConnection): FaktagrunnlagService {
             return FaktagrunnlagService(
-                BehandlingsflytGateway(),
                 BrevbestillingRepositoryImpl(connection),
             )
         }
-    }
-
-    fun hentOgFyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse) {
-        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
-        val brev = checkNotNull(bestilling.brev)
-        val faktagrunnlagTyper = brev.kjenteFaktagrunnlag().map { it.tilFaktagrunnlagType() }.toSet()
-
-        if (faktagrunnlagTyper.isEmpty()) {
-            return
-        }
-
-        val faktagrunnlag = hentFagtagrunnlagGateway.hent(bestilling.behandlingReferanse, faktagrunnlagTyper)
-
-        if (faktagrunnlag.isEmpty()) {
-            return
-        }
-
-        fyllInnFaktagrunnlag(brevbestillingReferanse, faktagrunnlag)
     }
 
     fun fyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
@@ -91,16 +69,6 @@ class FaktagrunnlagService(
                 }
             }
         }
-    }
-
-    fun KjentFaktagrunnlag.tilFaktagrunnlagType(): FaktagrunnlagType = when (this) {
-        KjentFaktagrunnlag.FRIST_DATO_11_7 -> FaktagrunnlagType.FRIST_DATO_11_7
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL,
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL,
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL,
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT,
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT,
-        KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT -> FaktagrunnlagType.GRUNNLAG_BEREGNING
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {

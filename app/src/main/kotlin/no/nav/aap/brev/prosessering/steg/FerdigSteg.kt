@@ -5,9 +5,8 @@ import org.slf4j.LoggerFactory
 
 class FerdigSteg() : Steg.Utfører {
     private val log = LoggerFactory.getLogger(FerdigSteg::class.java)
-    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
+    override fun utfør(kontekst: Steg.Kontekst) {
         log.info("Prosessering er ferdig.")
-        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {

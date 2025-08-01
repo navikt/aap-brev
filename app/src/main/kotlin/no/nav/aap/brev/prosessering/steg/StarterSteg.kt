@@ -5,9 +5,8 @@ import org.slf4j.LoggerFactory
 
 class StarterSteg() : Steg.Utfører {
     private val log = LoggerFactory.getLogger(StarterSteg::class.java)
-    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
+    override fun utfør(kontekst: Steg.Kontekst) {
         log.info("Prosessering har startet.")
-        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {

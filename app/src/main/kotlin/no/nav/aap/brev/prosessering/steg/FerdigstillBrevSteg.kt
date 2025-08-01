@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory
 
 class FerdigstillBrevSteg(private val ferdigstillService: FerdigstillService) : Steg.Utfører {
     private val log = LoggerFactory.getLogger(FerdigstillBrevSteg::class.java)
-    override fun utfør(kontekst: Steg.Kontekst): Steg.Resultat {
+    override fun utfør(kontekst: Steg.Kontekst) {
         log.info("Starter ferdigstilling av brev.")
         ferdigstillService.validerFerdigstilling(kontekst.referanse)
-        return Steg.Resultat.FULLFØRT
     }
 
     companion object : Steg {
