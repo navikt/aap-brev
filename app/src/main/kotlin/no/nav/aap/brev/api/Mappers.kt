@@ -24,12 +24,9 @@ fun Brevbestilling.tilResponse(): BrevbestillingResponse =
 fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
     when (prosesseringStatus) {
         null,
-        ProsesseringStatus.STARTET,
-        ProsesseringStatus.INNHOLD_HENTET,
-        ProsesseringStatus.FAKTAGRUNNLAG_HENTET -> Status.REGISTRERT
-
         ProsesseringStatus.BREVBESTILLING_LØST -> Status.UNDER_ARBEID
 
+        ProsesseringStatus.STARTET,
         ProsesseringStatus.BREV_FERDIGSTILT,
         ProsesseringStatus.JOURNALFORT,
         ProsesseringStatus.JOURNALPOST_VEDLEGG_TILKNYTTET,

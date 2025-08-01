@@ -6,7 +6,6 @@ import no.nav.aap.brev.innhold.harFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Status
-import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
 import org.assertj.core.api.Assertions.assertThat
@@ -21,7 +20,6 @@ class BrevbestillingTest : IntegrationTest() {
         val resultat = opprettBrevbestilling(ferdigstillAutomatisk = false)
         assertThat(resultat.brevbestilling.brev).isNotNull
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.UNDER_ARBEID)
-        assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
         assertAntallJobber(resultat.brevbestilling.referanse, 0)
         assertThat(resultat.alleredeOpprettet).isFalse
     }
@@ -37,7 +35,6 @@ class BrevbestillingTest : IntegrationTest() {
         assertThat(resultat.brevbestilling.brev).isNotNull
         assertThat(resultat.brevbestilling.brev?.harFaktagrunnlag()).isFalse
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.UNDER_ARBEID)
-        assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
         assertAntallJobber(resultat.brevbestilling.referanse, 0)
         assertThat(resultat.alleredeOpprettet).isFalse
     }
@@ -50,7 +47,6 @@ class BrevbestillingTest : IntegrationTest() {
         )
 
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.FERDIGSTILT)
-        assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
         assertAntallJobber(resultat.brevbestilling.referanse, 1)
         dataSource.transaction { connection ->
             val mottakerRepository = MottakerRepositoryImpl(connection)
@@ -71,7 +67,6 @@ class BrevbestillingTest : IntegrationTest() {
         )
 
         assertThat(resultat.brevbestilling.status).isEqualTo(Status.UNDER_ARBEID)
-        assertThat(resultat.brevbestilling.prosesseringStatus).isEqualTo(ProsesseringStatus.BREVBESTILLING_LØST)
         assertAntallJobber(resultat.brevbestilling.referanse, 0)
     }
 

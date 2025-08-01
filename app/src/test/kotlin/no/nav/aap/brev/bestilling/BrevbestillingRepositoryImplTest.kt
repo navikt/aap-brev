@@ -87,11 +87,11 @@ class BrevbestillingRepositoryImplTest {
 
             brevbestillingRepository.oppdaterProsesseringStatus(
                 bestilling.referanse,
-                ProsesseringStatus.FAKTAGRUNNLAG_HENTET
+                ProsesseringStatus.STARTET
             )
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
-            assertEquals(ProsesseringStatus.FAKTAGRUNNLAG_HENTET, bestilling.prosesseringStatus)
+            assertEquals(ProsesseringStatus.STARTET, bestilling.prosesseringStatus)
 
             brevbestillingRepository.lagreSignaturer(bestilling.id, signaturer)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
