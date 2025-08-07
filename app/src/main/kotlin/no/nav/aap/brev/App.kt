@@ -31,6 +31,7 @@ import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
 import no.nav.aap.motor.retry.RetryService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 
 private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
@@ -46,6 +47,8 @@ fun main() {
 
     val serverPort = System.getenv("HTTP_PORT")?.toInt() ?: 8080
     embeddedServer(Netty, configure = {
+        shutdownGracePeriod = TimeUnit.SECONDS.toMillis(5)
+        shutdownTimeout = TimeUnit.SECONDS.toMillis(10)
         connector {
             port = serverPort
         }
@@ -113,11 +116,15 @@ private fun Application.module(dataSource: DataSource): Motor {
     monitor.subscribe(ApplicationStarted) {
         motor.start()
     }
-    monitor.subscribe(ApplicationStopped) { application ->
-        application.environment.log.info("Server har stoppet")
+    monitor.subscribe(ApplicationStopPreparing) { environment ->
+        environment.log.info("Forbereder stopp av applikasjon, stopper motor.")
         motor.stop()
+    }
+    monitor.subscribe(ApplicationStopped) { application ->
+        application.environment.log.info("Server har stoppet.")
         // Release resources and unsubscribe from events
         application.monitor.unsubscribe(ApplicationStarted) {}
+        application.monitor.unsubscribe(ApplicationStopPreparing) {}
         application.monitor.unsubscribe(ApplicationStopped) {}
     }
 
