@@ -43,16 +43,22 @@ class FaktagrunnlagService(
                     ?: blokkInnhold
         }
 
-    private fun faktagrunnlagTilTekst(faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): Map<KjentFaktagrunnlag, String> {
+    private fun faktagrunnlagTilTekst(
+        alleFaktagrunnlag: Set<Faktagrunnlag>,
+        språk: Språk
+    ): Map<KjentFaktagrunnlag, String> {
         return buildMap {
-            faktagrunnlag.forEach {
-                when (it) {
+            alleFaktagrunnlag.forEach { faktagrunnlag ->
+                when (faktagrunnlag) {
+
+                    is Faktagrunnlag.AapFomDato ->
+                        put(KjentFaktagrunnlag.AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
 
                     is Faktagrunnlag.FristDato11_7 ->
-                        put(KjentFaktagrunnlag.FRIST_DATO_11_7, it.frist.formaterFullLengde(språk))
+                        put(KjentFaktagrunnlag.FRIST_DATO_11_7, faktagrunnlag.frist.formaterFullLengde(språk))
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
-                        val sortert = it.inntekterPerÅr.sortedBy { it.år }
+                        val sortert = faktagrunnlag.inntekterPerÅr.sortedBy { it.år }
                         sortert.getOrNull(0)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.toString())

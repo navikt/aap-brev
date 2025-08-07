@@ -1,6 +1,7 @@
 package no.nav.aap.brev.innhold
 
 enum class KjentFaktagrunnlag {
+    AAP_FOM_DATO,
     FRIST_DATO_11_7,
     GRUNNLAG_BEREGNING_AAR_1_AARSTALL,
     GRUNNLAG_BEREGNING_AAR_2_AARSTALL,
