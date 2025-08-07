@@ -47,7 +47,6 @@ class AppTest {
             server(
                 dbConfig = dbConfig,
             )
-            module()
         }.start()
 
         @JvmStatic
@@ -86,13 +85,4 @@ internal fun postgreSQLContainer(): PostgreSQLContainer<Nothing> {
     postgres.waitingFor(HostPortWaitStrategy().withStartupTimeout(Duration.of(60L, ChronoUnit.SECONDS)))
     postgres.start()
     return postgres
-}
-
-private fun Application.module() {
-    // Setter opp virtuell sandkasse lokalt
-    monitor.subscribe(ApplicationStopPreparing) { application ->
-        environment.log.info("Server har stoppet")
-        // Release resources and unsubscribe from events
-        monitor.unsubscribe(ApplicationStopped) {}
-    }
 }
