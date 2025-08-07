@@ -1,6 +1,5 @@
 package no.nav.aap.brev.innhold
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.test.fakes.brev
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -43,7 +42,7 @@ class BrevUtilsTest {
     fun `kan ikke ferdigstilles automatisk dersom brevet har faktagrunnlag`() {
         val brev = brev(
             kanSendesAutomatisk = true,
-            medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi),
+            medFaktagrunnlag = listOf(KjentFaktagrunnlag.FRIST_DATO_11_7.name),
             kanRedigeres = false,
             erFullstendig = true,
         )

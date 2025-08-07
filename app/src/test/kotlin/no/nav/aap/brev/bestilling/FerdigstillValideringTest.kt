@@ -1,11 +1,12 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.innhold.BrevinnholdService
+import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
@@ -125,7 +126,7 @@ class FerdigstillValideringTest : IntegrationTest() {
             ferdigstill(referanse)
         }
         assertThat(exception.message).endsWith(
-            "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${FaktagrunnlagType.FRIST_DATO_11_7.verdi}."
+            "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${KjentFaktagrunnlag.FRIST_DATO_11_7.name}."
         )
         assertStatus(referanse, Status.UNDER_ARBEID)
         assertAntallJobber(referanse, 0)

@@ -4,7 +4,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
-import no.nav.aap.behandlingsflyt.kontrakt.brevbestilling.FaktagrunnlagType
+import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Blokk
 import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
@@ -15,8 +15,6 @@ import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
 import java.util.UUID
-import kotlin.Boolean
-import kotlin.String
 
 fun brev(
     medFaktagrunnlag: List<String> = emptyList(),
@@ -103,7 +101,7 @@ fun Application.brevSanityProxyFake() {
                 )
 
                 Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT -> brev(
-                    medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi),
+                    medFaktagrunnlag = listOf(KjentFaktagrunnlag.FRIST_DATO_11_7.name),
                     kanRedigeres = false,
                     erFullstendig = true
                 )
