@@ -115,6 +115,8 @@ spec:
 
     - name: INTEGRASJON_DOKDISTFORDELING_URL
       value: https://dokdistfordeling.prod-fss-pub.nais.io
+    - name: INTEGRASJON_DOKDISTFORDELING_SCOPE
+      value: api://prod-fss.teamdokumenthandtering.dokdistfordeling/.default
 
     - name: INTEGRASJON_SAF_URL_GRAPHQL
       value: https://saf.prod-fss-pub.nais.io/graphql

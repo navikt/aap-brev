@@ -18,6 +18,7 @@
       <env name="INTEGRASJON_DOKARKIV_URL" value="https://dokarkiv-q2.dev-fss-pub.nais.io" />
       <env name="INTEGRASJON_DOKARKIV_SCOPE" value="api://dev-fss.teamdokumenthandtering.dokarkiv/.default" />
       <env name="INTEGRASJON_DOKDISTFORDELING_URL" value="https://dokdistfordeling.dev-fss-pub.nais.io" />
+      <env name="INTEGRASJON_DOKDISTFORDELING_SCOPE" value="api://dev-fss.teamdokumenthandtering.dokdistfordeling/.default" />
       <env name="INTEGRASJON_SAF_URL_GRAPHQL" value="https://saf-q2.dev-fss-pub.nais.io/graphql" />
       <env name="INTEGRASJON_SAF_SCOPE" value="api://dev-fss.teamdokumenthandtering.saf/.default" />
       <env name="INTEGRASJON_NOM_URL" value="https://nom-api.intern.dev.nav.no/graphql" />

@@ -17,7 +17,7 @@ import java.net.URI
 
 class DokdistfordelingGateway : DistribusjonGateway {
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokdistfordeling.url"))
-    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.saf.scope"))
+    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokdistfordeling.scope"))
     private val client = RestClient(
         config = config,
         tokenProvider = ClientCredentialsTokenProvider,
