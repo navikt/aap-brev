@@ -77,6 +77,7 @@ object Fakes : AutoCloseable {
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")
+        System.setProperty("integrasjon.dokdistfordeling.scope", "scope")
 
         // Norg
         System.setProperty("integrasjon.norg.url", "http://localhost:${norg.port()}")
