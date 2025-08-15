@@ -1,6 +1,6 @@
 val ktorVersion = "3.2.3"
 val komponenterVersjon = "1.0.308"
-val tilgangVersjon = "1.0.102"
+val tilgangVersjon = "1.0.108"
 
 plugins {
     id("brev.conventions")
