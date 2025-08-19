@@ -32,6 +32,9 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
     data class GrunnlagBeregning(
+        val dagsats: BigDecimal?,
+        val beregningstidspunkt: LocalDate?,
+        val beregningsgrunnlag: BigDecimal?,
         val inntekterPerÅr: List<InntektPerÅr>
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_BEREGNING) {
         data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)

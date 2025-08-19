@@ -58,16 +58,26 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.FRIST_DATO_11_7, faktagrunnlag.frist.formaterFullLengde(språk))
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
-                        val sortert = faktagrunnlag.inntekterPerÅr.sortedBy { it.år }
-                        sortert.getOrNull(0)?.also {
+                        faktagrunnlag.dagsats?.let { dagsats ->
+                            put(KjentFaktagrunnlag.DAGSATS, dagsats.toString())
+                        }
+                        faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
+                            put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.formaterFullLengde(språk))
+                        }
+                        faktagrunnlag.beregningsgrunnlag?.let { beregningsgrunnlag ->
+                            put(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG, beregningsgrunnlag.toString())
+                        }
+
+                        val inntekterPerÅr = faktagrunnlag.inntekterPerÅr.sortedBy { it.år }
+                        inntekterPerÅr.getOrNull(0)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.toString())
                         }
-                        sortert.getOrNull(1)?.also {
+                        inntekterPerÅr.getOrNull(1)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT, it.inntekt.toString())
                         }
-                        sortert.getOrNull(2)?.also {
+                        inntekterPerÅr.getOrNull(2)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT, it.inntekt.toString())
                         }
