@@ -65,6 +65,8 @@ internal fun Application.server(dbConfig: DbConfig) {
         exception<Throwable> { call, cause ->
             when (cause) {
                 is ValideringsfeilException -> {
+                    LoggerFactory.getLogger(App::class.java)
+                        .warn(cause.message, cause)
                     call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message))
                 }
 
