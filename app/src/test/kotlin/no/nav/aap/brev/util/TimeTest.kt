@@ -1,6 +1,7 @@
 package no.nav.aap.brev.util
 
 import no.nav.aap.brev.kontrakt.Språk
+import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

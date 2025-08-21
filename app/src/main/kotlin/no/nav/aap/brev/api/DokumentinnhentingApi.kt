@@ -29,7 +29,7 @@ import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.brev.person.PdlGateway
-import no.nav.aap.brev.util.formaterFullLengde
+import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.komponenter.miljo.MiljøKode
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig

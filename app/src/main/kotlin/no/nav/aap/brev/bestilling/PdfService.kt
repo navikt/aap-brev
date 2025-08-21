@@ -13,7 +13,7 @@ import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.person.PdlGateway
-import no.nav.aap.brev.util.formaterFullLengde
+import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
 

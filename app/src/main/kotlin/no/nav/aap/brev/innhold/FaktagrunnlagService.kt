@@ -7,7 +7,8 @@ import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.util.formaterFullLengde
+import no.nav.aap.brev.util.NumberUtils.formater
+import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.math.BigDecimal
 
@@ -60,28 +61,28 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
                         faktagrunnlag.dagsats?.let { dagsats ->
-                            put(KjentFaktagrunnlag.DAGSATS, dagsats.toString())
-                            put(KjentFaktagrunnlag.UKESATS, (dagsats * BigDecimal(5)).toString())
+                            put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
+                            put(KjentFaktagrunnlag.UKESATS, (dagsats * BigDecimal(5)).formater(språk))
                         }
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
                             put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.formaterFullLengde(språk))
                         }
                         faktagrunnlag.beregningsgrunnlag?.let { beregningsgrunnlag ->
-                            put(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG, beregningsgrunnlag.toString())
+                            put(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG, beregningsgrunnlag.formater(språk))
                         }
 
                         val inntekterPerÅr = faktagrunnlag.inntekterPerÅr.sortedBy { it.år }
                         inntekterPerÅr.getOrNull(0)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL, it.år.toString())
-                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.formater(språk))
                         }
                         inntekterPerÅr.getOrNull(1)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL, it.år.toString())
-                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT, it.inntekt.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT, it.inntekt.formater(språk))
                         }
                         inntekterPerÅr.getOrNull(2)?.also {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL, it.år.toString())
-                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT, it.inntekt.toString())
+                            put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT, it.inntekt.formater(språk))
                         }
                     }
                 }
