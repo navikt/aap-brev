@@ -65,7 +65,7 @@ class FaktagrunnlagService(
                             put(KjentFaktagrunnlag.UKESATS, (dagsats * BigDecimal(5)).formater(språk))
                         }
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
-                            put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.formaterFullLengde(språk))
+                            put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.year.toString())
                         }
                         faktagrunnlag.beregningsgrunnlag?.let { beregningsgrunnlag ->
                             put(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG, beregningsgrunnlag.formater(språk))
