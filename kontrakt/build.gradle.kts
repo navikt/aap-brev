@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val komponenterVersjon = "1.0.338"
+val komponenterVersjon = "1.0.339"
 
 plugins {
     id("brev.conventions")
