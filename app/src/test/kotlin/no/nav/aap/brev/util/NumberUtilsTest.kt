@@ -10,8 +10,8 @@ class NumberUtilsTest {
     @Test
     fun `formaterer`() {
         assertThat(BigDecimal("123456.00").formater(Språk.NB)).isEqualTo("123 456")
-        assertThat(BigDecimal("123456.237").formater(Språk.NB)).isEqualTo("123 456,24")
-        assertThat(BigDecimal("123456.237").formater(Språk.NN)).isEqualTo("123 456,24")
+        assertThat(BigDecimal("123456.225").formater(Språk.NB)).isEqualTo("123 456,23")
+        assertThat(BigDecimal("123456.235").formater(Språk.NN)).isEqualTo("123 456,24")
         assertThat(BigDecimal("123456.237").formater(Språk.EN)).isEqualTo("123,456.24")
     }
 }
