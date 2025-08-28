@@ -81,17 +81,20 @@ fun Application.brevSanityProxyFake() {
                     kanSendesAutomatisk = true,
                     kanRedigeres = false,
                     medFaktagrunnlag = listOf("fakta"),
-                            erFullstendig = true,
+                    erFullstendig = true,
                 )
+
                 Brevtype.KLAGE_OPPRETTHOLDELSE -> brev(
                     kanSendesAutomatisk = true,
                     kanRedigeres = true,
                     erFullstendig = true,
                 )
+
                 Brevtype.KLAGE_TRUKKET -> brev(
                     kanSendesAutomatisk = true,
                     erFullstendig = false,
                 )
+
                 Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> brev()
                 Brevtype.VARSEL_OM_BESTILLING -> brev(
                     medFaktagrunnlag = emptyList(),
@@ -107,6 +110,8 @@ fun Application.brevSanityProxyFake() {
                 )
 
                 Brevtype.FORVALTNINGSMELDING -> brev()
+                Brevtype.VEDTAK_11_7 -> brev()
+                Brevtype.VEDTAK_11_9 -> brev()
             }
             call.respond(brev)
         }
