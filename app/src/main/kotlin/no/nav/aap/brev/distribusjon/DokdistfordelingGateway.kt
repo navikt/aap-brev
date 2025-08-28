@@ -53,6 +53,8 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.AVSLAG,
             Brevtype.VEDTAK_ENDRING,
             Brevtype.KLAGE_AVVIST,
+            Brevtype.VEDTAK_11_7,
+            Brevtype.VEDTAK_11_9
                 -> Distribusjonstype.VEDTAK
 
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
