@@ -10,7 +10,6 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import java.math.BigDecimal
 
 class FaktagrunnlagService(
     private val brevbestillingRepository: BrevbestillingRepository,
@@ -62,7 +61,6 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.GrunnlagBeregning -> {
                         faktagrunnlag.dagsats?.let { dagsats ->
                             put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
-                            put(KjentFaktagrunnlag.UKESATS, (dagsats * BigDecimal(5)).formater(språk))
                         }
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
                             put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.year.toString())
