@@ -60,6 +60,7 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
                         faktagrunnlag.dagsats?.let { dagsats ->
+                            // TODO skal slettes når ny kontrakt er publisert med dagsats i tilkjent ytelse
                             put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
                         }
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
@@ -70,17 +71,29 @@ class FaktagrunnlagService(
                         }
 
                         val inntekterPerÅr = faktagrunnlag.inntekterPerÅr.sortedBy { it.år }
-                        inntekterPerÅr.getOrNull(0)?.also {
+                        inntekterPerÅr.getOrNull(0)?.let {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_INNTEKT, it.inntekt.formater(språk))
                         }
-                        inntekterPerÅr.getOrNull(1)?.also {
+                        inntekterPerÅr.getOrNull(1)?.let {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_2_INNTEKT, it.inntekt.formater(språk))
                         }
-                        inntekterPerÅr.getOrNull(2)?.also {
+                        inntekterPerÅr.getOrNull(2)?.let {
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_AARSTALL, it.år.toString())
                             put(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_3_INNTEKT, it.inntekt.formater(språk))
+                        }
+                    }
+
+                    is Faktagrunnlag.TilkjentYtelse -> {
+                        faktagrunnlag.dagsats?.let { dagsats ->
+                            put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
+                        }
+                        faktagrunnlag.barnetilleggSats?.let { barnetilleggSats ->
+                            put(
+                                KjentFaktagrunnlag.BARNETILLEGG_SATS,
+                                barnetilleggSats.formater(språk)
+                            )
                         }
                     }
                 }
