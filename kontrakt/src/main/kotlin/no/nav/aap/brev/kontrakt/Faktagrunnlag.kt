@@ -35,7 +35,12 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE)
     data class TilkjentYtelse(
         val dagsats: BigDecimal?,
+        val gradertDagsats: BigDecimal?,
         val barnetilleggSats: BigDecimal?,
+        val gradertBarnetillegg: BigDecimal?,
+        val gradertDagsatsInkludertBarnetillegg: BigDecimal?,
+        val barnetillegg: BigDecimal?,
+        val antallBarn: Int?,
     ) : Faktagrunnlag(FaktagrunnlagType.TILKJENT_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)

@@ -89,12 +89,43 @@ class FaktagrunnlagService(
                         faktagrunnlag.dagsats?.let { dagsats ->
                             put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
                         }
+                        faktagrunnlag.gradertDagsats?.let { gradertDagsats ->
+                            put(
+                                KjentFaktagrunnlag.GRADERT_DAGSATS,
+                                gradertDagsats.formater(språk)
+                            )
+                        }
                         faktagrunnlag.barnetilleggSats?.let { barnetilleggSats ->
                             put(
                                 KjentFaktagrunnlag.BARNETILLEGG_SATS,
                                 barnetilleggSats.formater(språk)
                             )
                         }
+                        faktagrunnlag.gradertBarnetillegg?.let { gradertBarnetillegg ->
+                            put(
+                                KjentFaktagrunnlag.GRADERT_BARNETILLEGG,
+                                gradertBarnetillegg.formater(språk)
+                            )
+                        }
+                        faktagrunnlag.gradertDagsatsInkludertBarnetillegg?.let { gradertDagsatsInkludertBarnetillegg ->
+                            put(
+                                KjentFaktagrunnlag.GRADERT_DAGSATS_INKLUDERT_BARNETILLEGG,
+                                gradertDagsatsInkludertBarnetillegg.formater(språk)
+                            )
+                        }
+                        faktagrunnlag.barnetillegg?.let { barnetillegg ->
+                            put(
+                                KjentFaktagrunnlag.BARNETILLEGG,
+                                barnetillegg.formater(språk)
+                            )
+                        }
+                        faktagrunnlag.antallBarn?.let { antallBarn ->
+                            put(
+                                KjentFaktagrunnlag.ANTALL_BARN,
+                                antallBarn.toString()
+                            )
+                        }
+
                     }
                 }
             }
