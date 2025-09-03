@@ -59,10 +59,6 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.FRIST_DATO_11_7, faktagrunnlag.frist.formaterFullLengde(språk))
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
-                        faktagrunnlag.dagsats?.let { dagsats ->
-                            // TODO skal slettes når ny kontrakt er publisert med dagsats i tilkjent ytelse
-                            put(KjentFaktagrunnlag.DAGSATS, dagsats.formater(språk))
-                        }
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
                             put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.year.toString())
                         }

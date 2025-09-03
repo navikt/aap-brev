@@ -45,7 +45,6 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
     data class GrunnlagBeregning(
-        val dagsats: BigDecimal?, // TODO skal slettes når ny kontrakt er publisert med dagsats i tilkjent ytelse
         val beregningstidspunkt: LocalDate?,
         val beregningsgrunnlag: BigDecimal?,
         val inntekterPerÅr: List<InntektPerÅr>
