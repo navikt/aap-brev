@@ -58,7 +58,7 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.11.2")
+    implementation("org.flywaydb:flyway-database-postgresql:11.12.0")
     implementation("org.postgresql:postgresql:42.7.7")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
