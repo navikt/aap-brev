@@ -11,22 +11,36 @@ class DistribusjonService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val journalpostRepository: JournalpostRepository,
     private val distribusjonGateway: DistribusjonGateway,
+    private val adresseGateway: AdresseGateway,
+    private val distribusjonskanalGateway: DistribusjonskanalGateway
 ) {
-
     companion object {
         fun konstruer(connection: DBConnection): DistribusjonService {
             return DistribusjonService(
                 BrevbestillingRepositoryImpl(connection),
                 JournalpostRepositoryImpl(connection),
-                DokdistfordelingGateway()
+                DokdistfordelingGateway(),
+                RegoppslagGateway(),
+                DokdistkanalGateway()
             )
         }
     }
 
+    fun kanBrevDistribueresTilBruker(personIndent: String): Boolean {
+        return (hentDistribusjonskanal(personIndent) != Distribusjonskanal.PRINT) || (hentPostadresse(personIndent) != null)
+    }
+
+    fun hentPostadresse(personIdent: String): HentPostadresseResponse? {
+        return adresseGateway.hentPostadresse(personIdent)
+    }
+
+    fun hentDistribusjonskanal(personIdent: String): Distribusjonskanal? {
+        return distribusjonskanalGateway.bestemDistribusjonskanal(personIdent)
+    }
+
     fun distribuerBrev(referanse: BrevbestillingReferanse) {
         val brevbestilling = brevbestillingRepository.hent(referanse)
-
-
+        val brukerIndent = brevbestilling.brukerIdent ?: ""
         val journalposter = journalpostRepository.hentAlleFor(referanse)
 
         check(journalposter.isNotEmpty()) {
@@ -37,19 +51,21 @@ class DistribusjonService(
             "Feiltilstand: Det finnes journalposter for bestillingen som ikke er ferdigstilt."
         }
 
-        journalposter
-            .filter { it.distribusjonBestillingId == null }
-            .forEach { journalpost ->
-                val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
-                    journalpost.journalpostId,
-                    brevbestilling.brevtype,
-                    journalpost.mottaker
-                )
-                // Midlertidig for bakoverkompabilitet
-                if (journalpost.mottaker.ident == brevbestilling.brukerIdent) {
-                    brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
+        if (kanBrevDistribueresTilBruker(brukerIndent)){
+            journalposter
+                .filter { it.distribusjonBestillingId == null }
+                .forEach { journalpost ->
+                    val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
+                        journalpost.journalpostId,
+                        brevbestilling.brevtype,
+                        journalpost.mottaker
+                    )
+                    // TODO Midlertidig for bakoverkompabilitet
+                    if (journalpost.mottaker.ident == brevbestilling.brukerIdent) {
+                        brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
+                    }
+                    journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
                 }
-                journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
-            }
+        }
     }
 }
