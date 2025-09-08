@@ -17,6 +17,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
+import no.nav.aap.brev.api.distribusjonApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
@@ -94,6 +95,7 @@ internal fun Application.server(dbConfig: DbConfig) {
             apiRouting {
                 bestillingApi(dataSource)
                 dokumentinnhentingApi()
+                distribusjonApi()
                 motorApi(dataSource)
             }
         }
