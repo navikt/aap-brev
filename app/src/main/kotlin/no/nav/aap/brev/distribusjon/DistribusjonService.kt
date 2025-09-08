@@ -11,22 +11,36 @@ class DistribusjonService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val journalpostRepository: JournalpostRepository,
     private val distribusjonGateway: DistribusjonGateway,
+    private val adresseGateway: AdresseGateway,
+    private val distribusjonskanalGateway: DistribusjonskanalGateway
 ) {
-
     companion object {
         fun konstruer(connection: DBConnection): DistribusjonService {
             return DistribusjonService(
                 BrevbestillingRepositoryImpl(connection),
                 JournalpostRepositoryImpl(connection),
-                DokdistfordelingGateway()
+                DokdistfordelingGateway(),
+                RegoppslagGateway(),
+                DokdistkanalGateway()
             )
         }
     }
 
+    fun kanBrevDistribueresTilBruker(personIndent: String): Boolean {
+        return (hentDistribusjonskanal(personIndent) != Distribusjonskanal.PRINT) || (hentPostadresse(personIndent) != null)
+    }
+
+    fun hentPostadresse(personIdent: String): Postadresse? {
+        return adresseGateway.hentPostadresse(personIdent)
+    }
+
+    fun hentDistribusjonskanal(personIdent: String): Distribusjonskanal? {
+        return distribusjonskanalGateway.bestemDistribusjonskanal(personIdent)
+    }
+
     fun distribuerBrev(referanse: BrevbestillingReferanse) {
         val brevbestilling = brevbestillingRepository.hent(referanse)
-
-
+        val brukerIndent = brevbestilling.brukerIdent ?: ""
         val journalposter = journalpostRepository.hentAlleFor(referanse)
 
         check(journalposter.isNotEmpty()) {
@@ -37,6 +51,10 @@ class DistribusjonService(
             "Feiltilstand: Det finnes journalposter for bestillingen som ikke er ferdigstilt."
         }
 
+        check (!kanBrevDistribueresTilBruker(brukerIndent)) {
+            "Kan ikke distribuere brev til bruker med ukjent postadresse og brev i postkasse som distribusjonskanal."
+        }
+
         journalposter
             .filter { it.distribusjonBestillingId == null }
             .forEach { journalpost ->
@@ -45,7 +63,7 @@ class DistribusjonService(
                     brevbestilling.brevtype,
                     journalpost.mottaker
                 )
-                // Midlertidig for bakoverkompabilitet
+                // TODO Midlertidig for bakoverkompabilitet
                 if (journalpost.mottaker.ident == brevbestilling.brukerIdent) {
                     brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
                 }
