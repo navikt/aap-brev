@@ -75,6 +75,7 @@ fun Application.brevSanityProxyFake() {
             // Gir ulike konfigurasjoner av brev for forskjellige test-scenario
             val brev = when (brevtype) {
                 Brevtype.INNVILGELSE -> brev()
+                Brevtype.VEDTAK_11_18 -> brev()
                 Brevtype.AVSLAG -> brev()
                 Brevtype.VEDTAK_ENDRING -> brev()
                 Brevtype.KLAGE_AVVIST -> brev(
