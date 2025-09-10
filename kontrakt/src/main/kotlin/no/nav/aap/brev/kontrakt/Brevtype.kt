@@ -2,7 +2,7 @@ package no.nav.aap.brev.kontrakt
 
 enum class Brevtype {
     INNVILGELSE,
-    VEDTAK_VURDERES_FOR_UFØRETRYGD,
+    VEDTAK_11_18,
     AVSLAG,
     VARSEL_OM_BESTILLING,
     FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
