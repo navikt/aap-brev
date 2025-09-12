@@ -45,7 +45,7 @@ publishing {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
 
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
     testImplementation("org.assertj:assertj-core:3.27.4")
