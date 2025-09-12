@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val komponenterVersjon = "1.0.339"
+val jupiterVersjon = "5.13.1"
 
 plugins {
     id("brev.conventions")
@@ -48,6 +49,6 @@ dependencies {
 
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
     testImplementation("org.assertj:assertj-core:3.27.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersjon")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersjon")
 }
