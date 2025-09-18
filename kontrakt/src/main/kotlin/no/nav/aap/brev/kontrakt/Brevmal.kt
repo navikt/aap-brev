@@ -36,12 +36,14 @@ data class Brevmal(
 
         @JsonTypeName("periodetekstRef")
         data class Periodetekst(
+            // grupper her også?
             val periodetekst: Teksteditor
         ) : TeksteditorElementer
 
         @JsonTypeName("betingetTekstRef")
         data class BetingetTekst(
-            val grupper: List<Gruppe>
+            val grupper: List<Gruppe>,
+            val tekst: Teksteditor,
         ) : TeksteditorElementer
     }
 
@@ -72,7 +74,8 @@ data class Brevmal(
 
     data class Gruppe(
         val _id: String,
-        val gruppenavn: String, val tekniskNavn: String
+        val gruppenavn: String,
+        val tekniskNavn: String
     )
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_type", visible = true)
