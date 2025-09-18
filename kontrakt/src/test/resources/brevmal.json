@@ -1,0 +1,628 @@
+{
+    "_createdAt": "2025-09-04T09:02:19Z",
+    "_id": "327f7e7f-a823-436b-863f-af4cb25ddb40",
+    "_originalId": "327f7e7f-a823-436b-863f-af4cb25ddb40",
+    "_rev": "ffUJJdSnYESXfv2jOpHn1Z",
+    "_system": {
+        "base": {
+            "id": "327f7e7f-a823-436b-863f-af4cb25ddb40",
+            "rev": "Ytv0u8p7Ex1SAq2Ta5Pvo4"
+        }
+    },
+    "_type": "mal",
+    "_updatedAt": "2025-09-08T07:29:41Z",
+    "delmaler": [
+        {
+            "_key": "87fa08ea962f",
+            "_type": "delmalRef",
+            "delmal": {
+                "_createdAt": "2025-09-04T09:02:06Z",
+                "_id": "142e2e17-0233-46f1-99c4-1c99a08368ac",
+                "_originalId": "142e2e17-0233-46f1-99c4-1c99a08368ac",
+                "_rev": "2XS5T8iyR77CNIkHNw7P8J",
+                "_system": {
+                    "base": {
+                        "id": "142e2e17-0233-46f1-99c4-1c99a08368ac",
+                        "rev": "nEijoxAov7vBF0GEE9rmZB"
+                    }
+                },
+                "_type": "delmal",
+                "_updatedAt": "2025-09-17T14:09:06Z",
+                "teksteditor": [
+                    {
+                        "_key": "a862a9948639",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "c34ec657ec7f",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Delmal  første avsnitt. Under er et valg."
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "61a6414307f6",
+                        "_type": "valgRef",
+                        "obligatorisk": true,
+                        "valg": {
+                            "_createdAt": "2025-09-04T08:08:11Z",
+                            "_id": "7ab401c4-b0a0-443a-abc6-4615c588397a",
+                            "_originalId": "7ab401c4-b0a0-443a-abc6-4615c588397a",
+                            "_rev": "nEijoxAov7vBF0GEEAGGGN",
+                            "_system": {
+                                "base": {
+                                    "id": "7ab401c4-b0a0-443a-abc6-4615c588397a",
+                                    "rev": "LF9ubz4vLUl24BkUvjr8BR"
+                                }
+                            },
+                            "_type": "valg",
+                            "_updatedAt": "2025-09-17T14:08:13Z",
+                            "valg": [
+                                {
+                                    "_key": "7ff0ae72add1",
+                                    "_type": "fritekst",
+                                    "fritekst": "fritekst"
+                                },
+                                {
+                                    "_key": "3dcf0ca4e26c",
+                                    "_type": "gruppertTekstRef",
+                                    "gruppe": {
+                                        "_createdAt": "2025-09-17T14:07:13Z",
+                                        "_id": "63ac864f-609f-45ab-b93e-1ca668945761",
+                                        "_originalId": "63ac864f-609f-45ab-b93e-1ca668945761",
+                                        "_rev": "nEijoxAov7vBF0GEEAG6qt",
+                                        "_type": "gruppe",
+                                        "_updatedAt": "2025-09-17T14:07:18Z",
+                                        "gruppenavn": "Gruppe 1",
+                                        "tekniskNavn": "GRUPPE_1"
+                                    },
+                                    "tekst": {
+                                        "_createdAt": "2025-09-04T07:43:16Z",
+                                        "_id": "617c04b5-9793-43b0-adf9-b2f722b27a36",
+                                        "_originalId": "617c04b5-9793-43b0-adf9-b2f722b27a36",
+                                        "_rev": "nEijoxAov7vBF0GEE9vmc9",
+                                        "_system": {
+                                            "base": {
+                                                "id": "617c04b5-9793-43b0-adf9-b2f722b27a36",
+                                                "rev": "3QHWfcrjWjKANIfgAO2P1e"
+                                            }
+                                        },
+                                        "_type": "tekst",
+                                        "_updatedAt": "2025-09-17T13:28:33Z",
+                                        "teksteditor": [
+                                            {
+                                                "_key": "f586393257df",
+                                                "_type": "block",
+                                                "children": [
+                                                    {
+                                                        "_key": "760def4caad6",
+                                                        "_type": "span",
+                                                        "marks": [],
+                                                        "text": "Tekst 1 med faktagrunnlag: "
+                                                    },
+                                                    {
+                                                        "_createdAt": "2025-09-09T13:48:40Z",
+                                                        "_id": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                                        "_key": "d8bca81fbc1c",
+                                                        "_originalId": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                                        "_ref": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                                        "_rev": "Ayz0qkvWb6walzY5rVIlmd",
+                                                        "_system": {
+                                                            "base": {
+                                                                "id": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                                                "rev": "j5sZiVQRUGkThv45CDHL8u"
+                                                            }
+                                                        },
+                                                        "_type": "faktagrunnlag",
+                                                        "_updatedAt": "2025-09-12T06:13:29Z",
+                                                        "datatype": "number",
+                                                        "tekniskNavn": "VAR_1",
+                                                        "visningsnavn": "Var 1"
+                                                    },
+                                                    {
+                                                        "_key": "9819de34dab7",
+                                                        "_type": "span",
+                                                        "marks": [],
+                                                        "text": "."
+                                                    }
+                                                ],
+                                                "markDefs": [],
+                                                "style": "normal"
+                                            }
+                                        ],
+                                        "title": "Tekst 1"
+                                    }
+                                },
+                                {
+                                    "_key": "b325170aa32f",
+                                    "_type": "gruppertTekstRef",
+                                    "gruppe": null,
+                                    "tekst": {
+                                        "_createdAt": "2025-09-04T08:20:20Z",
+                                        "_id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                                        "_originalId": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                                        "_rev": "2XS5T8iyR77CNIkHNw1Ef9",
+                                        "_system": {
+                                            "base": {
+                                                "id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                                                "rev": "LF9ubz4vLUl24BkUvjr7ku"
+                                            }
+                                        },
+                                        "_type": "tekst",
+                                        "_updatedAt": "2025-09-17T13:28:50Z",
+                                        "teksteditor": [
+                                            {
+                                                "_key": "b4eabf35d9d9",
+                                                "_type": "block",
+                                                "children": [
+                                                    {
+                                                        "_key": "f41ef354d68b",
+                                                        "_type": "span",
+                                                        "marks": [],
+                                                        "text": "Tekst 2 med faktagrunnlag: "
+                                                    },
+                                                    {
+                                                        "_createdAt": "2025-09-09T13:48:48Z",
+                                                        "_id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                                        "_key": "701c2ebd5d35",
+                                                        "_originalId": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                                        "_ref": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                                        "_rev": "3QHWfcrjWjKANIfgAQp97y",
+                                                        "_system": {
+                                                            "base": {
+                                                                "id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                                                "rev": "IdchENUh6rxYSaCTvsTMmw"
+                                                            }
+                                                        },
+                                                        "_type": "faktagrunnlag",
+                                                        "_updatedAt": "2025-09-12T06:13:16Z",
+                                                        "datatype": "string",
+                                                        "tekniskNavn": "VAR_2",
+                                                        "visningsnavn": "Var 2"
+                                                    },
+                                                    {
+                                                        "_key": "7ec3600be174",
+                                                        "_type": "span",
+                                                        "marks": [],
+                                                        "text": "."
+                                                    }
+                                                ],
+                                                "markDefs": [],
+                                                "style": "normal"
+                                            }
+                                        ],
+                                        "title": "Tekst 2"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "_key": "5dddf8bca17f",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "688c1dcd1c72",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Andre avsnitt "
+                            },
+                            {
+                                "_key": "2af9391d4a43",
+                                "_type": "span",
+                                "marks": [
+                                    "strong"
+                                ],
+                                "text": "med"
+                            },
+                            {
+                                "_key": "1aec9546256f",
+                                "_type": "span",
+                                "marks": [],
+                                "text": " "
+                            },
+                            {
+                                "_key": "c7a66e3dfea9",
+                                "_type": "span",
+                                "marks": [
+                                    "em"
+                                ],
+                                "text": "litt"
+                            },
+                            {
+                                "_key": "c46180e2533c",
+                                "_type": "span",
+                                "marks": [],
+                                "text": " "
+                            },
+                            {
+                                "_key": "2a425248b0fb",
+                                "_type": "span",
+                                "marks": [
+                                    "underline"
+                                ],
+                                "text": "formattering"
+                            },
+                            {
+                                "_key": "d9d24293d2aa",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "."
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "aeb233b42d4a",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "69b740f5cda5",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Så kommer det en periodetekst:"
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "7fae556caf05",
+                        "_type": "periodetekstRef",
+                        "periodetekst": {
+                            "_createdAt": "2025-09-09T07:03:07Z",
+                            "_id": "b7dbb43e-5314-4962-917e-9dd5525b344d",
+                            "_originalId": "b7dbb43e-5314-4962-917e-9dd5525b344d",
+                            "_rev": "xmMccSfAt5D3mH0Q8RKpGF",
+                            "_type": "periodetekst",
+                            "_updatedAt": "2025-09-09T13:55:58Z",
+                            "teksteditor": [
+                                {
+                                    "_key": "8c370a7333af",
+                                    "_type": "block",
+                                    "children": [
+                                        {
+                                            "_key": "8cbd2608defc",
+                                            "_type": "span",
+                                            "marks": [],
+                                            "text": "Endring fra "
+                                        },
+                                        {
+                                            "_createdAt": "2025-09-09T13:48:29Z",
+                                            "_id": "15f93307-49e6-4aa0-9697-f9fb4c562756",
+                                            "_key": "890d621453e6",
+                                            "_originalId": "15f93307-49e6-4aa0-9697-f9fb4c562756",
+                                            "_ref": "15f93307-49e6-4aa0-9697-f9fb4c562756",
+                                            "_rev": "3QHWfcrjWjKANIfgAQp9nW",
+                                            "_system": {
+                                                "base": {
+                                                    "id": "15f93307-49e6-4aa0-9697-f9fb4c562756",
+                                                    "rev": "OVKcTbelKQ3ED8g2ZK6HX8"
+                                                }
+                                            },
+                                            "_type": "faktagrunnlag",
+                                            "_updatedAt": "2025-09-12T06:13:49Z",
+                                            "datatype": "string",
+                                            "tekniskNavn": "PERIODE_FRA_DATO",
+                                            "visningsnavn": "Periode FOM"
+                                        },
+                                        {
+                                            "_key": "f4a472295c27",
+                                            "_type": "span",
+                                            "marks": [],
+                                            "text": " for verdi "
+                                        },
+                                        {
+                                            "_createdAt": "2025-09-09T13:48:40Z",
+                                            "_id": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                            "_key": "f4884168305d",
+                                            "_originalId": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                            "_ref": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                            "_rev": "Ayz0qkvWb6walzY5rVIlmd",
+                                            "_system": {
+                                                "base": {
+                                                    "id": "7edf7093-cd1a-4004-a4f2-fe6b2cd38d79",
+                                                    "rev": "j5sZiVQRUGkThv45CDHL8u"
+                                                }
+                                            },
+                                            "_type": "faktagrunnlag",
+                                            "_updatedAt": "2025-09-12T06:13:29Z",
+                                            "datatype": "number",
+                                            "tekniskNavn": "VAR_1",
+                                            "visningsnavn": "Var 1"
+                                        },
+                                        {
+                                            "_key": "2904df41cc05",
+                                            "_type": "span",
+                                            "marks": [],
+                                            "text": "."
+                                        }
+                                    ],
+                                    "markDefs": [],
+                                    "style": "normal"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "_key": "1f5249c865ee",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "14571a79f872",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Og her er det en betinget tekst:"
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "c4800bad6199",
+                        "_type": "betingetTekstRef",
+                        "grupper": [
+                            {
+                                "_createdAt": "2025-09-17T14:07:26Z",
+                                "_id": "a4989546-6d5a-4ea6-957f-fc5011e0b1f6",
+                                "_originalId": "a4989546-6d5a-4ea6-957f-fc5011e0b1f6",
+                                "_rev": "nEijoxAov7vBF0GEEAG8X5",
+                                "_type": "gruppe",
+                                "_updatedAt": "2025-09-17T14:07:33Z",
+                                "gruppenavn": "Gruppe 2",
+                                "tekniskNavn": "GRUPPE_2"
+                            }
+                        ],
+                        "tekst": {
+                            "_createdAt": "2025-09-04T08:20:20Z",
+                            "_id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                            "_originalId": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                            "_rev": "2XS5T8iyR77CNIkHNw1Ef9",
+                            "_system": {
+                                "base": {
+                                    "id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
+                                    "rev": "LF9ubz4vLUl24BkUvjr7ku"
+                                }
+                            },
+                            "_type": "tekst",
+                            "_updatedAt": "2025-09-17T13:28:50Z",
+                            "teksteditor": [
+                                {
+                                    "_key": "b4eabf35d9d9",
+                                    "_type": "block",
+                                    "children": [
+                                        {
+                                            "_key": "f41ef354d68b",
+                                            "_type": "span",
+                                            "marks": [],
+                                            "text": "Tekst 2 med faktagrunnlag: "
+                                        },
+                                        {
+                                            "_createdAt": "2025-09-09T13:48:48Z",
+                                            "_id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                            "_key": "701c2ebd5d35",
+                                            "_originalId": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                            "_ref": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                            "_rev": "3QHWfcrjWjKANIfgAQp97y",
+                                            "_system": {
+                                                "base": {
+                                                    "id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                                    "rev": "IdchENUh6rxYSaCTvsTMmw"
+                                                }
+                                            },
+                                            "_type": "faktagrunnlag",
+                                            "_updatedAt": "2025-09-12T06:13:16Z",
+                                            "datatype": "string",
+                                            "tekniskNavn": "VAR_2",
+                                            "visningsnavn": "Var 2"
+                                        },
+                                        {
+                                            "_key": "7ec3600be174",
+                                            "_type": "span",
+                                            "marks": [],
+                                            "text": "."
+                                        }
+                                    ],
+                                    "markDefs": [],
+                                    "style": "normal"
+                                }
+                            ],
+                            "title": "Tekst 2"
+                        }
+                    }
+                ],
+                "tittel": "Delmal 1"
+            },
+            "obligatorisk": true
+        },
+        {
+            "_key": "0242389766f9",
+            "_type": "delmalRef",
+            "delmal": {
+                "_createdAt": "2025-09-04T13:25:35Z",
+                "_id": "3fe38136-0326-4b45-8eca-1a0d451e1367",
+                "_originalId": "3fe38136-0326-4b45-8eca-1a0d451e1367",
+                "_rev": "OVKcTbelKQ3ED8g2ZK6Jw1",
+                "_system": {
+                    "base": {
+                        "id": "3fe38136-0326-4b45-8eca-1a0d451e1367",
+                        "rev": "by5cisBNJtYQpnxlVT3z1I"
+                    }
+                },
+                "_type": "delmal",
+                "_updatedAt": "2025-09-09T13:50:06Z",
+                "teksteditor": [
+                    {
+                        "_key": "06b7d940ed09",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "53bdca700073",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Tekst i delmal 2 med en variabel: "
+                            },
+                            {
+                                "_createdAt": "2025-09-09T13:48:48Z",
+                                "_id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_key": "bd664000bc43",
+                                "_originalId": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_ref": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_rev": "3QHWfcrjWjKANIfgAQp97y",
+                                "_system": {
+                                    "base": {
+                                        "id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                        "rev": "IdchENUh6rxYSaCTvsTMmw"
+                                    }
+                                },
+                                "_type": "faktagrunnlag",
+                                "_updatedAt": "2025-09-12T06:13:16Z",
+                                "datatype": "string",
+                                "tekniskNavn": "VAR_2",
+                                "visningsnavn": "Var 2"
+                            },
+                            {
+                                "_key": "8d0963cb42fc",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "."
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    }
+                ],
+                "tittel": "Delmal 2"
+            },
+            "obligatorisk": false
+        },
+        {
+            "_key": "10e4bb520107",
+            "_type": "delmalRef",
+            "delmal": {
+                "_createdAt": "2025-09-08T07:25:33Z",
+                "_id": "553eb74e-ee4d-4912-a0a8-15097c790119",
+                "_originalId": "553eb74e-ee4d-4912-a0a8-15097c790119",
+                "_rev": "2XS5T8iyR77CNIkHNw3fEx",
+                "_system": {
+                    "base": {
+                        "id": "553eb74e-ee4d-4912-a0a8-15097c790119",
+                        "rev": "LF9ubz4vLUl24BkUvk2I6J"
+                    }
+                },
+                "_type": "delmal",
+                "_updatedAt": "2025-09-17T13:35:18Z",
+                "teksteditor": [
+                    {
+                        "_key": "4ff018929b06",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "8c42e7102926",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "En liste:"
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "f83e2e46dff7",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "c2da448a5454",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Listepunkt 1"
+                            }
+                        ],
+                        "level": 1,
+                        "listItem": "bullet",
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "375139eb2662",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "b68a9ce00128",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Listepunkt 2"
+                            }
+                        ],
+                        "level": 1,
+                        "listItem": "bullet",
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "c8b47f84e312",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "10b246cb0487",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Listepunkt 3 med faktagrunnlag: "
+                            },
+                            {
+                                "_createdAt": "2025-09-09T13:48:48Z",
+                                "_id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_key": "7252049a97f2",
+                                "_originalId": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_ref": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                "_rev": "3QHWfcrjWjKANIfgAQp97y",
+                                "_system": {
+                                    "base": {
+                                        "id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
+                                        "rev": "IdchENUh6rxYSaCTvsTMmw"
+                                    }
+                                },
+                                "_type": "faktagrunnlag",
+                                "_updatedAt": "2025-09-12T06:13:16Z",
+                                "datatype": "string",
+                                "tekniskNavn": "VAR_2",
+                                "visningsnavn": "Var 2"
+                            },
+                            {
+                                "_key": "bd26b11d6e59",
+                                "_type": "span",
+                                "marks": [],
+                                "text": ""
+                            }
+                        ],
+                        "level": 1,
+                        "listItem": "bullet",
+                        "markDefs": [],
+                        "style": "normal"
+                    },
+                    {
+                        "_key": "895d87a7a27f",
+                        "_type": "block",
+                        "children": [
+                            {
+                                "_key": "6d4cdb4b248c",
+                                "_type": "span",
+                                "marks": [],
+                                "text": ""
+                            }
+                        ],
+                        "markDefs": [],
+                        "style": "normal"
+                    }
+                ],
+                "tittel": "Delmal 3"
+            },
+            "obligatorisk": false
+        }
+    ],
+    "overskrift": "Mal 1"
+}
