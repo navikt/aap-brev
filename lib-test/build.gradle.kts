@@ -27,5 +27,5 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
 
-    implementation("com.nimbusds:nimbus-jose-jwt:10.4.2")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.5")
 }
