@@ -46,6 +46,7 @@ publishing {
 dependencies {
     api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
 
+    testImplementation(project(":lib-test"))
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
     testImplementation("org.assertj:assertj-core:3.27.4")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")

@@ -19,15 +19,16 @@
                 "_createdAt": "2025-09-04T09:02:06Z",
                 "_id": "142e2e17-0233-46f1-99c4-1c99a08368ac",
                 "_originalId": "142e2e17-0233-46f1-99c4-1c99a08368ac",
-                "_rev": "2XS5T8iyR77CNIkHNw7P8J",
+                "_rev": "oc16HVx9EGsWFJ5XERuvwW",
                 "_system": {
                     "base": {
                         "id": "142e2e17-0233-46f1-99c4-1c99a08368ac",
-                        "rev": "nEijoxAov7vBF0GEE9rmZB"
+                        "rev": "2XS5T8iyR77CNIkHNw7P8J"
                     }
                 },
                 "_type": "delmal",
-                "_updatedAt": "2025-09-17T14:09:06Z",
+                "_updatedAt": "2025-09-23T05:58:12Z",
+                "paragraf": "11-2",
                 "teksteditor": [
                     {
                         "_key": "a862a9948639",
@@ -46,26 +47,21 @@
                     {
                         "_key": "61a6414307f6",
                         "_type": "valgRef",
-                        "obligatorisk": true,
+                        "obligatorisk": false,
                         "valg": {
                             "_createdAt": "2025-09-04T08:08:11Z",
                             "_id": "7ab401c4-b0a0-443a-abc6-4615c588397a",
                             "_originalId": "7ab401c4-b0a0-443a-abc6-4615c588397a",
-                            "_rev": "nEijoxAov7vBF0GEEAGGGN",
+                            "_rev": "XAQEqtwWGfwaiZX4sSouLf",
                             "_system": {
                                 "base": {
                                     "id": "7ab401c4-b0a0-443a-abc6-4615c588397a",
-                                    "rev": "LF9ubz4vLUl24BkUvjr8BR"
+                                    "rev": "nEijoxAov7vBF0GEEAGGGN"
                                 }
                             },
                             "_type": "valg",
-                            "_updatedAt": "2025-09-17T14:08:13Z",
+                            "_updatedAt": "2025-09-22T10:54:32Z",
                             "valg": [
-                                {
-                                    "_key": "7ff0ae72add1",
-                                    "_type": "fritekst",
-                                    "fritekst": "fritekst"
-                                },
                                 {
                                     "_key": "3dcf0ca4e26c",
                                     "_type": "gruppertTekstRef",
@@ -144,15 +140,15 @@
                                         "_createdAt": "2025-09-04T08:20:20Z",
                                         "_id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
                                         "_originalId": "aa4402da-8991-4586-a740-50a2fa57b7fb",
-                                        "_rev": "2XS5T8iyR77CNIkHNw1Ef9",
+                                        "_rev": "XAQEqtwWGfwaiZX4sUfEYh",
                                         "_system": {
                                             "base": {
                                                 "id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
-                                                "rev": "LF9ubz4vLUl24BkUvjr7ku"
+                                                "rev": "2XS5T8iyR77CNIkHNw1Ef9"
                                             }
                                         },
                                         "_type": "tekst",
-                                        "_updatedAt": "2025-09-17T13:28:50Z",
+                                        "_updatedAt": "2025-09-23T05:58:01Z",
                                         "teksteditor": [
                                             {
                                                 "_key": "b4eabf35d9d9",
@@ -196,6 +192,11 @@
                                         ],
                                         "title": "Tekst 2"
                                     }
+                                },
+                                {
+                                    "_key": "736e4643e24a",
+                                    "_type": "fritekst",
+                                    "fritekst": "fritekst"
                                 }
                             ]
                         }
@@ -375,21 +376,31 @@
                                 "_updatedAt": "2025-09-17T14:07:33Z",
                                 "gruppenavn": "Gruppe 2",
                                 "tekniskNavn": "GRUPPE_2"
+                            },
+                            {
+                                "_createdAt": "2025-09-17T14:07:13Z",
+                                "_id": "63ac864f-609f-45ab-b93e-1ca668945761",
+                                "_originalId": "63ac864f-609f-45ab-b93e-1ca668945761",
+                                "_rev": "nEijoxAov7vBF0GEEAG6qt",
+                                "_type": "gruppe",
+                                "_updatedAt": "2025-09-17T14:07:18Z",
+                                "gruppenavn": "Gruppe 1",
+                                "tekniskNavn": "GRUPPE_1"
                             }
                         ],
                         "tekst": {
                             "_createdAt": "2025-09-04T08:20:20Z",
                             "_id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
                             "_originalId": "aa4402da-8991-4586-a740-50a2fa57b7fb",
-                            "_rev": "2XS5T8iyR77CNIkHNw1Ef9",
+                            "_rev": "XAQEqtwWGfwaiZX4sUfEYh",
                             "_system": {
                                 "base": {
                                     "id": "aa4402da-8991-4586-a740-50a2fa57b7fb",
-                                    "rev": "LF9ubz4vLUl24BkUvjr7ku"
+                                    "rev": "2XS5T8iyR77CNIkHNw1Ef9"
                                 }
                             },
                             "_type": "tekst",
-                            "_updatedAt": "2025-09-17T13:28:50Z",
+                            "_updatedAt": "2025-09-23T05:58:01Z",
                             "teksteditor": [
                                 {
                                     "_key": "b4eabf35d9d9",
