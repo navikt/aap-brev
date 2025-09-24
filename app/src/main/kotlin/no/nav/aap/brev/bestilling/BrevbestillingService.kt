@@ -3,6 +3,7 @@ package no.nav.aap.brev.bestilling
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.innhold.BrevbyggerService
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
@@ -30,6 +31,7 @@ class BrevbestillingService(
     private val arkivoppslagGateway: ArkivoppslagGateway,
     private val brevinnholdService: BrevinnholdService,
     private val faktagrunnlagService: FaktagrunnlagService,
+    private val brevbyggerService: BrevbyggerService,
 ) {
 
     companion object {
@@ -41,6 +43,7 @@ class BrevbestillingService(
                 arkivoppslagGateway = SafGateway(),
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
+                brevbyggerService = BrevbyggerService.konstruer(connection),
             )
         }
     }
@@ -75,13 +78,67 @@ class BrevbestillingService(
         val bestillingId = resultat.brevbestilling.id
         val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagre(bestillingReferanse)
+        brevinnholdService.hentOgLagreBrev(bestillingReferanse)
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
         if (ferdigstillAutomatisk) {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
+                log.info("Ferdigstiller brev automatisk")
+                mottakerRepository.lagreMottakere(
+                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+                )
+
+                brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
+                leggTilJobb(resultat.brevbestilling)
+            } else {
+                throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
+            }
+        } else {
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
+        }
+
+        return OpprettBrevbestillingResultat(
+            brevbestilling = brevbestillingRepository.hent(bestillingReferanse),
+            alleredeOpprettet = false
+        )
+    }
+
+    fun opprettBestillingV3(
+        saksnummer: Saksnummer,
+        brukerIdent: String,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        faktagrunnlag: Set<Faktagrunnlag>,
+        vedlegg: Set<Vedlegg>,
+        ferdigstillAutomatisk: Boolean,
+    ): OpprettBrevbestillingResultat {
+        val resultat = opprettBestilling(
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            brevtype = brevtype,
+            språk = språk,
+            vedlegg = vedlegg,
+        )
+
+        if (resultat.alleredeOpprettet) {
+            return resultat
+        }
+
+        val bestillingId = resultat.brevbestilling.id
+        val bestillingReferanse = resultat.brevbestilling.referanse
+
+        brevinnholdService.hentOgLagreBrevmal(bestillingReferanse)
+
+        brevbyggerService.lagreInitiellBrevdata(bestillingReferanse, faktagrunnlag)
+
+        if (ferdigstillAutomatisk) {
+            if (brevbyggerService.kanFerdigstillesAutomatisk(bestillingReferanse)) {
                 log.info("Ferdigstiller brev automatisk")
                 mottakerRepository.lagreMottakere(
                     bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))

@@ -1,5 +1,6 @@
 package no.nav.aap.brev.innhold
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -23,7 +24,7 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
         prometheus = prometheus
     )
 
-    override fun hentBrevmal(
+    override fun hentBrev(
         brevtype: Brevtype,
         språk: Språk
     ): Brev {
@@ -37,5 +38,12 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
         return checkNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
             DefaultJsonMapper.fromJson(body)
         }))
+    }
+
+    override fun hentBrevmal(
+        brevtype: Brevtype,
+        språk: Språk
+    ): ObjectNode {
+        TODO("Not yet implemented")
     }
 }

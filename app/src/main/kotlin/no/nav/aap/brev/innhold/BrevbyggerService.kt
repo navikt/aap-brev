@@ -98,6 +98,19 @@ class BrevbyggerService(
         return emptyList() // TODO
     }
 
+    fun kanFerdigstillesAutomatisk(brevbestillingReferanse: BrevbestillingReferanse): Boolean {
+        /** TODO
+         * Forslag til foreløpig logikk når vi kun lagrer enkle faktagrunnlag:
+         * - Legg til felt på mal: kanSendesAutomatisk, må være true
+         * - Ingen delmaler som ikke er obligatorisk
+         * - Brevmal inneholder ikke:
+         *      - periodetekster
+         *      - valg
+         *      - betinget tekst
+         */
+        return false
+    }
+
     // TODO kan brukes i validering ved ferdigstilling
     fun finnAllePåkrevdeFaktagrunnlag(brevmal: Brevmal): List<String> {
         return brevmal.delmaler.flatMap { valgtDelmal ->
