@@ -17,34 +17,38 @@ data class Brevmal(
     data class Delmal(
         val _id: String,
         val tittel: String,
-        val teksteditor: List<TeksteditorElementer>
+        val teksteditor: List<TeksteditorElement>
     )
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_type", visible = true)
-    sealed interface TeksteditorElementer {
+    sealed interface TeksteditorElement {
 
         @JsonTypeName("block")
         data class Block(
             val children: List<BlockChildren>
-        ) : TeksteditorElementer
+        ) : TeksteditorElement
 
         @JsonTypeName("valgRef")
         data class Valg(
             val obligatorisk: Boolean,
             val valg: ValgAlternativer
-        ) : TeksteditorElementer
+        ) : TeksteditorElement
 
         @JsonTypeName("periodetekstRef")
         data class Periodetekst(
             // grupper her også?
+
+            // constraint på at fom- og/eller tom-dato må finnes? Hvis det gjøres her bør deserialisering prøves
+            // før lagring av json fra Sanity slik at det kan feile tidlig.
+
             val periodetekst: Teksteditor
-        ) : TeksteditorElementer
+        ) : TeksteditorElement
 
         @JsonTypeName("betingetTekstRef")
         data class BetingetTekst(
             val grupper: List<Gruppe>,
             val tekst: Teksteditor,
-        ) : TeksteditorElementer
+        ) : TeksteditorElement
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_type", visible = true)
@@ -69,7 +73,7 @@ data class Brevmal(
 
     data class Teksteditor(
         val _id: String,
-        val teksteditor: List<TeksteditorElementer.Block>
+        val teksteditor: List<TeksteditorElement.Block>
     )
 
     data class Gruppe(
