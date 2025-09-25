@@ -2,7 +2,8 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
+import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.innhold.BrevbyggerService
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
@@ -306,8 +307,6 @@ class BrevbestillingService(
     }
 
     private fun validerFerdigstilling(bestilling: Brevbestilling) {
-        checkNotNull(bestilling.brev)
-
         val feilmelding =
             "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
 
@@ -315,17 +314,16 @@ class BrevbestillingService(
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, status=${bestilling.status}"
         }
 
-        val faktagrunnlag = bestilling.brev.alleFaktagrunnlag()
-        valider(faktagrunnlag.isEmpty()) {
-            val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
-            "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
-        }
-    }
+        if (bestilling.erBestillingMedBrevmal()) {
+            brevbyggerService.validerFerdigstilling(bestilling.referanse)
+        } else {
+            checkNotNull(bestilling.brev)
 
-    private fun valider(value: Boolean, lazyMessage: () -> String) {
-        if (!value) {
-            val message = lazyMessage()
-            throw ValideringsfeilException(message)
+            val faktagrunnlag = bestilling.brev.alleFaktagrunnlag()
+            valider(faktagrunnlag.isEmpty()) {
+                val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
+                "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
+            }
         }
     }
 

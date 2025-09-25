@@ -5,11 +5,14 @@ import Brevdata.FaktagrunnlagMedVerdi
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.kontrakt.Brevmal
+import no.nav.aap.brev.kontrakt.Brevmal.ValgtDelmal
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import kotlin.collections.filterIsInstance
+import kotlin.collections.joinToString
 
 class BrevbyggerService(
     val brevbestillingRepository: BrevbestillingRepository,
@@ -25,9 +28,6 @@ class BrevbyggerService(
         }
     }
 
-    /**
-     * TODO koble på denne ved bestilling
-     */
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
@@ -111,9 +111,50 @@ class BrevbyggerService(
         return false
     }
 
-    // TODO kan brukes i validering ved ferdigstilling
-    fun finnAllePåkrevdeFaktagrunnlag(brevmal: Brevmal): List<String> {
-        return brevmal.delmaler.flatMap { valgtDelmal ->
+    fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        val brevmal = bestilling.brevmal?.tilBrevmal()
+        val brevdata = bestilling.brevdata
+
+        checkNotNull(brevmal)
+        checkNotNull(brevdata)
+
+        val feilmelding =
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
+
+        val valgteDelmaler =
+            brevmal.delmaler.filter { delmal -> brevdata.delmaler.map { it.id }.contains(delmal.delmal._id) }
+
+        val manglendeDelmaler = brevmal.delmaler.filter { it.obligatorisk }
+            .filterNot { delmal -> brevdata.delmaler.map { it.id }.contains(delmal.delmal._id) }
+
+        valider(manglendeDelmaler.isEmpty()) {
+            "$feilmelding: Mangler obligatoriske delmaler med id ${manglendeDelmaler.joinToString(separator = ",") { it.delmal._id }}"
+        }
+
+        val påkrevdeFaktagrunnlag = finnAllePåkrevdeFaktagrunnlag(valgteDelmaler)
+
+        val manglendeFaktagrunnlag = påkrevdeFaktagrunnlag.filterNot { påkrevdFaktagrunnlag ->
+            brevdata.faktagrunnlag.map { it.tekniskNavn }.contains(påkrevdFaktagrunnlag)
+        }
+        valider(manglendeFaktagrunnlag.isEmpty()) {
+            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}"
+        }
+
+        val manglendeValg =
+            valgteDelmaler
+                .flatMap { it.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>() }
+                .filter { it.obligatorisk }
+                .filterNot { valg ->
+                    brevdata.valg.map { it.id }.contains(valg.valg._id)
+                }
+        valider(manglendeValg.isEmpty()) {
+            "$feilmelding: Obligatorisk valg er ikke valgt"
+        }
+    }
+
+    fun finnAllePåkrevdeFaktagrunnlag(delmaler: List<ValgtDelmal>): List<String> {
+        return delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.flatMap { teksteditorElement ->
                 when (teksteditorElement) {
                     is Brevmal.TeksteditorElement.Block -> {

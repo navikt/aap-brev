@@ -2,7 +2,7 @@ package no.nav.aap.brev.bestilling
 
 import Brevdata
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
