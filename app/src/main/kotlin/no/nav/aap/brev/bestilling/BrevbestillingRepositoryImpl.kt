@@ -1,7 +1,6 @@
 package no.nav.aap.brev.bestilling
 
 import Brevdata
-import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -111,7 +110,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
             referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
             brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
-            brevmal = row.getStringOrNull("BREVMAL")?.let { DefaultJsonMapper.fromJson<ObjectNode>(it) },
+            brevmal = row.getStringOrNull("BREVMAL")?.let { DefaultJsonMapper.fromJson<BrevmalJson>(it) },
             brevdata = row.getStringOrNull("BREVDATA")?.let { DefaultJsonMapper.fromJson<Brevdata>(it) },
             brukerIdent = row.getStringOrNull("BRUKER_IDENT"),
             signaturer = hentSignaturer(id),
@@ -186,7 +185,7 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
 
     override fun oppdaterBrevmal(
         id: BrevbestillingId,
-        brevmal: ObjectNode
+        brevmal: BrevmalJson
     ) {
         connection.execute(
             "UPDATE BREVBESTILLING SET BREVMAL = ?::jsonb, OPPDATERT_TID = ? WHERE ID = ?"

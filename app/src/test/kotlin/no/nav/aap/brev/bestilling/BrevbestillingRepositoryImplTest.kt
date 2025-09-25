@@ -1,7 +1,6 @@
 package no.nav.aap.brev.bestilling
 
 import Brevdata
-import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
@@ -46,7 +45,7 @@ class BrevbestillingRepositoryImplTest {
                 Vedlegg(journalpostId = randomJournalpostId(), randomDokumentInfoId()),
             )
             val brev = brev()
-            val brevmal = FileUtils.lesFilTilJson<ObjectNode>("brevmal.json")
+            val brevmal = FileUtils.lesFilTilJson<BrevmalJson>("brevmal.json")
             val brevdata = Brevdata(
                 delmaler = listOf(Brevdata.Delmal("1"), Brevdata.Delmal("2")),
                 faktagrunnlag = listOf(

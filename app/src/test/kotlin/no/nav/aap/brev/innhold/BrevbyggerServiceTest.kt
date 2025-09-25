@@ -1,9 +1,9 @@
 package no.nav.aap.brev.innhold
 
 import Brevdata
-import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.test.FileUtils
@@ -21,7 +21,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
         dataSource.transaction { connection ->
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
             val brevbyggerService = BrevbyggerService.konstruer(connection)
-            val brevmal = FileUtils.lesFilTilJson<ObjectNode>("brevmal.json")
+            val brevmal = FileUtils.lesFilTilJson<BrevmalJson>("brevmal.json")
             val aapFomDato = Faktagrunnlag.AapFomDato(LocalDate.now())
             val faktagrunnlag = setOf(aapFomDato)
 

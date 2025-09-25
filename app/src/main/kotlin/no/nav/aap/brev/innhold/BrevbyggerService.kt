@@ -30,7 +30,7 @@ class BrevbyggerService(
      */
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
-        val brevmal = checkNotNull(bestilling.deserialisertBrevmal())
+        val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)

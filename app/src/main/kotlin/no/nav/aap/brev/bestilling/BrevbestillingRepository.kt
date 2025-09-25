@@ -1,7 +1,6 @@
 package no.nav.aap.brev.bestilling
 
 import Brevdata
-import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -35,7 +34,7 @@ interface BrevbestillingRepository {
 
     fun oppdaterBrevmal(
         id: BrevbestillingId,
-        brevmal: ObjectNode,
+        brevmal: BrevmalJson,
     )
 
     fun oppdaterBrevdata(
