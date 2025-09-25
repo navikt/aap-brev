@@ -181,6 +181,6 @@ class BrevbyggerService(
 
     private fun filtrerFaktagrunnlag(block: Brevmal.TeksteditorElement.Block): List<String> {
         return block.children.filterIsInstance<Brevmal.BlockChildren.Faktagrunnlag>()
-            .map { it.tekniskNavn }.also { it.forEach { println(it) } }
+            .map { it.tekniskNavn }
     }
 }
