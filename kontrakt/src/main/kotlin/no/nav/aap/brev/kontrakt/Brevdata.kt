@@ -22,7 +22,7 @@ data class Brevdata(
     data class Valg(
         val id: String,
         val valgtId: String?,
-        val fritekst: ObjectNode?,
+        val fritekst: Fritekst?,
     ) {
         init {
             require(valgtId != null || fritekst != null) {
@@ -33,6 +33,9 @@ data class Brevdata(
             }
         }
     }
+
+    @JvmInline
+    value class Fritekst(val json: ObjectNode)
 
     data class BetingetTekst(val id: String)
 }
