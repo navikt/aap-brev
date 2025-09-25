@@ -1,6 +1,7 @@
 {
     "_id": "327f7e7f-a823-436b-863f-af4cb25ddb40",
     "overskrift": "Mal 1",
+    "journalpostTittel": "Journalpost tittel 1",
     "delmaler": [
         {
             "delmal": {

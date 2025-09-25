@@ -55,8 +55,27 @@ class JournalføringService(
 
         val pdf = pdfService.genererPdfForJournalføring(bestilling, personinfo)
 
+        val tittelBrev = if (bestilling.erBestillingMedBrevmal()) {
+            checkNotNull(bestilling.brevmal?.tilBrevmal()?.overskrift)
+        } else {
+            checkNotNull(bestilling.brev?.overskrift)
+        }
+
+        val tittelJournalpost = if (bestilling.erBestillingMedBrevmal()) {
+            bestilling.brevmal?.tilBrevmal()?.journalpostTittel
+        } else {
+            bestilling.brev?.journalpostTittel
+        } ?: tittelBrev
+
         mottakere.forEach { mottaker ->
-            journalførBrevbestilling(bestilling, mottaker, personinfo, pdf)
+            journalførBrevbestilling(
+                bestilling = bestilling,
+                mottaker = mottaker,
+                personinfo = personinfo,
+                pdf = pdf,
+                tittelJournalpost = tittelJournalpost,
+                tittelBrev = tittelBrev
+            )
         }
     }
 
@@ -64,11 +83,10 @@ class JournalføringService(
         bestilling: Brevbestilling,
         mottaker: Mottaker,
         personinfo: Personinfo,
-        pdf: Pdf
+        pdf: Pdf,
+        tittelJournalpost: String,
+        tittelBrev: String,
     ) {
-        checkNotNull(bestilling.brev) {
-            "Kan ikke journalføre bestilling uten brev."
-        }
         requireNotNull(mottaker.id) {
             "Mottaker må være lagret i databasen før journalføring"
         }
@@ -84,8 +102,8 @@ class JournalføringService(
             mottakerNavn = mottaker.navnOgAdresse?.navn,
             saksnummer = bestilling.saksnummer,
             eksternReferanseId = mottaker.bestillingMottakerReferanse,
-            tittelJournalpost = checkNotNull(value = bestilling.brev.journalpostTittel ?: bestilling.brev.overskrift),
-            tittelBrev = checkNotNull(value = bestilling.brev.overskrift),
+            tittelJournalpost = tittelJournalpost,
+            tittelBrev = tittelBrev,
             brevkode = bestilling.brevtype.name,
             overstyrInnsynsregel = false,
         )

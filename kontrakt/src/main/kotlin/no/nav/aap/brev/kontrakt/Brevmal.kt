@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 data class Brevmal(
     val _id: String,
     val overskrift: String,
+    val journalpostTittel: String,
     val delmaler: List<ValgtDelmal>
 ) {
 

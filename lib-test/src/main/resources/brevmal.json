@@ -635,5 +635,6 @@
             "obligatorisk": false
         }
     ],
+    "journalpostTittel": "Journalpost tittel 1",
     "overskrift": "Mal 1"
 }
