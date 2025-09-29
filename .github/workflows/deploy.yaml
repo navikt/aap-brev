@@ -80,6 +80,7 @@ jobs:
       contents: read
       id-token: write
     uses: navikt/aap-workflows/.github/workflows/deploy.yml@main
+    concurrency: deploy-dev
     secrets: inherit
     with:
       cluster: dev-gcp
@@ -91,6 +92,7 @@ jobs:
       contents: read
       id-token: write
     uses: navikt/aap-workflows/.github/workflows/deploy.yml@main
+    concurrency: deploy-prod
     secrets: inherit
     with:
       cluster: prod-gcp
