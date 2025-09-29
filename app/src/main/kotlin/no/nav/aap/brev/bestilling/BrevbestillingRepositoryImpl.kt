@@ -1,7 +1,8 @@
 package no.nav.aap.brev.bestilling
 
+import Brevdata
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.prosessering.ProsesseringStatus
@@ -109,6 +110,8 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
             referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
             brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
+            brevmal = row.getStringOrNull("BREVMAL")?.let { DefaultJsonMapper.fromJson<BrevmalJson>(it) },
+            brevdata = row.getStringOrNull("BREVDATA")?.let { DefaultJsonMapper.fromJson<Brevdata>(it) },
             brukerIdent = row.getStringOrNull("BRUKER_IDENT"),
             signaturer = hentSignaturer(id),
             opprettet = row.getLocalDateTime("OPPRETTET_TID"),
@@ -171,6 +174,43 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
                 setString(1, DefaultJsonMapper.toJson(brev))
                 setLocalDateTime(2, LocalDateTime.now())
                 setUUID(3, referanse.referanse)
+            }
+            setResultValidator {
+                if (it != 1) {
+                    throw ValideringsfeilException("Forsøkte å oppdatere brevbestilling som ikke finnes.")
+                }
+            }
+        }
+    }
+
+    override fun oppdaterBrevmal(
+        id: BrevbestillingId,
+        brevmal: BrevmalJson
+    ) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET BREVMAL = ?::jsonb, OPPDATERT_TID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setString(1, DefaultJsonMapper.toJson(brevmal))
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
+            }
+            setResultValidator {
+                if (it != 1) {
+                    throw ValideringsfeilException("Forsøkte å oppdatere brevbestilling som ikke finnes.")
+                }
+            }
+        }
+    }
+
+    override fun oppdaterBrevdata(id: BrevbestillingId, brevdata: Brevdata) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET BREVDATA = ?::jsonb, OPPDATERT_TID = ? WHERE ID = ?"
+        ) {
+            setParams {
+                setString(1, DefaultJsonMapper.toJson(brevdata))
+                setLocalDateTime(2, LocalDateTime.now())
+                setLong(3, id.id)
             }
             setResultValidator {
                 if (it != 1) {

@@ -54,25 +54,46 @@ class PdfService(
         personinfo: Personinfo,
         sorterbareSignaturer: List<SorterbarSignatur>
     ): Pdf {
-
-        checkNotNull(bestilling.brev) {
-            "Kan ikke generere pdf av brevbestilling uten brev."
-        }
-
         val signaturer: List<Signatur> =
             signaturService.signaturer(sorterbareSignaturer, bestilling.brevtype, personinfo)
 
-        val pdfBrev = mapPdfBrev(
-            brukerIdent = personinfo.personIdent,
-            navn = personinfo.navn,
-            saksnummer = bestilling.saksnummer,
-            brev = bestilling.brev,
-            dato = LocalDate.now(),
-            språk = bestilling.språk,
-            signaturer = signaturer,
-        )
+        if (bestilling.erBestillingMedBrevmal()) {
+            checkNotNull(bestilling.brevmal) {
+                "Kan ikke generere pdf av brevbestilling uten brevmal."
+            }
+            checkNotNull(bestilling.brevdata) {
+                "Kan ikke generere pdf av brevbestilling uten brevdata."
+            }
 
-        return pdfGateway.genererPdf(pdfBrev)
+            val request = GenererPdfRequest(
+                brukerIdent = personinfo.personIdent,
+                navn = personinfo.navn,
+                saksnummer = bestilling.saksnummer,
+                brevmal = bestilling.brevmal,
+                brevdata = bestilling.brevdata,
+                dato = LocalDate.now(),
+                språk = bestilling.språk,
+                signaturer = signaturer,
+            )
+
+            return pdfGateway.genererPdfV2(request)
+        } else {
+            checkNotNull(bestilling.brev) {
+                "Kan ikke generere pdf av brevbestilling uten brev."
+            }
+
+            val pdfBrev = mapPdfBrev(
+                brukerIdent = personinfo.personIdent,
+                navn = personinfo.navn,
+                saksnummer = bestilling.saksnummer,
+                brev = bestilling.brev,
+                dato = LocalDate.now(),
+                språk = bestilling.språk,
+                signaturer = signaturer,
+            )
+
+            return pdfGateway.genererPdf(pdfBrev)
+        }
     }
 
     private fun mapPdfBrev(

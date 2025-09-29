@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import Brevdata
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -12,6 +13,8 @@ data class Brevbestilling(
     val saksnummer: Saksnummer,
     val referanse: BrevbestillingReferanse,
     val brev: Brev?,
+    val brevmal: BrevmalJson?,
+    val brevdata: Brevdata?,
     val brukerIdent: String?,
     val signaturer: List<SorterbarSignatur>,
     val opprettet: LocalDateTime,
@@ -23,4 +26,8 @@ data class Brevbestilling(
     val status: Status?,
     val prosesseringStatus: ProsesseringStatus?,
     val vedlegg: Set<Vedlegg>,
-)
+) {
+    fun erBestillingMedBrevmal(): Boolean {
+        return brev == null && brevmal != null && brevdata != null
+    }
+}

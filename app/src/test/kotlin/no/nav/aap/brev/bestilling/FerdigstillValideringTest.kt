@@ -1,7 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
@@ -169,7 +169,7 @@ class FerdigstillValideringTest : IntegrationTest() {
                     ferdigstillAutomatisk = false,
                 ).brevbestilling
 
-            brevinnholdService.hentOgLagre(bestilling.referanse)
+            brevinnholdService.hentOgLagreBrev(bestilling.referanse)
             brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
             brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 
