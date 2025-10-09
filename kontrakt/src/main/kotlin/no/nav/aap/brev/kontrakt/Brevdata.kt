@@ -5,7 +5,8 @@ data class Brevdata(
     val faktagrunnlag: List<FaktagrunnlagMedVerdi>,
     val periodetekster: List<Periodetekst>,
     val valg: List<Valg>,
-    val betingetTekst: List<BetingetTekst>
+    val betingetTekst: List<BetingetTekst>,
+    val fritekster: List<FritekstMedKey>
 ) {
     data class Delmal(val id: String)
 
@@ -21,21 +22,14 @@ data class Brevdata(
 
     data class Valg(
         val id: String,
-        val valgtId: String?,
+        val valgt: String, // key
         val fritekst: Fritekst?,
-    ) {
-        init {
-            require(valgtId != null || fritekst != null) {
-                "Må ha verdi for enten valgtId eller fritekst"
-            }
-            require(!(valgtId != null && fritekst != null)) {
-                "Kan ikke ha verdi for både valgt og fritekst"
-            }
-        }
-    }
+    )
 
     @JvmInline
     value class Fritekst(val json: ObjectNode)
+
+    data class FritekstMedKey(val key: String, val fritekst: Fritekst)
 
     data class BetingetTekst(val id: String)
 }

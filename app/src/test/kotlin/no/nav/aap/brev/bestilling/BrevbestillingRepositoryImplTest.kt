@@ -55,9 +55,10 @@ class BrevbestillingRepositoryImplTest {
                 periodetekster = listOf(Brevdata.Periodetekst("3", listOf(Brevdata.FaktagrunnlagMedVerdi("C", "v3")))),
                 valg = listOf(
                     Brevdata.Valg("4", "5", null),
-                    Brevdata.Valg("6", null, DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
+                    Brevdata.Valg("6", "7", DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
                 ),
-                betingetTekst = listOf(Brevdata.BetingetTekst("7"), Brevdata.BetingetTekst("8")),
+                betingetTekst = listOf(Brevdata.BetingetTekst("8"), Brevdata.BetingetTekst("9")),
+                fritekster = listOf(Brevdata.FritekstMedKey("10", DefaultJsonMapper.fromJson("""{"fritekst": "def"}""")))
             )
             val signaturNavIdent1 = randomNavIdent()
             val signaturNavIdent2 = randomNavIdent()

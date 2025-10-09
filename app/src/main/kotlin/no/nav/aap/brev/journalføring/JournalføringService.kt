@@ -62,7 +62,7 @@ class JournalføringService(
         }
 
         val tittelJournalpost = if (bestilling.erBestillingMedBrevmal()) {
-            bestilling.brevmal?.tilBrevmal()?.journalpostTittel
+            bestilling.brevmal?.tilBrevmal()?.journalposttittel
         } else {
             bestilling.brev?.journalpostTittel
         } ?: tittelBrev
