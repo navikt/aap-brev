@@ -12,7 +12,7 @@ class BrevinnholdService(
     companion object {
         fun konstruer(connection: DBConnection): BrevinnholdService {
             return BrevinnholdService(
-                brevinnholdGateway = SanityBrevinnholdGateway(),
+                brevinnholdGateway = BrevSanityProxyGateway(),
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
             )
         }

@@ -37,24 +37,4 @@ class SaksbehandlingPdfGenGateway : PdfGateway {
 
         return Pdf(bytes)
     }
-
-    override fun genererPdfV2(request: GenererPdfRequest): Pdf {
-        // TODO midlertidig for testing. Dette blir kall mot en annen app
-        val uri = baseUri.resolve("/api/v1/genpdf/aap-saksbehandling-pdfgen/brev")
-        val httpRequest = PostRequest(
-            body = request,
-            additionalHeaders = listOf(
-                Header("Accept", "application/pdf")
-            )
-        )
-        val bytes = client.post(uri, httpRequest, { body, _ ->
-            body.readAllBytes()
-        })
-
-        require(bytes != null) {
-            "Fikk tom respons fra pdfgen"
-        }
-
-        return Pdf(bytes)
-    }
 }
