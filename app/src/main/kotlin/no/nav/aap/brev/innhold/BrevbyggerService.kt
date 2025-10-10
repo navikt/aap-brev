@@ -36,8 +36,11 @@ class BrevbyggerService(
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val periodetekster =
             utledPeriodetekster(brevmal, emptyList()) // TODO periodiserte faktagrunnlag fra faktagrunnlag
-        val valg = utledValg(brevmal, relevanteGrupper = emptyList()) // TODO relevante grupper fra faktagrunnlag
-        val betingetTekst = utledBetingetTekst(brevmal)
+        val valg = utledValg(brevmal, relevanteKategorier = emptyList()) // TODO relevante kategorier fra faktagrunnlag
+        val betingetTekst = utledBetingetTekst(
+            brevmal,
+            relevanteKategorier = emptyList()
+        )  // TODO relevante kategorier fra faktagrunnlag
 
         val brevdata = Brevdata(
             delmaler = delmaler,
@@ -51,11 +54,11 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    fun utledValgteDelmaler(brevmal: Brevmal): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(brevmal: Brevmal): List<Brevdata.Delmal> {
         return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
     }
 
-    fun utledFaktagrunnlagMedVerdi(faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<FaktagrunnlagMedVerdi> {
+    private fun utledFaktagrunnlagMedVerdi(faktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<FaktagrunnlagMedVerdi> {
         val faktagrunnlagTekst = faktagrunnlagService.faktagrunnlagTilTekst(faktagrunnlag, språk)
 
         return faktagrunnlagTekst.entries.map { faktagrunnlag ->
@@ -66,7 +69,7 @@ class BrevbyggerService(
         }
     }
 
-    fun utledPeriodetekster(brevmal: Brevmal, periodiserteFaktagrunnlag: List<Any>): List<Brevdata.Periodetekst> {
+    private fun utledPeriodetekster(brevmal: Brevmal, periodiserteFaktagrunnlag: List<Any>): List<Brevdata.Periodetekst> {
         return brevmal.delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>()
                 .flatMap { teksteditorElement ->
@@ -81,36 +84,69 @@ class BrevbyggerService(
         }
     }
 
-    fun utledValg(brevmal: Brevmal, relevanteGrupper: List<String>): List<Brevdata.Valg> {
+    private fun utledValg(brevmal: Brevmal, relevanteKategorier: List<String>): List<Brevdata.Valg> {
         return brevmal.delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
                 .mapNotNull { valg ->
                     val forhåndsvalgt =
                         valg.valg.alternativer.filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
                             .find { valgAlternativ ->
-                                relevanteGrupper.contains(valgAlternativ.kategori?.tekniskNavn)
+                                relevanteKategorier.contains(valgAlternativ.kategori?.tekniskNavn)
                             } ?: return@mapNotNull null
-
-                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt.tekst._id, null)
+                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key, null)
                 }
         }
     }
 
-    fun utledBetingetTekst(brevmal: Brevmal): List<Brevdata.BetingetTekst> {
-        return emptyList() // TODO
+    private fun utledBetingetTekst(brevmal: Brevmal, relevanteKategorier: List<String>): List<Brevdata.BetingetTekst> {
+        return brevmal.delmaler.flatMap { valgtDelmal ->
+            valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>()
+                .mapNotNull { betingetTekst ->
+                    if (betingetTekst.kategorier.map { it.tekniskNavn }.intersect(relevanteKategorier.toSet())
+                            .isNotEmpty()
+                    ) {
+                        Brevdata.BetingetTekst(betingetTekst.tekst._id)
+                    } else {
+                        null
+                    }
+                }
+        }
     }
 
-    fun kanFerdigstillesAutomatisk(brevbestillingReferanse: BrevbestillingReferanse): Boolean {
-        /** TODO
-         * Forslag til foreløpig logikk når vi kun lagrer enkle faktagrunnlag:
-         * - Legg til felt på mal: kanSendesAutomatisk, må være true
-         * - Ingen delmaler som ikke er obligatorisk
-         * - Brevmal inneholder ikke:
-         *      - periodetekster
-         *      - valg
-         *      - betinget tekst
-         */
-        return false
+    fun validerAutomatiskFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        val brevmal = checkNotNull(bestilling.brevmal).tilBrevmal()
+        val brevdata = bestilling.brevdata
+        val feilmelding =
+            "Kan ikke automatisk ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
+
+        valider(brevmal.kanSendesAutomatisk) {
+            "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
+        }
+
+        valider(brevmal.delmaler.all { it.obligatorisk }) {
+            "$feilmelding: Det er delmaler som ikke er obligatorisk."
+        }
+
+        validerFaktagrunnlag(brevmal.delmaler, brevdata, feilmelding)
+
+        val alleTeksteditorElementer = brevmal.delmaler.flatMap { it.delmal.teksteditor }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Valg>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder valg."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Fritekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder fritekst."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder betinget tekst."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder betinget tekst."
+        }
     }
 
     fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
@@ -142,15 +178,7 @@ class BrevbyggerService(
                 "$feilmelding: Mangler fritekst(er) ${manglendeFritekster.joinToString(separator = ",")} med key for delmale med id ${delmalValg.delmal._id}"
             }
         }
-
-        val påkrevdeFaktagrunnlag = finnAllePåkrevdeFaktagrunnlag(valgteDelmaler)
-
-        val manglendeFaktagrunnlag = påkrevdeFaktagrunnlag.filterNot { påkrevdFaktagrunnlag ->
-            brevdata.faktagrunnlag.map { it.tekniskNavn }.contains(påkrevdFaktagrunnlag)
-        }
-        valider(manglendeFaktagrunnlag.isEmpty()) {
-            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}"
-        }
+        validerFaktagrunnlag(valgteDelmaler, brevdata, feilmelding)
 
         val manglendeValg =
             valgteDelmaler
@@ -164,7 +192,23 @@ class BrevbyggerService(
         }
     }
 
-    fun finnAllePåkrevdeFaktagrunnlag(delmaler: List<DelmalValg>): List<String> {
+    private fun validerFaktagrunnlag(
+        delmaler: List<DelmalValg>,
+        brevdata: Brevdata?,
+        feilmelding: String
+    ) {
+        val påkrevdeFaktagrunnlag = finnAllePåkrevdeFaktagrunnlag(delmaler)
+        val faktagrunnlagData = brevdata?.faktagrunnlag ?: emptyList()
+        val manglendeFaktagrunnlag = påkrevdeFaktagrunnlag.filterNot { påkrevdFaktagrunnlag ->
+            faktagrunnlagData.map { it.tekniskNavn }.contains(påkrevdFaktagrunnlag)
+        }
+
+        valider(manglendeFaktagrunnlag.isEmpty()) {
+            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}"
+        }
+    }
+
+    private fun finnAllePåkrevdeFaktagrunnlag(delmaler: List<DelmalValg>): List<String> {
         return delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.flatMap { teksteditorElement ->
                 when (teksteditorElement) {

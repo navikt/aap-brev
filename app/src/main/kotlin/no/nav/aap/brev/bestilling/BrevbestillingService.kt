@@ -139,17 +139,14 @@ class BrevbestillingService(
         brevbyggerService.lagreInitiellBrevdata(bestillingReferanse, faktagrunnlag)
 
         if (ferdigstillAutomatisk) {
-            if (brevbyggerService.kanFerdigstillesAutomatisk(bestillingReferanse)) {
-                log.info("Ferdigstiller brev automatisk")
-                mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-                )
+            brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
+            log.info("Ferdigstiller brev automatisk")
+            mottakerRepository.lagreMottakere(
+                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+            )
 
-                brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
-                leggTilJobb(resultat.brevbestilling)
-            } else {
-                throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
-            }
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
+            leggTilJobb(resultat.brevbestilling)
         } else {
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
