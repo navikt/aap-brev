@@ -2,7 +2,9 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
+import no.nav.aap.brev.feil.valider
+import no.nav.aap.brev.innhold.BrevbyggerService
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
@@ -30,6 +32,7 @@ class BrevbestillingService(
     private val arkivoppslagGateway: ArkivoppslagGateway,
     private val brevinnholdService: BrevinnholdService,
     private val faktagrunnlagService: FaktagrunnlagService,
+    private val brevbyggerService: BrevbyggerService,
 ) {
 
     companion object {
@@ -41,6 +44,7 @@ class BrevbestillingService(
                 arkivoppslagGateway = SafGateway(),
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
+                brevbyggerService = BrevbyggerService.konstruer(connection),
             )
         }
     }
@@ -75,7 +79,7 @@ class BrevbestillingService(
         val bestillingId = resultat.brevbestilling.id
         val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagre(bestillingReferanse)
+        brevinnholdService.hentOgLagreBrev(bestillingReferanse)
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
@@ -92,6 +96,57 @@ class BrevbestillingService(
             } else {
                 throw ValideringsfeilException("Kan ikke ferdigstille brev automatisk")
             }
+        } else {
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
+        }
+
+        return OpprettBrevbestillingResultat(
+            brevbestilling = brevbestillingRepository.hent(bestillingReferanse),
+            alleredeOpprettet = false
+        )
+    }
+
+    fun opprettBestillingV3(
+        saksnummer: Saksnummer,
+        brukerIdent: String,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        brevtype: Brevtype,
+        språk: Språk,
+        faktagrunnlag: Set<Faktagrunnlag>,
+        vedlegg: Set<Vedlegg>,
+        ferdigstillAutomatisk: Boolean,
+    ): OpprettBrevbestillingResultat {
+        val resultat = opprettBestilling(
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            brevtype = brevtype,
+            språk = språk,
+            vedlegg = vedlegg,
+        )
+
+        if (resultat.alleredeOpprettet) {
+            return resultat
+        }
+
+        val bestillingId = resultat.brevbestilling.id
+        val bestillingReferanse = resultat.brevbestilling.referanse
+
+        brevinnholdService.hentOgLagreBrevmal(bestillingReferanse)
+
+        brevbyggerService.lagreInitiellBrevdata(bestillingReferanse, faktagrunnlag)
+
+        if (ferdigstillAutomatisk) {
+            brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
+            log.info("Ferdigstiller brev automatisk")
+            mottakerRepository.lagreMottakere(
+                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+            )
+
+            brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
+            leggTilJobb(resultat.brevbestilling)
         } else {
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
@@ -249,8 +304,6 @@ class BrevbestillingService(
     }
 
     private fun validerFerdigstilling(bestilling: Brevbestilling) {
-        checkNotNull(bestilling.brev)
-
         val feilmelding =
             "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
 
@@ -258,17 +311,16 @@ class BrevbestillingService(
             "$feilmelding: Bestillingen er i feil status for ferdigstilling, status=${bestilling.status}"
         }
 
-        val faktagrunnlag = bestilling.brev.alleFaktagrunnlag()
-        valider(faktagrunnlag.isEmpty()) {
-            val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
-            "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
-        }
-    }
+        if (bestilling.erBestillingMedBrevmal()) {
+            brevbyggerService.validerFerdigstilling(bestilling.referanse)
+        } else {
+            checkNotNull(bestilling.brev)
 
-    private fun valider(value: Boolean, lazyMessage: () -> String) {
-        if (!value) {
-            val message = lazyMessage()
-            throw ValideringsfeilException(message)
+            val faktagrunnlag = bestilling.brev.alleFaktagrunnlag()
+            valider(faktagrunnlag.isEmpty()) {
+                val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
+                "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
+            }
         }
     }
 

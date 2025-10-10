@@ -1,7 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.test.fakes.brev
 import org.assertj.core.api.Assertions.assertThat

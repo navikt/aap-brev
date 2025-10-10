@@ -1,7 +1,7 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.innhold.harFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
