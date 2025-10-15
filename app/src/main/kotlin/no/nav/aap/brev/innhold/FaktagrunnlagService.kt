@@ -60,7 +60,7 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
-                            put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.year.toString())
+                            put(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT, beregningstidspunkt.formaterFullLengde(språk))
                         }
                         faktagrunnlag.beregningsgrunnlag?.let { beregningsgrunnlag ->
                             put(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG, beregningsgrunnlag.formater(språk))
