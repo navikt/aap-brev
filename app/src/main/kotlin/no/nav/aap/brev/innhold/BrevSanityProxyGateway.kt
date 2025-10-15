@@ -48,7 +48,7 @@ class BrevSanityProxyGateway : BrevinnholdGateway, PdfGatewayV2 {
         brevtype: Brevtype,
         språk: Språk
     ): BrevmalJson {
-        val uri = baseUri.resolve("/api/v2/mal?brevtype=$brevtype&sprak=$språk")
+        val uri = baseUri.resolve("/api/brevmal?brevtype=$brevtype&sprak=$språk")
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
                 Header("Accept", "application/json")

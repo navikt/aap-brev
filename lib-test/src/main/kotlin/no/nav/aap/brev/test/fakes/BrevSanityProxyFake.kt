@@ -3,6 +3,7 @@ package no.nav.aap.brev.test.fakes
 import io.ktor.server.application.Application
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Blokk
@@ -10,10 +11,12 @@ import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevmal
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
+import no.nav.aap.brev.test.FileUtils
 import java.util.UUID
 
 fun brev(
@@ -115,6 +118,14 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_11_9 -> brev()
             }
             call.respond(brev)
+        }
+        get("/api/brevmal") {
+            val brevmal = FileUtils.lesFilTilJson<Brevmal>("brevmal.json")
+            call.respond(brevmal)
+        }
+
+        post("/api/pdf") {
+            call.respond(ByteArray(0))
         }
     }
 }
