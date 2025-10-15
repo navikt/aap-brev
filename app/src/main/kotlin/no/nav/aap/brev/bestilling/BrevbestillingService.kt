@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import Brevdata
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.feil.ValideringsfeilException
@@ -217,6 +218,12 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 
+    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, brevdata: Brevdata) {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        validerOppdaterBrevdata(bestilling)
+        brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
+    }
+
     fun ferdigstill(
         referanse: BrevbestillingReferanse,
         signaturer: List<SignaturGrunnlag>?,
@@ -363,6 +370,12 @@ class BrevbestillingService(
         if (bestilling.brev.ikkeRedigerbartInnhold() != oppdatertBrev.ikkeRedigerbartInnhold()) {
 //            throw ValideringsfeilException("Forsøkte å oppdatere deler av brevet som ikke er redigerbart")
             log.warn("Forsøkte å oppdatere deler av brevet som ikke er redigerbart") // TODO midlertidig bare logging for testing
+        }
+    }
+
+    private fun validerOppdaterBrevdata(bestilling: Brevbestilling) {
+        valider(bestilling.status == Status.UNDER_ARBEID) {
+            "Forsøkte å oppdatere brev i bestilling med status=${bestilling.status}"
         }
     }
 }
