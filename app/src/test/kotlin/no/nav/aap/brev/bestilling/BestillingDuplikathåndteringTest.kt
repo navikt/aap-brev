@@ -2,6 +2,7 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.randomBehandlingReferanse
@@ -14,13 +15,15 @@ import no.nav.aap.komponenter.dbconnect.transaction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class BestillingDuplikathåndteringTest : IntegrationTest() {
 
-    @Test
-    fun `håndterer duplikat bestilling`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `håndterer duplikat bestilling`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val brukerIdent = randomBrukerIdent()
         val behandlingReferanse = randomBehandlingReferanse()
@@ -31,41 +34,74 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
         )
-        dataSource.transaction { connection ->
+        val resultatFørste = opprettBestilling(
+            brukV3 = brukV3,
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+        )
+
+        assertFalse(resultatFørste.alleredeOpprettet)
+
+        val resultatAndre = opprettBestilling(
+            brukV3 = brukV3,
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+        )
+
+        assertTrue(resultatAndre.alleredeOpprettet)
+    }
+
+    private fun opprettBestilling(
+        brukV3: Boolean,
+        saksnummer: Saksnummer,
+        brukerIdent: String,
+        behandlingReferanse: BehandlingReferanse,
+        unikReferanse: UnikReferanse,
+        vedlegg: Set<Vedlegg>,
+        brevtype: Brevtype = Brevtype.INNVILGELSE,
+        språk: Språk = Språk.NB,
+        faktagrunnlag: Set<Faktagrunnlag> = emptySet(),
+        ferdigstillAutomatisk: Boolean = false,
+    ): OpprettBrevbestillingResultat {
+        return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-
-            val resultatFørste = brevbestillingService.opprettBestillingV2(
-                saksnummer = saksnummer,
-                brukerIdent = brukerIdent,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                ferdigstillAutomatisk = false,
-            )
-
-            assertFalse(resultatFørste.alleredeOpprettet)
-
-            val resultatAndre = brevbestillingService.opprettBestillingV2(
-                saksnummer = saksnummer,
-                brukerIdent = brukerIdent,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                ferdigstillAutomatisk = false,
-            )
-
-            assertTrue(resultatAndre.alleredeOpprettet)
+            if (brukV3) {
+                brevbestillingService.opprettBestillingV3(
+                    saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    faktagrunnlag = faktagrunnlag,
+                    vedlegg = vedlegg,
+                    ferdigstillAutomatisk = ferdigstillAutomatisk,
+                )
+            } else {
+                brevbestillingService.opprettBestillingV2(
+                    saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    faktagrunnlag = faktagrunnlag,
+                    vedlegg = vedlegg,
+                    ferdigstillAutomatisk = ferdigstillAutomatisk,
+                )
+            }
         }
     }
 
-    @Test
-    fun `feiler dersom bestilling med lik unik referanse ikke er identisk med opprinnelig bestilling`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `feiler dersom bestilling med lik unik referanse ikke er identisk med opprinnelig bestilling`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val brukerIdent = randomBrukerIdent()
         val behandlingReferanse = randomBehandlingReferanse()
@@ -76,94 +112,94 @@ class BestillingDuplikathåndteringTest : IntegrationTest() {
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
         )
-        val bestilling = dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
-            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+        val referanse = opprettBestilling(
+            brukV3 = brukV3,
+            saksnummer = saksnummer,
+            brukerIdent = brukerIdent,
+            behandlingReferanse = behandlingReferanse,
+            unikReferanse = unikReferanse,
+            vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+        ).brevbestilling.referanse
 
-            val referanse = brevbestillingService.opprettBestillingV2(
-                saksnummer = saksnummer,
-                brukerIdent = brukerIdent,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
-
-            brevbestillingRepository.hent(referanse)
-        }
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             saksnummer = randomSaksnummer(),
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             brukerIdent = randomBrukerIdent(),
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             behandlingReferanse = randomBehandlingReferanse()
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             brevtype = Brevtype.AVSLAG,
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             språk = Språk.NN
         )
 
         assertThrowsVedLikUnikReferanseMenUlikBestilling(
-            bestilling = bestilling,
+            brukV3 = brukV3,
+            referanse = referanse,
             vedlegg = emptySet()
         )
     }
 
     fun assertThrowsVedLikUnikReferanseMenUlikBestilling(
-        bestilling: Brevbestilling,
-        saksnummer: Saksnummer = bestilling.saksnummer,
-        brukerIdent: String? = bestilling.brukerIdent,
-        behandlingReferanse: BehandlingReferanse = bestilling.behandlingReferanse,
-        brevtype: Brevtype = bestilling.brevtype,
-        språk: Språk = bestilling.språk,
-        vedlegg: Set<Vedlegg> = bestilling.vedlegg,
+        brukV3: Boolean = false,
+        referanse: BrevbestillingReferanse,
+        saksnummer: Saksnummer? = null,
+        brukerIdent: String? = null,
+        behandlingReferanse: BehandlingReferanse? = null,
+        brevtype: Brevtype? = null,
+        språk: Språk? = null,
+        vedlegg: Set<Vedlegg>? = null,
     ) {
-        val endretBestilling = bestilling.copy(
-            saksnummer = saksnummer,
-            brukerIdent = brukerIdent,
-            behandlingReferanse = behandlingReferanse,
-            brevtype = brevtype,
-            språk = språk,
-            vedlegg = vedlegg,
-        )
-        dataSource.transaction { connection ->
+
+        val endretBestilling = dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-
-            val exception = assertThrows<IllegalStateException> {
-                brevbestillingService.opprettBestillingV2(
-                    saksnummer = endretBestilling.saksnummer,
-                    brukerIdent = endretBestilling.brukerIdent!!,
-                    behandlingReferanse = endretBestilling.behandlingReferanse,
-                    unikReferanse = endretBestilling.unikReferanse,
-                    brevtype = endretBestilling.brevtype,
-                    språk = endretBestilling.språk,
-                    faktagrunnlag = emptySet(),
-                    vedlegg = endretBestilling.vedlegg,
-                    ferdigstillAutomatisk = false,
-                )
-            }
-
-            assertEquals(
-                exception.message,
-                "Bestilling med unikReferanse=${bestilling.unikReferanse.referanse} finnnes allerede, men er ikke samme bestilling."
+            val bestilling = brevbestillingService.hent(referanse)
+            bestilling.copy(
+                saksnummer = saksnummer ?: bestilling.saksnummer,
+                brukerIdent = brukerIdent ?: bestilling.brukerIdent,
+                behandlingReferanse = behandlingReferanse ?: bestilling.behandlingReferanse,
+                brevtype = brevtype ?: bestilling.brevtype,
+                språk = språk ?: bestilling.språk,
+                vedlegg = vedlegg ?: bestilling.vedlegg,
             )
         }
+        val exception = assertThrows<IllegalStateException> {
+            opprettBestilling(
+                brukV3 = brukV3,
+                saksnummer = endretBestilling.saksnummer,
+                brukerIdent = endretBestilling.brukerIdent!!,
+                behandlingReferanse = endretBestilling.behandlingReferanse,
+                unikReferanse = endretBestilling.unikReferanse,
+                brevtype = endretBestilling.brevtype,
+                språk = endretBestilling.språk,
+                faktagrunnlag = emptySet(),
+                vedlegg = endretBestilling.vedlegg,
+                ferdigstillAutomatisk = false,
+            )
+        }
+
+        assertEquals(
+            exception.message,
+            "Bestilling med unikReferanse=${endretBestilling.unikReferanse.referanse} finnnes allerede, men er ikke samme bestilling."
+        )
     }
 }
