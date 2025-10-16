@@ -35,7 +35,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val oppdatertBestilling = brevbestillingRepository.hent(brevbestilling.referanse)
 
             assertThat(oppdatertBestilling.brevdata?.delmaler)
-                .containsExactlyInAnyOrder(Brevdata.Delmal("142e2e17-0233-46f1-99c4-1c99a08368ac"))
+                .containsExactlyInAnyOrder(Brevdata.Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
 
             assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
                 Brevdata.FaktagrunnlagMedVerdi(
