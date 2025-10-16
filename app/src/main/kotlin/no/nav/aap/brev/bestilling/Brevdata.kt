@@ -1,3 +1,5 @@
+package no.nav.aap.brev.bestilling
+
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 data class Brevdata(

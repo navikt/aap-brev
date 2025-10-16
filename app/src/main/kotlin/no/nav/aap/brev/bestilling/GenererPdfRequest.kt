@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import Brevdata
 import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.Språk
 import java.time.LocalDate

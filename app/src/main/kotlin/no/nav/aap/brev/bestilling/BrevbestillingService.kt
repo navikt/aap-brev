@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import Brevdata
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.feil.ValideringsfeilException

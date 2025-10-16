@@ -1,6 +1,6 @@
 package no.nav.aap.brev.innhold
 
-import Brevdata
+import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.BrevmalJson

@@ -1,7 +1,7 @@
 package no.nav.aap.brev.innhold
 
-import Brevdata
-import Brevdata.FaktagrunnlagMedVerdi
+import no.nav.aap.brev.bestilling.Brevdata
+import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl

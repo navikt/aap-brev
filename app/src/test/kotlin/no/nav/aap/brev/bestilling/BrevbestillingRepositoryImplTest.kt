@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import Brevdata
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
