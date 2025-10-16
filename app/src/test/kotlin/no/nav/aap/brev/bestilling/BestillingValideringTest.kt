@@ -17,8 +17,10 @@ import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import kotlin.booleanArrayOf
 
 class BestillingValideringTest {
 
@@ -32,8 +34,9 @@ class BestillingValideringTest {
         }
     }
 
-    @Test
-    fun `bestilling går igjennom dersom ingen valideringsfeil`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `bestilling går igjennom dersom ingen valideringsfeil`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val brukerIdent = randomBrukerIdent()
         val dokumentInfoId = randomDokumentInfoId()
@@ -46,23 +49,39 @@ class BestillingValideringTest {
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse = brevbestillingService.opprettBestillingV2(
-                saksnummer = saksnummer,
-                brukerIdent = brukerIdent,
-                behandlingReferanse = randomBehandlingReferanse(),
-                unikReferanse = randomUnikReferanse(),
-                brevtype = Brevtype.INNVILGELSE,
-                språk = Språk.NB,
-                faktagrunnlag = emptySet(),
-                vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                ferdigstillAutomatisk = false,
-            ).brevbestilling.referanse
+            val referanse =
+                if (brukV3) {
+                    brevbestillingService.opprettBestillingV3(
+                        saksnummer = saksnummer,
+                        brukerIdent = brukerIdent,
+                        behandlingReferanse = randomBehandlingReferanse(),
+                        unikReferanse = randomUnikReferanse(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        språk = Språk.NB,
+                        faktagrunnlag = emptySet(),
+                        vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                        ferdigstillAutomatisk = false,
+                    ).brevbestilling.referanse
+                } else {
+                    brevbestillingService.opprettBestillingV2(
+                        saksnummer = saksnummer,
+                        brukerIdent = brukerIdent,
+                        behandlingReferanse = randomBehandlingReferanse(),
+                        unikReferanse = randomUnikReferanse(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        språk = Språk.NB,
+                        faktagrunnlag = emptySet(),
+                        vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                        ferdigstillAutomatisk = false,
+                    ).brevbestilling.referanse
+                }
             assertNotNull(brevbestillingRepository.hent(referanse))
         }
     }
 
-    @Test
-    fun `validering feiler dersom sak på vedlegg ikke har fagsakId lik bestillingens saksnummer`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom sak på vedlegg ikke har fagsakId lik bestillingens saksnummer`(brukV3: Boolean) {
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
@@ -71,14 +90,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = randomSaksnummer(),
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Ulik sak."
         )
     }
 
-    @Test
-    fun `validering feiler dersom sak på vedlegg ikke har fagsystem KELVIN`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom sak på vedlegg ikke har fagsystem KELVIN`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -89,14 +110,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Ulik sak."
         )
     }
 
-    @Test
-    fun `validering feiler dersom sak på vedlegg ikke er sakstype FAGSAK`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom sak på vedlegg ikke er sakstype FAGSAK`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -107,14 +130,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Ulik sak."
         )
     }
 
-    @Test
-    fun `validering feiler dersom sak på vedlegg ikke har tema AAP`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom sak på vedlegg ikke har tema AAP`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -125,14 +150,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Ulik sak."
         )
     }
 
-    @Test
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (journalposten)`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (journalposten)`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -143,14 +170,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Bruker har ikke tilgang til journalpost."
         )
     }
 
-    @Test
-    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT eller EKSPEDERT`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT eller EKSPEDERT`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -161,14 +190,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Feil status JOURNALFOERT."
         )
     }
 
-    @Test
-    fun `validering feiler dersom vedlegg ikke har dokumentet i arkivet`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom vedlegg ikke har dokumentet i arkivet`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val journalpost = gittJournalpostIArkivet(
             journalpostId = randomJournalpostId(),
@@ -177,14 +208,16 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = setOf(Vedlegg(journalpost.journalpostId, randomDokumentInfoId())),
             feilmelding = "Fant ikke dokument i journalpost."
         )
     }
 
-    @Test
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -195,6 +228,7 @@ class BestillingValideringTest {
         )
 
         validerFeilVedBestilling(
+            brukV3 = brukV3,
             saksnummer = saksnummer,
             vedlegg = journalpost.somVedlegg(),
             feilmelding = "Bruker har ikke tilgang til dokumentet."
@@ -206,6 +240,7 @@ class BestillingValideringTest {
     }
 
     private fun validerFeilVedBestilling(
+        brukV3: Boolean,
         saksnummer: Saksnummer,
         vedlegg: Set<Vedlegg>,
         feilmelding: String,
@@ -213,17 +248,31 @@ class BestillingValideringTest {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val exception = assertThrows<ValideringsfeilException> {
-                brevbestillingService.opprettBestillingV2(
-                    saksnummer = saksnummer,
-                    brukerIdent = randomBrukerIdent(),
-                    behandlingReferanse = randomBehandlingReferanse(),
-                    unikReferanse = randomUnikReferanse(),
-                    brevtype = Brevtype.INNVILGELSE,
-                    språk = Språk.NB,
-                    faktagrunnlag = emptySet(),
-                    vedlegg = vedlegg,
-                    ferdigstillAutomatisk = false,
-                )
+                if (brukV3) {
+                    brevbestillingService.opprettBestillingV3(
+                        saksnummer = saksnummer,
+                        brukerIdent = randomBrukerIdent(),
+                        behandlingReferanse = randomBehandlingReferanse(),
+                        unikReferanse = randomUnikReferanse(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        språk = Språk.NB,
+                        faktagrunnlag = emptySet(),
+                        vedlegg = vedlegg,
+                        ferdigstillAutomatisk = false,
+                    )
+                } else {
+                    brevbestillingService.opprettBestillingV2(
+                        saksnummer = saksnummer,
+                        brukerIdent = randomBrukerIdent(),
+                        behandlingReferanse = randomBehandlingReferanse(),
+                        unikReferanse = randomUnikReferanse(),
+                        brevtype = Brevtype.INNVILGELSE,
+                        språk = Språk.NB,
+                        faktagrunnlag = emptySet(),
+                        vedlegg = vedlegg,
+                        ferdigstillAutomatisk = false,
+                    )
+                }
             }
             assertThat(exception.message).endsWith(feilmelding)
         }
