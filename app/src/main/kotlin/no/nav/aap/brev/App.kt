@@ -15,10 +15,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import no.nav.aap.brev.api.ErrorResponse
 import no.nav.aap.brev.api.bestillingApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
-import no.nav.aap.brev.exception.ValideringsfeilException
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
