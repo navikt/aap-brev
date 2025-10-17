@@ -61,23 +61,7 @@ internal fun Application.server(dbConfig: DbConfig) {
 
     commonKtorModule(prometheus, AzureConfig(), InfoModel(title = "AAP - Brev"))
 
-    install(StatusPages) {
-        exception<Throwable> { call, cause ->
-            when (cause) {
-                is ValideringsfeilException -> {
-                    LoggerFactory.getLogger(App::class.java)
-                        .warn(cause.message, cause)
-                    call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.message))
-                }
-
-                else -> {
-                    LoggerFactory.getLogger(App::class.java)
-                        .warn("Ukjent feil ved kall til '{}'", call.request.local.uri, cause)
-                    call.respond(status = HttpStatusCode.InternalServerError, message = ErrorResponse(cause.message))
-                }
-            }
-        }
-    }
+    install(StatusPages, StatusPagesConfigHelper.setup())
 
     install(CORS) {
         anyHost()
