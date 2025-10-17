@@ -4,6 +4,9 @@ import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.Brevdata
+import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
+import no.nav.aap.brev.bestilling.Brevdata.FritekstMedKey
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
@@ -14,15 +17,19 @@ import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import kotlin.booleanArrayOf
 
 class JournalføringServiceTest : IntegrationTest() {
 
-    @Test
-    fun `journalfører brevet og lagrer journalpostId`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `journalfører brevet og lagrer journalpostId`(brukV3: Boolean) {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             val journalføringService = JournalføringService.konstruer(connection)
@@ -31,6 +38,7 @@ class JournalføringServiceTest : IntegrationTest() {
             val journalpostRepository = JournalpostRepositoryImpl(connection)
 
             val bestilling = opprettBrevbestilling(
+                brukV3 = brukV3,
                 behandlingReferanse = behandlingReferanse,
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,
@@ -60,6 +68,22 @@ class JournalføringServiceTest : IntegrationTest() {
                 ),
                 bestillingMottakerReferanse = bestillingMottakerReferanse2
             )
+            if (bestilling.brevdata != null) {
+                brevbestillingService.oppdaterBrevdata(
+                    bestilling.referanse,
+                    bestilling.brevdata.copy(
+                        faktagrunnlag = bestilling.brevdata.faktagrunnlag
+                            .plus(FaktagrunnlagMedVerdi("VAR_1", ""))
+                            .plus(FaktagrunnlagMedVerdi("VAR_2", "")),
+                        fritekster = bestilling.brevdata.fritekster.plus(
+                            FritekstMedKey(
+                                "8a3109fb503c",
+                                Brevdata.Fritekst(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
+                            )
+                        )
+                    )
+                )
+            }
             brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
 
             journalføringService.journalførBrevbestilling(bestilling.referanse)
@@ -75,13 +99,15 @@ class JournalføringServiceTest : IntegrationTest() {
         }
     }
 
-    @Test
-    fun `validering feiler dersom bestillingen mangler brev`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `validering feiler dersom bestillingen mangler brev`(brukV3: Boolean) {
         dataSource.transaction { connection ->
             val journalføringService = JournalføringService.konstruer(connection)
             val mottakerRepository = MottakerRepositoryImpl(connection)
 
             val bestilling = opprettBrevbestilling(
+                brukV3 = brukV3,
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,
             ).brevbestilling
@@ -93,11 +119,12 @@ class JournalføringServiceTest : IntegrationTest() {
             )
 
             connection.execute(
-                "UPDATE BREVBESTILLING SET BREV = ?::jsonb WHERE REFERANSE = ?"
+                "UPDATE BREVBESTILLING SET BREV = ?::jsonb, BREVMAL = ?::jsonb WHERE REFERANSE = ?"
             ) {
                 setParams {
                     setString(1, null)
-                    setUUID(2, referanse.referanse)
+                    setString(2, null)
+                    setUUID(3, referanse.referanse)
                 }
             }
 
@@ -108,32 +135,9 @@ class JournalføringServiceTest : IntegrationTest() {
         }
     }
 
-    @Test
-    fun `validering feiler dersom brevet inneholder manglende faktagrunnlag`() {
-        dataSource.transaction { connection ->
-            val journalføringService = JournalføringService.konstruer(connection)
-            val mottakerRepository = MottakerRepositoryImpl(connection)
-
-            val bestilling = opprettBrevbestilling(
-                brevtype = Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
-                ferdigstillAutomatisk = false,
-            ).brevbestilling
-            mottakerRepository.lagreMottakere(
-                bestilling.id,
-                mottakereLikBrukerIdent(bestilling, "${bestilling.referanse.referanse}-1")
-            )
-            val referanse = bestilling.referanse
-            val exception = assertThrows<IllegalStateException> {
-                journalføringService.journalførBrevbestilling(
-                    referanse,
-                )
-            }
-            assertEquals(exception.message, "Kan ikke lage PDF av brev med manglende faktagrunnlag FRIST_DATO_11_7.")
-        }
-    }
-
-    @Test
-    fun `håndterer respons med http status 409 pga allerede journalført`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `håndterer respons med http status 409 pga allerede journalført`(brukV3: Boolean) {
         dataSource.transaction { connection ->
             val journalføringService = JournalføringService.konstruer(connection)
             val behandlingReferanse = randomBehandlingReferanse()
@@ -141,6 +145,7 @@ class JournalføringServiceTest : IntegrationTest() {
             val journalpostRepository = JournalpostRepositoryImpl(connection)
 
             val bestilling = opprettBrevbestilling(
+                brukV3 = brukV3,
                 behandlingReferanse = behandlingReferanse,
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,

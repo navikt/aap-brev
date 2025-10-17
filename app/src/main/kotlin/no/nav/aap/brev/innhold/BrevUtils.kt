@@ -12,9 +12,6 @@ fun Brev.alleFaktagrunnlag(): List<BlokkInnhold.Faktagrunnlag> =
         .flatMap { it.innhold }
         .filterIsInstance<BlokkInnhold.Faktagrunnlag>()
 
-fun Brev.kjenteFaktagrunnlag(): List<KjentFaktagrunnlag> =
-    alleFaktagrunnlag().mapNotNull { it.kjentFaktagrunnlag() }
-
 fun BlokkInnhold.Faktagrunnlag.kjentFaktagrunnlag(): KjentFaktagrunnlag? =
     KjentFaktagrunnlag.entries.find { it.name == tekniskNavn.uppercase() }
 
