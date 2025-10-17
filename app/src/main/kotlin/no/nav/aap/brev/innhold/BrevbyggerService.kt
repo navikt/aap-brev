@@ -175,7 +175,7 @@ class BrevbyggerService(
                 .filterIsInstance<Brevmal.TeksteditorElement.Fritekst>()
                 .filterNot { brevdata.fritekster.map { it.key }.contains(it._key) }
             valider(manglendeFritekster.isEmpty()) {
-                "$feilmelding: Mangler fritekst(er) ${manglendeFritekster.joinToString(separator = ",")} med key for delmale med id ${delmalValg.delmal._id}"
+                "$feilmelding: Mangler fritekst(er) ${manglendeFritekster.joinToString(separator = ",")} med key for delmal med id ${delmalValg.delmal._id}"
             }
         }
         validerFaktagrunnlag(valgteDelmaler, brevdata, feilmelding)
