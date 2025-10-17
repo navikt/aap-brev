@@ -1,0 +1,126 @@
+{
+    "journalposttittel": "Mal 1",
+    "_rev": "AS5i4RvL5zgUXbbUgdsfo1",
+    "_system": {
+        "base": {
+            "rev": "AS5i4RvL5zgUXbbUgdqYxW",
+            "id": "327f7e7f-a823-436b-863f-af4cb25ddb40"
+        }
+    },
+    "_id": "327f7e7f-a823-436b-863f-af4cb25ddb40",
+    "_createdAt": "2025-09-04T09:02:19Z",
+    "_type": "mal",
+    "kanSendesAutomatisk": true,
+    "_updatedAt": "2025-09-29T11:18:02Z",
+    "internTittel": "Mal 1",
+    "overskrift": "Mal 1",
+    "delmaler": [
+        {
+            "_key": "fc8f17712a79",
+            "obligatorisk": true,
+            "_type": "delmalRef",
+            "delmal": {
+                "_type": "delmal",
+                "_id": "49d9c7a7-29db-43c6-aece-45e97314a50a",
+                "_updatedAt": "2025-10-08T06:29:05Z",
+                "internTittel": "Delmal 1",
+                "paragraf": "11-2",
+                "_system": {
+                    "base": {
+                        "id": "49d9c7a7-29db-43c6-aece-45e97314a50a",
+                        "rev": "6WtiBizt6GSRcp6LvN8CXW"
+                    }
+                },
+                "_createdAt": "2025-09-26T10:24:40Z",
+                "_rev": "6WtiBizt6GSRcp6LvN8DeA",
+                "overskrift": "Delmal 1",
+                "teksteditor": [
+                    {
+                        "children": [
+                            {
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Delmal 1.",
+                                "_key": "dee19465d419"
+                            }
+                        ],
+                        "_type": "block",
+                        "style": "normal",
+                        "_key": "577f6e2aac39",
+                        "markDefs": []
+                    },
+                    {
+                        "_key": "4c1bad6583a9",
+                        "markDefs": [],
+                        "children": [
+                            {
+                                "text": "",
+                                "_key": "676a44c330d5",
+                                "_type": "span",
+                                "marks": []
+                            }
+                        ],
+                        "_type": "block",
+                        "style": "normal"
+                    },
+                    {
+                        "children": [
+                            {
+                                "_key": "301d2fc56fee",
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Valg:"
+                            }
+                        ],
+                        "_type": "block",
+                        "style": "normal",
+                        "_key": "f91dcbc716d8",
+                        "markDefs": []
+                    },
+                    {
+                        "children": [
+                            {
+                                "_type": "span",
+                                "marks": [],
+                                "text": "Periodetekst:",
+                                "_key": "ad6441a272e1"
+                            }
+                        ],
+                        "_type": "block",
+                        "style": "normal",
+                        "_key": "b83fa4047839",
+                        "markDefs": []
+                    },
+                    {
+                        "style": "normal",
+                        "_key": "1e358ecede58",
+                        "markDefs": [],
+                        "children": [
+                            {
+                                "_key": "ad58b7d4d6fd",
+                                "_type": "span",
+                                "marks": [],
+                                "text": ""
+                            }
+                        ],
+                        "_type": "block"
+                    },
+                    {
+                        "style": "normal",
+                        "_key": "e575a0c5a3fc",
+                        "markDefs": [],
+                        "children": [
+                            {
+                                "_type": "span",
+                                "marks": [],
+                                "text": "",
+                                "_key": "c60f1e4c94f1"
+                            }
+                        ],
+                        "_type": "block"
+                    }
+                ]
+            }
+        }
+    ]
+}

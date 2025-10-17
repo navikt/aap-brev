@@ -120,7 +120,13 @@ fun Application.brevSanityProxyFake() {
             call.respond(brev)
         }
         get("/api/brevmal") {
-            val brevmal = FileUtils.lesFilTilJson<Brevmal>("brevmal.json")
+            val brevtype = Brevtype.valueOf(checkNotNull(call.queryParameters.get("brevtype")))
+            val brevmal = when (brevtype) {
+                Brevtype.FORVALTNINGSMELDING,
+                Brevtype.VARSEL_OM_BESTILLING -> FileUtils.lesFilTilJson<Brevmal>("brevmal_automatisk.json")
+
+                else -> FileUtils.lesFilTilJson<Brevmal>("brevmal.json")
+            }
             call.respond(brevmal)
         }
 

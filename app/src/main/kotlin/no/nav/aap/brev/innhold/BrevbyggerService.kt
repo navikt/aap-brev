@@ -118,7 +118,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal).tilBrevmal()
         val brevdata = bestilling.brevdata
         val feilmelding =
-            "Kan ikke automatisk ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
+            "Kan ikke automatisk ferdigstille brevbestilling"
 
         valider(brevmal.kanSendesAutomatisk) {
             "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
@@ -144,8 +144,8 @@ class BrevbyggerService(
             "$feilmelding: Det er delmaler som inneholder betinget tekst."
         }
 
-        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
-            "$feilmelding: Det er delmaler som inneholder betinget tekst."
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder periodetekst."
         }
     }
 
@@ -204,7 +204,7 @@ class BrevbyggerService(
         }
 
         valider(manglendeFaktagrunnlag.isEmpty()) {
-            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}"
+            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}."
         }
     }
 
