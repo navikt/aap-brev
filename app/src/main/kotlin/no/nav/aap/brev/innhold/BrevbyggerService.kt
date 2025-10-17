@@ -158,7 +158,7 @@ class BrevbyggerService(
         checkNotNull(brevdata)
 
         val feilmelding =
-            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}"
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet"
 
         val valgteDelmaler =
             brevmal.delmaler.filter { delmal -> brevdata.delmaler.map { it.id }.contains(delmal.delmal._id) }
