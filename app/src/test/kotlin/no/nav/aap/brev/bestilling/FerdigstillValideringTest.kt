@@ -2,23 +2,26 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.feil.ValideringsfeilException
-import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevmal
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
+import no.nav.aap.brev.test.BrevmalBuilder
 import no.nav.aap.brev.test.fakes.brev
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.EnumSource.Mode
+import kotlin.Boolean
 
 class FerdigstillValideringTest : IntegrationTest() {
 
@@ -115,11 +118,12 @@ class FerdigstillValideringTest : IntegrationTest() {
     }
 
     @Test
-    fun `ferdigstilling feiler dersom brevet har faktagrunnlag`() {
+    fun `ferdigstilling feiler dersom validering av brevet feiler v2`() {
         val referanse =
             gittBrevMed(
                 brev = brev(medFaktagrunnlag = listOf(FaktagrunnlagType.FRIST_DATO_11_7.verdi)),
                 status = Status.UNDER_ARBEID,
+                brukV3 = false
             ).referanse
         assertAntallJobber(referanse, 0)
         val exception = assertThrows<ValideringsfeilException> {
@@ -127,6 +131,30 @@ class FerdigstillValideringTest : IntegrationTest() {
         }
         assertThat(exception.message).endsWith(
             "Brevet mangler utfylling av faktagrunnlag med teknisk navn: ${KjentFaktagrunnlag.FRIST_DATO_11_7.name}."
+        )
+        assertStatus(referanse, Status.UNDER_ARBEID)
+        assertAntallJobber(referanse, 0)
+    }
+
+    @Test
+    fun `ferdigstilling feiler dersom validering av brevet feiler v3`() {
+        val referanse =
+            gittBrevMed(
+                brevmal = BrevmalBuilder.builder {
+                    delmal {
+                        obligatorisk = true
+                        faktagrunnlag(FaktagrunnlagType.FRIST_DATO_11_7.verdi)
+                    }
+                },
+                status = Status.UNDER_ARBEID,
+                brukV3 = true
+            ).referanse
+        assertAntallJobber(referanse, 0)
+        val exception = assertThrows<ValideringsfeilException> {
+            ferdigstill(referanse)
+        }
+        assertThat(exception.message).contains(
+            "Kan ikke ferdigstille brevbestilling med referanse=${referanse.referanse}. Validering av brevinnhold feilet"
         )
         assertStatus(referanse, Status.UNDER_ARBEID)
         assertAntallJobber(referanse, 0)
@@ -154,14 +182,16 @@ class FerdigstillValideringTest : IntegrationTest() {
     }
 
     private fun gittBrevMed(
-        brev: Brev,
         status: Status,
+        brev: Brev? = null, // fjernes og tilpass resterende tester når v2 fjernes
+        brevmal: Brevmal? = null,
+        brukV3: Boolean = false,
     ): Brevbestilling {
         return dataSource.transaction { connection ->
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
-            val brevinnholdService = BrevinnholdService.konstruer(connection)
             val bestilling =
                 opprettBrevbestilling(
+                    brukV3 = brukV3,
                     brevtype = Brevtype.INNVILGELSE,
                     språk = Språk.NB,
                     faktagrunnlag = emptySet(),
@@ -169,8 +199,15 @@ class FerdigstillValideringTest : IntegrationTest() {
                     ferdigstillAutomatisk = false,
                 ).brevbestilling
 
-            brevinnholdService.hentOgLagreBrev(bestilling.referanse)
-            brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+            if (brev != null) {
+                brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
+            }
+            if (brevmal != null) {
+                brevbestillingRepository.oppdaterBrevmal(
+                    bestilling.id,
+                    DefaultJsonMapper.fromJson(DefaultJsonMapper.toJson(brevmal))
+                )
+            }
             brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 
             bestilling

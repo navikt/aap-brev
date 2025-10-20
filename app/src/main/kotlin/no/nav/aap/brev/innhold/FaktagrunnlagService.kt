@@ -44,7 +44,7 @@ class FaktagrunnlagService(
                     ?: blokkInnhold
         }
 
-    private fun faktagrunnlagTilTekst(
+    fun faktagrunnlagTilTekst(
         alleFaktagrunnlag: Set<Faktagrunnlag>,
         språk: Språk
     ): Map<KjentFaktagrunnlag, String> {
