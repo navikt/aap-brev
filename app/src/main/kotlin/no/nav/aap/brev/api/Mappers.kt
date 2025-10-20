@@ -7,7 +7,7 @@ import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import java.util.UUID
+import java.util.*
 
 fun Brevbestilling.tilResponse(): BrevbestillingResponse =
     BrevbestillingResponse(
@@ -18,11 +18,11 @@ fun Brevbestilling.tilResponse(): BrevbestillingResponse =
         behandlingReferanse = behandlingReferanse.referanse,
         brevtype = brevtype,
         språk = språk,
-        status = utledStatus(prosesseringStatus)
+        status = utledStatus(status, prosesseringStatus)
     )
 
-fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
-    when (prosesseringStatus) {
+fun utledStatus(status: Status?, prosesseringStatus: ProsesseringStatus?): Status =
+    status ?: when (prosesseringStatus) {
         null,
         ProsesseringStatus.BREVBESTILLING_LØST -> Status.UNDER_ARBEID
 
