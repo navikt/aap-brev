@@ -2,7 +2,8 @@ package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
-import no.nav.aap.brev.exception.ValideringsfeilException
+import no.nav.aap.brev.feil.ValideringsfeilException
+import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.innhold.FaktagrunnlagService
 import no.nav.aap.brev.innhold.alleFaktagrunnlag
@@ -262,13 +263,6 @@ class BrevbestillingService(
         valider(faktagrunnlag.isEmpty()) {
             val faktagrunnlagString = faktagrunnlag.joinToString(separator = ",", transform = { it.tekniskNavn })
             "$feilmelding: Brevet mangler utfylling av faktagrunnlag med teknisk navn: $faktagrunnlagString."
-        }
-    }
-
-    private fun valider(value: Boolean, lazyMessage: () -> String) {
-        if (!value) {
-            val message = lazyMessage()
-            throw ValideringsfeilException(message)
         }
     }
 
