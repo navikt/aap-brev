@@ -1,4 +1,4 @@
-package no.nav.aap.brev.exception
+package no.nav.aap.brev.feil
 
 @Deprecated(
     message = "Bruk heller en variant av ApiException (UgyldigForespørselException, Internfeil, etc.)",
