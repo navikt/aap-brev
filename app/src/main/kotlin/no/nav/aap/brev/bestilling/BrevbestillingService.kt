@@ -75,7 +75,7 @@ class BrevbestillingService(
         val bestillingId = resultat.brevbestilling.id
         val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagre(bestillingReferanse)
+        brevinnholdService.hentOgLagreBrev(bestillingReferanse)
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 

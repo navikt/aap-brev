@@ -13,7 +13,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.Client
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.net.URI
 
-class SanityBrevinnholdGateway : BrevinnholdGateway {
+class BrevSanityProxyGateway : BrevinnholdGateway {
 
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.brev_sanity_proxy.url"))
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.brev_sanity_proxy.scope"))
@@ -23,7 +23,7 @@ class SanityBrevinnholdGateway : BrevinnholdGateway {
         prometheus = prometheus
     )
 
-    override fun hentBrevmal(
+    override fun hentBrev(
         brevtype: Brevtype,
         språk: Språk
     ): Brev {
