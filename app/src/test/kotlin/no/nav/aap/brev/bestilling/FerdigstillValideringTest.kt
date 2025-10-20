@@ -169,7 +169,7 @@ class FerdigstillValideringTest : IntegrationTest() {
                     ferdigstillAutomatisk = false,
                 ).brevbestilling
 
-            brevinnholdService.hentOgLagre(bestilling.referanse)
+            brevinnholdService.hentOgLagreBrev(bestilling.referanse)
             brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
             brevbestillingRepository.oppdaterStatus(bestilling.id, status)
 

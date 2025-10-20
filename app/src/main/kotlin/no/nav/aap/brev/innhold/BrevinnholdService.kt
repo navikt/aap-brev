@@ -12,15 +12,15 @@ class BrevinnholdService(
     companion object {
         fun konstruer(connection: DBConnection): BrevinnholdService {
             return BrevinnholdService(
-                brevinnholdGateway = SanityBrevinnholdGateway(),
+                brevinnholdGateway = BrevSanityProxyGateway(),
                 brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
             )
         }
     }
 
-    fun hentOgLagre(referanse: BrevbestillingReferanse) {
+    fun hentOgLagreBrev(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        val brev = brevinnholdGateway.hentBrevmal(bestilling.brevtype, bestilling.språk)
+        val brev = brevinnholdGateway.hentBrev(bestilling.brevtype, bestilling.språk)
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
     }
