@@ -29,7 +29,7 @@ object StatusPagesConfigHelper {
                         ApiException(
                             status = HttpStatusCode.BadRequest,
                             message = cause.message ?: "Valideringsfeil",
-                            code = ApiErrorCode.UKJENT_FEIL
+                            code = ApiErrorCode.UGYLDIG_FORESPØRSEL
                         )
                     )
                 }
