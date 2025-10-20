@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val komponenterVersjon = "1.0.339"
+val komponenterVersjon = "1.0.400"
+val jupiterVersjon = "5.13.1"
 
 plugins {
     id("brev.conventions")
@@ -44,11 +45,11 @@ publishing {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
 
     testImplementation(project(":lib-test"))
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
-    testImplementation("org.assertj:assertj-core:3.27.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.1")
+    testImplementation("org.assertj:assertj-core:3.27.6")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersjon")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersjon")
 }
