@@ -12,7 +12,7 @@
     "_type": "mal",
     "kanSendesAutomatisk": true,
     "_updatedAt": "2025-09-29T11:18:02Z",
-    "internTittel": "Mal 1",
+    "beskrivelse": "Mal 1",
     "overskrift": "Mal 1",
     "delmaler": [
         {
@@ -23,7 +23,7 @@
                 "_type": "delmal",
                 "_id": "49d9c7a7-29db-43c6-aece-45e97314a50a",
                 "_updatedAt": "2025-10-08T06:29:05Z",
-                "internTittel": "Delmal 1",
+                "beskrivelse": "Delmal 1",
                 "paragraf": "11-2",
                 "_system": {
                     "base": {
