@@ -77,7 +77,7 @@ internal fun Application.server(dbConfig: DbConfig) {
             apiRouting {
                 bestillingApi(dataSource)
                 dokumentinnhentingApi()
-                distribusjonApi()
+                distribusjonApi(dataSource)
                 motorApi(dataSource)
             }
         }

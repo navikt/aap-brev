@@ -5,25 +5,22 @@ import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.HttpStatusCode
-import no.nav.aap.brev.distribusjon.Distribusjonskanal
-import no.nav.aap.brev.distribusjon.DokdistkanalGateway
-import no.nav.aap.brev.distribusjon.RegoppslagGateway
+import no.nav.aap.brev.distribusjon.DistribusjonService
 import no.nav.aap.brev.kontrakt.KanDistribuereBrevReponse
 import no.nav.aap.brev.kontrakt.KanDistribuereBrevRequest
 import no.nav.aap.brev.kontrakt.MottakerDistStatus
+import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedPost
+import javax.sql.DataSource
 
-fun NormalOpenAPIRoute.distribusjonApi() {
+fun NormalOpenAPIRoute.distribusjonApi(dataSource: DataSource) {
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
         applicationRole = "hent-distribusjoninfo",
         applicationsOnly = true
     )
-
-    val regoppslagGateway = RegoppslagGateway()
-    val dokdistkanalGateway = DokdistkanalGateway()
 
     route("/api/distribusjon") {
         route("/kan-distribuere-brev") {
@@ -35,9 +32,9 @@ fun NormalOpenAPIRoute.distribusjonApi() {
                     val personident = mottaker.ident
 
                     if (personident != null) {
-                        val distribusjonskanal = dokdistkanalGateway.bestemDistribusjonskanal(personident)
-                        val mottakerPostadresse = regoppslagGateway.hentPostadresse(personident)
-                        val kanDistribuereBrev = (distribusjonskanal != Distribusjonskanal.PRINT) || mottakerPostadresse != null
+                        val kanDistribuereBrev = dataSource.transaction { connection ->
+                            DistribusjonService.konstruer(connection).kanBrevDistribueresTilBruker(personident)
+                        }
                         mottakereDistStatus.add(MottakerDistStatus(mottaker, kanDistribuereBrev))
                     }
                 }
