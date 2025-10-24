@@ -1,11 +1,11 @@
 # aap-brev
 [![release](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml/badge.svg)](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml)
 
-aap-brev håndterer bestilling, journalføring og distribusjon av brev. 
+aap-brev håndterer bestilling, journalføring og distribusjon av brev. Se sysdoc for teknisk beskrivelse: https://aap-sysdoc.ansatt.nav.no/funksjonalitet/Brev/teknisk/
 
 ## API-dokumentasjon
 
-APIene er dokumentert med Swagger: localhost:8082/swagger-ui/index.html
+APIene er dokumentert med Swagger: https://aap-brev.intern.dev.nav.no/swagger-ui/index.html
 
 ## Komme i gang
 
