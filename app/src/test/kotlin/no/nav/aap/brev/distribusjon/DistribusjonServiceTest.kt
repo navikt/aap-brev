@@ -9,6 +9,8 @@ import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.NavnOgAdresse
 import no.nav.aap.brev.journalføring.JournalføringService
 import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.test.fakes.brukerForDistkanal
+import no.nav.aap.brev.test.fakes.brukerForRegoppslag
 import no.nav.aap.brev.test.fakes.distribusjonBestillingIdForJournalpost
 import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
@@ -21,6 +23,40 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class DistribusjonServiceTest : IntegrationTest() {
+    @Test
+    fun `skal ikke distribuere journalpost for bruker med ukjent bostedsadresse og print som distribusjonskanal`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            val journalføringService = JournalføringService.konstruer(connection)
+            val distribusjonService = DistribusjonService.konstruer(connection)
+            val journalpostRepository = JournalpostRepositoryImpl(connection)
+
+            val bestillingMottakerReferanse = "${bestilling.referanse.referanse}"
+            val mottaker = Mottaker(
+                ident = bestilling.brukerIdent,
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = bestillingMottakerReferanse,
+            )
+
+            brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker))
+            journalføringService.journalførBrevbestilling(referanse)
+            brukerForRegoppslag(mottaker.ident, false)
+            brukerForDistkanal(mottaker.ident, Distribusjonskanal.PRINT)
+            distribusjonService.distribuerBrev(referanse)
+
+            val oppdaterteJournalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
+
+         // TODO Kommenter inn når feature toggle i distribuerBrev er verifisert i prod og skrevet ut
+         // assertThat(oppdaterteJournalposter.get(0).distribusjonBestillingId).isNull()
+        }
+    }
 
     @Test
     fun `distribuerer journalpost og lagrer distribusjon bestilling id`() {
@@ -70,6 +106,7 @@ class DistribusjonServiceTest : IntegrationTest() {
 
             brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker1, mottaker2))
             journalføringService.journalførBrevbestilling(referanse)
+            brukerForRegoppslag(mottaker1.ident, true)
             distribusjonService.distribuerBrev(referanse)
 
             val oppdaterteJournalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
