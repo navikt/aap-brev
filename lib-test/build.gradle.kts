@@ -1,6 +1,6 @@
 val ktorVersion = "3.3.1"
-val komponenterVersjon = "1.0.411"
-val tilgangVersjon = "1.0.138"
+val komponenterVersjon = "1.0.412"
+val tilgangVersjon = "1.0.140"
 val jacksonVersjon = "2.20.0"
 
 plugins {
