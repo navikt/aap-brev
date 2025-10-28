@@ -132,6 +132,24 @@ class BestillingValideringTest {
     }
 
     @Test
+    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT, EKSPEDERT eller FEILREGISTRERT`() {
+        val saksnummer = randomSaksnummer()
+        val dokumentInfoId = randomDokumentInfoId()
+        val journalpost = gittJournalpostIArkivet(
+            journalpostId = randomJournalpostId(),
+            saksnummer = saksnummer,
+            dokumentInfoId = dokumentInfoId,
+            journalstatus = "JOURNALFOERT"
+        )
+
+        validerFeilVedBestilling(
+            saksnummer = saksnummer,
+            vedlegg = journalpost.somVedlegg(),
+            feilmelding = "Feil status JOURNALFOERT."
+        )
+    }
+
+    @Test
     fun `validering feiler dersom vedlegg ikke har dokumentet i arkivet`() {
         val saksnummer = randomSaksnummer()
         val journalpost = gittJournalpostIArkivet(

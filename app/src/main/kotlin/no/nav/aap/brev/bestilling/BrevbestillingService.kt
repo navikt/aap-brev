@@ -228,6 +228,11 @@ class BrevbestillingService(
                     "$feilmelding: Ulik sak."
                 }
 
+                val tillatteJournalstatuser = setOf("FERDIGSTILT", "EKSPEDERT", "FEILREGISTRERT")
+                valider(tillatteJournalstatuser.contains(journalpost.journalstatus)) {
+                    "$feilmelding: Feil status ${journalpost.journalstatus}."
+                }
+
                 val dokument = journalpost.dokumenter.find { it.dokumentInfoId == dokumentInfoId }
                 valider(dokument != null) {
                     "$feilmelding: Fant ikke dokument i journalpost."
