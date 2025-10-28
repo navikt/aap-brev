@@ -19,6 +19,7 @@ import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
@@ -219,7 +220,7 @@ class BrevbestillingService(
                 val sak = journalpost.sak
                 val feilmelding =
                     "Kan ikke legge ved dokument, dokumentInfoId=${dokumentInfoId.id} fra journalpostId=${journalpostId.id} i bestilling for sak ${saksnummer.nummer}"
-
+                val erDev = Miljø.erDev()
                 valider(
                     sak.fagsakId == saksnummer.nummer &&
                             sak.fagsaksystem == "KELVIN" &&
@@ -229,11 +230,11 @@ class BrevbestillingService(
                     "$feilmelding: Ulik sak."
                 }
 
-                valider(journalpost.brukerHarTilgang) {
+                valider(erDev || journalpost.brukerHarTilgang) {
                     "$feilmelding: Bruker har ikke tilgang til journalpost."
                 }
 
-                valider(journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
+                valider(erDev || journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
                     "$feilmelding: Feil status ${journalpost.journalstatus}."
                 }
 
@@ -242,7 +243,7 @@ class BrevbestillingService(
                     "$feilmelding: Fant ikke dokument i journalpost."
                 }
 
-                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
+                valider(erDev || dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
                     "$feilmelding: Bruker har ikke tilgang til dokumentet."
                 }
             }
