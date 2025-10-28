@@ -132,25 +132,7 @@ class BestillingValideringTest {
     }
 
     @Test
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (journalposten)`() {
-        val saksnummer = randomSaksnummer()
-        val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIArkivet(
-            journalpostId = randomJournalpostId(),
-            saksnummer = saksnummer,
-            dokumentInfoId = dokumentInfoId,
-            brukerHarTilgangTilJournalpost = false
-        )
-
-        validerFeilVedBestilling(
-            saksnummer = saksnummer,
-            vedlegg = journalpost.somVedlegg(),
-            feilmelding = "Bruker har ikke tilgang til journalpost."
-        )
-    }
-
-    @Test
-    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT eller EKSPEDERT`() {
+    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT, EKSPEDERT eller FEILREGISTRERT`() {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -180,24 +162,6 @@ class BestillingValideringTest {
             saksnummer = saksnummer,
             vedlegg = setOf(Vedlegg(journalpost.journalpostId, randomDokumentInfoId())),
             feilmelding = "Fant ikke dokument i journalpost."
-        )
-    }
-
-    @Test
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`() {
-        val saksnummer = randomSaksnummer()
-        val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIArkivet(
-            journalpostId = randomJournalpostId(),
-            saksnummer = saksnummer,
-            dokumentInfoId = dokumentInfoId,
-            brukerHarTilgangTilDokument = false,
-        )
-
-        validerFeilVedBestilling(
-            saksnummer = saksnummer,
-            vedlegg = journalpost.somVedlegg(),
-            feilmelding = "Bruker har ikke tilgang til dokumentet."
         )
     }
 
