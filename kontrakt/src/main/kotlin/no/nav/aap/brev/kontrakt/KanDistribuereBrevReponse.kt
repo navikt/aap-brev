@@ -5,6 +5,6 @@ class KanDistribuereBrevReponse (
 )
 
 data class MottakerDistStatus(
-    val mottaker: MottakerDto,
+    val mottakerIdent: String,
     val kanDistribuere: Boolean
 )

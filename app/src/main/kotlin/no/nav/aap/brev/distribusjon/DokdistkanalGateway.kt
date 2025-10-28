@@ -1,7 +1,6 @@
 package no.nav.aap.brev.distribusjon
 
 import no.nav.aap.brev.prometheus
-import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
@@ -14,8 +13,8 @@ import java.net.URI
 val JOURNALPOST_TEMA_OPPFOLGING = "AAP"
 
 class DokdistkanalGateway : DistribusjonskanalGateway {
-    private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokdist.url"))
-    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokdist.scope"))
+    private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokdistkanal.url"))
+    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokdistkanal.scope"))
 
     private val client = RestClient(
         config = config,
@@ -24,10 +23,11 @@ class DokdistkanalGateway : DistribusjonskanalGateway {
         prometheus = prometheus
     )
 
-    override fun bestemDistribusjonskanal(personident: String): Distribusjonskanal? {
+    override fun bestemDistribusjonskanal(brukerId: String, mottakerId: String): Distribusjonskanal? {
         val httpRequest = PostRequest(
             body = BestemDistribusjonskanalRequest(
-                personident
+                brukerId,
+                mottakerId
             )
         )
         val uri = baseUri.resolve("/rest/bestemDistribusjonskanal")
@@ -38,9 +38,8 @@ class DokdistkanalGateway : DistribusjonskanalGateway {
 
 data class BestemDistribusjonskanalRequest(
     val brukerId: String,
-    val mottakerId: String = brukerId,
+    val mottakerId: String,
     val tema: String = JOURNALPOST_TEMA_OPPFOLGING,
-    val erArkivert: Boolean = true,
 )
 
 data class BestemDistribusjonskanalResponse(

@@ -7,5 +7,5 @@ enum class Distribusjonskanal {
     LOKAL_PRINT,
     INGEN_DISTRIBUSJON,
     TRYGDERETTEN,
-    DPVT;
+    DPVT
 }

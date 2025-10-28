@@ -85,9 +85,9 @@ object Fakes : AutoCloseable {
         System.setProperty("integrasjon.dokarkiv.url", "http://localhost:${dokarkiv.port()}")
         System.setProperty("integrasjon.dokarkiv.scope", "scope")
 
-        // Dokdist
-        System.setProperty("integrasjon.dokdist.url", "http://localhost:${dokdistkanal.port()}")
-        System.setProperty("integrasjon.dokdist.scope", "scope")
+        // Dokdistkanal
+        System.setProperty("integrasjon.dokdistkanal.url", "http://localhost:${dokdistkanal.port()}")
+        System.setProperty("integrasjon.dokdistkanal.scope", "scope")
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")

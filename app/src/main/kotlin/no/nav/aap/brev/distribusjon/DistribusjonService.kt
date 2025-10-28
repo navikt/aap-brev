@@ -31,16 +31,16 @@ class DistribusjonService(
         }
     }
 
-    fun kanBrevDistribueresTilBruker(personIndent: String): Boolean {
-        return (hentDistribusjonskanal(personIndent) != Distribusjonskanal.PRINT) || (hentPostadresse(personIndent) != null)
+    fun kanBrevDistribueresTilBruker(brukerId: String, mottakerId: String): Boolean {
+        return (hentDistribusjonskanal(brukerId, mottakerId) != Distribusjonskanal.PRINT) || (hentPostadresse(mottakerId)?.adresse != null)
     }
 
     fun hentPostadresse(personIdent: String): HentPostadresseResponse? {
         return adresseGateway.hentPostadresse(personIdent)
     }
 
-    fun hentDistribusjonskanal(personIdent: String): Distribusjonskanal? {
-        return distribusjonskanalGateway.bestemDistribusjonskanal(personIdent)
+    fun hentDistribusjonskanal(brukerId: String, mottakerId: String): Distribusjonskanal? {
+        return distribusjonskanalGateway.bestemDistribusjonskanal(brukerId, mottakerId)
     }
 
     fun distribuerBrev(referanse: BrevbestillingReferanse) {
@@ -58,13 +58,24 @@ class DistribusjonService(
         journalposter
             .filter { it.distribusjonBestillingId == null }
             .forEach { journalpost ->
+                val brukerIdent = brevbestilling.brukerIdent
                 val mottaker = journalpost.mottaker
-                val ident = mottaker.ident
-                val kanDistribuere = (mottaker.identType != IdentType.FNR) || (ident != null && kanBrevDistribueresTilBruker(ident))
+                val mottakerIdent = mottaker.ident
 
-                // TODO Fjerne logging og feature toggle etter verifisering i prod
-                log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
-                if (Miljø.erProd() || kanDistribuere) {
+                // TODO Fjerne feature toggle og logging etter verifisering i prod
+                fun kanDistribuere(): Boolean {
+                    if (Miljø.erProd()) {
+                        return true;
+                    }
+                    val kanDistribuere = (mottaker.identType != IdentType.FNR) || (brukerIdent != null && mottakerIdent != null && kanBrevDistribueresTilBruker(
+                        brukerIdent,
+                        mottakerIdent
+                    ))
+                    log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
+                    return kanDistribuere
+                }
+
+                if (kanDistribuere()) {
                     val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
                         journalpost.journalpostId,
                         brevbestilling.brevtype,

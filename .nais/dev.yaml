@@ -157,4 +157,4 @@ spec:
     - name: INTEGRASJON_DOKDISTKANAL_URL
       value: https://dokdistkanal.dev-fss-pub.nais.io/rest/v1
     - name: INTEGRASJON_DOKDISTKANAL_SCOPE
-      value: api://dev-fss.dokdistfordeling.teamdokumenthandtering/.default
+      value: api://dev-fss.dokdistkanal.teamdokumenthandtering/.default

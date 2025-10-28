@@ -27,23 +27,19 @@ fun NormalOpenAPIRoute.distribusjonApi(dataSource: DataSource) {
             authorizedPost<Unit, KanDistribuereBrevReponse, KanDistribuereBrevRequest>(
                 authorizationBodyPathConfig
             ) { _, request ->
-                val mottakereDistStatus = mutableListOf<MottakerDistStatus>()
-                request.mottakere.forEach { mottaker ->
-                    val personident = mottaker.ident
-
-                    if (personident != null) {
-                        val kanDistribuereBrev = dataSource.transaction { connection ->
-                            DistribusjonService.konstruer(connection).kanBrevDistribueresTilBruker(personident)
-                        }
-                        mottakereDistStatus.add(MottakerDistStatus(mottaker, kanDistribuereBrev))
-                    }
-                }
-
-                if (mottakereDistStatus.isEmpty()) {
+                val mottakere = request.mottakerIdentListe
+                if (mottakere.isEmpty()) {
                     respondWithStatus(HttpStatusCode.NoContent)
-                } else {
-                    respond(KanDistribuereBrevReponse(mottakereDistStatus), HttpStatusCode.OK)
                 }
+
+                val mottakereDistStatus = mutableListOf<MottakerDistStatus>()
+                mottakere.forEach { mottakerIdent ->
+                    val kanDistribuereBrev = dataSource.transaction { connection ->
+                        DistribusjonService.konstruer(connection).kanBrevDistribueresTilBruker(brukerId = request.brukerIdent, mottakerId = mottakerIdent)
+                    }
+                    mottakereDistStatus.add(MottakerDistStatus(mottakerIdent, kanDistribuereBrev))
+                }
+                respond(KanDistribuereBrevReponse(mottakereDistStatus), HttpStatusCode.OK)
             }
         }
     }

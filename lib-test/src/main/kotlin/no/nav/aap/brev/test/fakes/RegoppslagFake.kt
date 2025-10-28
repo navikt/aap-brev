@@ -8,6 +8,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import no.nav.aap.brev.distribusjon.HentPostadresseRequest
 import no.nav.aap.brev.distribusjon.HentPostadresseResponse
+import no.nav.aap.brev.distribusjon.RegoppslagAdresse
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 
 private var brukerIdTilHarPostadresse = mutableMapOf<String, Boolean>()
@@ -30,15 +31,18 @@ fun Application.regoppslagFake() {
             if (brukerHarAdresse) {
                 call.respond(
                     HttpStatusCode.OK, HentPostadresseResponse(
-                        adresseKilde = "OPPSLAG_REGISTER",
-                        type = "BOSTEDSADRESSE",
-                        adresselinje1 = "Testgaten 123",
-                        adresselinje2 = null,
-                        adresselinje3 = null,
-                        postnummer = "1234",
-                        poststed = "Testbyen",
-                        landkode = "NOR",
-                        land = "Norge"
+                        navn = "",
+                        adresse = RegoppslagAdresse(
+                            adresseKilde = "BOSTEDSADRESSE",
+                            type = "NORSKPOSTADRESSE",
+                            adresselinje1 = "Testgaten 123",
+                            adresselinje2 = null,
+                            adresselinje3 = null,
+                            postnummer = "1234",
+                            poststed = "Testbyen",
+                            landkode = "NOR",
+                            land = "Norge"
+                        )
                     )
                 )
             } else {

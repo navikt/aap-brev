@@ -1,7 +1,6 @@
 package no.nav.aap.brev.distribusjon
 
 import no.nav.aap.brev.prometheus
-import no.nav.aap.brev.util.HåndterConflictResponseHandler
 import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
@@ -33,18 +32,23 @@ class RegoppslagGateway : AdresseGateway {
     }
 }
 
-data class HentPostadresseRequest(
-    val ident: String,
-)
-
-data class HentPostadresseResponse(
+data class RegoppslagAdresse(
     val adresseKilde: String,
     val type: String,
     val adresselinje1: String,
     val adresselinje2: String?,
     val adresselinje3: String?,
-    val postnummer: String,
-    val poststed: String,
+    val postnummer: String?,
+    val poststed: String?,
     val landkode: String,
-    val land: String,
+    val land: String
+)
+
+data class HentPostadresseRequest(
+    val ident: String,
+)
+
+data class HentPostadresseResponse(
+    val navn: String?,
+    val adresse: RegoppslagAdresse?
 )

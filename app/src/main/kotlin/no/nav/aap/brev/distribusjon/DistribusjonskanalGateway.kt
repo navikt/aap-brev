@@ -1,5 +1,5 @@
 package no.nav.aap.brev.distribusjon
 
 interface DistribusjonskanalGateway {
-    fun bestemDistribusjonskanal(personident: String): Distribusjonskanal?
+    fun bestemDistribusjonskanal(brukerId: String, mottakerId: String): Distribusjonskanal?
 }
