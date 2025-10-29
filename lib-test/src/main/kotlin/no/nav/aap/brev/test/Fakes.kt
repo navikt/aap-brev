@@ -7,10 +7,12 @@ import no.nav.aap.brev.test.fakes.azureFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
+import no.nav.aap.brev.test.fakes.dokdistkanalFake
 import no.nav.aap.brev.test.fakes.nomFake
 import no.nav.aap.brev.test.fakes.norgFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.pdlFake
+import no.nav.aap.brev.test.fakes.regoppslagFake
 import no.nav.aap.brev.test.fakes.safFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import org.slf4j.Logger
@@ -32,7 +34,9 @@ object Fakes : AutoCloseable {
         val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
         val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
+        val regoppslag = embeddedServer(Netty, port = 0, module = { regoppslagFake() }).apply { start() }
         val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
+        val dokdistkanal = embeddedServer(Netty, port = 0, module = { dokdistkanalFake() }).apply { start() }
         val dokdistfordeling = embeddedServer(Netty, port = 0, module = { dokdistfordelingFake() }).apply { start() }
         val nom = embeddedServer(Netty, port = 0, module = { nomFake() }).apply { start() }
         val pdl = embeddedServer(Netty, port = 0, module = { pdlFake() }).apply { start() }
@@ -44,7 +48,9 @@ object Fakes : AutoCloseable {
                 tilgang,
                 brevSanityProxy,
                 pdfGen,
+                regoppslag,
                 dokarkiv,
+                dokdistkanal,
                 dokdistfordeling,
                 saf,
             )
@@ -71,9 +77,17 @@ object Fakes : AutoCloseable {
         System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
         System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
 
+        // Regoppslag
+        System.setProperty("integrasjon.regoppslag.url", "http://localhost:${regoppslag.port()}")
+        System.setProperty("integrasjon.regoppslag.scope", "scope")
+
         // Dokarkiv
         System.setProperty("integrasjon.dokarkiv.url", "http://localhost:${dokarkiv.port()}")
         System.setProperty("integrasjon.dokarkiv.scope", "scope")
+
+        // Dokdistkanal
+        System.setProperty("integrasjon.dokdistkanal.url", "http://localhost:${dokdistkanal.port()}")
+        System.setProperty("integrasjon.dokdistkanal.scope", "scope")
 
         // Dokdistfordeling
         System.setProperty("integrasjon.dokdistfordeling.url", "http://localhost:${dokdistfordeling.port()}")

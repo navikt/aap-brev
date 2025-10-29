@@ -135,3 +135,13 @@ spec:
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
     - name: INTEGRASJON_PDL_SCOPE
       value: api://prod-fss.pdl.pdl-api/.default
+
+    - name: INTEGRASJON_REGOPPSLAG_URL
+      value: https://regoppslag.prod-fss-pub.nais.io
+    - name: INTEGRASJON_REGOPPSLAG_SCOPE
+      value: api://prod-gcp.regoppslag.teamdokumenthandtering/.default
+
+    - name: INTEGRASJON_DOKDISTKANAL_URL
+      value: https://dokdistkanal.prod-fss-pub.nais.io/rest/v1
+    - name: INTEGRASJON_DOKDISTKANAL_SCOPE
+      value: api://prod-fss.dokdistkanal.teamdokumenthandtering/.default

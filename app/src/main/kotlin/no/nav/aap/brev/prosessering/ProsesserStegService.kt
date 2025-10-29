@@ -37,7 +37,6 @@ class ProsesserStegService(
         .build()
 
     fun prosesserBestilling(referanse: BrevbestillingReferanse) {
-
         val bestilling = brevbestillingRepository.hent(referanse)
         val stegene = flyt.fraStatus(bestilling.prosesseringStatus)
 
@@ -48,9 +47,7 @@ class ProsesserStegService(
 
         stegene.forEach { steg ->
             steg.konstruer(connection).utfør(Steg.Kontekst(referanse))
-
             brevbestillingRepository.oppdaterProsesseringStatus(referanse, flyt.utfall(steg))
-
             connection.markerSavepoint()
         }
     }

@@ -21,7 +21,6 @@ class ProsesserBrevbestillingJobbUtfører(
     }
 
     companion object : Jobb {
-
         const val BESTILLING_REFERANSE_PARAMETER_NAVN = "referanse"
 
         override fun konstruer(connection: DBConnection): JobbUtfører {
