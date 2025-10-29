@@ -1,11 +1,13 @@
 package no.nav.aap.brev.distribusjon
 
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepository
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
+import no.nav.aap.brev.bestilling.OpprettetJournalpost
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
@@ -58,24 +60,7 @@ class DistribusjonService(
         journalposter
             .filter { it.distribusjonBestillingId == null }
             .forEach { journalpost ->
-                val brukerIdent = brevbestilling.brukerIdent
-                val mottaker = journalpost.mottaker
-                val mottakerIdent = mottaker.ident
-
-                // TODO Fjerne feature toggle og logging etter verifisering i prod
-                fun kanDistribuere(): Boolean {
-                    if (Miljø.erProd()) {
-                        return true;
-                    }
-                    val kanDistribuere = (mottaker.identType != IdentType.FNR) || (brukerIdent != null && mottakerIdent != null && kanBrevDistribueresTilBruker(
-                        brukerIdent,
-                        mottakerIdent
-                    ))
-                    log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
-                    return kanDistribuere
-                }
-
-                if (kanDistribuere()) {
+                if (kanDistribuere(brevbestilling, journalpost)) {
                     val distribusjonBestillingId = distribusjonGateway.distribuerJournalpost(
                         journalpost.journalpostId,
                         brevbestilling.brevtype,
@@ -88,5 +73,22 @@ class DistribusjonService(
                     journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
                 }
             }
+    }
+
+    fun kanDistribuere(brevbestilling: Brevbestilling, journalpost: OpprettetJournalpost): Boolean {
+        // TODO Fjerne feature toggle og logging etter verifisering i dev
+        if (Miljø.erProd()) {
+            return true;
+        }
+        val brukerIdent = brevbestilling.brukerIdent
+        val mottaker = journalpost.mottaker
+        val mottakerIdent = mottaker.ident
+
+        val kanDistribuere = (mottaker.identType != IdentType.FNR) || (brukerIdent != null && mottakerIdent != null && kanBrevDistribueresTilBruker(
+            brukerIdent,
+            mottakerIdent
+        ))
+        log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
+        return kanDistribuere
     }
 }
