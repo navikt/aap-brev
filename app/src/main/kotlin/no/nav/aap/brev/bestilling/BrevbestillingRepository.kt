@@ -31,6 +31,16 @@ interface BrevbestillingRepository {
         brev: Brev,
     )
 
+    fun oppdaterBrevmal(
+        id: BrevbestillingId,
+        brevmal: BrevmalJson,
+    )
+
+    fun oppdaterBrevdata(
+        id: BrevbestillingId,
+        brevdata: Brevdata,
+    )
+
     fun oppdaterProsesseringStatus(
         referanse: BrevbestillingReferanse,
         prosesseringStatus: ProsesseringStatus,
