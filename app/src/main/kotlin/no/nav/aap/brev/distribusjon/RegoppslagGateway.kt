@@ -5,6 +5,7 @@ import no.nav.aap.komponenter.config.requiredConfigForKey
 import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
+import no.nav.aap.komponenter.httpklient.httpclient.error.IkkeFunnetException
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
@@ -28,7 +29,11 @@ class RegoppslagGateway : AdresseGateway {
             )
         )
         val uri = baseUri.resolve("/rest/postadresse")
-        return client.post<HentPostadresseRequest, HentPostadresseResponse>(uri, httpRequest)
+        try {
+            return client.post<HentPostadresseRequest, HentPostadresseResponse>(uri, httpRequest)
+        } catch (_: IkkeFunnetException) {
+            return null
+        }
     }
 }
 
