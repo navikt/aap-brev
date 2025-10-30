@@ -1,14 +1,19 @@
 package no.nav.aap.brev.innhold
 
+import no.nav.aap.brev.bestilling.Brevdata
+import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.Brevdata
-import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
+import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.kontrakt.Brevmal
+import no.nav.aap.brev.kontrakt.Brevmal.BlockChildren
+import no.nav.aap.brev.kontrakt.Brevmal.DelmalValg
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import kotlin.collections.filterIsInstance
+import kotlin.collections.joinToString
 
 class BrevbyggerService(
     val brevbestillingRepository: BrevbestillingRepository,
@@ -113,5 +118,168 @@ class BrevbyggerService(
                     }
                 }
         }
+    }
+
+    fun validerAutomatiskFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        val brevmal = checkNotNull(bestilling.brevmal).tilBrevmal()
+        val brevdata = bestilling.brevdata
+        val feilmelding =
+            "Kan ikke automatisk ferdigstille brevbestilling"
+
+        valider(brevmal.kanSendesAutomatisk) {
+            "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
+        }
+
+        valider(brevmal.delmaler.all { it.obligatorisk }) {
+            "$feilmelding: Det er delmaler som ikke er obligatorisk."
+        }
+
+        validerFaktagrunnlag(brevmal.delmaler, brevdata, feilmelding)
+
+        val alleTeksteditorElementer = brevmal.delmaler.flatMap { it.delmal.teksteditor }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Valg>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder valg."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Fritekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder fritekst."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder betinget tekst."
+        }
+
+        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>().isEmpty()) {
+            "$feilmelding: Det er delmaler som inneholder periodetekst."
+        }
+    }
+
+    fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        val brevmal = bestilling.brevmal?.tilBrevmal()
+        val brevdata = bestilling.brevdata
+
+        checkNotNull(brevmal)
+        checkNotNull(brevdata)
+
+        val feilmelding =
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet"
+
+        val valgteDelmaler =
+            brevmal.delmaler.filter { delmal -> brevdata.delmaler.map { it.id }.contains(delmal.delmal._id) }
+
+        val manglendeDelmaler = brevmal.delmaler.filter { it.obligatorisk }
+            .filterNot { delmal -> brevdata.delmaler.map { it.id }.contains(delmal.delmal._id) }
+
+        valider(manglendeDelmaler.isEmpty()) {
+            "$feilmelding: Mangler obligatoriske delmaler med id ${manglendeDelmaler.joinToString(separator = ",") { it.delmal._id }}."
+        }
+
+        valgteDelmaler.forEach { delmalValg ->
+            val manglendeFritekster = delmalValg.delmal.teksteditor
+                .filterIsInstance<Brevmal.TeksteditorElement.Fritekst>()
+                .filterNot { brevdata.fritekster.map { it.key }.contains(it._key) }
+            valider(manglendeFritekster.isEmpty()) {
+                "$feilmelding: Mangler fritekst(er) med key ${
+                    manglendeFritekster.joinToString(
+                        transform = { it._key },
+                        separator = ","
+                    )
+                } for delmal med id ${delmalValg.delmal._id}."
+            }
+        }
+        validerFaktagrunnlag(brevmal.delmaler, brevdata, feilmelding)
+
+        val manglendeValg =
+            valgteDelmaler
+                .flatMap { it.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>() }
+                .filter { it.obligatorisk }
+                .filterNot { valg ->
+                    brevdata.valg.map { it.id }.contains(valg.valg._id)
+                }
+        valider(manglendeValg.isEmpty()) {
+            "$feilmelding: Obligatorisk(e) valg med id ${
+                manglendeValg.joinToString(
+                    separator = ",",
+                    transform = { it.valg._id })
+            } er ikke valgt."
+        }
+
+        val periodetekster = valgteDelmaler.flatMap { delmalValg ->
+            delmalValg.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>()
+        }
+        brevdata.periodetekster.forEach { periodetekstData ->
+            val periodetekst = periodetekster.find { it.periodetekst._id == periodetekstData.id }
+            val faktagrunnlag = periodetekst?.periodetekst?.teksteditor?.flatMap { it.children }
+                ?.filterIsInstance<BlockChildren.Faktagrunnlag>() ?: emptyList()
+            val manglendeFaktagrunnlag = faktagrunnlag.map { it.tekniskNavn }
+                .subtract(periodetekstData.faktagrunnlagMedVerdi.map { it.tekniskNavn })
+            valider(manglendeFaktagrunnlag.isEmpty()) {
+                "$feilmelding: Mangler faktagrunnlag ${manglendeFaktagrunnlag.joinToString(separator = ",")} for periodetekst."
+            }
+        }
+    }
+
+    private fun validerFaktagrunnlag(
+        delmaler: List<DelmalValg>,
+        brevdata: Brevdata?,
+        feilmelding: String
+    ) {
+        val påkrevdeFaktagrunnlag = finnAllePåkrevdeFaktagrunnlag(delmaler, brevdata)
+        val faktagrunnlagData = brevdata?.faktagrunnlag ?: emptyList()
+        val manglendeFaktagrunnlag = påkrevdeFaktagrunnlag.filterNot { påkrevdFaktagrunnlag ->
+            faktagrunnlagData.map { it.tekniskNavn }.contains(påkrevdFaktagrunnlag)
+        }
+
+        valider(manglendeFaktagrunnlag.isEmpty()) {
+            "$feilmelding: Mangler faktagrunnlag for ${manglendeFaktagrunnlag.joinToString(separator = ",")}."
+        }
+    }
+
+    private fun finnAllePåkrevdeFaktagrunnlag(delmaler: List<DelmalValg>, brevdata: Brevdata?): List<String> {
+        val valgteDelmaler = brevdata?.delmaler ?: emptyList()
+        val relevanteDelmaler =
+            delmaler.filter { delmal -> valgteDelmaler.map { it.id }.contains(delmal.delmal._id) }
+        return relevanteDelmaler.flatMap { valgtDelmal ->
+            valgtDelmal.delmal.teksteditor.flatMap { teksteditorElement ->
+                when (teksteditorElement) {
+                    is Brevmal.TeksteditorElement.Block -> {
+                        filtrerFaktagrunnlag(teksteditorElement)
+                    }
+
+                    is Brevmal.TeksteditorElement.BetingetTekst -> {
+                        teksteditorElement.tekst.teksteditor.flatMap { filtrerFaktagrunnlag(it) }
+                    }
+
+                    is Brevmal.TeksteditorElement.Valg -> {
+                        val valgData = brevdata?.valg?.find { it.id == teksteditorElement.valg._id }
+                        if (valgData != null) {
+                            teksteditorElement.valg.alternativer
+                                .filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
+                                .find { it._key == valgData.valgt }
+                                ?.tekst?.teksteditor
+                                ?.flatMap { filtrerFaktagrunnlag(it) } ?: emptyList()
+                        } else {
+                            emptyList()
+                        }
+                    }
+
+                    is Brevmal.TeksteditorElement.Periodetekst -> {
+                        emptyList() // har faktagrunnlag men flere verdier for samme faktagrunnlag
+                    }
+
+                    is Brevmal.TeksteditorElement.Fritekst -> {
+                        emptyList()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun filtrerFaktagrunnlag(block: Brevmal.TeksteditorElement.Block): List<String> {
+        return block.children.filterIsInstance<Brevmal.BlockChildren.Faktagrunnlag>()
+            .map { it.tekniskNavn }
     }
 }
