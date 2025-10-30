@@ -24,4 +24,11 @@ class BrevinnholdService(
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
     }
+
+    fun hentOgLagreBrevmal(referanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        val brevmal = brevinnholdGateway.hentBrevmal(bestilling.brevtype, bestilling.språk)
+
+        brevbestillingRepository.oppdaterBrevmal(bestilling.id, brevmal)
+    }
 }

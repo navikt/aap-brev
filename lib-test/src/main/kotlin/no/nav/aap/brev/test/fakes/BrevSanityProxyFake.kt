@@ -3,6 +3,7 @@ package no.nav.aap.brev.test.fakes
 import io.ktor.server.application.Application
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Blokk
@@ -14,6 +15,7 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
+import no.nav.aap.brev.test.BrevmalBuilder
 import java.util.UUID
 
 fun brev(
@@ -116,6 +118,50 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_11_9 -> brev()
             }
             call.respond(brev)
+        }
+        get("/api/brevmal") {
+            val brevtype = Brevtype.valueOf(checkNotNull(call.queryParameters.get("brevtype")))
+            val brevmal = when (brevtype) {
+                Brevtype.FORVALTNINGSMELDING,
+                Brevtype.VARSEL_OM_BESTILLING -> BrevmalBuilder.builder {
+                    kanSendesAutomatisk = true
+                    delmal {
+                        obligatorisk = true
+                    }
+                }
+
+                else -> {
+                    BrevmalBuilder.builder {
+                        kanSendesAutomatisk = false
+                        delmal {
+                            obligatorisk = false
+                        }
+                        delmal {
+                            faktagrunnlag(KjentFaktagrunnlag.AAP_FOM_DATO.name)
+                            valg {
+                                obligatorisk = true
+                                alternativ("kategori_1", listOf(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name))
+                                alternativ("kategori_2", emptyList())
+                            }
+                            periodetekst(
+                                listOf(
+                                    KjentFaktagrunnlag.FRIST_DATO_11_7.name,
+                                    KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name
+                                )
+                            )
+                            betingetTekst(
+                                listOf("kategori_1"), listOf(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name)
+                            )
+                            fritekst()
+                        }
+                    }
+                }
+            }
+            call.respond(brevmal)
+        }
+
+        post("/api/pdf") {
+            call.respond(ByteArray(0))
         }
     }
 }
