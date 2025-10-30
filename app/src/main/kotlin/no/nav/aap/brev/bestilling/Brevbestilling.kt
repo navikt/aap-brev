@@ -12,6 +12,8 @@ data class Brevbestilling(
     val saksnummer: Saksnummer,
     val referanse: BrevbestillingReferanse,
     val brev: Brev?,
+    val brevmal: BrevmalJson?,
+    val brevdata: Brevdata?,
     val brukerIdent: String?,
     val signaturer: List<SorterbarSignatur>,
     val opprettet: LocalDateTime,
