@@ -21,11 +21,11 @@ fun Brevbestilling.tilResponse(): BrevbestillingResponse =
         behandlingReferanse = behandlingReferanse.referanse,
         brevtype = brevtype,
         språk = språk,
-        status = utledStatus(prosesseringStatus)
+        status = utledStatus(status, prosesseringStatus)
     )
 
-fun utledStatus(prosesseringStatus: ProsesseringStatus?): Status =
-    when (prosesseringStatus) {
+fun utledStatus(status: Status?, prosesseringStatus: ProsesseringStatus?): Status =
+    status ?: when (prosesseringStatus) {
         null,
         ProsesseringStatus.BREVBESTILLING_LØST -> Status.UNDER_ARBEID
 

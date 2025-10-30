@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val ktorVersion = "3.3.1"
-val komponenterVersjon = "1.0.400"
-val tilgangVersjon = "1.0.136"
+val komponenterVersjon = "1.0.414"
+val tilgangVersjon = "1.0.143"
 val junitVersjon = "5.13.1"
 
 plugins {
@@ -38,7 +38,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
     implementation("io.micrometer:micrometer-registry-prometheus:1.15.5")
-    implementation("ch.qos.logback:logback-classic:1.5.19")
+    implementation("ch.qos.logback:logback-classic:1.5.20")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
@@ -59,8 +59,8 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.14.1")
-    implementation("org.postgresql:postgresql:42.7.7")
+    implementation("org.flywaydb:flyway-database-postgresql:11.15.0")
+    implementation("org.postgresql:postgresql:42.7.8")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersjon")

@@ -279,7 +279,6 @@ class BrevbestillingService(
                 val sak = journalpost.sak
                 val feilmelding =
                     "Kan ikke legge ved dokument, dokumentInfoId=${dokumentInfoId.id} fra journalpostId=${journalpostId.id} i bestilling for sak ${saksnummer.nummer}"
-
                 valider(
                     sak.fagsakId == saksnummer.nummer &&
                             sak.fagsaksystem == "KELVIN" &&
@@ -289,21 +288,14 @@ class BrevbestillingService(
                     "$feilmelding: Ulik sak."
                 }
 
-                valider(journalpost.brukerHarTilgang) {
-                    "$feilmelding: Bruker har ikke tilgang til journalpost."
-                }
-
-                valider(journalpost.journalstatus == "FERDIGSTILT" || journalpost.journalstatus == "EKSPEDERT") {
+                val tillatteJournalstatuser = setOf("FERDIGSTILT", "EKSPEDERT", "FEILREGISTRERT")
+                valider(tillatteJournalstatuser.contains(journalpost.journalstatus)) {
                     "$feilmelding: Feil status ${journalpost.journalstatus}."
                 }
 
                 val dokument = journalpost.dokumenter.find { it.dokumentInfoId == dokumentInfoId }
                 valider(dokument != null) {
                     "$feilmelding: Fant ikke dokument i journalpost."
-                }
-
-                valider(dokument?.dokumentvarianter?.find { it.brukerHarTilgang } != null) {
-                    "$feilmelding: Bruker har ikke tilgang til dokumentet."
                 }
             }
         }

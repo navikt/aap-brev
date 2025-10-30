@@ -159,27 +159,7 @@ class BestillingValideringTest {
 
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (journalposten)`(brukV3: Boolean) {
-        val saksnummer = randomSaksnummer()
-        val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIArkivet(
-            journalpostId = randomJournalpostId(),
-            saksnummer = saksnummer,
-            dokumentInfoId = dokumentInfoId,
-            brukerHarTilgangTilJournalpost = false
-        )
-
-        validerFeilVedBestilling(
-            brukV3 = brukV3,
-            saksnummer = saksnummer,
-            vedlegg = journalpost.somVedlegg(),
-            feilmelding = "Bruker har ikke tilgang til journalpost."
-        )
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [true, false])
-    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT eller EKSPEDERT`(brukV3: Boolean) {
+    fun `validering feiler dersom vedlegg ikke journalstatus FERDIGSTILT, EKSPEDERT eller FEILREGISTRERT`(brukV3: Boolean) {
         val saksnummer = randomSaksnummer()
         val dokumentInfoId = randomDokumentInfoId()
         val journalpost = gittJournalpostIArkivet(
@@ -212,26 +192,6 @@ class BestillingValideringTest {
             saksnummer = saksnummer,
             vedlegg = setOf(Vedlegg(journalpost.journalpostId, randomDokumentInfoId())),
             feilmelding = "Fant ikke dokument i journalpost."
-        )
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = [true, false])
-    fun `validering feiler dersom bruker ikke har tilgang til vedlegg (dokument)`(brukV3: Boolean) {
-        val saksnummer = randomSaksnummer()
-        val dokumentInfoId = randomDokumentInfoId()
-        val journalpost = gittJournalpostIArkivet(
-            journalpostId = randomJournalpostId(),
-            saksnummer = saksnummer,
-            dokumentInfoId = dokumentInfoId,
-            brukerHarTilgangTilDokument = false,
-        )
-
-        validerFeilVedBestilling(
-            brukV3 = brukV3,
-            saksnummer = saksnummer,
-            vedlegg = journalpost.somVedlegg(),
-            feilmelding = "Bruker har ikke tilgang til dokumentet."
         )
     }
 

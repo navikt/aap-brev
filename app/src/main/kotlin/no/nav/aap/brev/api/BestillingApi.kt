@@ -38,7 +38,6 @@ import no.nav.aap.tilgang.authorizedPut
 import org.slf4j.MDC
 import javax.sql.DataSource
 
-
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
 
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
