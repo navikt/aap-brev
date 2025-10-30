@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import kotlin.io.bufferedReader
 import kotlin.io.readText
-import kotlin.jvm.java
 
 object FileUtils {
     fun lesFil(filnavn: String): String {
