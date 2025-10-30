@@ -11,12 +11,11 @@ import no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Brevmal
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Formattering
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Tekstbolk
-import no.nav.aap.brev.test.FileUtils
+import no.nav.aap.brev.test.BrevmalBuilder
 import java.util.UUID
 
 fun brev(
@@ -124,9 +123,39 @@ fun Application.brevSanityProxyFake() {
             val brevtype = Brevtype.valueOf(checkNotNull(call.queryParameters.get("brevtype")))
             val brevmal = when (brevtype) {
                 Brevtype.FORVALTNINGSMELDING,
-                Brevtype.VARSEL_OM_BESTILLING -> FileUtils.lesFilTilJson<Brevmal>("brevmal_automatisk.json")
+                Brevtype.VARSEL_OM_BESTILLING -> BrevmalBuilder.builder {
+                    kanSendesAutomatisk = true
+                    delmal {
+                        obligatorisk = true
+                    }
+                }
 
-                else -> FileUtils.lesFilTilJson<Brevmal>("brevmal.json")
+                else -> {
+                    BrevmalBuilder.builder {
+                        kanSendesAutomatisk = false
+                        delmal {
+                            obligatorisk = false
+                        }
+                        delmal {
+                            faktagrunnlag(KjentFaktagrunnlag.AAP_FOM_DATO.name)
+                            valg {
+                                obligatorisk = true
+                                alternativ("kategori_1", listOf(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name))
+                                alternativ("kategori_2", emptyList())
+                            }
+                            periodetekst(
+                                listOf(
+                                    KjentFaktagrunnlag.FRIST_DATO_11_7.name,
+                                    KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name
+                                )
+                            )
+                            betingetTekst(
+                                listOf("kategori_1"), listOf(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name)
+                            )
+                            fritekst()
+                        }
+                    }
+                }
             }
             call.respond(brevmal)
         }
