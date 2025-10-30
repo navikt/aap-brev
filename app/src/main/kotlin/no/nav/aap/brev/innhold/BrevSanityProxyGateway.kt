@@ -1,5 +1,6 @@
 package no.nav.aap.brev.innhold
 
+import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -28,6 +29,22 @@ class BrevSanityProxyGateway : BrevinnholdGateway {
         språk: Språk
     ): Brev {
         val uri = baseUri.resolve("/api/mal?brevtype=$brevtype&sprak=$språk")
+        val httpRequest = GetRequest(
+            additionalHeaders = listOf(
+                Header("Accept", "application/json")
+            )
+        )
+
+        return checkNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
+            DefaultJsonMapper.fromJson(body)
+        }))
+    }
+
+    override fun hentBrevmal(
+        brevtype: Brevtype,
+        språk: Språk
+    ): BrevmalJson {
+        val uri = baseUri.resolve("/api/brevmal?brevtype=$brevtype&sprak=$språk")
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
                 Header("Accept", "application/json")
