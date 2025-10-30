@@ -159,5 +159,9 @@ fun Application.brevSanityProxyFake() {
             }
             call.respond(brevmal)
         }
+
+        post("/api/pdf") {
+            call.respond(ByteArray(0))
+        }
     }
 }
