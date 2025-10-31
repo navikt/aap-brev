@@ -25,4 +25,8 @@ data class Brevbestilling(
     val status: Status?,
     val prosesseringStatus: ProsesseringStatus?,
     val vedlegg: Set<Vedlegg>,
-)
+) {
+    fun erBestillingMedBrevmal(): Boolean {
+        return brev == null && brevmal != null && brevdata != null
+    }
+}

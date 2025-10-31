@@ -1,13 +1,16 @@
 package no.nav.aap.brev.api
 
 import no.nav.aap.brev.bestilling.Brevbestilling
+import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
+import no.nav.aap.brev.kontrakt.OppdaterBrevdataRequest
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
-import java.util.*
+import no.nav.aap.komponenter.json.DefaultJsonMapper
+import java.util.UUID
 
 fun Brevbestilling.tilResponse(): BrevbestillingResponse =
     BrevbestillingResponse(
@@ -62,5 +65,42 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
     mottaker.tilMottaker(
         bestillingReferanse = bestillingReferanse,
         index = index
+    )
+}
+
+fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
+    return Brevdata(
+        delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
+        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
+            Brevdata.FaktagrunnlagMedVerdi(
+                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
+                verdi = faktagrunnlagMedVerdi.verdi
+            )
+        },
+        periodetekster = periodetekster.map { periodetekst ->
+            Brevdata.Periodetekst(
+                id = periodetekst.id,
+                faktagrunnlagMedVerdi = periodetekst.faktagrunnlagMedVerdi.map { faktagrunnlagMedVerdi ->
+                    Brevdata.FaktagrunnlagMedVerdi(
+                        tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
+                        verdi = faktagrunnlagMedVerdi.verdi
+                    )
+                }
+            )
+        },
+        valg = valg.map { valg ->
+            Brevdata.Valg(
+                valg.id,
+                valg.valgt,
+                valg.fritekstJson?.let { fritekst -> DefaultJsonMapper.fromJson(fritekst) },
+            )
+        },
+        betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
+        fritekster = fritekster.map { fritekst ->
+            Brevdata.FritekstMedKey(
+                fritekst.key,
+                DefaultJsonMapper.fromJson(fritekst.fritekstJson)
+            )
+        },
     )
 }

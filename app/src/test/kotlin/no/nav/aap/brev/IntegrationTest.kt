@@ -42,6 +42,7 @@ abstract class IntegrationTest {
     }
 
     fun opprettBrevbestilling(
+        brukV3: Boolean = false,
         saksnummer: Saksnummer = randomSaksnummer(),
         brukerIdent: String = randomBrukerIdent(),
         behandlingReferanse: BehandlingReferanse = randomBehandlingReferanse(),
@@ -54,17 +55,32 @@ abstract class IntegrationTest {
     ): OpprettBrevbestillingResultat {
         return dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            brevbestillingService.opprettBestillingV2(
-                saksnummer = saksnummer,
-                brukerIdent = brukerIdent,
-                behandlingReferanse = behandlingReferanse,
-                unikReferanse = unikReferanse,
-                brevtype = brevtype,
-                språk = språk,
-                faktagrunnlag = faktagrunnlag,
-                vedlegg = vedlegg,
-                ferdigstillAutomatisk = ferdigstillAutomatisk,
-            )
+            if (brukV3) {
+                brevbestillingService.opprettBestillingV3(
+                    saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    faktagrunnlag = faktagrunnlag,
+                    vedlegg = vedlegg,
+                    ferdigstillAutomatisk = ferdigstillAutomatisk,
+                )
+            } else {
+                brevbestillingService.opprettBestillingV2(
+                    saksnummer = saksnummer,
+                    brukerIdent = brukerIdent,
+                    behandlingReferanse = behandlingReferanse,
+                    unikReferanse = unikReferanse,
+                    brevtype = brevtype,
+                    språk = språk,
+                    faktagrunnlag = faktagrunnlag,
+                    vedlegg = vedlegg,
+                    ferdigstillAutomatisk = ferdigstillAutomatisk,
+                )
+
+            }
         }
     }
 
