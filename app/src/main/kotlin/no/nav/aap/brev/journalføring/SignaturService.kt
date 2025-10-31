@@ -73,7 +73,7 @@ class SignaturService(
 
             Brevtype.VEDTAK_ENDRING, Brevtype.VARSEL_OM_BESTILLING, Brevtype.AVSLAG, Brevtype.INNVILGELSE,
             Brevtype.KLAGE_AVVIST, Brevtype.KLAGE_OPPRETTHOLDELSE, Brevtype.KLAGE_TRUKKET, Brevtype.VEDTAK_11_7,
-            Brevtype.VEDTAK_11_9, Brevtype.VEDTAK_11_17, Brevtype.VEDTAK_11_18 -> {
+            Brevtype.VEDTAK_11_9, Brevtype.OMGJORT_VEDTAK_11_9, Brevtype.VEDTAK_11_17, Brevtype.VEDTAK_11_18 -> {
                 false
             }
         }

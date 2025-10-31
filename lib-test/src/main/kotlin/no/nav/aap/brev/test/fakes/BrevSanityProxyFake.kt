@@ -116,6 +116,7 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.FORVALTNINGSMELDING -> brev()
                 Brevtype.VEDTAK_11_7 -> brev()
                 Brevtype.VEDTAK_11_9 -> brev()
+                Brevtype.OMGJORT_VEDTAK_11_9 -> brev()
             }
             call.respond(brev)
         }
