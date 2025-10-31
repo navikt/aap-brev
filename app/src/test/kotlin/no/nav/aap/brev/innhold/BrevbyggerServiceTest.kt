@@ -195,7 +195,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
-             delmal {
+            delmal {
                 faktagrunnlag(KjentFaktagrunnlag.AAP_FOM_DATO.name)
                 val valg1 = valg {
                     obligatorisk = true
