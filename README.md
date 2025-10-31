@@ -1,6 +1,11 @@
 # aap-brev
-
 [![release](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml/badge.svg)](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml)
+
+aap-brev håndterer bestilling, journalføring og distribusjon av brev. Se sysdoc for teknisk beskrivelse: https://aap-sysdoc.ansatt.nav.no/funksjonalitet/Brev/teknisk/
+
+## API-dokumentasjon
+
+APIene er dokumentert med Swagger: https://aap-brev.intern.dev.nav.no/swagger-ui/index.html
 
 ## Komme i gang
 
@@ -14,14 +19,23 @@ Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på Git
 
 Interne henvendelser kan sendes via Slack i kanalen `#po-aap-team-aap`.
 
-## Bumpe Gradle wrapper
+## Lokalt utviklingsmiljø
 
-Kjør
+### Laste ned private pakker
+For at Gradle skal finne private pakker på Github, legg dette i `$HOME/.gradle/gradle.properties`
+
 ```
-./gradlew wrapper --gradle-version=8.13 && ./gradlew wrapper
+githubUser=<github-brukernavn>
+githubPassword=<github-token>
 ```
 
-## Kjøre lokalt mot dev-gcp
+### Kjøre lokalt
+
+Kjør`TestAppKt`. Appen vil da kjøre på localhost:8082. Alternativt, for å unngå å starte IntelliJ, gå i rotmappen og kjør:
+
+```./gradlew runTestApp ```
+
+### Kjøre lokalt mot dev-gcp
 
 Prosjektet inneholder en run config som kan kjøres av IntelliJ. Burde være synlig under "Run configurations" med navnet
 `dev-gcp.run.xml`.
