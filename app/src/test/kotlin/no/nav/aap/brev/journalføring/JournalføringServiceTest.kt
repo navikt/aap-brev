@@ -68,10 +68,10 @@ class JournalføringServiceTest : IntegrationTest() {
                 ),
                 bestillingMottakerReferanse = bestillingMottakerReferanse2
             )
-            if (bestilling.brevdata != null) {
+            if (brukV3) {
                 brevbestillingService.oppdaterBrevdata(
                     bestilling.referanse,
-                    bestilling.brevdata.copy(
+                    bestilling.brevdata!!.copy(
                         faktagrunnlag = bestilling.brevdata.faktagrunnlag
                             .plus(FaktagrunnlagMedVerdi("VAR_1", ""))
                             .plus(FaktagrunnlagMedVerdi("VAR_2", "")),
