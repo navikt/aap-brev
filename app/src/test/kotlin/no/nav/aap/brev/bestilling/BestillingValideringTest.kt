@@ -1,10 +1,10 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.arkivoppslag.Journalpost
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.test.fakes.gittJournalpostIArkivet
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrukerIdent
@@ -13,26 +13,13 @@ import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import kotlin.booleanArrayOf
 
-class BestillingValideringTest {
-
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
-
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
+class BestillingValideringTest : IntegrationTest() {
 
     @ParameterizedTest
     @ValueSource(booleans = [true, false])
@@ -45,36 +32,23 @@ class BestillingValideringTest {
             saksnummer = saksnummer,
             dokumentInfoId = dokumentInfoId
         )
+        val referanse =
+            opprettBrevbestilling(
+                brukV3 = brukV3,
+                saksnummer = saksnummer,
+                brukerIdent = brukerIdent,
+                behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = randomUnikReferanse(),
+                brevtype = Brevtype.INNVILGELSE,
+                språk = Språk.NB,
+                faktagrunnlag = emptySet(),
+                vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
+                ferdigstillAutomatisk = false,
+            ).brevbestilling.referanse
+
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
             val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
 
-            val referanse =
-                if (brukV3) {
-                    brevbestillingService.opprettBestillingV3(
-                        saksnummer = saksnummer,
-                        brukerIdent = brukerIdent,
-                        behandlingReferanse = randomBehandlingReferanse(),
-                        unikReferanse = randomUnikReferanse(),
-                        brevtype = Brevtype.INNVILGELSE,
-                        språk = Språk.NB,
-                        faktagrunnlag = emptySet(),
-                        vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                        ferdigstillAutomatisk = false,
-                    ).brevbestilling.referanse
-                } else {
-                    brevbestillingService.opprettBestillingV2(
-                        saksnummer = saksnummer,
-                        brukerIdent = brukerIdent,
-                        behandlingReferanse = randomBehandlingReferanse(),
-                        unikReferanse = randomUnikReferanse(),
-                        brevtype = Brevtype.INNVILGELSE,
-                        språk = Språk.NB,
-                        faktagrunnlag = emptySet(),
-                        vedlegg = setOf(Vedlegg(journalpost.journalpostId, dokumentInfoId)),
-                        ferdigstillAutomatisk = false,
-                    ).brevbestilling.referanse
-                }
             assertNotNull(brevbestillingRepository.hent(referanse))
         }
     }
@@ -206,33 +180,19 @@ class BestillingValideringTest {
         feilmelding: String,
     ) {
         dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection)
             val exception = assertThrows<ValideringsfeilException> {
-                if (brukV3) {
-                    brevbestillingService.opprettBestillingV3(
-                        saksnummer = saksnummer,
-                        brukerIdent = randomBrukerIdent(),
-                        behandlingReferanse = randomBehandlingReferanse(),
-                        unikReferanse = randomUnikReferanse(),
-                        brevtype = Brevtype.INNVILGELSE,
-                        språk = Språk.NB,
-                        faktagrunnlag = emptySet(),
-                        vedlegg = vedlegg,
-                        ferdigstillAutomatisk = false,
-                    )
-                } else {
-                    brevbestillingService.opprettBestillingV2(
-                        saksnummer = saksnummer,
-                        brukerIdent = randomBrukerIdent(),
-                        behandlingReferanse = randomBehandlingReferanse(),
-                        unikReferanse = randomUnikReferanse(),
-                        brevtype = Brevtype.INNVILGELSE,
-                        språk = Språk.NB,
-                        faktagrunnlag = emptySet(),
-                        vedlegg = vedlegg,
-                        ferdigstillAutomatisk = false,
-                    )
-                }
+                opprettBrevbestilling(
+                    brukV3 = brukV3,
+                    saksnummer = saksnummer,
+                    brukerIdent = randomBrukerIdent(),
+                    behandlingReferanse = randomBehandlingReferanse(),
+                    unikReferanse = randomUnikReferanse(),
+                    brevtype = Brevtype.INNVILGELSE,
+                    språk = Språk.NB,
+                    faktagrunnlag = emptySet(),
+                    vedlegg = vedlegg,
+                    ferdigstillAutomatisk = false,
+                )
             }
             assertThat(exception.message).endsWith(feilmelding)
         }
