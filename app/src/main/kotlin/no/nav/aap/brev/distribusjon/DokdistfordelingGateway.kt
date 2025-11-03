@@ -55,7 +55,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.KLAGE_AVVIST,
             Brevtype.VEDTAK_11_7,
             Brevtype.VEDTAK_11_9,
-            Brevtype.OMGJORT_VEDTAK_11_9,
+            Brevtype.OMGJØRING_VEDTAK_11_9,
             Brevtype.VEDTAK_11_17,
             Brevtype.VEDTAK_11_18
                 -> Distribusjonstype.VEDTAK
