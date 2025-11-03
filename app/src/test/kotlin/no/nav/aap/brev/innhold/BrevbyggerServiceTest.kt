@@ -21,7 +21,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.Year
 
 class BrevbyggerServiceTest : IntegrationTest() {
 
@@ -31,7 +33,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
         val aapFomDato = Faktagrunnlag.AapFomDato(LocalDate.now())
         val faktagrunnlag = setOf(aapFomDato)
 
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
         oppdaterBrevmalJson(bestilling.id, brevmal)
         lagreInitiellBrevdata(bestilling.referanse, faktagrunnlag)
 
@@ -54,14 +56,29 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling er ok dersom brevet kan sendes`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
+        lagreInitiellBrevdata(
+            bestilling.referanse, setOf(
+                Faktagrunnlag.AapFomDato(LocalDate.now()), Faktagrunnlag.GrunnlagBeregning(
+                    beregningstidspunkt = LocalDate.now(),
+                    beregningsgrunnlag = BigDecimal("123123"),
+                    inntekterPerÅr = listOf(
+                        Faktagrunnlag.GrunnlagBeregning.InntektPerÅr(
+                            Year.of(2022),
+                            BigDecimal("321321")
+                        )
+                    )
+                )
+            )
+        )
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
             delmal {
                 obligatorisk = false
             }
             delmal {
+
                 obligatorisk = true
                 faktagrunnlag(KjentFaktagrunnlag.AAP_FOM_DATO.name)
                 val valg1 = valg {
@@ -119,7 +136,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
             }
 
         })
-
         assertDoesNotThrow {
             validerFerdigstilling(bestilling.referanse)
         }
@@ -127,7 +143,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom obligatorisk delmal ikke er valgt`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         var manglendeDelmal: Brevmal.DelmalValg? = null
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
@@ -152,7 +168,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom fritekst i valgt delmal mangler`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         var delmalMedMangler: Brevmal.DelmalValg? = null
         var manglendeFritekst: Brevmal.TeksteditorElement.Fritekst? = null
@@ -175,7 +191,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom faktagrunnlag mangler verdi`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
@@ -213,7 +229,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom obligatorisk valg ikke er valgt`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         var delmalMedMangler: Brevmal.DelmalValg? = null
         var manglendeValg: Brevmal.TeksteditorElement.Valg? = null
@@ -240,7 +256,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom valgt valg mangler faktagrunnlag`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
@@ -275,7 +291,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerFerdigstilling feiler dersom valgt periodetekst mangler faktagrunnlag`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
@@ -310,7 +326,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling er ok dersom brevet kan sendes automatisk`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
             delmal {
@@ -326,7 +342,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevet ikke kan sendes automatisk`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
@@ -341,7 +357,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevet har delmaler som ikke er obligatorisk`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
@@ -357,7 +373,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevmal har faktagrunnlag uten verdi`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
@@ -378,7 +394,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevmal inneholder valg`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
@@ -402,7 +418,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevmal inneholder fritekst`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
@@ -421,7 +437,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevmal inneholder betinget tekst`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
@@ -441,7 +457,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
     @Test
     fun `validerAutomatiskFerdigstilling feiler dersom brevmal inneholder periodetekst`() {
-        val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true

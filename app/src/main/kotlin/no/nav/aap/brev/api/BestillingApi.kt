@@ -1,5 +1,6 @@
 package no.nav.aap.brev.api
 
+import no.nav.aap.brev.kontrakt.OppdaterBrevdataRequest
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
@@ -27,6 +28,7 @@ import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.Operasjon
@@ -79,7 +81,48 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                                     bestillingResultat.brevbestilling.referanse.referanse,
                                 ), httpStatusCode
                             )
+                        }
+                }
+            }
+        }
+        route("/v3/bestill") {
+            authorizedPost<Unit, BestillBrevResponse, BestillBrevV2Request>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.SAKSNUMMER.key, request.saksnummer).use {
+                    MDC.putCloseable(MDCNøkler.BEHANDLING_REFERANSE.key, request.behandlingReferanse.toString())
+                        .use {
+                            if (Miljø.erProd()) {
+                                respondWithStatus(HttpStatusCode.NotImplemented)
+                                return@authorizedPost
+                            }
+                            val bestillingResultat = dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection).opprettBestillingV3(
+                                    saksnummer = Saksnummer(request.saksnummer),
+                                    brukerIdent = request.brukerIdent,
+                                    behandlingReferanse = BehandlingReferanse(request.behandlingReferanse),
+                                    unikReferanse = UnikReferanse(request.unikReferanse),
+                                    brevtype = request.brevtype,
+                                    språk = request.sprak,
+                                    faktagrunnlag = request.faktagrunnlag,
+                                    vedlegg = request.vedlegg.map {
+                                        Vedlegg(
+                                            JournalpostId(it.journalpostId),
+                                            DokumentInfoId(it.dokumentInfoId)
+                                        )
+                                    }.toSet(),
+                                    ferdigstillAutomatisk = request.ferdigstillAutomatisk,
+                                )
+                            }
+                            val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
+                                HttpStatusCode.Conflict
+                            } else {
+                                HttpStatusCode.Created
+                            }
 
+                            respond(
+                                BestillBrevResponse(
+                                    bestillingResultat.brevbestilling.referanse.referanse,
+                                ), httpStatusCode
+                            )
                         }
                 }
             }
@@ -110,6 +153,21 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                             dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection)
                                     .oppdaterBrev(referanse.brevbestillingReferanse, brev)
+                            }
+                            respondWithStatus(HttpStatusCode.NoContent)
+                        }
+                    }
+                }
+                route("/v3/oppdater") {
+                    authorizedPut<BrevbestillingReferansePathParam, Unit, OppdaterBrevdataRequest>(authorizationBodyPathConfig) { referanse, brevdata ->
+                        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
+                            if (Miljø.erProd()) {
+                                respondWithStatus(HttpStatusCode.NotImplemented)
+                                return@authorizedPut
+                            }
+                            dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection)
+                                    .oppdaterBrevdata(referanse.brevbestillingReferanse, brevdata.tilBrevdata())
                             }
                             respondWithStatus(HttpStatusCode.NoContent)
                         }
