@@ -139,7 +139,7 @@ spec:
     - name: INTEGRASJON_REGOPPSLAG_URL
       value: https://regoppslag.prod-fss-pub.nais.io
     - name: INTEGRASJON_REGOPPSLAG_SCOPE
-      value: api://prod-gcp.teamdokumenthandtering.regoppslag/.default
+      value: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 
     - name: INTEGRASJON_DOKDISTKANAL_URL
       value: https://dokdistkanal.prod-fss-pub.nais.io/rest/v1
