@@ -76,19 +76,19 @@ class DistribusjonService(
     }
 
     fun kanDistribuere(brevbestilling: Brevbestilling, journalpost: OpprettetJournalpost): Boolean {
-        // TODO Fjerne feature toggle og logging etter verifisering i dev
-        if (Miljø.erProd()) {
-            return true;
-        }
         val brukerIdent = brevbestilling.brukerIdent
         val mottaker = journalpost.mottaker
         val mottakerIdent = mottaker.ident
-
         val kanDistribuere = (mottaker.identType != IdentType.FNR) || (brukerIdent != null && mottakerIdent != null && kanBrevDistribueresTilBruker(
             brukerIdent,
             mottakerIdent
         ))
+
+        // TODO Fjerne logging og feature toggle etter verifisering i prod
         log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
+        if (Miljø.erProd()) {
+            return true
+        }
         return kanDistribuere
     }
 }
