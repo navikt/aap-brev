@@ -87,7 +87,7 @@ jobs:
       manifest: .nais/dev.yaml
 
   deploy-prod:
-    needs: [ build,deploy-dev ]
+    needs: [ build,publiser-kontrakt,deploy-dev ]
     permissions:
       contents: read
       id-token: write
