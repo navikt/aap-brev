@@ -1,7 +1,7 @@
 package no.nav.aap.brev.kontrakt
 
-class KanDistribuereBrevReponse (
-    mottakereDistStatus: List<MottakerDistStatus>
+data class KanDistribuereBrevReponse (
+    val mottakereDistStatus: List<MottakerDistStatus>
 )
 
 data class MottakerDistStatus(
