@@ -16,17 +16,25 @@ import no.nav.aap.brev.test.randomNavIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import no.nav.aap.komponenter.dbtest.TestDataSource
 import no.nav.aap.komponenter.json.DefaultJsonMapper
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class BrevbestillingRepositoryImplTest {
 
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
+    private lateinit var dataSource: TestDataSource
+
+    @BeforeEach
+    fun setup() {
+        dataSource = TestDataSource()
     }
+
+    @AfterEach
+    fun tearDown() = dataSource.close()
 
     @Test
     fun `lagrer, henter og oppdaterer`() {

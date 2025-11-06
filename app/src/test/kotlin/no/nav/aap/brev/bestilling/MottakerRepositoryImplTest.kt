@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrevtype
 import no.nav.aap.brev.test.randomBrukerIdent
@@ -8,15 +7,23 @@ import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import no.nav.aap.komponenter.dbtest.TestDataSource
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class MottakerRepositoryImplTest  {
 
-    companion object {
-        private val dataSource = InitTestDatabase.freshDatabase()
+    private lateinit var dataSource: TestDataSource
+
+    @BeforeEach
+    fun setup() {
+        dataSource = TestDataSource()
     }
+
+    @AfterEach
+    fun tearDown() = dataSource.close()
 
     @Test
     fun `lagrer og henter`() {

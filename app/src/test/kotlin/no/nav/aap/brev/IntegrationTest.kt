@@ -22,24 +22,32 @@ import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.dbtest.InitTestDatabase
+import no.nav.aap.komponenter.dbtest.TestDataSource
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import kotlin.random.Random
 
 abstract class IntegrationTest {
 
     companion object {
-
-        @JvmStatic
-        protected val dataSource = InitTestDatabase.freshDatabase()
-
         @BeforeAll
         @JvmStatic
         fun beforeAll() {
             Fakes.start()
         }
     }
+
+    lateinit var dataSource: TestDataSource
+
+    @BeforeEach
+    fun setup() {
+        dataSource = TestDataSource()
+    }
+
+    @AfterEach
+    fun tearDown() = dataSource.close()
 
     fun opprettBrevbestilling(
         brukV3: Boolean = false,
