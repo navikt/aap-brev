@@ -71,8 +71,8 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
 fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
     return Brevdata(
         delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
-        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            Brevdata.FaktagrunnlagMedVerdi(
+        faktagrunnlag = this@tilBrevdata.faktagrunnlag.map { faktagrunnlagMedVerdi ->
+            Brevdata.Faktagrunnlag(
                 tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                 verdi = faktagrunnlagMedVerdi.verdi
             )
@@ -80,8 +80,8 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
         periodetekster = periodetekster.map { periodetekst ->
             Brevdata.Periodetekst(
                 id = periodetekst.id,
-                faktagrunnlagMedVerdi = periodetekst.faktagrunnlagMedVerdi.map { faktagrunnlagMedVerdi ->
-                    Brevdata.FaktagrunnlagMedVerdi(
+                faktagrunnlag = periodetekst.faktagrunnlag.map { faktagrunnlagMedVerdi ->
+                    Brevdata.Faktagrunnlag(
                         tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                         verdi = faktagrunnlagMedVerdi.verdi
                     )
@@ -91,13 +91,13 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
         valg = valg.map { valg ->
             Brevdata.Valg(
                 valg.id,
-                valg.valgt,
-                valg.fritekstJson?.let { fritekst -> DefaultJsonMapper.fromJson(fritekst) },
+                valg.key,
             )
         },
         betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
         fritekster = fritekster.map { fritekst ->
-            Brevdata.FritekstMedKey(
+            Brevdata.Fritekst(
+                fritekst.id,
                 fritekst.key,
                 DefaultJsonMapper.fromJson(fritekst.fritekstJson)
             )
