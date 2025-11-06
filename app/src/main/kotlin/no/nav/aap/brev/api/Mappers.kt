@@ -71,7 +71,7 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
 fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
     return Brevdata(
         delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
-        faktagrunnlag = this@tilBrevdata.faktagrunnlag.map { faktagrunnlagMedVerdi ->
+        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
             Brevdata.Faktagrunnlag(
                 tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                 verdi = faktagrunnlagMedVerdi.verdi
