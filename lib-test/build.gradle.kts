@@ -1,4 +1,4 @@
-val ktorVersion = "3.3.1"
+val ktorVersion = "3.3.2"
 val komponenterVersjon = "1.0.430"
 val tilgangVersjon = "1.0.153"
 val jacksonVersjon = "2.20.1"
@@ -27,5 +27,5 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
 
-    implementation("com.nimbusds:nimbus-jose-jwt:10.5")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.6")
 }
