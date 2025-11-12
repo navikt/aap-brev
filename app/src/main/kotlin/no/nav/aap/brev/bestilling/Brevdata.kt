@@ -32,7 +32,7 @@ data class Brevdata(
 
     // Kan være fritekst for en delmal eller valg
     data class Fritekst(
-        val id: String,
+        val parentId: String,
         val key: String,
         val fritekst: FritekstJson
     )
