@@ -72,7 +72,7 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
     return Brevdata(
         delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
         faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            Brevdata.FaktagrunnlagMedVerdi(
+            Brevdata.Faktagrunnlag(
                 tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                 verdi = faktagrunnlagMedVerdi.verdi
             )
@@ -80,8 +80,8 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
         periodetekster = periodetekster.map { periodetekst ->
             Brevdata.Periodetekst(
                 id = periodetekst.id,
-                faktagrunnlagMedVerdi = periodetekst.faktagrunnlagMedVerdi.map { faktagrunnlagMedVerdi ->
-                    Brevdata.FaktagrunnlagMedVerdi(
+                faktagrunnlag = periodetekst.faktagrunnlag.map { faktagrunnlagMedVerdi ->
+                    Brevdata.Faktagrunnlag(
                         tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                         verdi = faktagrunnlagMedVerdi.verdi
                     )
@@ -90,16 +90,16 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
         },
         valg = valg.map { valg ->
             Brevdata.Valg(
-                valg.id,
-                valg.valgt,
-                valg.fritekstJson?.let { fritekst -> DefaultJsonMapper.fromJson(fritekst) },
+                id = valg.id,
+                key = valg.key,
             )
         },
         betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
         fritekster = fritekster.map { fritekst ->
-            Brevdata.FritekstMedKey(
-                fritekst.key,
-                DefaultJsonMapper.fromJson(fritekst.fritekstJson)
+            Brevdata.Fritekst(
+                parentId = fritekst.parentId,
+                key = fritekst.key,
+                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
             )
         },
     )

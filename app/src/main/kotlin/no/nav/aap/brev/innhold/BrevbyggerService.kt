@@ -1,7 +1,6 @@
 package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.bestilling.Brevdata
-import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
@@ -62,11 +61,11 @@ class BrevbyggerService(
     private fun utledFaktagrunnlagMedVerdi(
         faktagrunnlag: Set<Faktagrunnlag>,
         språk: Språk
-    ): List<FaktagrunnlagMedVerdi> {
+    ): List<Brevdata.Faktagrunnlag> {
         val faktagrunnlagTekst = faktagrunnlagService.faktagrunnlagTilTekst(faktagrunnlag, språk)
 
         return faktagrunnlagTekst.entries.map { faktagrunnlag ->
-            FaktagrunnlagMedVerdi(
+            Brevdata.Faktagrunnlag(
                 faktagrunnlag.key.name,
                 faktagrunnlag.value
             )
@@ -100,7 +99,7 @@ class BrevbyggerService(
                             .find { valgAlternativ ->
                                 relevanteKategorier.contains(valgAlternativ.kategori?.tekniskNavn)
                             } ?: return@mapNotNull null
-                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key, null)
+                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key)
                 }
         }
     }
@@ -215,7 +214,7 @@ class BrevbyggerService(
             val faktagrunnlag = periodetekst?.periodetekst?.teksteditor?.flatMap { it.children }
                 ?.filterIsInstance<BlockChildren.Faktagrunnlag>() ?: emptyList()
             val manglendeFaktagrunnlag = faktagrunnlag.map { it.tekniskNavn }
-                .subtract(periodetekstData.faktagrunnlagMedVerdi.map { it.tekniskNavn })
+                .subtract(periodetekstData.faktagrunnlag.map { it.tekniskNavn }.toSet())
             valider(manglendeFaktagrunnlag.isEmpty()) {
                 "$feilmelding: Mangler faktagrunnlag ${manglendeFaktagrunnlag.joinToString(separator = ",")} for periodetekst."
             }
@@ -258,7 +257,7 @@ class BrevbyggerService(
                         if (valgData != null) {
                             teksteditorElement.valg.alternativer
                                 .filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
-                                .find { it._key == valgData.valgt }
+                                .find { it._key == valgData.key }
                                 ?.tekst?.teksteditor
                                 ?.flatMap { filtrerFaktagrunnlag(it) } ?: emptyList()
                         } else {

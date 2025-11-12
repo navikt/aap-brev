@@ -5,8 +5,6 @@ import no.nav.aap.brev.bestilling.BrevbestillingId
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.Brevdata
-import no.nav.aap.brev.bestilling.Brevdata.Delmal
-import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevmal
@@ -43,10 +41,10 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertThat(oppdatertBestilling.brevdata?.delmaler)
-                .containsExactlyInAnyOrder(Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
+                .containsExactlyInAnyOrder(Brevdata.Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
 
             assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
-                FaktagrunnlagMedVerdi(
+                Brevdata.Faktagrunnlag(
                     FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO,
                     aapFomDato.dato.formaterFullLengde(bestilling.språk)
                 )
@@ -100,12 +98,12 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
                 oppdaterBrevdata(bestilling.referanse) {
                     this.copy(
-                        delmaler = listOf(Delmal(_id)),
+                        delmaler = listOf(Brevdata.Delmal(_id)),
                         faktagrunnlag = listOf(
-                            FaktagrunnlagMedVerdi(KjentFaktagrunnlag.AAP_FOM_DATO.name, "AAP_FOM_DATO"),
-                            FaktagrunnlagMedVerdi(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name, "BEREGNINGSTIDSPUNKT"),
-                            FaktagrunnlagMedVerdi(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name, "BEREGNINGSGRUNNLAG"),
-                            FaktagrunnlagMedVerdi(
+                            Brevdata.Faktagrunnlag(KjentFaktagrunnlag.AAP_FOM_DATO.name, "AAP_FOM_DATO"),
+                            Brevdata.Faktagrunnlag(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name, "BEREGNINGSTIDSPUNKT"),
+                            Brevdata.Faktagrunnlag(KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name, "BEREGNINGSGRUNNLAG"),
+                            Brevdata.Faktagrunnlag(
                                 KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
                                 "GRUNNLAG_BEREGNING_AAR_1_AARSTALL"
                             )
@@ -113,22 +111,23 @@ class BrevbyggerServiceTest : IntegrationTest() {
                         periodetekster = listOf(
                             Brevdata.Periodetekst(
                                 periodetekst1.periodetekst._id, listOf(
-                                    FaktagrunnlagMedVerdi(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7"),
-                                    FaktagrunnlagMedVerdi(
+                                    Brevdata.Faktagrunnlag(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7"),
+                                    Brevdata.Faktagrunnlag(
                                         KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name,
                                         "BEREGNINGSGRUNNLAG"
                                     )
                                 )
                             ),
                         ),
-                        valg = listOf(Brevdata.Valg(valg1.valg._id, valg1.valg.alternativer.first()._key, null)),
+                        valg = listOf(Brevdata.Valg(valg1.valg._id, valg1.valg.alternativer.first()._key)),
                         betingetTekst = listOf(
                             Brevdata.BetingetTekst(betingetTekst1.tekst._id)
                         ),
                         fritekster = listOf(
-                            Brevdata.FritekstMedKey(
+                            Brevdata.Fritekst(
+                                _id,
                                 fritekst._key,
-                                Brevdata.Fritekst(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
+                                Brevdata.FritekstJson(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
                             )
                         )
                     )
@@ -155,7 +154,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 obligatorisk = true
             }
             oppdaterBrevdata(bestilling.referanse) {
-                this.copy(delmaler = listOf(Delmal(delmal1.delmal._id)))
+                this.copy(delmaler = listOf(Brevdata.Delmal(delmal1.delmal._id)))
             }
         })
         val exception = assertThrows<ValideringsfeilException> {
@@ -178,7 +177,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 manglendeFritekst = fritekst()
             }
             oppdaterBrevdata(bestilling.referanse) {
-                this.copy(delmaler = listOf(Delmal(delmalMedMangler.delmal._id)))
+                this.copy(delmaler = listOf(Brevdata.Delmal(delmalMedMangler.delmal._id)))
             }
         })
         val exception = assertThrows<ValideringsfeilException> {
@@ -206,12 +205,11 @@ class BrevbyggerServiceTest : IntegrationTest() {
                     betingetTekst(listOf("kategori_1", "kategori_2"), listOf(KjentFaktagrunnlag.BARNETILLEGG_SATS.name))
                 oppdaterBrevdata(bestilling.referanse) {
                     this.copy(
-                        delmaler = listOf(Delmal(_id)),
+                        delmaler = listOf(Brevdata.Delmal(_id)),
                         valg = listOf(
                             Brevdata.Valg(
                                 valg1.valg._id,
                                 valg1.valg.alternativer.first()._key,
-                                null
                             )
                         ),
                         betingetTekst = listOf(Brevdata.BetingetTekst(betingetTekst1.tekst._id))
@@ -243,7 +241,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 }
             }
             oppdaterBrevdata(bestilling.referanse) {
-                this.copy(delmaler = listOf(Delmal(delmalMedMangler.delmal._id)))
+                this.copy(delmaler = listOf(Brevdata.Delmal(delmalMedMangler.delmal._id)))
             }
         })
         val exception = assertThrows<ValideringsfeilException> {
@@ -269,12 +267,11 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
                 oppdaterBrevdata(bestilling.referanse) {
                     this.copy(
-                        delmaler = listOf(Delmal(_id)),
+                        delmaler = listOf(Brevdata.Delmal(_id)),
                         valg = listOf(
                             Brevdata.Valg(
                                 valg1.valg._id,
                                 valg1.valg.alternativer[1]._key,
-                                null
                             )
                         )
                     )
@@ -304,11 +301,11 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 )
                 oppdaterBrevdata(bestilling.referanse) {
                     this.copy(
-                        delmaler = listOf(Delmal(_id)),
+                        delmaler = listOf(Brevdata.Delmal(_id)),
                         periodetekster = listOf(
                             Brevdata.Periodetekst(
                                 periodetekst1.periodetekst._id, listOf(
-                                    FaktagrunnlagMedVerdi(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7")
+                                    Brevdata.Faktagrunnlag(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7")
                                 )
                             ),
                         ),

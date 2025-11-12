@@ -5,8 +5,6 @@ import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Brevdata
-import no.nav.aap.brev.bestilling.Brevdata.FaktagrunnlagMedVerdi
-import no.nav.aap.brev.bestilling.Brevdata.FritekstMedKey
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
@@ -73,12 +71,13 @@ class JournalføringServiceTest : IntegrationTest() {
                     bestilling.referanse,
                     bestilling.brevdata!!.copy(
                         faktagrunnlag = bestilling.brevdata.faktagrunnlag
-                            .plus(FaktagrunnlagMedVerdi("VAR_1", ""))
-                            .plus(FaktagrunnlagMedVerdi("VAR_2", "")),
+                            .plus(Brevdata.Faktagrunnlag("VAR_1", ""))
+                            .plus(Brevdata.Faktagrunnlag("VAR_2", "")),
                         fritekster = bestilling.brevdata.fritekster.plus(
-                            FritekstMedKey(
+                            Brevdata.Fritekst(
+                                "49d9c7a7-29db-43c6-aece-45e97314a50a",
                                 "8a3109fb503c",
-                                Brevdata.Fritekst(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
+                                Brevdata.FritekstJson(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
                             )
                         )
                     )
