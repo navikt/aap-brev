@@ -1,14 +1,14 @@
 package no.nav.aap.brev.kontrakt
 
 data class OppdaterBrevdataRequest(
-    val delmaler: List<ValgtDelmal>,
+    val delmaler: List<Delmal>,
     val faktagrunnlag: List<Faktagrunnlag>,
     val periodetekster: List<Periodetekst>,
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
     val fritekster: List<Fritekst>
 ) {
-    data class ValgtDelmal(val id: String)
+    data class Delmal(val id: String)
 
     data class Faktagrunnlag(
         val tekniskNavn: String,
@@ -26,7 +26,7 @@ data class OppdaterBrevdataRequest(
     )
 
     data class Fritekst(
-        val id: String,
+        val parentId: String,
         val key: String,
         val fritekstJson: String
     )

@@ -90,16 +90,16 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
         },
         valg = valg.map { valg ->
             Brevdata.Valg(
-                valg.id,
-                valg.key,
+                id = valg.id,
+                key = valg.key,
             )
         },
         betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
         fritekster = fritekster.map { fritekst ->
             Brevdata.Fritekst(
-                fritekst.id,
-                fritekst.key,
-                DefaultJsonMapper.fromJson(fritekst.fritekstJson)
+                parentId = fritekst.parentId,
+                key = fritekst.key,
+                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekstJson)
             )
         },
     )
