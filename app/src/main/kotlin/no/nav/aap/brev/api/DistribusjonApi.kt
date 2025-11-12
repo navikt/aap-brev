@@ -30,6 +30,7 @@ fun NormalOpenAPIRoute.distribusjonApi(dataSource: DataSource) {
                 val mottakere = request.mottakerIdentListe
                 if (mottakere.isEmpty()) {
                     respondWithStatus(HttpStatusCode.NoContent)
+                    return@authorizedPost
                 }
 
                 val mottakereDistStatus = mutableListOf<MottakerDistStatus>()
