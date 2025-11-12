@@ -99,7 +99,7 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
             Brevdata.Fritekst(
                 parentId = fritekst.parentId,
                 key = fritekst.key,
-                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekstJson)
+                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
             )
         },
     )

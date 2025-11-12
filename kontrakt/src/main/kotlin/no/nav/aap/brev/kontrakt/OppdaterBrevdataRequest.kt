@@ -28,7 +28,7 @@ data class OppdaterBrevdataRequest(
     data class Fritekst(
         val parentId: String,
         val key: String,
-        val fritekstJson: String
+        val fritekst: String
     )
 
     data class BetingetTekst(val id: String)
