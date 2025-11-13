@@ -123,19 +123,19 @@ class FaktagrunnlagService(
                         }
                         faktagrunnlag.minsteÅrligYtelse?.let { minsteÅrligYtelse ->
                             put(
-                                KjentFaktagrunnlag.MINSTE_ÅRLIG_YTELSE,
+                                KjentFaktagrunnlag.MINSTE_AARLIG_YTELSE,
                                 minsteÅrligYtelse.formater(språk)
                             )
                         }
                         faktagrunnlag.minsteÅrligYtelseUnder25?.let { minsteÅrligYtelseUnder25 ->
                             put(
-                                KjentFaktagrunnlag.MINSTE_ÅRLIG_YTELSE_UNDER_25ÅR,
+                                KjentFaktagrunnlag.MINSTE_AARLIG_YTELSE_UNDER_25AAR,
                                 minsteÅrligYtelseUnder25.formater(språk)
                             )
                         }
                         faktagrunnlag.årligYtelse?.let { årligYtelse ->
                             put(
-                                KjentFaktagrunnlag.ÅRLIG_YTELSE,
+                                KjentFaktagrunnlag.AARLIG_YTELSE,
                                 årligYtelse.formater(språk)
                             )
                         }
