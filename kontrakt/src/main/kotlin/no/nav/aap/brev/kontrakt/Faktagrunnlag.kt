@@ -41,6 +41,9 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val gradertDagsatsInkludertBarnetillegg: BigDecimal?,
         val barnetillegg: BigDecimal?,
         val antallBarn: Int?,
+        val minsteÅrligYtelse: BigDecimal?,
+        val minsteÅrligYtelseUnder25: BigDecimal?,
+        val årligYtelse: BigDecimal?
     ) : Faktagrunnlag(FaktagrunnlagType.TILKJENT_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
