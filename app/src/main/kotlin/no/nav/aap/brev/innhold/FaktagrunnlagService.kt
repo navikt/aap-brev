@@ -121,6 +121,24 @@ class FaktagrunnlagService(
                                 antallBarn.toString()
                             )
                         }
+                        faktagrunnlag.minsteÅrligYtelse?.let { minsteÅrligYtelse ->
+                            put(
+                                KjentFaktagrunnlag.MINSTE_ÅRLIG_YTELSE,
+                                minsteÅrligYtelse.formater(språk)
+                            )
+                        }
+                        faktagrunnlag.minsteÅrligYtelseUnder25?.let { minsteÅrligYtelseUnder25 ->
+                            put(
+                                KjentFaktagrunnlag.MINSTE_ÅRLIG_YTELSE_UNDER_25ÅR,
+                                minsteÅrligYtelseUnder25.formater(språk)
+                            )
+                        }
+                        faktagrunnlag.årligYtelse?.let { årligYtelse ->
+                            put(
+                                KjentFaktagrunnlag.ÅRLIG_YTELSE,
+                                årligYtelse.formater(språk)
+                            )
+                        }
 
                     }
                 }
