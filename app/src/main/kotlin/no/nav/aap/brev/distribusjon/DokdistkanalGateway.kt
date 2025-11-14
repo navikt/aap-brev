@@ -39,6 +39,7 @@ class DokdistkanalGateway : DistribusjonskanalGateway {
 data class BestemDistribusjonskanalRequest(
     val brukerId: String,
     val mottakerId: String,
+    val erArkivert: Boolean = true,
     val tema: String = JOURNALPOST_TEMA_OPPFOLGING,
 )
 
