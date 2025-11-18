@@ -1,11 +1,11 @@
 package no.nav.aap.brev.test
 
-import no.nav.aap.brev.kontrakt.Brevmal
-import no.nav.aap.brev.kontrakt.Brevmal.BlockChildren
-import no.nav.aap.brev.kontrakt.Brevmal.Delmal
-import no.nav.aap.brev.kontrakt.Brevmal.DelmalValg
-import no.nav.aap.brev.kontrakt.Brevmal.TeksteditorElement
-import no.nav.aap.brev.kontrakt.Brevmal.ValgAlternativ
+import no.nav.aap.brev.bestilling.Brevmal
+import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
+import no.nav.aap.brev.bestilling.Brevmal.Delmal
+import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
+import no.nav.aap.brev.bestilling.Brevmal.TeksteditorElement
+import no.nav.aap.brev.bestilling.Brevmal.ValgAlternativ
 import java.util.UUID.randomUUID
 
 class BrevmalBuilder() {

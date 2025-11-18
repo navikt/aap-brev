@@ -4,7 +4,6 @@ import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.innhold.KjentFaktagrunnlag
 import no.nav.aap.brev.kontrakt.Brev
-import no.nav.aap.brev.kontrakt.Brevmal
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.FaktagrunnlagType
 import no.nav.aap.brev.kontrakt.Rolle

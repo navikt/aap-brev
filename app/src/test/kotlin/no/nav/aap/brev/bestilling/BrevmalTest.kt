@@ -1,4 +1,4 @@
-package no.nav.aap.brev.kontrakt
+package no.nav.aap.brev.bestilling
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import no.nav.aap.brev.test.FileUtils

@@ -7,7 +7,7 @@ import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.feil.ValideringsfeilException
-import no.nav.aap.brev.kontrakt.Brevmal
+import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.test.BrevmalBuilder
