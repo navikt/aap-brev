@@ -1,6 +1,6 @@
 package no.nav.aap.brev.kontrakt
 
-data class OppdaterBrevdataRequest(
+data class BrevdataDto(
     val delmaler: List<Delmal>,
     val faktagrunnlag: List<Faktagrunnlag>,
     val periodetekster: List<Periodetekst>,

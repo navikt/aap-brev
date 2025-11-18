@@ -6,7 +6,7 @@ import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
-import no.nav.aap.brev.kontrakt.OppdaterBrevdataRequest
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.json.DefaultJsonMapper
@@ -16,6 +16,8 @@ fun Brevbestilling.tilResponse(): BrevbestillingResponse =
     BrevbestillingResponse(
         referanse = referanse.referanse,
         brev = brev,
+        brevmal = brevmal?.json?.let { DefaultJsonMapper.toJson(it) },
+        brevdata = brevdata?.tilBrevdataDto(),
         opprettet = opprettet,
         oppdatert = oppdatert,
         behandlingReferanse = behandlingReferanse.referanse,
@@ -68,7 +70,7 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
     )
 }
 
-fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
+fun BrevdataDto.tilBrevdata(): Brevdata {
     return Brevdata(
         delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
         faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
@@ -100,6 +102,43 @@ fun OppdaterBrevdataRequest.tilBrevdata(): Brevdata {
                 parentId = fritekst.parentId,
                 key = fritekst.key,
                 fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
+            )
+        },
+    )
+}
+
+fun Brevdata.tilBrevdataDto(): BrevdataDto {
+    return BrevdataDto(
+        delmaler = delmaler.map { delmal -> BrevdataDto.Delmal(id = delmal.id) },
+        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
+            BrevdataDto.Faktagrunnlag(
+                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
+                verdi = faktagrunnlagMedVerdi.verdi
+            )
+        },
+        periodetekster = periodetekster.map { periodetekst ->
+            BrevdataDto.Periodetekst(
+                id = periodetekst.id,
+                faktagrunnlag = periodetekst.faktagrunnlag.map { faktagrunnlagMedVerdi ->
+                    BrevdataDto.Faktagrunnlag(
+                        tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
+                        verdi = faktagrunnlagMedVerdi.verdi
+                    )
+                }
+            )
+        },
+        valg = valg.map { valg ->
+            BrevdataDto.Valg(
+                id = valg.id,
+                key = valg.key,
+            )
+        },
+        betingetTekst = betingetTekst.map { tekst -> BrevdataDto.BetingetTekst(tekst.id) },
+        fritekster = fritekster.map { fritekst ->
+            BrevdataDto.Fritekst(
+                parentId = fritekst.parentId,
+                key = fritekst.key,
+                fritekst = DefaultJsonMapper.toJson(fritekst.fritekst)
             )
         },
     )

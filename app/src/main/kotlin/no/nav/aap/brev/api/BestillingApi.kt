@@ -1,6 +1,6 @@
 package no.nav.aap.brev.api
 
-import no.nav.aap.brev.kontrakt.OppdaterBrevdataRequest
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
@@ -159,7 +159,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     }
                 }
                 route("/v3/oppdater") {
-                    authorizedPut<BrevbestillingReferansePathParam, Unit, OppdaterBrevdataRequest>(authorizationBodyPathConfig) { referanse, brevdata ->
+                    authorizedPut<BrevbestillingReferansePathParam, Unit, BrevdataDto>(authorizationBodyPathConfig) { referanse, brevdata ->
                         MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
                             if (Miljø.erProd()) {
                                 respondWithStatus(HttpStatusCode.NotImplemented)
