@@ -22,26 +22,25 @@ fun NormalOpenAPIRoute.distribusjonApi(dataSource: DataSource) {
         applicationsOnly = true
     )
 
-    route("/api/distribusjon") {
-        route("/kan-distribuere-brev") {
-            authorizedPost<Unit, KanDistribuereBrevReponse, KanDistribuereBrevRequest>(
-                authorizationBodyPathConfig
-            ) { _, request ->
-                val mottakere = request.mottakerIdentListe
-                if (mottakere.isEmpty()) {
-                    respondWithStatus(HttpStatusCode.NoContent)
-                    return@authorizedPost
-                }
-
-                val mottakereDistStatus = mutableListOf<MottakerDistStatus>()
-                mottakere.forEach { mottakerIdent ->
-                    val kanDistribuereBrev = dataSource.transaction { connection ->
-                        DistribusjonService.konstruer(connection).kanBrevDistribueresTilBruker(brukerId = request.brukerIdent, mottakerId = mottakerIdent)
-                    }
-                    mottakereDistStatus.add(MottakerDistStatus(mottakerIdent, kanDistribuereBrev))
-                }
-                respond(KanDistribuereBrevReponse(mottakereDistStatus), HttpStatusCode.OK)
+    route("api/{brevbestillingReferanse}/kan-distribuere-brev") {
+        authorizedPost<Unit, KanDistribuereBrevReponse, KanDistribuereBrevRequest>(
+            authorizationBodyPathConfig
+        ) { _, request ->
+            val mottakere = request.mottakerIdentListe
+            if (mottakere.isEmpty()) {
+                respondWithStatus(HttpStatusCode.NoContent)
+                return@authorizedPost
             }
+
+            val mottakereDistStatus = mutableListOf<MottakerDistStatus>()
+            mottakere.forEach { mottakerIdent ->
+                val kanDistribuereBrev = dataSource.transaction { connection ->
+                    DistribusjonService.konstruer(connection)
+                        .kanBrevDistribueresTilBruker(brukerId = request.brukerIdent, mottakerId = mottakerIdent)
+                }
+                mottakereDistStatus.add(MottakerDistStatus(mottakerIdent, kanDistribuereBrev))
+            }
+            respond(KanDistribuereBrevReponse(mottakereDistStatus), HttpStatusCode.OK)
         }
     }
 }
