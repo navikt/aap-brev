@@ -5,9 +5,9 @@ import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.feil.valider
-import no.nav.aap.brev.kontrakt.Brevmal
-import no.nav.aap.brev.kontrakt.Brevmal.BlockChildren
-import no.nav.aap.brev.kontrakt.Brevmal.DelmalValg
+import no.nav.aap.brev.bestilling.Brevmal
+import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
+import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
@@ -278,7 +278,7 @@ class BrevbyggerService(
     }
 
     private fun filtrerFaktagrunnlag(block: Brevmal.TeksteditorElement.Block): List<String> {
-        return block.children.filterIsInstance<Brevmal.BlockChildren.Faktagrunnlag>()
+        return block.children.filterIsInstance<BlockChildren.Faktagrunnlag>()
             .map { it.tekniskNavn }
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.aap.brev.kontrakt
+package no.nav.aap.brev.bestilling
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
