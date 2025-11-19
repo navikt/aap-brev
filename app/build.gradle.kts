@@ -67,7 +67,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersjon")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersjon")
     testImplementation("org.assertj:assertj-core:3.27.6")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.1")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
 
     testImplementation(project(":lib-test"))
     testImplementation("io.mockk:mockk:1.14.6")
