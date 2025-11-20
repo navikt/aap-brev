@@ -62,6 +62,7 @@ spec:
             roles:
               - "bestill-brev"
               - "hent-brev"
+              - "hent-distribusjoninfo"
         - application: paw-patrol
         - application: dokumentinnhenting
           permissions:
