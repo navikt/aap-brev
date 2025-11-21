@@ -229,11 +229,11 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
             }
         }
         route("/oppdater-brevmal") {
-            authorizedPut<BrevbestillingReferansePathParam, Unit, OppdaterBrevmalRequest>(authorizationBodyPathConfig) { referanse, brevdata ->
-                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
+            authorizedPut<Unit, String, OppdaterBrevmalRequest>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
                     dataSource.transaction { connection ->
                         BrevinnholdService.konstruer(connection)
-                            .hentOgLagreBrevmal(BrevbestillingReferanse(referanse.referanse))
+                            .hentOgLagreBrevmal(BrevbestillingReferanse(request.referanse))
                     }
                     respondWithStatus(HttpStatusCode.NoContent)
                 }
