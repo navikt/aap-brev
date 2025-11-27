@@ -46,6 +46,10 @@ interface BrevbestillingRepository {
         prosesseringStatus: ProsesseringStatus,
     )
 
+    fun nullstillProsesseringStatus(
+        referanse: BrevbestillingReferanse
+    )
+
     fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>)
 
     fun oppdaterStatus(id: BrevbestillingId, status: Status)
