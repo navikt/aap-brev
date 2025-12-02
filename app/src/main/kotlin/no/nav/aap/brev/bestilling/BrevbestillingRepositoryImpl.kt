@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.App
 import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -13,8 +14,11 @@ import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.util.UUID
+
+private val LOGGER = LoggerFactory.getLogger(App::class.java)
 
 class BrevbestillingRepositoryImpl(private val connection: DBConnection) : BrevbestillingRepository {
 
@@ -186,6 +190,8 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         id: BrevbestillingId,
         brevmal: BrevmalJson
     ) {
+        LOGGER.info("Brevmal til db:" + brevmal.toString())
+        LOGGER.info("bestillingsid:" + id)
         connection.execute(
             "UPDATE BREVBESTILLING SET BREVMAL = ?::jsonb, OPPDATERT_TID = ? WHERE ID = ?"
         ) {
