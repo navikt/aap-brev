@@ -13,4 +13,16 @@ data class GenererPdfRequest(
     val dato: LocalDate,
     val språk: Språk,
     val signaturer: List<Signatur>,
-)
+    val mottaker: Mottaker,
+) {
+    data class Mottaker(
+        val navn: String,
+        val ident: String,
+        val identType: IdentType
+    ) {
+        enum class IdentType {
+            FNR, HPRNR
+        }
+    }
+
+}
