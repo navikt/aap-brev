@@ -108,7 +108,7 @@ class BrevbyggerService(
         return brevmal.delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>()
                 .mapNotNull { betingetTekst ->
-                    if (betingetTekst.kategorier.map { it.tekniskNavn }.intersect(relevanteKategorier.toSet())
+                    if (betingetTekst.kategorier.orEmpty().map { it.tekniskNavn }.intersect(relevanteKategorier.toSet())
                             .isNotEmpty()
                     ) {
                         Brevdata.BetingetTekst(betingetTekst.tekst._id)
