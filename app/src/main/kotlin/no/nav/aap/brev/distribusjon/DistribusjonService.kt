@@ -9,7 +9,6 @@ import no.nav.aap.brev.bestilling.JournalpostRepository
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.OpprettetJournalpost
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
 
 class DistribusjonService(
@@ -71,6 +70,8 @@ class DistribusjonService(
                         brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
                     }
                     journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
+                } else {
+                    log.info("Kan ikke distribuere brev til bruker pga. manglende adresseinformasjon. Fortsetter uten distribusjon.")
                 }
             }
     }
@@ -84,11 +85,6 @@ class DistribusjonService(
             mottakerIdent
         ))
 
-        // TODO Fjerne logging og feature toggle etter verifisering i prod
-        log.info("Kan distribuere brev til bruker: ${kanDistribuere}")
-        if (Miljø.erProd()) {
-            return true
-        }
         return kanDistribuere
     }
 }
