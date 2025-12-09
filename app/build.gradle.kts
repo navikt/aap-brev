@@ -70,5 +70,5 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
 
     testImplementation(project(":lib-test"))
-    testImplementation("io.mockk:mockk:1.14.6")
+    testImplementation("io.mockk:mockk:1.14.7")
 }
