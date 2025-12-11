@@ -237,6 +237,22 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
         }
     }
 
+    override fun nullstillProsesseringStatus(
+        referanse: BrevbestillingReferanse
+    ) {
+        connection.execute(
+            "UPDATE BREVBESTILLING SET PROSESSERING_STATUS = NULL, OPPDATERT_TID = ? WHERE REFERANSE = ?"
+        ) {
+            setParams {
+                setLocalDateTime(1, LocalDateTime.now())
+                setUUID(2, referanse.referanse)
+            }
+            setResultValidator {
+                require(1 == it)
+            }
+        }
+    }
+
     override fun lagreSignaturer(brevbestillingId: BrevbestillingId, signaturer: List<SignaturGrunnlag>) {
         val query = """
             INSERT INTO SIGNATUR (BREVBESTILLING_ID, NAV_IDENT, ROLLE, SORTERINGS_NOKKEL) VALUES (?, ?, ?, ?)

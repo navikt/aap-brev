@@ -77,6 +77,11 @@ class PdfService(
                 dato = LocalDate.now(),
                 språk = bestilling.språk,
                 signaturer = signaturer,
+                mottaker = GenererPdfRequest.Mottaker(
+                    navn = personinfo.navn,
+                    ident = personinfo.personIdent,
+                    identType = GenererPdfRequest.Mottaker.IdentType.FNR
+                )
             )
 
             return pdfGatewayV2.genererPdf(request)

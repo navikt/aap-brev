@@ -25,6 +25,7 @@ import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
+import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
@@ -226,6 +227,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     personinfo = personinfo
                 )
                 respond(HentSignaturerResponse(signaturer))
+            }
+        }
+        route("/gjenoppta-bestilling") {
+            authorizedPost<Unit, String, GjenopptaBrevbestillingRequest>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
+                    dataSource.transaction { connection ->
+                        BrevbestillingService.konstruer(connection)
+                            .gjenoppta(BrevbestillingReferanse(request.referanse))
+                    }
+                    respond("{}", HttpStatusCode.Accepted)
+                }
             }
         }
         route("/oppdater-brevmal") {

@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val ktorVersion = "3.3.2"
-val komponenterVersjon = "1.0.442"
-val tilgangVersjon = "1.0.159"
+val ktorVersion = "3.3.3"
+val komponenterVersjon = "1.0.458"
+val tilgangVersjon = "1.0.169"
 val junitVersjon = "5.13.1"
 
 plugins {
     id("brev.conventions")
-    id("io.ktor.plugin") version "3.3.2"
+    id("io.ktor.plugin") version "3.3.3"
 }
 
 application {
@@ -59,7 +59,7 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.17.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.18.0")
     implementation("org.postgresql:postgresql:42.7.8")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
@@ -70,5 +70,5 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
 
     testImplementation(project(":lib-test"))
-    testImplementation("io.mockk:mockk:1.14.6")
+    testImplementation("io.mockk:mockk:1.14.7")
 }

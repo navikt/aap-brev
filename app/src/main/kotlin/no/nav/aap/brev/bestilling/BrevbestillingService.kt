@@ -264,6 +264,17 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
     }
 
+    fun gjenoppta(referanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
+
+        valider(bestilling.status == Status.AVBRUTT) {
+            "Kan ikke gjenoppta brevbestilling med status ${bestilling.status}"
+        }
+
+        brevbestillingRepository.oppdaterStatus(bestilling.id, Status.UNDER_ARBEID)
+        brevbestillingRepository.nullstillProsesseringStatus(referanse)
+    }
+
     private fun brukerTilMottaker(brevbestilling: Brevbestilling): Mottaker {
         return Mottaker(
             ident = brevbestilling.brukerIdent,

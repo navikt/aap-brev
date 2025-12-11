@@ -19,7 +19,7 @@ data class Brevmal(
 
     data class Delmal(
         override val _id: String,
-        val overskrift: String,
+        val overskrift: String?,
         val teksteditor: List<TeksteditorElement>
     ) : Document
 
@@ -53,7 +53,7 @@ data class Brevmal(
         @JsonTypeName("betingetTekstRef")
         data class BetingetTekst(
             override val _key: String,
-            val kategorier: List<Kategori>,
+            val kategorier: List<Kategori>?,
             val tekst: Teksteditor,
         ) : TeksteditorElement
 

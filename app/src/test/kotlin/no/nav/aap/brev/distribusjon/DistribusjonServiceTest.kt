@@ -53,8 +53,7 @@ class DistribusjonServiceTest : IntegrationTest() {
 
             val oppdaterteJournalposter = journalpostRepository.hentAlleFor(bestilling.referanse)
 
-         // TODO Kommenter inn når feature toggle i distribuerBrev er verifisert i prod og skrevet ut
-         // assertThat(oppdaterteJournalposter.get(0).distribusjonBestillingId).isNull()
+          assertThat(oppdaterteJournalposter[0].distribusjonBestillingId).isNull()
         }
     }
 
