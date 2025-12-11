@@ -14,6 +14,7 @@ import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.bestilling.tilSorterbareSignaturer
+import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.journalføring.SignaturService
@@ -27,6 +28,7 @@ import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
+import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.miljo.Miljø
@@ -235,6 +237,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                             .gjenoppta(BrevbestillingReferanse(request.referanse))
                     }
                     respond("{}", HttpStatusCode.Accepted)
+                }
+            }
+        }
+        route("/oppdater-brevmal") {
+            authorizedPut<Unit, String, OppdaterBrevmalRequest>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
+                    dataSource.transaction { connection ->
+                        BrevinnholdService.konstruer(connection)
+                            .hentOgLagreBrevmal(BrevbestillingReferanse(request.referanse))
+                    }
+                    respondWithStatus(HttpStatusCode.NoContent)
                 }
             }
         }
