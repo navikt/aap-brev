@@ -81,6 +81,7 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_11_18 -> brev()
                 Brevtype.AVSLAG -> brev()
                 Brevtype.VEDTAK_ENDRING -> brev()
+                Brevtype.BARNETILLEGG_SATS_REGULERING -> brev()
                 Brevtype.KLAGE_AVVIST -> brev(
                     kanSendesAutomatisk = true,
                     kanRedigeres = false,
