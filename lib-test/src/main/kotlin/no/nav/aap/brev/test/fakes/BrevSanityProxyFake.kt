@@ -114,6 +114,7 @@ fun Application.brevSanityProxyFake() {
                     erFullstendig = true
                 )
 
+                Brevtype.KLAGE_MOTTATT -> brev()
                 Brevtype.FORVALTNINGSMELDING -> brev()
                 Brevtype.VEDTAK_11_7 -> brev()
                 Brevtype.VEDTAK_11_9 -> brev()
