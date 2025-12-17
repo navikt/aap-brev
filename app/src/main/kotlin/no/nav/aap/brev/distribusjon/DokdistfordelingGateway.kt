@@ -66,6 +66,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV
                 -> Distribusjonstype.VIKTIG
 
+            Brevtype.KLAGE_MOTTATT,
             Brevtype.KLAGE_TRUKKET,
             Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.FORVALTNINGSMELDING,
