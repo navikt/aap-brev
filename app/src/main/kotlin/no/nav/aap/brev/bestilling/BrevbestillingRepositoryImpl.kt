@@ -335,4 +335,17 @@ class BrevbestillingRepositoryImpl(private val connection: DBConnection) : Brevb
             }
         }
     }
+
+    override fun slettBrevbestilling(referanse: BrevbestillingReferanse) {
+        connection.execute(
+            "DELETE FROM BREVBESTILLING WHERE REFERANSE = ?"
+        ) {
+            setParams {
+                setUUID(1, referanse.referanse)
+            }
+            setResultValidator {
+                require(1 == it)
+            }
+        }
+    }
 }
