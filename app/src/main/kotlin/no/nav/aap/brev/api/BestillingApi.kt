@@ -18,6 +18,7 @@ import no.nav.aap.brev.innhold.BrevinnholdService
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.journalføring.SignaturService
+import no.nav.aap.brev.kontrakt.SlettBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.AvbrytBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.BestillBrevV2Request
@@ -235,6 +236,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     dataSource.transaction { connection ->
                         BrevbestillingService.konstruer(connection)
                             .gjenoppta(BrevbestillingReferanse(request.referanse))
+                    }
+                    respond("{}", HttpStatusCode.Accepted)
+                }
+            }
+        }
+        route("/slett") {
+            authorizedPost<Unit, String, SlettBrevbestillingRequest>(authorizationBodyPathConfig) { _, request ->
+                MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
+                    dataSource.transaction { connection ->
+                        BrevbestillingService.konstruer(connection)
+                            .slett(BrevbestillingReferanse(request.referanse))
                     }
                     respond("{}", HttpStatusCode.Accepted)
                 }
