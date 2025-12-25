@@ -38,7 +38,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
     implementation("io.micrometer:micrometer-registry-prometheus:1.16.1")
-    implementation("ch.qos.logback:logback-classic:1.5.22")
+    implementation("ch.qos.logback:logback-classic:1.5.23")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
@@ -53,13 +53,13 @@ dependencies {
     implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
     implementation("no.nav.aap.tilgang:plugin-kontrakt:$tilgangVersjon")
 
-    implementation("no.nav:ktor-openapi-generator:1.0.131")
+    implementation("no.nav:ktor-openapi-generator:1.0.133")
 
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.19.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
     implementation("org.postgresql:postgresql:42.7.8")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
@@ -67,7 +67,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersjon")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersjon")
     testImplementation("org.assertj:assertj-core:3.27.6")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.2")
+    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
 
     testImplementation(project(":lib-test"))
     testImplementation("io.mockk:mockk:1.14.7")
