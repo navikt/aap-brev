@@ -75,7 +75,6 @@ spec:
         - host: saf.prod-fss-pub.nais.io
         - host: pdl-api.prod-fss-pub.nais.io
       rules:
-        - application: behandlingsflyt
         - application: brev-sanity-proxy
         - application: saksbehandling-pdfgen
         - application: nom-api
