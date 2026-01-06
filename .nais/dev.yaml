@@ -86,7 +86,6 @@ spec:
         - host: saf-q2.dev-fss-pub.nais.io
         - host: pdl-api.dev-fss-pub.nais.io
       rules:
-        - application: behandlingsflyt
         - application: brev-sanity-proxy
         - application: saksbehandling-pdfgen
         - application: nom-api
