@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import javax.sql.DataSource
 
-private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
+private val SECURE_LOGGER: Logger = LoggerFactory.getLogger("team-logs")
 private val LOGGER = LoggerFactory.getLogger(App::class.java)
 
 class App
