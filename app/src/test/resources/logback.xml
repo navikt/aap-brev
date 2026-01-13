@@ -10,7 +10,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="secureLog" level="TRACE" additivity="false">
+    <logger name="team-logs" level="TRACE" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 

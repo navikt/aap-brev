@@ -52,8 +52,6 @@ spec:
     application:
       enabled: true
       allowAllUsers: true
-  secureLogs:
-    enabled: true
   accessPolicy:
     inbound:
       rules:
@@ -81,6 +79,8 @@ spec:
           namespace: nom
         - application: norg2
           namespace: org
+        - application: logging
+          namespace: nais-system
 
   env:
     - name: INTEGRASJON_TILGANG_URL
