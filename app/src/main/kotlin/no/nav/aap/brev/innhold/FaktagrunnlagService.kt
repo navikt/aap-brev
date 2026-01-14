@@ -139,6 +139,11 @@ class FaktagrunnlagService(
                                 årligYtelse.formater(språk)
                             )
                         }
+                        faktagrunnlag.sisteDagMedYtelse?.let { sisteDagMedYtelse ->
+                            put(
+                                KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
+                                sisteDagMedYtelse.formaterFullLengde(språk))
+                        }
 
                     }
                 }
