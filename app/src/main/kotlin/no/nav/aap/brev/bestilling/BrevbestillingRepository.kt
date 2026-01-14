@@ -59,4 +59,6 @@ interface BrevbestillingRepository {
     fun lagreJournalpostFerdigstilt(id: BrevbestillingId, journalpostFerdigstilt: Boolean)
 
     fun lagreDistribusjonBestilling(id: BrevbestillingId, distribusjonBestillingId: DistribusjonBestillingId)
+
+    fun slettBrevbestilling(referanse: BrevbestillingReferanse)
 }

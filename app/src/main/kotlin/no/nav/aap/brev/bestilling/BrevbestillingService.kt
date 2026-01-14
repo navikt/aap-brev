@@ -264,6 +264,17 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterProsesseringStatus(referanse, ProsesseringStatus.AVBRUTT)
     }
 
+    fun slett(referanse: BrevbestillingReferanse) {
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
+
+        // TODO: Andre krav til ikke slettbar ? eks. prosesseringsStatus ??
+        valider(bestilling.status != Status.FERDIGSTILT) {
+            "Kan ikke slette brevbestilling med status ${bestilling.status}"
+        }
+
+        brevbestillingRepository.slettBrevbestilling(referanse)
+    }
+
     fun gjenoppta(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
