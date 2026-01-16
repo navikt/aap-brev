@@ -4,7 +4,7 @@ val komponenterVersjon = "1.0.479"
 val jupiterVersjon = "5.13.1"
 
 plugins {
-    id("brev.conventions")
+    id("aap.conventions")
     `maven-publish`
     `java-library`
 }
