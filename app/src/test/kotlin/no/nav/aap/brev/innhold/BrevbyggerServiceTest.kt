@@ -58,7 +58,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
 
         lagreInitiellBrevdata(
             bestilling.referanse, setOf(
-                Faktagrunnlag.AapFomDato(LocalDate.now()), Faktagrunnlag.GrunnlagBeregning(
+                Faktagrunnlag.AapFomDato(LocalDate.now()),
+                Faktagrunnlag.GrunnlagBeregning(
                     beregningstidspunkt = LocalDate.now(),
                     beregningsgrunnlag = BigDecimal("123123"),
                     inntekterPerÅr = listOf(
@@ -67,7 +68,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
                             BigDecimal("321321")
                         )
                     )
-                )
+                ),
+                Faktagrunnlag.Sykdomsvurdering("Begrunnelse")
             )
         )
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
@@ -106,6 +108,10 @@ class BrevbyggerServiceTest : IntegrationTest() {
                             Brevdata.Faktagrunnlag(
                                 KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name,
                                 "GRUNNLAG_BEREGNING_AAR_1_AARSTALL"
+                            ),
+                            Brevdata.Faktagrunnlag(
+                                KjentFaktagrunnlag.SYKDOMSVURDERING.name,
+                                "SYKDOMSVURDERING",
                             )
                         ),
                         periodetekster = listOf(

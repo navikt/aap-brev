@@ -142,10 +142,14 @@ class FaktagrunnlagService(
                         faktagrunnlag.sisteDagMedYtelse?.let { sisteDagMedYtelse ->
                             put(
                                 KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
-                                sisteDagMedYtelse.formaterFullLengde(språk))
+                                sisteDagMedYtelse.formaterFullLengde(språk)
+                            )
                         }
 
                     }
+
+                    is Faktagrunnlag.Sykdomsvurdering ->
+                        put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                 }
             }
         }
