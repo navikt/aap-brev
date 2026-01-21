@@ -145,6 +145,11 @@ class FaktagrunnlagService(
                                 sisteDagMedYtelse.formaterFullLengde(språk)
                             )
                         }
+                        faktagrunnlag.kravdatoUføretrygd?.let { kravdatoUføretrygd ->
+                            put(
+                                KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
+                                kravdatoUføretrygd.formaterFullLengde(språk))
+                        }
 
                     }
 
