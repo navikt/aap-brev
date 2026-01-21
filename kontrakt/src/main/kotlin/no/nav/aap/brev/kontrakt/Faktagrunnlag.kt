@@ -11,12 +11,14 @@ const val FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO: String = "AAP_FOM_DATO"
 const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
 const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
+const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
     FRIST_DATO_11_7(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7),
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
+    SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -55,4 +57,9 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_BEREGNING) {
         data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)
     }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
+    data class Sykdomsvurdering(
+        val begrunnelse: String,
+    ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
 }
