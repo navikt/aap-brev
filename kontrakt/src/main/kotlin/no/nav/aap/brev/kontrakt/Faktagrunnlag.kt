@@ -8,6 +8,7 @@ import java.time.LocalDate
 import java.time.Year
 
 const val FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO: String = "AAP_FOM_DATO"
+const val FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE: String = "SISTE_DAG_MED_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
 const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
@@ -26,6 +27,11 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO)
     data class AapFomDato(
+        val dato: LocalDate
+    ) : Faktagrunnlag(FaktagrunnlagType.AAP_FOM_DATO)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE)
+    data class SisteDagMedYtelse(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.AAP_FOM_DATO)
 

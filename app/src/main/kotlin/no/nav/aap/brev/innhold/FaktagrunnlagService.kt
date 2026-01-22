@@ -148,8 +148,16 @@ class FaktagrunnlagService(
 
                     }
 
-                    is Faktagrunnlag.Sykdomsvurdering ->
+                    is Faktagrunnlag.Sykdomsvurdering -> {
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
+                    }
+
+                    is Faktagrunnlag.SisteDagMedYtelse -> {
+                        put(
+                            KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
+                            faktagrunnlag.dato.formaterFullLengde(språk)
+                        )
+                    }
                 }
             }
         }

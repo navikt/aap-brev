@@ -74,7 +74,8 @@ class SignaturService(
             Brevtype.VEDTAK_ENDRING, Brevtype.BARNETILLEGG_SATS_REGULERING, Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.AVSLAG, Brevtype.INNVILGELSE, Brevtype.KLAGE_AVVIST, Brevtype.KLAGE_OPPRETTHOLDELSE,
             Brevtype.KLAGE_TRUKKET, Brevtype.VEDTAK_11_7, Brevtype.VEDTAK_11_9, Brevtype.OMGJØRING_VEDTAK_11_9,
-            Brevtype.VEDTAK_11_17, Brevtype.VEDTAK_11_18, Brevtype.VEDTAK_11_23_SJETTE_LEDD -> {
+            Brevtype.VEDTAK_11_17, Brevtype.VEDTAK_11_18, Brevtype.VEDTAK_11_23_SJETTE_LEDD,
+            Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE -> {
                 false
             }
         }

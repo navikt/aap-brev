@@ -2,6 +2,7 @@ package no.nav.aap.brev.kontrakt
 
 enum class Brevtype {
     INNVILGELSE,
+    VEDTAK_UTVID_VEDTAKSLENGDE,
     VEDTAK_11_17,
     VEDTAK_11_18,
     AVSLAG,

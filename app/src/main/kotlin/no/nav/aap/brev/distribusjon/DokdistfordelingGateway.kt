@@ -50,6 +50,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
     private fun utledDistribusjonstype(brevtype: Brevtype): Distribusjonstype {
         return when (brevtype) {
             Brevtype.INNVILGELSE,
+            Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,
             Brevtype.AVSLAG,
             Brevtype.VEDTAK_ENDRING,
             Brevtype.BARNETILLEGG_SATS_REGULERING,
