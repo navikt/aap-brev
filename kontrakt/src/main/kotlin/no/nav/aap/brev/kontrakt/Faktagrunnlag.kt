@@ -25,7 +25,6 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
-
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO)
     data class AapFomDato(
         val dato: LocalDate
