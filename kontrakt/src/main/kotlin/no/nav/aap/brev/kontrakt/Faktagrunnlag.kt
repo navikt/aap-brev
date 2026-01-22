@@ -46,7 +46,8 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val minsteÅrligYtelse: BigDecimal?,
         val minsteÅrligYtelseUnder25: BigDecimal?,
         val årligYtelse: BigDecimal?,
-        val sisteDagMedYtelse: LocalDate?
+        val sisteDagMedYtelse: LocalDate?,
+        val kravdatoUføretrygd: LocalDate?
     ) : Faktagrunnlag(FaktagrunnlagType.TILKJENT_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
