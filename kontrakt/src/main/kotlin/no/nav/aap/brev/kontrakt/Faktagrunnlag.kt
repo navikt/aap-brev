@@ -16,6 +16,7 @@ const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
+    SISTE_DAG_MED_YTELSE(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE),
     FRIST_DATO_11_7(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7),
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
@@ -33,7 +34,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE)
     data class SisteDagMedYtelse(
         val dato: LocalDate
-    ) : Faktagrunnlag(FaktagrunnlagType.AAP_FOM_DATO)
+    ) : Faktagrunnlag(FaktagrunnlagType.SISTE_DAG_MED_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7)
     data class FristDato11_7(
