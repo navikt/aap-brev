@@ -1,5 +1,5 @@
 plugins {
-    id("brev.conventions")
+    id("aap.conventions")
 }
 
 dependencies {

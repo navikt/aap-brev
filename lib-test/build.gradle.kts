@@ -4,7 +4,7 @@ val tilgangVersjon = "1.0.178"
 val jacksonVersjon = "2.20.1"
 
 plugins {
-    id("brev.conventions")
+    id("aap.conventions")
 }
 
 dependencies {

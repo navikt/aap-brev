@@ -6,7 +6,7 @@ val tilgangVersjon = "1.0.178"
 val junitVersjon = "5.13.1"
 
 plugins {
-    id("brev.conventions")
+    id("aap.conventions")
     id("io.ktor.plugin") version "3.3.3"
 }
 
