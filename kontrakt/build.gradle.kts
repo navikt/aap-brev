@@ -49,7 +49,7 @@ dependencies {
 
     testImplementation(project(":lib-test"))
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
-    testImplementation("org.assertj:assertj-core:3.27.6")
+    testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersjon")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersjon")
 }
