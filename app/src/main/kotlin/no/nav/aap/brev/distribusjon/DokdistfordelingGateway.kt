@@ -64,13 +64,13 @@ class DokdistfordelingGateway : DistribusjonGateway {
                 -> Distribusjonstype.VEDTAK
 
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
-            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
+            Brevtype.FORVALTNINGSMELDING,
                 -> Distribusjonstype.VIKTIG
 
             Brevtype.KLAGE_MOTTATT,
             Brevtype.KLAGE_TRUKKET,
             Brevtype.VARSEL_OM_BESTILLING,
-            Brevtype.FORVALTNINGSMELDING,
             Brevtype.KLAGE_OPPRETTHOLDELSE
                 -> Distribusjonstype.ANNET
         }
