@@ -78,14 +78,14 @@ data class Mottaker(
     val bestillingMottakerReferanse: String,
 ) {
     init {
-        require(navnOgAdresse != null || identType == IdentType.FNR) {
-            "navnOgAdresse må være satt dersom identType ikke er FNR."
+        require(navnOgAdresse != null || identType == IdentType.FNR || identType == IdentType.ORGNR) {
+            "navnOgAdresse må være satt dersom identType ikke er FNR eller ORGNR."
         }
         require(
             (identType != null && ident != null)
                     || (identType == null && ident == null)
         ) {
-            "idenType og ident må være satt sammen, eller begge må være null"
+            "identType og ident må være satt sammen, eller begge må være null."
         }
     }
 }

@@ -19,14 +19,14 @@ data class JournalføringData(
     }
 
     init {
-        require(mottakerNavn != null || mottakerType == MottakerType.FNR) {
-            "MottakerNavn må være satt dersom MottakerType ikke er FNR."
+        require(mottakerNavn != null || mottakerType == MottakerType.FNR || mottakerType == MottakerType.ORGNR) {
+            "mottakerNavn må være satt dersom mottakerType ikke er FNR eller ORGNR."
         }
         require(
             (mottakerType != null && mottakerIdent != null)
                     || (mottakerType == null && mottakerIdent == null)
         ) {
-            "MottakerType og MottakerIdent må være satt sammen, eller begge må være null"
+            "mottakerType og mottakerIdent må være satt sammen, eller begge må være null."
         }
     }
 }
