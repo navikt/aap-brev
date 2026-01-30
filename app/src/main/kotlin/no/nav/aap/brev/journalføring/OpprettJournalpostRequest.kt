@@ -20,14 +20,14 @@ data class OpprettJournalpostRequest(
         val navn: String? = null
     ) {
         init {
-            require(navn != null || idType == IdType.FNR) {
-                "MottakerNavn må være satt dersom MottakerType ikke er FNR."
+            require(navn != null || idType == IdType.FNR || idType == IdType.ORGNR) {
+                "navn må være satt dersom idType ikke er FNR eller ORGNR."
             }
             require(
                 (idType != null && id != null)
                         || (idType == null && id == null)
             ) {
-                "IdType og id må være satt sammen, eller begge må være null"
+                "idType og id må være satt sammen, eller begge må være null"
             }
         }
 

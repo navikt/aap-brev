@@ -47,6 +47,62 @@ class FerdigstillValideringTest : IntegrationTest() {
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(
+        IdentType::class, mode = Mode.INCLUDE, names = ["FNR", "ORGNR"]
+    )
+    fun `ferdigstilling går igjennom uten at navn og adresse oppgis da dette slås opp av tjenester for journalføring og distribusjon`(
+        identType: IdentType
+    ) {
+        val brevbestilling =
+            gittBrevMed(
+                brev = brev(),
+                status = Status.UNDER_ARBEID,
+            )
+
+        assertAntallJobber(brevbestilling.referanse, 0)
+        ferdigstill(
+            referanse = brevbestilling.referanse,
+            mottakere = listOf(
+                Mottaker(
+                    ident = "123",
+                    identType = identType,
+                    navnOgAdresse = null,
+                    bestillingMottakerReferanse = "bestillingMottakerReferanse"
+                )
+            ),
+        )
+        assertStatus(brevbestilling.referanse, Status.FERDIGSTILT)
+        assertAntallJobber(brevbestilling.referanse, 1)
+    }
+
+    @ParameterizedTest
+    @EnumSource(
+        IdentType::class, mode = Mode.EXCLUDE, names = ["FNR", "ORGNR"]
+    )
+    fun `ferdigstilling feiler dersom navn og adresse på mottaker ikke oppgis`(identType: IdentType) {
+        val brevbestilling =
+            gittBrevMed(
+                brev = brev(),
+                status = Status.UNDER_ARBEID,
+            )
+
+        val exception = assertThrows<IllegalArgumentException> {
+            ferdigstill(
+                referanse = brevbestilling.referanse,
+                mottakere = listOf(
+                    Mottaker(
+                        ident = "123",
+                        identType = identType,
+                        navnOgAdresse = null,
+                        bestillingMottakerReferanse = "bestillingMottakerReferanse"
+                    )
+                ),
+            )
+        }
+        assertThat(exception.message).isEqualTo("navnOgAdresse må være satt dersom identType ikke er FNR eller ORGNR.")
+    }
+
     @Test
     fun `ferdigstill feiler ikke dersom allerede ferdigstilt, men gjør ingen endring`() {
         val bestilling = gittBrevMed(
@@ -102,18 +158,6 @@ class FerdigstillValideringTest : IntegrationTest() {
         assertThat(bestillingEtterDuplikatFerdigstillKall.signaturer).isEqualTo(ferdigstiltBestilling.signaturer)
         assertThat(hentMottakere(referanse)).isEqualTo(mottakere)
         assertAntallJobber(referanse, 1)
-    }
-
-    private fun hentBestilling(referanse: BrevbestillingReferanse): Brevbestilling {
-        return dataSource.transaction { connection ->
-            BrevbestillingRepositoryImpl(connection).hent(referanse)
-        }
-    }
-
-    private fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
-        return dataSource.transaction { connection ->
-            MottakerRepositoryImpl(connection).hentMottakere(referanse)
-        }
     }
 
     @Test
@@ -178,6 +222,18 @@ class FerdigstillValideringTest : IntegrationTest() {
 
         assertStatus(referanse, status)
         assertAntallJobber(referanse, 0)
+    }
+
+    private fun hentBestilling(referanse: BrevbestillingReferanse): Brevbestilling {
+        return dataSource.transaction { connection ->
+            BrevbestillingRepositoryImpl(connection).hent(referanse)
+        }
+    }
+
+    private fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
+        return dataSource.transaction { connection ->
+            MottakerRepositoryImpl(connection).hentMottakere(referanse)
+        }
     }
 
     private fun gittBrevMed(
