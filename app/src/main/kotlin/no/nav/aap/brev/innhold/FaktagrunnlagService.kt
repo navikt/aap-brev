@@ -55,6 +55,15 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.AapFomDato ->
                         put(KjentFaktagrunnlag.AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
 
+                    is Faktagrunnlag.KravdatoUføretrygd->
+                        put(KjentFaktagrunnlag.KRAVDATO_UFORETRYGD, faktagrunnlag.dato.formaterFullLengde(språk))
+
+                    is Faktagrunnlag.SisteDagMedYtelse ->
+                        put(KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE, faktagrunnlag.dato.formaterFullLengde(språk))
+
+                    is Faktagrunnlag.DatoAvklartForJobbsøk->
+                        put(KjentFaktagrunnlag.DATO_AVKLART_FOR_JOBBSOK, faktagrunnlag.dato.formaterFullLengde(språk))
+
                     is Faktagrunnlag.FristDato11_7 ->
                         put(KjentFaktagrunnlag.FRIST_DATO_11_7, faktagrunnlag.frist.formaterFullLengde(språk))
 
@@ -139,30 +148,12 @@ class FaktagrunnlagService(
                                 årligYtelse.formater(språk)
                             )
                         }
-                        faktagrunnlag.sisteDagMedYtelse?.let { sisteDagMedYtelse ->
-                            put(
-                                KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
-                                sisteDagMedYtelse.formaterFullLengde(språk)
-                            )
-                        }
-                        faktagrunnlag.kravdatoUføretrygd?.let { kravdatoUføretrygd ->
-                            put(
-                                KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
-                                kravdatoUføretrygd.formaterFullLengde(språk))
-                        }
-
                     }
 
                     is Faktagrunnlag.Sykdomsvurdering -> {
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
-                    is Faktagrunnlag.SisteDagMedYtelse -> {
-                        put(
-                            KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
-                            faktagrunnlag.dato.formaterFullLengde(språk)
-                        )
-                    }
                 }
             }
         }

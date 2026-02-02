@@ -8,7 +8,9 @@ import java.time.LocalDate
 import java.time.Year
 
 const val FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO: String = "AAP_FOM_DATO"
+const val FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD: String = "KRAVDATO_UFORETRYGD"
 const val FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE: String = "SISTE_DAG_MED_YTELSE"
+const val FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK: String = "DATO_AVKLART_FOR_JOBBSOK"
 const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
 const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
@@ -16,7 +18,9 @@ const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
+    KRAVDATO_UFORETRYGD(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD),
     SISTE_DAG_MED_YTELSE(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE),
+    DATO_AVKLART_FOR_JOBBSOK(FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK),
     FRIST_DATO_11_7(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7),
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
@@ -30,10 +34,20 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.AAP_FOM_DATO)
 
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD)
+    data class KravdatoUføretrygd(
+        val dato: LocalDate
+    ) : Faktagrunnlag(FaktagrunnlagType.KRAVDATO_UFORETRYGD)
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE)
     data class SisteDagMedYtelse(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.SISTE_DAG_MED_YTELSE)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK)
+    data class DatoAvklartForJobbsøk(
+        val dato: LocalDate
+    ) : Faktagrunnlag(FaktagrunnlagType.DATO_AVKLART_FOR_JOBBSOK)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7)
     data class FristDato11_7(
@@ -52,8 +66,6 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val minsteÅrligYtelse: BigDecimal?,
         val minsteÅrligYtelseUnder25: BigDecimal?,
         val årligYtelse: BigDecimal?,
-        val sisteDagMedYtelse: LocalDate?,
-        val kravdatoUføretrygd: LocalDate?
     ) : Faktagrunnlag(FaktagrunnlagType.TILKJENT_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
