@@ -45,7 +45,7 @@ publishing {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0")
 
     testImplementation(project(":lib-test"))
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
