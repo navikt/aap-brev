@@ -55,6 +55,9 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.AapFomDato ->
                         put(KjentFaktagrunnlag.AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
 
+                    is Faktagrunnlag.UtvidetAapFomDato ->
+                        put(KjentFaktagrunnlag.UTVIDET_AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
+
                     is Faktagrunnlag.KravdatoUføretrygd->
                         put(KjentFaktagrunnlag.KRAVDATO_UFORETRYGD, faktagrunnlag.dato.formaterFullLengde(språk))
 
