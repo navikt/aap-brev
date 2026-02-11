@@ -10,10 +10,12 @@ import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.LocalDate
 
 class NomInfoGateway : AnsattInfoGateway {
+    private val log = LoggerFactory.getLogger(javaClass)
     private val graphqlUrl = URI.create(requiredConfigForKey("integrasjon.nom.url"))
     private val config = ClientConfig(
         scope = requiredConfigForKey("integrasjon.nom.scope"),
@@ -48,11 +50,20 @@ class NomInfoGateway : AnsattInfoGateway {
     }
 
     private fun finnAnsattEnhetsnummer(nomDataRessurs: NomDataRessurs): String {
-        val enhet = nomDataRessurs.orgTilknytning.single {
-            it.erAktiv() && it.erDagligOppfolging
-        }.orgEnhet
+        val orgTilknytningMedDagligOppfolging = nomDataRessurs.orgTilknytning.filter { it.erDagligOppfolging }
+        val orgTilknytning = orgTilknytningMedDagligOppfolging.singleOrNull {
+            it.erAktiv()
+        } ?: orgTilknytningMedDagligOppfolging.maxByOrNull { it.gyldigFom }?.also {
+            log.info("Finner ikke aktiv OrgTilknytning for ansatt, bruker siste gyldige for å hente enhet til signatur")
+        }
 
-        return checkNotNull(enhet.remedyEnhetId)
+        checkNotNull(orgTilknytning) {
+            "Fant ikke OrgTilknytning for ansatt. Klarer ikke utlede enhet for signatur."
+        }
+
+        return checkNotNull(orgTilknytning.orgEnhet.remedyEnhetId) {
+            "Klarer ikke utlede enhet for signatur. OrgEnhet til OrgTilknytning mangler RemedyEnhetId."
+        }
     }
 
     private fun OrgTilknytning.erAktiv(): Boolean {

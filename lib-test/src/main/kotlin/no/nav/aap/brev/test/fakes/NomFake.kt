@@ -1,33 +1,29 @@
 package no.nav.aap.brev.test.fakes
 
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.Application
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
 import no.nav.aap.brev.organisasjon.NomData
-import no.nav.aap.brev.organisasjon.NomDataRessurs
-import no.nav.aap.brev.organisasjon.OrgEnhet
-import no.nav.aap.brev.organisasjon.OrgTilknytning
+import no.nav.aap.brev.organisasjon.NomRessursVariables
 import no.nav.aap.brev.util.graphql.GraphQLResponse
-import java.time.LocalDate
+import no.nav.aap.brev.util.graphql.GraphqlRequest
+import no.nav.aap.komponenter.json.DefaultJsonMapper
+
+private val navIdentTilNomData = mutableMapOf<String, NomData>()
+
+fun nomDataForNavIdent(navIdent: String, nomData: NomData) {
+    navIdentTilNomData.put(navIdent, nomData)
+}
 
 fun Application.nomFake() {
     applicationFakeFelles("nom")
     routing {
         post("/graphql") {
-            val data = NomData(
-                NomDataRessurs(
-                    orgTilknytning = listOf(
-                        OrgTilknytning(
-                            OrgEnhet("1234"),
-                            true,
-                            LocalDate.now(),
-                            null
-                        )
-                    ), visningsnavn = "Test"
-                )
-            )
+            val request = DefaultJsonMapper.fromJson<GraphqlRequest<NomRessursVariables>>(call.receiveText())
             val response = GraphQLResponse(
-                data,
+                navIdentTilNomData[request.variables.navIdent],
                 emptyList()
             )
 
