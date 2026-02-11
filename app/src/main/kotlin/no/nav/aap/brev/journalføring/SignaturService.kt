@@ -14,11 +14,14 @@ import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.komponenter.miljo.MiljøKode
+import org.slf4j.LoggerFactory
 
 class SignaturService(
     val ansattInfoGateway: AnsattInfoGateway,
     val enhetGateway: EnhetGateway,
 ) {
+
+    private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
         fun konstruer(): SignaturService {
@@ -40,6 +43,7 @@ class SignaturService(
             val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
 
             val ansattInfoMedRolle: List<AnsattInfoMedRolle> = sorterteSignaturer.map {
+                log.info("Henter ansatt-info for ansatt med rolle ${it.rolle}")
                 it to ansattInfoGateway.hentAnsattInfo(it.navIdent)
             }.map { (signatur, ansattInfo) ->
                 AnsattInfoMedRolle(ansattInfo, signatur.rolle)
