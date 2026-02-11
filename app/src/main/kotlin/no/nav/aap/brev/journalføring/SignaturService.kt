@@ -1,6 +1,5 @@
 package no.nav.aap.brev.journalføring
 
-import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.kontrakt.Brevtype
@@ -22,7 +21,7 @@ class SignaturService(
     val enhetGateway: EnhetGateway,
 ) {
 
-    private val log = LoggerFactory.getLogger(BrevbestillingService::class.java)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     companion object {
         fun konstruer(): SignaturService {
