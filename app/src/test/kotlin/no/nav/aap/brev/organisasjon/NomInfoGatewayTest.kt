@@ -81,6 +81,12 @@ class NomInfoGatewayTest {
                             gyldigFom = LocalDate.now().minusDays(30),
                             gyldigTom = LocalDate.now().minusDays(1)
                         ),
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("2345"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(30),
+                            gyldigTom = null
+                        ),
                     ), visningsnavn = "Saksbehandler Navn"
                 )
             )
@@ -94,19 +100,93 @@ class NomInfoGatewayTest {
     }
 
     @Test
-    fun `feiler dersom det ikke finnes en OrgTilknytning daglig oppfølging`() {
+    fun `bruker enhet fra OrgTilknytning uten daglig oppfølging som er gyldig nå dersom det ikke finnes noen med daglig oppfølging`() {
         val navIdent = randomNavIdent()
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
                     orgTilknytning = listOf(
                         OrgTilknytning(
+                            orgEnhet = OrgEnhet("1234"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(60),
+                            gyldigTom = LocalDate.now().minusDays(10)
+                        ),
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("2345"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(70),
+                            gyldigTom = LocalDate.now().minusDays(20)
+                        ),
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("3456"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(30),
+                            gyldigTom = LocalDate.now().plusDays(10)
+                        ),
+                        OrgTilknytning(
                             orgEnhet = OrgEnhet("4567"),
                             erDagligOppfolging = false,
-                            gyldigFom = LocalDate.now(),
+                            gyldigFom = LocalDate.now().minusDays(40),
                             gyldigTom = null
-                        )
+                        ),
                     ), visningsnavn = "Saksbehandler Navn"
+                )
+            )
+        )
+
+        val ansattInfo = NomInfoGateway().hentAnsattInfo(navIdent)
+
+        assertThat(ansattInfo.navIdent).isEqualTo(navIdent)
+        assertThat(ansattInfo.navn).isEqualTo("Saksbehandler Navn")
+        assertThat(ansattInfo.enhetsnummer).isEqualTo("4567")
+    }
+
+    @Test
+    fun `bruker enhet fra siste OrgTilknytning dersom det ikke finnes noen med daglig oppfølging og ingen gyldige OrgTilknytning nå`() {
+        val navIdent = randomNavIdent()
+        nomDataForNavIdent(
+            navIdent, NomData(
+                NomDataRessurs(
+                    orgTilknytning = listOf(
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("1234"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(60),
+                            gyldigTom = LocalDate.now().minusDays(10)
+                        ),
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("2345"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(70),
+                            gyldigTom = LocalDate.now().minusDays(20)
+                        ),
+                        OrgTilknytning(
+                            orgEnhet = OrgEnhet("3456"),
+                            erDagligOppfolging = false,
+                            gyldigFom = LocalDate.now().minusDays(30),
+                            gyldigTom = LocalDate.now().plusDays(10)
+                        ),
+                    ), visningsnavn = "Saksbehandler Navn"
+                )
+            )
+        )
+
+        val ansattInfo = NomInfoGateway().hentAnsattInfo(navIdent)
+
+        assertThat(ansattInfo.navIdent).isEqualTo(navIdent)
+        assertThat(ansattInfo.navn).isEqualTo("Saksbehandler Navn")
+        assertThat(ansattInfo.enhetsnummer).isEqualTo("3456")
+    }
+
+    @Test
+    fun `feiler dersom det ikke finnes en OrgTilknytning`() {
+        val navIdent = randomNavIdent()
+        nomDataForNavIdent(
+            navIdent, NomData(
+                NomDataRessurs(
+                    orgTilknytning = emptyList(),
+                    visningsnavn = "Saksbehandler Navn"
                 )
             )
         )
