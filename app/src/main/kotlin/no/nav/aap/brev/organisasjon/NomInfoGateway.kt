@@ -78,7 +78,7 @@ private const val navIdent = "\$navIdent"
 val ressursQuery = """
     query($navIdent: String!) {
       ressurs(where: {navident: $navIdent}) {
-        orgTilknytninger(utvalg: ALLE) {
+        orgTilknytning {
           orgEnhet {
             remedyEnhetId
           }
