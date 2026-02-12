@@ -25,7 +25,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = listOf(
+                    orgTilknytninger = listOf(
                         OrgTilknytning(
                             orgEnhet = OrgEnhet("1234"),
                             erDagligOppfolging = true,
@@ -68,7 +68,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = listOf(
+                    orgTilknytninger = listOf(
                         OrgTilknytning(
                             orgEnhet = OrgEnhet("1234"),
                             erDagligOppfolging = true,
@@ -105,7 +105,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = listOf(
+                    orgTilknytninger = listOf(
                         OrgTilknytning(
                             orgEnhet = OrgEnhet("1234"),
                             erDagligOppfolging = false,
@@ -148,7 +148,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = listOf(
+                    orgTilknytninger = listOf(
                         OrgTilknytning(
                             orgEnhet = OrgEnhet("1234"),
                             erDagligOppfolging = false,
@@ -185,7 +185,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = emptyList(),
+                    orgTilknytninger = emptyList(),
                     visningsnavn = "Saksbehandler Navn"
                 )
             )
@@ -204,7 +204,7 @@ class NomInfoGatewayTest {
         nomDataForNavIdent(
             navIdent, NomData(
                 NomDataRessurs(
-                    orgTilknytning = listOf(
+                    orgTilknytninger = listOf(
                         OrgTilknytning(
                             orgEnhet = OrgEnhet(remedyEnhetId = null),
                             erDagligOppfolging = true,

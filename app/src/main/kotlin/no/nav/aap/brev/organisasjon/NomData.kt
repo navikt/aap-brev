@@ -7,7 +7,7 @@ data class NomData(
 )
 
 data class NomDataRessurs(
-    val orgTilknytning: List<OrgTilknytning>,
+    val orgTilknytninger: List<OrgTilknytning>,
     val visningsnavn: String,
 )
 
