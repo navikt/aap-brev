@@ -50,12 +50,12 @@ class NomInfoGateway : AnsattInfoGateway {
     }
 
     private fun finnAnsattEnhetsnummer(nomDataRessurs: NomDataRessurs): String {
-        val orgTilknytningMedDagligOppfolging = nomDataRessurs.orgTilknytning.filter { it.erDagligOppfolging }
+        val orgTilknytningMedDagligOppfolging = nomDataRessurs.orgTilknytninger.filter { it.erDagligOppfolging }
         val orgTilknytning = orgTilknytningMedDagligOppfolging.singleOrNull {
             it.erAktiv()
         } ?: orgTilknytningMedDagligOppfolging.maxByOrNull { it.gyldigTom ?: LocalDate.MAX }?.also {
             log.info("Finner ikke aktiv OrgTilknytning med daglig oppfølging for ansatt, bruker siste OrgTilknytning med daglig oppfølging for å hente enhet til signatur.")
-        } ?: nomDataRessurs.orgTilknytning.maxByOrNull { it.gyldigTom ?: LocalDate.MAX }?.also {
+        } ?: nomDataRessurs.orgTilknytninger.maxByOrNull { it.gyldigTom ?: LocalDate.MAX }?.also {
             log.info("Finner ikke OrgTilknytning med daglig oppfølging for ansatt, bruker siste OrgTilknytning for å hente enhet til signatur.")
         }
 
