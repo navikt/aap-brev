@@ -53,8 +53,10 @@ class NomInfoGateway : AnsattInfoGateway {
         val orgTilknytningMedDagligOppfolging = nomDataRessurs.orgTilknytning.filter { it.erDagligOppfolging }
         val orgTilknytning = orgTilknytningMedDagligOppfolging.singleOrNull {
             it.erAktiv()
-        } ?: orgTilknytningMedDagligOppfolging.maxByOrNull { it.gyldigFom }?.also {
-            log.info("Finner ikke aktiv OrgTilknytning for ansatt, bruker siste gyldige for å hente enhet til signatur")
+        } ?: orgTilknytningMedDagligOppfolging.maxByOrNull { it.gyldigTom ?: LocalDate.MAX }?.also {
+            log.info("Finner ikke aktiv OrgTilknytning med daglig oppfølging for ansatt, bruker siste OrgTilknytning med daglig oppfølging for å hente enhet til signatur.")
+        } ?: nomDataRessurs.orgTilknytning.maxByOrNull { it.gyldigTom ?: LocalDate.MAX }?.also {
+            log.info("Finner ikke OrgTilknytning med daglig oppfølging for ansatt, bruker siste OrgTilknytning for å hente enhet til signatur.")
         }
 
         checkNotNull(orgTilknytning) {
