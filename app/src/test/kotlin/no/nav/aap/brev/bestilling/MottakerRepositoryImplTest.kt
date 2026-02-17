@@ -13,7 +13,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class MottakerRepositoryImplTest  {
+class MottakerRepositoryImplTest {
 
     private lateinit var dataSource: TestDataSource
 
@@ -66,14 +66,8 @@ class MottakerRepositoryImplTest  {
                 listOf(mottaker1, mottaker2)
             )
 
-            assertThat(
-                mottakerRepository.hentMottakere(bestilling.id).map { it.copy(id = null) }).containsExactlyInAnyOrder(mottaker1,
-                mottaker2
-            )
-
-            assertThat(
-                mottakerRepository.hentMottakere(bestilling.referanse)
-                    .map { it.copy(id = null) }).containsExactlyInAnyOrder(mottaker1, mottaker2)
+            assertThat(mottakerRepository.hentMottakere(bestilling.id).map { it.copy(id = null) })
+                .containsExactlyInAnyOrder(mottaker1, mottaker2)
         }
     }
 }

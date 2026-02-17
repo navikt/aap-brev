@@ -7,7 +7,6 @@ import no.nav.aap.komponenter.json.DefaultJsonMapper
 interface MottakerRepository {
     fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>)
     fun hentMottakere(brevbestillingId: BrevbestillingId): List<Mottaker>
-    fun hentMottakere(brevbestillingReferanse: BrevbestillingReferanse): List<Mottaker>
 }
 
 class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRepository {
@@ -37,21 +36,6 @@ class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRep
         return connection.queryList(query) {
             setParams {
                 setLong(1, brevbestillingId.id)
-            }
-            setRowMapper { row ->
-                mapMottaker(row)
-            }
-        }
-    }
-
-    override fun hentMottakere(brevbestillingReferanse: BrevbestillingReferanse): List<Mottaker> {
-        val query = """
-            SELECT * FROM MOTTAKER WHERE BREVBESTILLING_ID IN (SELECT ID FROM BREVBESTILLING WHERE REFERANSE = ?)
-        """.trimIndent()
-
-        return connection.queryList(query) {
-            setParams {
-                setUUID(1, brevbestillingReferanse.referanse)
             }
             setRowMapper { row ->
                 mapMottaker(row)
