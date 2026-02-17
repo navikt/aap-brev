@@ -66,23 +66,7 @@ class JournalføringServiceTest : IntegrationTest() {
                 ),
                 bestillingMottakerReferanse = bestillingMottakerReferanse2
             )
-            if (brukV3) {
-                brevbestillingService.oppdaterBrevdata(
-                    bestilling.referanse,
-                    bestilling.brevdata!!.copy(
-                        faktagrunnlag = bestilling.brevdata.faktagrunnlag
-                            .plus(Brevdata.Faktagrunnlag("VAR_1", ""))
-                            .plus(Brevdata.Faktagrunnlag("VAR_2", "")),
-                        fritekster = bestilling.brevdata.fritekster.plus(
-                            Brevdata.Fritekst(
-                                "49d9c7a7-29db-43c6-aece-45e97314a50a",
-                                "8a3109fb503c",
-                                Brevdata.FritekstJson(DefaultJsonMapper.fromJson("""{"fritekst": "abc"}"""))
-                            )
-                        )
-                    )
-                )
-            }
+
             brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
 
             journalføringService.journalførBrevbestilling(bestilling.referanse)
