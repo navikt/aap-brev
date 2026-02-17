@@ -5,6 +5,7 @@ import no.nav.aap.brev.bestilling.BrevbestillingId
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.OpprettBrevbestillingResultat
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.UnikReferanse
@@ -96,6 +97,13 @@ abstract class IntegrationTest {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
             brevbestillingService.oppdaterBrev(referanse, brev)
+        }
+    }
+
+    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, brevdata: Brevdata) {
+        dataSource.transaction { connection ->
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
+            brevbestillingService.oppdaterBrevdata(referanse, brevdata)
         }
     }
 

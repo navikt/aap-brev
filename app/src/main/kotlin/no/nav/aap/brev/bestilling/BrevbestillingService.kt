@@ -219,7 +219,7 @@ class BrevbestillingService(
 
     fun oppdaterBrevdata(referanse: BrevbestillingReferanse, brevdata: Brevdata) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        validerOppdaterBrevdata(bestilling)
+        validerOppdaterBrevdata(bestilling, brevdata)
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
@@ -375,9 +375,21 @@ class BrevbestillingService(
         }
     }
 
-    private fun validerOppdaterBrevdata(bestilling: Brevbestilling) {
+    private fun validerOppdaterBrevdata(
+        bestilling: Brevbestilling,
+        nyBrevdata: Brevdata
+    ) {
         valider(bestilling.status == Status.UNDER_ARBEID) {
             "Forsøkte å oppdatere brev i bestilling med status=${bestilling.status}"
+        }
+        val eksisterendeFaktagrunnlag = bestilling.brevdata?.faktagrunnlag ?: emptyList()
+        val nyFaktagrunnlag = nyBrevdata.faktagrunnlag
+
+        valider(
+            nyFaktagrunnlag.containsAll(eksisterendeFaktagrunnlag) &&
+                    nyFaktagrunnlag.size == eksisterendeFaktagrunnlag.size
+        ) {
+            "Kan ikke oppdatere faktagrunnlag"
         }
     }
 }
