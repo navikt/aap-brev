@@ -133,7 +133,7 @@ class FerdigstillValideringTest : IntegrationTest() {
         )
 
         val ferdigstiltBestilling = hentBestilling(referanse)
-        val mottakere = hentMottakere(referanse)
+        val mottakere = hentMottakere(ferdigstiltBestilling.id)
         assertThat(ferdigstiltBestilling.status).isEqualTo(Status.FERDIGSTILT)
         assertThat(ferdigstiltBestilling.signaturer).hasSize(1)
         assertThat(mottakere).hasSize(1)
@@ -156,7 +156,7 @@ class FerdigstillValideringTest : IntegrationTest() {
         val bestillingEtterDuplikatFerdigstillKall = hentBestilling(referanse)
         assertThat(bestillingEtterDuplikatFerdigstillKall.status).isEqualTo(Status.FERDIGSTILT)
         assertThat(bestillingEtterDuplikatFerdigstillKall.signaturer).isEqualTo(ferdigstiltBestilling.signaturer)
-        assertThat(hentMottakere(referanse)).isEqualTo(mottakere)
+        assertThat(hentMottakere(bestillingEtterDuplikatFerdigstillKall.id)).isEqualTo(mottakere)
         assertAntallJobber(referanse, 1)
     }
 
@@ -230,9 +230,9 @@ class FerdigstillValideringTest : IntegrationTest() {
         }
     }
 
-    private fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
+    private fun hentMottakere(id: BrevbestillingId): List<Mottaker> {
         return dataSource.transaction { connection ->
-            MottakerRepositoryImpl(connection).hentMottakere(referanse)
+            MottakerRepositoryImpl(connection).hentMottakere(id)
         }
     }
 

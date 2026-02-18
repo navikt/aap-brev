@@ -42,7 +42,7 @@ class JournalføringService(
     fun journalførBrevbestilling(referanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(referanse)
 
-        val mottakere = mottakerRepository.hentMottakere(referanse)
+        val mottakere = mottakerRepository.hentMottakere(bestilling.id)
         require(mottakere.isNotEmpty()) {
             "Det må være minst én mottaker for å kunne journalføre brevbestilling."
         }
