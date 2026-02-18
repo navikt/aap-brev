@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val ktorVersion = "3.3.3"
+val ktorVersion = "3.4.0"
 val komponenterVersjon = "2.0.1"
 val tilgangVersjon = "1.0.179"
 val junitVersjon = "5.13.1"
 
 plugins {
     id("aap.conventions")
-    id("io.ktor.plugin") version "3.3.3"
+    id("io.ktor.plugin") version "3.4.0"
 }
 
 application {
@@ -36,9 +36,9 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.16.2")
-    implementation("ch.qos.logback:logback-classic:1.5.25")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.16.3")
+    implementation("ch.qos.logback:logback-classic:1.5.31")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
@@ -60,7 +60,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.flywaydb:flyway-database-postgresql:11.20.2")
-    implementation("org.postgresql:postgresql:42.7.9")
+    implementation("org.postgresql:postgresql:42.7.10")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersjon")
@@ -70,5 +70,5 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers-postgresql:2.0.3")
 
     testImplementation(project(":lib-test"))
-    testImplementation("io.mockk:mockk:1.14.7")
+    testImplementation("io.mockk:mockk:1.14.9")
 }
