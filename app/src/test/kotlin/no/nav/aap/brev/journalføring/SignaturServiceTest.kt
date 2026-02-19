@@ -35,7 +35,7 @@ class SignaturServiceTest {
 
 
         val signaturer = signaturService.signaturer(
-            listOf(SorterbarSignatur("navident", 0, Rolle.BESLUTTER)),
+            listOf(SorterbarSignatur("navident", 0, Rolle.BESLUTTER, "1234")),
             Brevtype.INNVILGELSE,
             personInfoMedStrengtFortroligAdresse
         )
@@ -70,9 +70,9 @@ class SignaturServiceTest {
 
         val signaturer = signaturService.signaturer(
             listOf(
-                SorterbarSignatur("navident1", 1, null),
-                SorterbarSignatur("navident0", 0, null),
-                SorterbarSignatur("navident2", 2, null)
+                SorterbarSignatur("navident1", 1, null, null),
+                SorterbarSignatur("navident0", 0, null, null),
+                SorterbarSignatur("navident2", 2, null, null)
             ),
             Brevtype.INNVILGELSE,
             personInfo
@@ -104,7 +104,7 @@ class SignaturServiceTest {
         val signaturService = SignaturService(ansattInfoGateway, enhetGateway)
 
         val signaturer = signaturService.signaturer(
-            listOf(SorterbarSignatur("navident", 1, Rolle.KVALITETSSIKRER)),
+            listOf(SorterbarSignatur("navident", 1, Rolle.KVALITETSSIKRER, null)),
             Brevtype.INNVILGELSE,
             personInfo
         )
