@@ -60,7 +60,8 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.OMGJØRING_VEDTAK_11_9,
             Brevtype.VEDTAK_11_17,
             Brevtype.VEDTAK_11_18,
-            Brevtype.VEDTAK_11_23_SJETTE_LEDD
+            Brevtype.VEDTAK_11_23_SJETTE_LEDD,
+            Brevtype.STANS_AV_YTELSE,
                 -> Distribusjonstype.VEDTAK
 
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
