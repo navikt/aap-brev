@@ -9,7 +9,10 @@ fun Application.norgFake() {
     applicationFakeFelles("norg")
     routing {
         get("/norg2/api/v1/enhet") {
-            call.respond(listOf(NorgEnhet("1234", "Navn", "LOKAL")))
+            val enheter = call.queryParameters.getAll("enhetsnummerListe")
+                ?.map { NorgEnhet(it, "Enhetnavn $it", "LOKAL") }
+                ?: emptyList()
+            call.respond(enheter)
         }
         get("/norg2/api/v1/enhet/{enhetNr}/overordnet") {
             call.respond(listOf(NorgEnhet("4321", "Fylkeskontornavn", "FYLKE")))
