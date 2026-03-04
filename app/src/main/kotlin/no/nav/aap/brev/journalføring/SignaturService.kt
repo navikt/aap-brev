@@ -74,7 +74,7 @@ class SignaturService(
         }
     }
 
-    fun signaturerV2(
+    private fun signaturerV2(
         sorterteSignaturer: List<SorterbarSignatur>,
         brevtype: Brevtype,
     ): List<Signatur> {
