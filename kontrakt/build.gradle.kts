@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val komponenterVersjon = "2.0.2"
+val komponenterVersjon = "2.0.14"
 val jupiterVersjon = "5.13.1"
 
 plugins {
@@ -45,7 +45,7 @@ publishing {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1")
 
     testImplementation(project(":lib-test"))
     testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")

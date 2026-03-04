@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val ktorVersion = "3.4.0"
-val komponenterVersjon = "2.0.2"
-val tilgangVersjon = "1.0.179"
+val komponenterVersjon = "2.0.14"
+val tilgangVersjon = "1.0.182"
 val junitVersjon = "5.13.1"
 
 plugins {
@@ -36,9 +36,9 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1")
     implementation("io.micrometer:micrometer-registry-prometheus:1.16.3")
-    implementation("ch.qos.logback:logback-classic:1.5.31")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
