@@ -69,8 +69,8 @@ class BrevbestillingRepositoryImplTest {
             val signaturNavIdent1 = randomNavIdent()
             val signaturNavIdent2 = randomNavIdent()
             val signaturer = listOf(
-                SignaturGrunnlag(signaturNavIdent1, null),
-                SignaturGrunnlag(signaturNavIdent2, Rolle.KVALITETSSIKRER),
+                SignaturGrunnlag(signaturNavIdent1, null, null),
+                SignaturGrunnlag(signaturNavIdent2, Rolle.KVALITETSSIKRER, "1234"),
             )
             val journalpostId = randomJournalpostId()
 
@@ -132,10 +132,8 @@ class BrevbestillingRepositoryImplTest {
 
             assertEquals(
                 listOf(
-                    SorterbarSignatur(signaturNavIdent1, 1, null), SorterbarSignatur(
-                        signaturNavIdent2, 2,
-                        Rolle.KVALITETSSIKRER
-                    )
+                    SorterbarSignatur(signaturNavIdent1, 1, null, null),
+                    SorterbarSignatur(signaturNavIdent2, 2, Rolle.KVALITETSSIKRER, "1234")
                 ),
                 bestilling.signaturer
             )

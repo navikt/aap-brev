@@ -4,6 +4,7 @@ import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
+import no.nav.aap.brev.test.fakes.nomDataForAlleIdenter
 import no.nav.aap.komponenter.config.configForKey
 import java.util.concurrent.TimeUnit
 
@@ -16,6 +17,8 @@ fun main() {
         println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
         jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
     }
+
+    nomDataForAlleIdenter()
 
     Fakes.start(azurePort = 8083)
 

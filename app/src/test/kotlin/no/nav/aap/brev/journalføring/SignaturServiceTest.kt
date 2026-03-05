@@ -2,86 +2,83 @@ package no.nav.aap.brev.journalføring
 
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import no.nav.aap.brev.bestilling.Personinfo
 import no.nav.aap.brev.bestilling.SorterbarSignatur
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Rolle
 import no.nav.aap.brev.kontrakt.Signatur
-import no.nav.aap.brev.no.nav.aap.brev.test.Fakes
 import no.nav.aap.brev.organisasjon.AnsattInfo
-import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.Enhet
 import no.nav.aap.brev.organisasjon.EnhetsType
 import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.organisasjon.NorgGateway
+import no.nav.aap.brev.test.randomBrukerIdent
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 class SignaturServiceTest {
 
-    companion object {
-        @BeforeAll
-        @JvmStatic
-        fun beforeAll() {
-            Fakes.start()
-        }
-    }
+    private val ansattInfoGateway = mockk<NomInfoGateway>()
+    private val enhetGateway = mockk<NorgGateway>()
+    private val signaturService = SignaturService(ansattInfoGateway, enhetGateway)
 
     @Test
     fun `signaturer vises ikke ved strengt fortrolig adresse`() {
-        val signaturService = SignaturService.konstruer()
-
-
         val signaturer = signaturService.signaturer(
-            listOf(SorterbarSignatur("navident", 0, Rolle.BESLUTTER)),
+            listOf(SorterbarSignatur("navident", 0, Rolle.BESLUTTER, "1234")),
             Brevtype.INNVILGELSE,
-            personInfoMedStrengtFortroligAdresse
+            Personinfo(personIdent = randomBrukerIdent(), navn = "navn", harStrengtFortroligAdresse = true)
         )
         assertThat(signaturer).isEmpty()
     }
 
-    @Test
-    fun `signaturer sorteres basert på angitt sorteringsnøkkel`() {
+    @ParameterizedTest
+    @ValueSource(booleans = [true, false])
+    fun `signaturer sorteres basert på angitt sorteringsnøkkel`(harEnhetISignatur: Boolean) {
 
-        val ansattInfoGateway = spyk<AnsattInfoGateway> {
-            every { hentAnsattInfo("navident0") } returns AnsattInfo(
-                navIdent = "navident0",
-                navn = "Ansattnavn0",
-                enhetsnummer = "1234",
-            )
-            every { hentAnsattInfo("navident1") } returns AnsattInfo(
-                navIdent = "navident1",
-                navn = "Ansattnavn1",
-                enhetsnummer = "1234",
-            )
-            every { hentAnsattInfo("navident2") } returns AnsattInfo(
-                navIdent = "navident2",
-                navn = "Ansattnavn2",
-                enhetsnummer = "1234",
-            )
-        }
-        val enhetGateway = mockk<NorgGateway> {
-            every { hentOverordnetFylkesenhet(any()) } returns Enhet("4321", "Overordnet enhet", EnhetsType.FYLKE)
-            every { hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
-        }
-        val signaturService = SignaturService(ansattInfoGateway, enhetGateway)
+        every { ansattInfoGateway.hentAnsattInfo("navident1") } returns AnsattInfo(
+            navIdent = "navident1",
+            navn = "Ansattnavn1",
+            enhetsnummer = "1234",
+        )
+        every { ansattInfoGateway.hentAnsattInfo("navident2") } returns AnsattInfo(
+            navIdent = "navident2",
+            navn = "Ansattnavn2",
+            enhetsnummer = "1234",
+        )
+        every { ansattInfoGateway.hentAnsattInfo("navident3") } returns AnsattInfo(
+            navIdent = "navident3",
+            navn = "Ansattnavn3",
+            enhetsnummer = "1234",
+        )
+        every { enhetGateway.hentOverordnetFylkesenhet(any()) } returns Enhet(
+            "4321",
+            "Overordnet enhet",
+            EnhetsType.FYLKE
+        )
+        every { enhetGateway.hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
 
+        val enhet = if (harEnhetISignatur) "1234" else null
         val signaturer = signaturService.signaturer(
             listOf(
-                SorterbarSignatur("navident1", 1, null),
-                SorterbarSignatur("navident0", 0, null),
-                SorterbarSignatur("navident2", 2, null)
+                SorterbarSignatur("navident2", 1, null, enhet),
+                SorterbarSignatur("navident1", 0, null, enhet),
+                SorterbarSignatur("navident3", 2, null, enhet)
             ),
             Brevtype.INNVILGELSE,
-            personInfo
+            personinfo = Personinfo(
+                personIdent = randomBrukerIdent(),
+                navn = "navn",
+                harStrengtFortroligAdresse = false
+            )
         )
         assertThat(signaturer).isEqualTo(
             listOf(
-                Signatur(navn = "Ansattnavn0", enhet = "Enhet"),
                 Signatur(navn = "Ansattnavn1", enhet = "Enhet"),
-                Signatur(navn = "Ansattnavn2", enhet = "Enhet")
+                Signatur(navn = "Ansattnavn2", enhet = "Enhet"),
+                Signatur(navn = "Ansattnavn3", enhet = "Enhet")
             )
         )
     }
@@ -89,30 +86,85 @@ class SignaturServiceTest {
     @Test
     fun `kvalitetssikrer signerer med navn på overordnet fylkesenhet`() {
 
-        val ansattInfoGateway = mockk<NomInfoGateway> {
-            every { hentAnsattInfo(any()) } returns AnsattInfo(
-                navIdent = "navident",
-                navn = "Ansattnavn",
-                enhetsnummer = "1234",
-            )
-        }
-        val enhetGateway = mockk<NorgGateway> {
-            every { hentOverordnetFylkesenhet(any()) } returns Enhet("4321", "Overordnet enhet", EnhetsType.FYLKE)
-            every { hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
-        }
-
-        val signaturService = SignaturService(ansattInfoGateway, enhetGateway)
+        every { ansattInfoGateway.hentAnsattInfo(any()) } returns AnsattInfo(
+            navIdent = "navident",
+            navn = "Ansattnavn",
+            enhetsnummer = "1234",
+        )
+        every { enhetGateway.hentOverordnetFylkesenhet(any()) } returns Enhet(
+            "4321",
+            "Overordnet enhet",
+            EnhetsType.FYLKE
+        )
+        every { enhetGateway.hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
 
         val signaturer = signaturService.signaturer(
-            listOf(SorterbarSignatur("navident", 1, Rolle.KVALITETSSIKRER)),
-            Brevtype.INNVILGELSE,
-            personInfo
+            sorterbareSignaturer = listOf(SorterbarSignatur("navident", 1, Rolle.KVALITETSSIKRER, null)),
+            brevtype = Brevtype.INNVILGELSE,
+            personinfo = Personinfo(
+                personIdent = randomBrukerIdent(),
+                navn = "navn",
+                harStrengtFortroligAdresse = false
+            )
         )
         assertThat(signaturer).isEqualTo(listOf(Signatur(navn = "Ansattnavn", enhet = "Overordnet enhet")))
     }
 
+    @Test
+    fun `bruker enhet fra signatur dersom definert med unntak for NAY AAP enhet, ellers ansatt-enhet`() {
+        every { ansattInfoGateway.hentAnsattInfo("navident1") } returns AnsattInfo(
+            navIdent = "navident1",
+            navn = "Ansattnavn1",
+            enhetsnummer = "4567",
+        )
 
-    private val personInfoMedStrengtFortroligAdresse = Personinfo("ident", "navn", true)
-    private val personInfo = Personinfo("ident", "navn", false)
+        every { ansattInfoGateway.hentAnsattInfo("navident2") } returns AnsattInfo(
+            navIdent = "navident2",
+            navn = "Ansattnavn2",
+            enhetsnummer = "5678",
+        )
 
+        every { ansattInfoGateway.hentAnsattInfo("navident3") } returns AnsattInfo(
+            navIdent = "navident3",
+            navn = "Ansattnavn3",
+            enhetsnummer = "6789",
+        )
+
+        every { ansattInfoGateway.hentAnsattInfo("navident4") } returns AnsattInfo(
+            navIdent = "navident4",
+            navn = "Ansattnavn4",
+            enhetsnummer = "7890",
+        )
+
+        every { enhetGateway.hentEnheter(any()) } returns listOf(
+            Enhet("4491", "Enhetsnavn 4491", EnhetsType.ANNET),
+            Enhet("1234", "Enhetsnavn 1234", EnhetsType.LOKAL),
+            Enhet("2345", "Enhetsnavn 2345", EnhetsType.LOKAL),
+            Enhet("4567", "Enhetsnavn 4567", EnhetsType.LOKAL),
+            Enhet("5678", "Enhetsnavn 5678", EnhetsType.LOKAL),
+            Enhet("6789", "Enhetsnavn 6789", EnhetsType.LOKAL),
+            Enhet("7890", "Enhetsnavn 7890", EnhetsType.LOKAL),
+        )
+
+        val signaturer = signaturService.signaturer(
+            sorterbareSignaturer = listOf(
+                SorterbarSignatur("navident1", 1, null, "4491"),
+                SorterbarSignatur("navident2", 2, null, "1234"),
+                SorterbarSignatur("navident3", 3, null, "2345"),
+                SorterbarSignatur("navident4", 4, null, null),
+            ),
+            brevtype = Brevtype.INNVILGELSE,
+            personinfo = Personinfo(
+                personIdent = randomBrukerIdent(),
+                navn = "navn",
+                harStrengtFortroligAdresse = false
+            )
+        )
+        assertThat(signaturer).isEqualTo(listOf(
+            Signatur(navn = "Ansattnavn1", enhet = "Enhetsnavn 4567"),
+            Signatur(navn = "Ansattnavn2", enhet = "Enhetsnavn 1234"),
+            Signatur(navn = "Ansattnavn3", enhet = "Enhetsnavn 2345"),
+            Signatur(navn = "Ansattnavn4", enhet = "Enhetsnavn 7890"),
+        ))
+    }
 }

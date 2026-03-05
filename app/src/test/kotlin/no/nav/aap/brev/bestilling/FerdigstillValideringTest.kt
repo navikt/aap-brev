@@ -121,7 +121,7 @@ class FerdigstillValideringTest : IntegrationTest() {
         ferdigstill(
             referanse = referanse,
             signaturer = listOf(
-                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING)
+                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING, null)
             ),
             mottakere = listOf(
                 Mottaker(
@@ -142,7 +142,7 @@ class FerdigstillValideringTest : IntegrationTest() {
         ferdigstill(
             referanse = referanse,
             signaturer = listOf(
-                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING)
+                SignaturGrunnlag("ident", Rolle.SAKSBEHANDLER_OPPFOLGING, null)
             ),
             mottakere = listOf(
                 Mottaker(

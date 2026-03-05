@@ -23,6 +23,8 @@ class SignaturService(
 
     private val log = LoggerFactory.getLogger(javaClass)
 
+    private val NAY_AAP_ENHET = "4491"
+
     companion object {
         fun konstruer(): SignaturService {
             return SignaturService(
@@ -41,6 +43,10 @@ class SignaturService(
             emptyList()
         } else {
             val sorterteSignaturer = sorterbareSignaturer.sortedBy { it.sorteringsnøkkel }
+
+            if (harEnhetISignatur(sorterbareSignaturer)) {
+                return signaturerV2(sorterteSignaturer, brevtype)
+            }
 
             val ansattInfoMedRolle: List<AnsattInfoMedRolle> = sorterteSignaturer.map {
                 log.info("Henter ansatt-info for ansatt med rolle ${it.rolle}")
@@ -66,6 +72,38 @@ class SignaturService(
                 )
             }
         }
+    }
+
+    private fun signaturerV2(
+        sorterteSignaturer: List<SorterbarSignatur>,
+        brevtype: Brevtype,
+    ): List<Signatur> {
+        val navIdentTilAnsattInfo = sorterteSignaturer.associate { signatur ->
+            signatur.navIdent to ansattInfoGateway.hentAnsattInfo(signatur.navIdent)
+        }
+
+        val navIdentTilEnhet = sorterteSignaturer.associate { signatur ->
+            if (signatur.enhet == null || signatur.enhet == NAY_AAP_ENHET) {
+                signatur.navIdent to navIdentTilAnsattInfo.getValue(signatur.navIdent).enhetsnummer
+            } else {
+                signatur.navIdent to signatur.enhet
+            }
+        }
+
+        val enheter = enhetGateway.hentEnheter(navIdentTilEnhet.values.toList()).associateBy { it.enhetsNummer }
+
+        return sorterteSignaturer.map { signatur ->
+            val enhetsnummer = navIdentTilEnhet.getValue(signatur.navIdent)
+            val enhet = enheter.getValue(enhetsnummer)
+            Signatur(
+                navn = navIdentTilAnsattInfo.getValue(signatur.navIdent).navn,
+                enhet = if (brukEnhetsTypeNavn(brevtype)) enhet.enhetstypeNavn else enhet.navn
+            )
+        }
+    }
+
+    private fun harEnhetISignatur(sorterbareSignaturer: List<SorterbarSignatur>): Boolean {
+        return sorterbareSignaturer.any { it.enhet != null }
     }
 
     private fun brukEnhetsTypeNavn(brevtype: Brevtype): Boolean {
