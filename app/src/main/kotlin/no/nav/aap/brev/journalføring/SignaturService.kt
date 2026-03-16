@@ -108,16 +108,37 @@ class SignaturService(
 
     private fun brukEnhetsTypeNavn(brevtype: Brevtype): Boolean {
         return when (brevtype) {
-            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT, Brevtype.FORVALTNINGSMELDING,
-            Brevtype.KLAGE_MOTTATT, Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> {
+            Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
+            Brevtype.FORVALTNINGSMELDING,
+            Brevtype.KLAGE_MOTTATT,
+            Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
+                -> {
                 true
             }
 
-            Brevtype.VEDTAK_ENDRING, Brevtype.BARNETILLEGG_SATS_REGULERING, Brevtype.VARSEL_OM_BESTILLING,
-            Brevtype.AVSLAG, Brevtype.INNVILGELSE, Brevtype.KLAGE_AVVIST, Brevtype.KLAGE_OPPRETTHOLDELSE,
-            Brevtype.KLAGE_TRUKKET, Brevtype.VEDTAK_11_7, Brevtype.VEDTAK_11_9, Brevtype.OMGJØRING_VEDTAK_11_9,
-            Brevtype.VEDTAK_11_17, Brevtype.VEDTAK_11_18, Brevtype.VEDTAK_11_23_SJETTE_LEDD,
-            Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE, Brevtype.STANS_AV_YTELSE -> {
+            Brevtype.VEDTAK_ENDRING,
+            Brevtype.BARNETILLEGG_SATS_REGULERING,
+            Brevtype.VARSEL_OM_BESTILLING,
+            Brevtype.AVSLAG,
+            Brevtype.INNVILGELSE,
+            Brevtype.KLAGE_AVVIST,
+            Brevtype.KLAGE_OPPRETTHOLDELSE,
+            Brevtype.KLAGE_TRUKKET,
+            Brevtype.VEDTAK_11_7,
+            Brevtype.VEDTAK_11_9,
+            Brevtype.OMGJØRING_VEDTAK_11_9,
+            Brevtype.VEDTAK_11_17,
+            Brevtype.VEDTAK_11_18,
+            Brevtype.VEDTAK_11_23_SJETTE_LEDD,
+            Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,
+            Brevtype.STANS_AV_YTELSE,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_MEDLEMSKAP,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_3,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_4,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_12,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_26,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_27,
+                -> {
                 false
             }
         }
