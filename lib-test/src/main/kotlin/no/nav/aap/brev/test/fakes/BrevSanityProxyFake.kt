@@ -76,13 +76,6 @@ fun Application.brevSanityProxyFake() {
             val brevtype = Brevtype.valueOf(checkNotNull(call.queryParameters.get("brevtype")))
             // Gir ulike konfigurasjoner av brev for forskjellige test-scenario
             val brev = when (brevtype) {
-                Brevtype.INNVILGELSE -> brev()
-                Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE -> brev()
-                Brevtype.VEDTAK_11_17 -> brev()
-                Brevtype.VEDTAK_11_18 -> brev()
-                Brevtype.AVSLAG -> brev()
-                Brevtype.VEDTAK_ENDRING -> brev()
-                Brevtype.BARNETILLEGG_SATS_REGULERING -> brev()
                 Brevtype.KLAGE_AVVIST -> brev(
                     kanSendesAutomatisk = true,
                     kanRedigeres = false,
@@ -101,7 +94,6 @@ fun Application.brevSanityProxyFake() {
                     erFullstendig = false,
                 )
 
-                Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV -> brev()
                 Brevtype.VARSEL_OM_BESTILLING -> brev(
                     medFaktagrunnlag = emptyList(),
                     kanSendesAutomatisk = true,
@@ -115,13 +107,28 @@ fun Application.brevSanityProxyFake() {
                     erFullstendig = true
                 )
 
-                Brevtype.KLAGE_MOTTATT -> brev()
-                Brevtype.FORVALTNINGSMELDING -> brev()
-                Brevtype.VEDTAK_11_7 -> brev()
-                Brevtype.VEDTAK_11_9 -> brev()
-                Brevtype.VEDTAK_11_23_SJETTE_LEDD -> brev()
-                Brevtype.OMGJØRING_VEDTAK_11_9 -> brev()
-                Brevtype.STANS_AV_YTELSE -> brev()
+                Brevtype.INNVILGELSE,
+                Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,
+                Brevtype.VEDTAK_11_17,
+                Brevtype.VEDTAK_11_18,
+                Brevtype.AVSLAG,
+                Brevtype.VEDTAK_ENDRING,
+                Brevtype.BARNETILLEGG_SATS_REGULERING,
+                Brevtype.KLAGE_MOTTATT,
+                Brevtype.FORVALTNINGSMELDING,
+                Brevtype.VEDTAK_11_7,
+                Brevtype.VEDTAK_11_9,
+                Brevtype.VEDTAK_11_23_SJETTE_LEDD,
+                Brevtype.OMGJØRING_VEDTAK_11_9,
+                Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
+                Brevtype.STANS_AV_YTELSE,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_MEDLEMSKAP,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_3,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_4,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_12,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_26,
+                Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_27,
+                    -> brev()
             }
             call.respond(brev)
         }

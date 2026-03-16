@@ -62,6 +62,12 @@ class DokdistfordelingGateway : DistribusjonGateway {
             Brevtype.VEDTAK_11_18,
             Brevtype.VEDTAK_11_23_SJETTE_LEDD,
             Brevtype.STANS_AV_YTELSE,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_MEDLEMSKAP,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_3,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_4,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_12,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_26,
+            Brevtype.VEDTAK_FORLENGELSE_UNDER_ETT_ÅR_11_27,
                 -> Distribusjonstype.VEDTAK
 
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
