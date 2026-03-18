@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val ktorVersion = "3.4.1"
 val komponenterVersjon = "2.0.17"
-val tilgangVersjon = "1.0.182"
+val tilgangVersjon = "1.0.183"
 val junitVersjon = "5.13.1"
 
 plugins {
