@@ -37,7 +37,7 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.16.3")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.16.4")
     implementation("ch.qos.logback:logback-classic:1.5.32")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
@@ -59,7 +59,7 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:12.0.3")
+    implementation("org.flywaydb:flyway-database-postgresql:12.1.0")
     implementation("org.postgresql:postgresql:42.7.10")
 
     testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
