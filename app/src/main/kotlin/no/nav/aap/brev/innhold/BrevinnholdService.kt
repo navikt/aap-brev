@@ -29,6 +29,9 @@ class BrevinnholdService(
         val bestilling = brevbestillingRepository.hent(referanse)
         val brevmal = brevinnholdGateway.hentBrevmal(bestilling.brevtype, bestilling.språk)
 
+        // Sjekk at vi klarer å deserialisere til `Brevmal`
+        brevmal.tilBrevmal()
+
         brevbestillingRepository.oppdaterBrevmal(bestilling.id, brevmal)
     }
 }
