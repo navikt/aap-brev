@@ -206,59 +206,6 @@
                     },
                     {
                         "_type": "block",
-                        "_key": "b83fa4047839",
-                        "children": [
-                            {
-                                "_type": "span",
-                                "_key": "ad6441a272e1"
-                            }
-                        ]
-                    },
-                    {
-                        "_type": "periodetekstRef",
-                        "_key": "d551d0eb9f73",
-                        "periodetekst": {
-                            "_id": "930215c9-2f09-42b9-a811-fd4c2c1dadd2",
-                            "teksteditor": [
-                                {
-                                    "_type": "block",
-                                    "_key": "8c68d141e44b",
-                                    "children": [
-                                        {
-                                            "_type": "span",
-                                            "_key": "177555812720"
-                                        },
-                                        {
-                                            "_type": "faktagrunnlag",
-                                            "_key": "92e31b283dfd",
-                                            "_id": "15f93307-49e6-4aa0-9697-f9fb4c562756",
-                                            "datatype": "string",
-                                            "tekniskNavn": "PERIODE_FRA_DATO",
-                                            "visningsnavn": "Periode FOM"
-                                        },
-                                        {
-                                            "_type": "span",
-                                            "_key": "a13c31f54335"
-                                        },
-                                        {
-                                            "_type": "faktagrunnlag",
-                                            "_key": "90a0f11cbc86",
-                                            "_id": "5ff7c0c9-ac2e-4f0f-a269-5c85603a48d5",
-                                            "datatype": "string",
-                                            "tekniskNavn": "VAR_2",
-                                            "visningsnavn": "Var 2"
-                                        },
-                                        {
-                                            "_type": "span",
-                                            "_key": "f7ae7be583d6"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "_type": "block",
                         "_key": "a412708ae156",
                         "children": [
                             {

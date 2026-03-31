@@ -86,12 +86,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
                     alternativ("kategori_1", listOf(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name))
                     alternativ("kategori_2", emptyList())
                 }
-                val periodetekst1 = periodetekst(
-                    listOf(
-                        KjentFaktagrunnlag.FRIST_DATO_11_7.name,
-                        KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name
-                    )
-                )
 
                 val betingetTekst1 = betingetTekst(
                     listOf("kategori_1"), listOf(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name)
@@ -113,17 +107,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
                                 KjentFaktagrunnlag.SYKDOMSVURDERING.name,
                                 "SYKDOMSVURDERING",
                             )
-                        ),
-                        periodetekster = listOf(
-                            Brevdata.Periodetekst(
-                                periodetekst1.periodetekst._id, listOf(
-                                    Brevdata.Faktagrunnlag(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7"),
-                                    Brevdata.Faktagrunnlag(
-                                        KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name,
-                                        "BEREGNINGSGRUNNLAG"
-                                    )
-                                )
-                            ),
                         ),
                         valg = listOf(Brevdata.Valg(valg1.valg._id, valg1.valg.alternativer.first()._key)),
                         betingetTekst = listOf(
@@ -293,41 +276,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    fun `validerFerdigstilling feiler dersom valgt periodetekst mangler faktagrunnlag`() {
-        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
-
-        oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
-            kanSendesAutomatisk = false
-            delmal {
-                val periodetekst1 = periodetekst(
-                    listOf(
-                        KjentFaktagrunnlag.FRIST_DATO_11_7.name,
-                        KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name
-                    )
-                )
-                oppdaterBrevdata(bestilling.referanse) {
-                    this.copy(
-                        delmaler = listOf(Brevdata.Delmal(_id)),
-                        periodetekster = listOf(
-                            Brevdata.Periodetekst(
-                                periodetekst1.periodetekst._id, listOf(
-                                    Brevdata.Faktagrunnlag(KjentFaktagrunnlag.FRIST_DATO_11_7.name, "FRIST_DATO_11_7")
-                                )
-                            ),
-                        ),
-                    )
-                }
-            }
-        })
-        val exception = assertThrows<ValideringsfeilException> {
-            validerFerdigstilling(bestilling.referanse)
-        }
-        assertThat(exception.message).isEqualTo(
-            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet: Mangler faktagrunnlag ${KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name} for periodetekst."
-        )
-    }
-
-    @Test
     fun `validerAutomatiskFerdigstilling er ok dersom brevet kan sendes automatisk`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
@@ -458,25 +406,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
         )
     }
 
-    @Test
-    fun `validerAutomatiskFerdigstilling feiler dersom brevmal inneholder periodetekst`() {
-        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
-
-        oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
-            kanSendesAutomatisk = true
-            delmal {
-                obligatorisk = true
-                periodetekst(listOf("VAR_1", "VAR_2"))
-            }
-        })
-        val exception = assertThrows<ValideringsfeilException> {
-            validerAutomatiskFerdigstilling(bestilling.referanse)
-        }
-        assertThat(exception.message).isEqualTo(
-            "Kan ikke automatisk ferdigstille brevbestilling: Det er delmaler som inneholder periodetekst."
-        )
-    }
-
     private fun validerFerdigstilling(referanse: BrevbestillingReferanse) {
         dataSource.transaction { connection ->
             val brevbyggerService = BrevbyggerService.konstruer(connection)
@@ -516,7 +445,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val eksisterendeBrevdata = bestilling.brevdata ?: Brevdata(
                 delmaler = emptyList(),
                 faktagrunnlag = emptyList(),
-                periodetekster = emptyList(),
                 valg = emptyList(),
                 betingetTekst = emptyList(),
                 fritekster = emptyList()

@@ -33,7 +33,6 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
             bestilling.referanse, brevdata = Brevdata(
                 delmaler = emptyList(),
                 faktagrunnlag = emptyList(),
-                periodetekster = emptyList(),
                 valg = emptyList(),
                 betingetTekst = emptyList(),
                 fritekster = emptyList(),
@@ -75,7 +74,6 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
                 bestilling.referanse, brevdata = Brevdata(
                     delmaler = emptyList(),
                     faktagrunnlag = emptyList(),
-                    periodetekster = emptyList(),
                     valg = emptyList(),
                     betingetTekst = emptyList(),
                     fritekster = emptyList(),
@@ -99,7 +97,6 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
                 bestilling.referanse, brevdata = Brevdata(
                     delmaler = emptyList(),
                     faktagrunnlag = listOf(Faktagrunnlag("tekniskNavn", "verdi")),
-                    periodetekster = emptyList(),
                     valg = emptyList(),
                     betingetTekst = emptyList(),
                     fritekster = emptyList(),

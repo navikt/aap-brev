@@ -39,17 +39,6 @@ data class Brevmal(
             val valg: ValgAlternativer
         ) : TeksteditorElement
 
-        @JsonTypeName("periodetekstRef")
-        data class Periodetekst(
-            // grupper her også?
-
-            // constraint på at fom- og/eller tom-dato må finnes? Hvis det gjøres her bør deserialisering prøves
-            // før lagring av json fra Sanity slik at det kan feile tidlig.
-
-            override val _key: String,
-            val periodetekst: Teksteditor
-        ) : TeksteditorElement
-
         @JsonTypeName("betingetTekstRef")
         data class BetingetTekst(
             override val _key: String,
