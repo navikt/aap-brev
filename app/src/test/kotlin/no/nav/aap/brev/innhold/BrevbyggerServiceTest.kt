@@ -35,21 +35,116 @@ class BrevbyggerServiceTest : IntegrationTest() {
         oppdaterBrevmalJson(bestilling.id, brevmal)
         lagreInitiellBrevdata(bestilling.referanse, faktagrunnlag)
 
-        dataSource.transaction { connection ->
-            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+        val oppdatertBestilling = hentBestilling(bestilling.referanse)
 
-            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+        assertThat(oppdatertBestilling.brevdata?.delmaler)
+            .containsExactlyInAnyOrder(Brevdata.Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
 
-            assertThat(oppdatertBestilling.brevdata?.delmaler)
-                .containsExactlyInAnyOrder(Brevdata.Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
+        assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
+            Brevdata.Faktagrunnlag(
+                FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO,
+                aapFomDato.dato.formaterFullLengde(bestilling.språk)
+            )
+        )
+    }
 
-            assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
-                Brevdata.Faktagrunnlag(
-                    FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO,
-                    aapFomDato.dato.formaterFullLengde(bestilling.språk)
+    @Test
+    fun `lagrer initielle valg og betinget tekst basert pa kategorier`() {
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
+
+        lateinit var forventetValg: Brevmal.TeksteditorElement.Valg
+        lateinit var forventetBetingetTekst: Brevmal.TeksteditorElement.BetingetTekst
+
+        oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+            delmal {
+                forventetValg = valg {
+                    alternativ(kategori = null)
+                    alternativ(kategori = "UKJENT_KATEGORI")
+                    alternativ(kategori = KjentKategori.HAR_BARNETILLEGG.name)
+                }
+                valg {
+                    alternativ(kategori = null)
+                    alternativ(kategori = "UKJENT_KATEGORI")
+                }
+                forventetBetingetTekst = betingetTekst(
+                    listOf(KjentKategori.HAR_BARNETILLEGG.name),
+                    emptyList()
+                )
+                betingetTekst(
+                    listOf("UKJENT_KATEGORI"),
+                    emptyList()
+                )
+            }
+        })
+
+        lagreInitiellBrevdata(
+            bestilling.referanse,
+            setOf(
+                Faktagrunnlag.TilkjentYtelse(
+                    dagsats = null,
+                    gradertDagsats = null,
+                    barnetilleggSats = null,
+                    gradertBarnetillegg = null,
+                    gradertDagsatsInkludertBarnetillegg = null,
+                    barnetillegg = null,
+                    antallBarn = 2,
+                    minsteÅrligYtelse = null,
+                    minsteÅrligYtelseUnder25 = null,
+                    årligYtelse = null
                 )
             )
-        }
+        )
+
+        val oppdatertBestilling = hentBestilling(bestilling.referanse)
+
+        assertThat(oppdatertBestilling.brevdata?.valg).containsExactly(
+            Brevdata.Valg(
+                id = forventetValg.valg._id,
+                key = forventetValg.valg.alternativer[2]._key,
+            )
+        )
+        assertThat(oppdatertBestilling.brevdata?.betingetTekst).containsExactly(
+            Brevdata.BetingetTekst(forventetBetingetTekst.tekst._id)
+        )
+    }
+
+    @Test
+    fun `lagrer ikke initielle valg og betinget tekst når faktagrunnlag ikke gir kategorier`() {
+        val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
+
+        oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+            delmal {
+                valg {
+                    alternativ(KjentKategori.HAR_BARNETILLEGG.name)
+                }
+                betingetTekst(
+                    listOf(KjentKategori.HAR_BARNETILLEGG.name),
+                )
+            }
+        })
+
+        lagreInitiellBrevdata(
+            bestilling.referanse,
+            setOf(
+                Faktagrunnlag.TilkjentYtelse(
+                    dagsats = null,
+                    gradertDagsats = null,
+                    barnetilleggSats = null,
+                    gradertBarnetillegg = null,
+                    gradertDagsatsInkludertBarnetillegg = null,
+                    barnetillegg = null,
+                    antallBarn = 0,
+                    minsteÅrligYtelse = null,
+                    minsteÅrligYtelseUnder25 = null,
+                    årligYtelse = null
+                )
+            )
+        )
+
+        val oppdatertBestilling = hentBestilling(bestilling.referanse)
+
+        assertThat(oppdatertBestilling.brevdata?.valg).isEmpty()
+        assertThat(oppdatertBestilling.brevdata?.betingetTekst).isEmpty()
     }
 
     @Test
@@ -150,7 +245,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
     fun `validerFerdigstilling feiler dersom obligatorisk delmal ikke er valgt`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
-        var manglendeDelmal: Brevmal.DelmalValg? = null
+        lateinit var manglendeDelmal: Brevmal.DelmalValg
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
             val delmal1 = delmal {
@@ -175,8 +270,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
     fun `validerFerdigstilling feiler dersom fritekst i valgt delmal mangler`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
-        var delmalMedMangler: Brevmal.DelmalValg? = null
-        var manglendeFritekst: Brevmal.TeksteditorElement.Fritekst? = null
+        lateinit var delmalMedMangler: Brevmal.DelmalValg
+        lateinit var manglendeFritekst: Brevmal.TeksteditorElement.Fritekst
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
             delmalMedMangler = delmal {
@@ -235,8 +330,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
     fun `validerFerdigstilling feiler dersom obligatorisk valg ikke er valgt`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
-        var delmalMedMangler: Brevmal.DelmalValg? = null
-        var manglendeValg: Brevmal.TeksteditorElement.Valg? = null
+        lateinit var delmalMedMangler: Brevmal.DelmalValg
+        lateinit var manglendeValg: Brevmal.TeksteditorElement.Valg
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = false
             delmalMedMangler = delmal {
