@@ -11,6 +11,7 @@ import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import java.math.BigDecimal
 import kotlin.collections.filterIsInstance
 import kotlin.collections.joinToString
 
@@ -92,7 +93,7 @@ class BrevbyggerService(
         return faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
                 is Faktagrunnlag.TilkjentYtelse -> {
-                    if ((faktagrunnlag.antallBarn ?: 0) > 0) {
+                    if ((faktagrunnlag.barnetillegg ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
                         setOf(KjentKategori.HAR_BARNETILLEGG)
                     } else {
                         emptySet()
