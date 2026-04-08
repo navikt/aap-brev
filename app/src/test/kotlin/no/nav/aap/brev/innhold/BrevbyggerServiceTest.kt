@@ -109,7 +109,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    fun `lagrer ikke initielle valg og betinget tekst når faktagrunnlag ikke gir kategorier`() {
+    fun `lagrer ikke initielle valg og betinget tekst når det ikke utledes noen kategorier basert på faktagrunnlag`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
