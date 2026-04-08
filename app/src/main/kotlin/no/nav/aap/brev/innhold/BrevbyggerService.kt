@@ -11,6 +11,7 @@ import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import java.math.BigDecimal
 import kotlin.collections.filterIsInstance
 import kotlin.collections.joinToString
 
@@ -32,15 +33,13 @@ class BrevbyggerService(
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
+        val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val periodetekster =
             utledPeriodetekster(brevmal, emptyList()) // TODO periodiserte faktagrunnlag fra faktagrunnlag
-        val valg = utledValg(brevmal, relevanteKategorier = emptyList()) // TODO relevante kategorier fra faktagrunnlag
-        val betingetTekst = utledBetingetTekst(
-            brevmal,
-            relevanteKategorier = emptyList()
-        )  // TODO relevante kategorier fra faktagrunnlag
+        val valg = utledValg(brevmal, kategorier)
+        val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 
         val brevdata = Brevdata(
             delmaler = delmaler,
@@ -90,25 +89,42 @@ class BrevbyggerService(
         }
     }
 
-    private fun utledValg(brevmal: Brevmal, relevanteKategorier: List<String>): List<Brevdata.Valg> {
+    private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
+        return faktagrunnlag.flatMap { faktagrunnlag ->
+            when (faktagrunnlag) {
+                is Faktagrunnlag.TilkjentYtelse -> {
+                    if ((faktagrunnlag.barnetillegg ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
+                        setOf(KjentKategori.HAR_BARNETILLEGG)
+                    } else {
+                        emptySet()
+                    }
+                }
+
+                else -> emptySet()
+            }
+        }.toSet()
+    }
+
+    private fun utledValg(brevmal: Brevmal, kategorier: Set<KjentKategori>): List<Brevdata.Valg> {
         return brevmal.delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
                 .mapNotNull { valg ->
                     val forhåndsvalgt =
                         valg.valg.alternativer.filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
                             .find { valgAlternativ ->
-                                relevanteKategorier.contains(valgAlternativ.kategori?.tekniskNavn)
+                                kategorier.map { it.name }.contains(valgAlternativ.kategori?.tekniskNavn)
                             } ?: return@mapNotNull null
                     Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key)
                 }
         }
     }
 
-    private fun utledBetingetTekst(brevmal: Brevmal, relevanteKategorier: List<String>): List<Brevdata.BetingetTekst> {
+    private fun utledBetingetTekst(brevmal: Brevmal, kategorier: Set<KjentKategori>): List<Brevdata.BetingetTekst> {
         return brevmal.delmaler.flatMap { valgtDelmal ->
             valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>()
                 .mapNotNull { betingetTekst ->
-                    if (betingetTekst.kategorier.orEmpty().map { it.tekniskNavn }.intersect(relevanteKategorier.toSet())
+                    if (betingetTekst.kategorier.orEmpty().map { it.tekniskNavn }
+                            .intersect(kategorier.map { it.name }.toSet())
                             .isNotEmpty()
                     ) {
                         Brevdata.BetingetTekst(betingetTekst.tekst._id)

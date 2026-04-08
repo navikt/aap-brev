@@ -1,6 +1,7 @@
 package no.nav.aap.brev
 
 import no.nav.aap.brev.bestilling.BehandlingReferanse
+import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingId
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
@@ -90,6 +91,12 @@ abstract class IntegrationTest {
                 )
 
             }
+        }
+    }
+
+    fun hentBestilling(referanse: BrevbestillingReferanse): Brevbestilling {
+        return dataSource.transaction { connection ->
+            BrevbestillingRepositoryImpl(connection).hent(referanse)
         }
     }
 
