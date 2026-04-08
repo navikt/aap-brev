@@ -86,7 +86,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                     barnetilleggSats = null,
                     gradertBarnetillegg = null,
                     gradertDagsatsInkludertBarnetillegg = null,
-                    barnetillegg = BigDecimal("200"),
+                    barnetillegg = BigDecimal("76"),
                     antallBarn = 2,
                     minsteÅrligYtelse = null,
                     minsteÅrligYtelseUnder25 = null,
