@@ -79,17 +79,6 @@ fun BrevdataDto.tilBrevdata(): Brevdata {
                 verdi = faktagrunnlagMedVerdi.verdi
             )
         },
-        periodetekster = periodetekster.map { periodetekst ->
-            Brevdata.Periodetekst(
-                id = periodetekst.id,
-                faktagrunnlag = periodetekst.faktagrunnlag.map { faktagrunnlagMedVerdi ->
-                    Brevdata.Faktagrunnlag(
-                        tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                        verdi = faktagrunnlagMedVerdi.verdi
-                    )
-                }
-            )
-        },
         valg = valg.map { valg ->
             Brevdata.Valg(
                 id = valg.id,
@@ -114,17 +103,6 @@ fun Brevdata.tilBrevdataDto(): BrevdataDto {
             BrevdataDto.Faktagrunnlag(
                 tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
                 verdi = faktagrunnlagMedVerdi.verdi
-            )
-        },
-        periodetekster = periodetekster.map { periodetekst ->
-            BrevdataDto.Periodetekst(
-                id = periodetekst.id,
-                faktagrunnlag = periodetekst.faktagrunnlag.map { faktagrunnlagMedVerdi ->
-                    BrevdataDto.Faktagrunnlag(
-                        tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                        verdi = faktagrunnlagMedVerdi.verdi
-                    )
-                }
             )
         },
         valg = valg.map { valg ->

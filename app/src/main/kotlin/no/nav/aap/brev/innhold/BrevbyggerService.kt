@@ -36,15 +36,12 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
-        val periodetekster =
-            utledPeriodetekster(brevmal, emptyList()) // TODO periodiserte faktagrunnlag fra faktagrunnlag
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 
         val brevdata = Brevdata(
             delmaler = delmaler,
             faktagrunnlag = faktagrunnlagMedVerdi,
-            periodetekster = periodetekster,
             valg = valg,
             betingetTekst = betingetTekst,
             fritekster = emptyList()
@@ -68,24 +65,6 @@ class BrevbyggerService(
                 faktagrunnlag.key.name,
                 faktagrunnlag.value
             )
-        }
-    }
-
-    private fun utledPeriodetekster(
-        brevmal: Brevmal,
-        periodiserteFaktagrunnlag: List<Any>
-    ): List<Brevdata.Periodetekst> {
-        return brevmal.delmaler.flatMap { valgtDelmal ->
-            valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>()
-                .flatMap { teksteditorElement ->
-                    /** TODO
-                     * - Hent ut alle faktagrunnlag i teksteditorElement.periodetekst
-                     * - det må eksistere faktagrunnlag for fom- og/eller tom-dato
-                     * - Sjekk om det finnes periodiserte faktagrunnlag som er relevant
-                     * - returner teksteditorElement.periodetekst._id og alle faktagrunnlag med verdi
-                     */
-                    emptyList()
-                }
         }
     }
 
@@ -165,10 +144,6 @@ class BrevbyggerService(
         valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
             "$feilmelding: Det er delmaler som inneholder betinget tekst."
         }
-
-        valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>().isEmpty()) {
-            "$feilmelding: Det er delmaler som inneholder periodetekst."
-        }
     }
 
     fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
@@ -221,20 +196,6 @@ class BrevbyggerService(
                     transform = { it.valg._id })
             } er ikke valgt."
         }
-
-        val periodetekster = valgteDelmaler.flatMap { delmalValg ->
-            delmalValg.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Periodetekst>()
-        }
-        brevdata.periodetekster.forEach { periodetekstData ->
-            val periodetekst = periodetekster.find { it.periodetekst._id == periodetekstData.id }
-            val faktagrunnlag = periodetekst?.periodetekst?.teksteditor?.flatMap { it.children }
-                ?.filterIsInstance<BlockChildren.Faktagrunnlag>() ?: emptyList()
-            val manglendeFaktagrunnlag = faktagrunnlag.map { it.tekniskNavn }
-                .subtract(periodetekstData.faktagrunnlag.map { it.tekniskNavn }.toSet())
-            valider(manglendeFaktagrunnlag.isEmpty()) {
-                "$feilmelding: Mangler faktagrunnlag ${manglendeFaktagrunnlag.joinToString(separator = ",")} for periodetekst."
-            }
-        }
     }
 
     private fun validerFaktagrunnlag(
@@ -279,10 +240,6 @@ class BrevbyggerService(
                         } else {
                             emptyList()
                         }
-                    }
-
-                    is Brevmal.TeksteditorElement.Periodetekst -> {
-                        emptyList() // har faktagrunnlag men flere verdier for samme faktagrunnlag
                     }
 
                     is Brevmal.TeksteditorElement.Fritekst -> {

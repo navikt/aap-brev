@@ -156,12 +156,6 @@ fun Application.brevSanityProxyFake() {
                                 alternativ("kategori_1", listOf(KjentFaktagrunnlag.BEREGNINGSTIDSPUNKT.name))
                                 alternativ("kategori_2", emptyList())
                             }
-                            periodetekst(
-                                listOf(
-                                    KjentFaktagrunnlag.FRIST_DATO_11_7.name,
-                                    KjentFaktagrunnlag.BEREGNINGSGRUNNLAG.name
-                                )
-                            )
                             betingetTekst(
                                 listOf("kategori_1"), listOf(KjentFaktagrunnlag.GRUNNLAG_BEREGNING_AAR_1_AARSTALL.name)
                             )

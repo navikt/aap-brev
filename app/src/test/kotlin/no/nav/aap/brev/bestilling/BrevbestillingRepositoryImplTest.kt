@@ -59,7 +59,6 @@ class BrevbestillingRepositoryImplTest {
                     Brevdata.Faktagrunnlag("A", "v1"),
                     Brevdata.Faktagrunnlag("B", "v2")
                 ),
-                periodetekster = listOf(Brevdata.Periodetekst("3", listOf(Brevdata.Faktagrunnlag("C", "v3")))),
                 valg = listOf(
                     Brevdata.Valg("4", "5"),
                 ),

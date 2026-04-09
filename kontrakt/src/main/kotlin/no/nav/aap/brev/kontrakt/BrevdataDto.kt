@@ -3,7 +3,6 @@ package no.nav.aap.brev.kontrakt
 data class BrevdataDto(
     val delmaler: List<Delmal>,
     val faktagrunnlag: List<Faktagrunnlag>,
-    val periodetekster: List<Periodetekst>,
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
     val fritekster: List<Fritekst>
@@ -13,11 +12,6 @@ data class BrevdataDto(
     data class Faktagrunnlag(
         val tekniskNavn: String,
         val verdi: String
-    )
-
-    data class Periodetekst(
-        val id: String,
-        val faktagrunnlag: List<Faktagrunnlag>
     )
 
     data class Valg(

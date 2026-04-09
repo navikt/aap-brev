@@ -79,15 +79,6 @@ class DelmalBuilder {
         return valg
     }
 
-    fun periodetekst(faktagrunnlag: List<String>): TeksteditorElement.Periodetekst {
-        val periodetekst = TeksteditorElement.Periodetekst(
-            _key = randomUUID().toString(),
-            periodetekst = byggTeksteditor(faktagrunnlag)
-        )
-        teksteditor.add(periodetekst)
-        return periodetekst
-    }
-
     fun betingetTekst(kategorier: List<String>, faktagrunnlag: List<String> = emptyList()): TeksteditorElement.BetingetTekst {
         val betingetTekst = TeksteditorElement.BetingetTekst(
             _key = randomUUID().toString(),
