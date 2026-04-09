@@ -1,6 +1,6 @@
 val ktorVersion = "3.4.2"
-val komponenterVersjon = "2.0.24"
-val tilgangVersjon = "1.0.183"
+val komponenterVersjon = "2.0.26"
+val tilgangVersjon = "1.0.184"
 val jacksonVersjon = "2.21.2"
 
 plugins {
@@ -27,5 +27,5 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
 
-    implementation("com.nimbusds:nimbus-jose-jwt:10.8")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.9")
 }

@@ -224,12 +224,6 @@ class FerdigstillValideringTest : IntegrationTest() {
         assertAntallJobber(referanse, 0)
     }
 
-    private fun hentBestilling(referanse: BrevbestillingReferanse): Brevbestilling {
-        return dataSource.transaction { connection ->
-            BrevbestillingRepositoryImpl(connection).hent(referanse)
-        }
-    }
-
     private fun hentMottakere(id: BrevbestillingId): List<Mottaker> {
         return dataSource.transaction { connection ->
             MottakerRepositoryImpl(connection).hentMottakere(id)

@@ -31,7 +31,6 @@ import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.Operasjon
@@ -93,10 +92,6 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 MDC.putCloseable(MDCNøkler.SAKSNUMMER.key, request.saksnummer).use {
                     MDC.putCloseable(MDCNøkler.BEHANDLING_REFERANSE.key, request.behandlingReferanse.toString())
                         .use {
-                            if (Miljø.erProd()) {
-                                respondWithStatus(HttpStatusCode.NotImplemented)
-                                return@authorizedPost
-                            }
                             val bestillingResultat = dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection).opprettBestillingV3(
                                     saksnummer = Saksnummer(request.saksnummer),
@@ -164,10 +159,6 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 route("/v3/oppdater") {
                     authorizedPut<BrevbestillingReferansePathParam, Unit, BrevdataDto>(authorizationBodyPathConfig) { referanse, brevdata ->
                         MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
-                            if (Miljø.erProd()) {
-                                respondWithStatus(HttpStatusCode.NotImplemented)
-                                return@authorizedPut
-                            }
                             dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection)
                                     .oppdaterBrevdata(referanse.brevbestillingReferanse, brevdata.tilBrevdata())

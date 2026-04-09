@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val komponenterVersjon = "2.0.24"
+val komponenterVersjon = "2.0.26"
 val jupiterVersjon = "5.13.1"
 
 plugins {

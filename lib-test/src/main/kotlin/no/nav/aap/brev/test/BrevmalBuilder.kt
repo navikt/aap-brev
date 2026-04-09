@@ -8,7 +8,7 @@ import no.nav.aap.brev.bestilling.Brevmal.TeksteditorElement
 import no.nav.aap.brev.bestilling.Brevmal.ValgAlternativ
 import java.util.UUID.randomUUID
 
-class BrevmalBuilder() {
+class BrevmalBuilder {
     var _id = randomUUID().toString()
     var overskrift = "Overskrift"
     var journalposttittel = "Journalposttittel"
@@ -49,7 +49,7 @@ class BrevmalBuilder() {
 }
 
 
-class DelmalBuilder() {
+class DelmalBuilder {
     var _id = randomUUID().toString()
     var _key = randomUUID().toString()
     var obligatorisk = false
@@ -79,7 +79,7 @@ class DelmalBuilder() {
         return valg
     }
 
-    fun betingetTekst(kategorier: List<String>, faktagrunnlag: List<String>): TeksteditorElement.BetingetTekst {
+    fun betingetTekst(kategorier: List<String>, faktagrunnlag: List<String> = emptyList()): TeksteditorElement.BetingetTekst {
         val betingetTekst = TeksteditorElement.BetingetTekst(
             _key = randomUUID().toString(),
             kategorier = kategorier.map { byggKategori(it) },
@@ -96,7 +96,7 @@ class DelmalBuilder() {
     }
 }
 
-class ValgBuilder() {
+class ValgBuilder {
     var _id = randomUUID().toString()
     var _key = randomUUID().toString()
     var obligatorisk = false
@@ -105,11 +105,11 @@ class ValgBuilder() {
         return Brevmal.ValgAlternativer(_id, alternativer)
     }
 
-    fun alternativ(kategori: String, faktagrunnlag: List<String> = emptyList()): ValgAlternativ.KategorisertTekst {
+    fun alternativ(kategori: String? = null, faktagrunnlag: List<String> = emptyList()): ValgAlternativ.KategorisertTekst {
         val valgAlternativ = ValgAlternativ.KategorisertTekst(
             _key = randomUUID().toString(),
             tekst = byggTeksteditor(faktagrunnlag),
-            kategori = byggKategori(kategori)
+            kategori = kategori?.let(::byggKategori)
         )
         alternativer.add(valgAlternativ)
         return valgAlternativ
