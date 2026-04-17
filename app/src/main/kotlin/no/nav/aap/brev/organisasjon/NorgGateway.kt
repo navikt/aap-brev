@@ -38,22 +38,6 @@ class NorgGateway : EnhetGateway {
         return response.map { it.tilEnhet() }
     }
 
-    override fun hentOverordnetFylkesenhet(enhetsnummer: String): Enhet {
-        val uri = baseUri.resolve("/norg2/api/v1/enhet/$enhetsnummer/overordnet?organiseringsType=${EnhetsType.FYLKE}")
-
-        val httpRequest = GetRequest(
-            additionalHeaders = listOf(
-                Header("Accept", "application/json")
-            )
-        )
-        val response: List<NorgEnhet> =
-            checkNotNull(client.get(uri = uri, request = httpRequest, mapper = { body, _ ->
-                DefaultJsonMapper.fromJson(body)
-            }))
-
-        return response.single().tilEnhet()
-    }
-
     private fun NorgEnhet.tilEnhet(): Enhet {
         return Enhet(
             enhetsNummer = enhetNr,
