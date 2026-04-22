@@ -1,8 +1,3 @@
-val ktorVersion = "3.4.2"
-val komponenterVersjon = "2.0.41"
-val tilgangVersjon = "1.0.188"
-val jacksonVersjon = "2.21.2"
-
 plugins {
     id("aap.conventions")
 }
@@ -10,22 +5,22 @@ plugins {
 dependencies {
     implementation(project(":app"))
     implementation(project(":kontrakt"))
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-server-cors:$ktorVersion")
-    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation(libs.ktorServerAuth)
+    implementation(libs.ktorServerAuthJwt)
+    implementation(libs.ktorServerCallLogging)
+    implementation(libs.ktorServerContentNegotation)
+    implementation(libs.ktorServerMetricsMicrometer)
+    implementation(libs.ktorServerNetty)
+    implementation(libs.ktorServerCors)
+    implementation(libs.ktorServerStatusPages)
+    implementation(libs.ktorSerializationJackson)
 
-    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:json:$komponenterVersjon")
-    implementation("no.nav.aap.tilgang:api-kontrakt:$tilgangVersjon")
+    implementation(libs.httpklient)
+    implementation(libs.json)
+    implementation(libs.tilgangKontrakt)
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersjon")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersjon")
+    implementation(libs.jacksonDatabind)
+    implementation(libs.jacksonDatatypeJsr310)
 
-    implementation("com.nimbusds:nimbus-jose-jwt:10.9")
+    implementation(libs.joseJwt)
 }

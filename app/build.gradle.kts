@@ -1,13 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val ktorVersion = "3.4.2"
-val komponenterVersjon = "2.0.41"
-val tilgangVersjon = "1.0.188"
-val junitVersjon = "6.0.1"
-
 plugins {
     id("aap.conventions")
-    id("io.ktor.plugin") version "3.4.2"
+    alias(libs.plugins.ktor)
 }
 
 application {
@@ -33,42 +28,42 @@ tasks.register<JavaExec>("genererOpenApi") {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-cors:$ktorVersion")
-    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+    implementation(libs.ktorServerCors)
+    implementation(libs.ktorServerStatusPages)
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.16.5")
-    implementation("ch.qos.logback:logback-classic:1.5.32")
-    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
+    implementation(libs.jacksonDatatypeJsr310)
+    implementation(libs.micrometerRegistryPrometheus)
+    implementation(libs.logbackClassic)
+    implementation(libs.logstashLogbackEncoder)
 
-    implementation("no.nav.aap.kelvin:dbconnect:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:dbmigrering:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:httpklient:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:json:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:infrastructure:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:motor:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:motor-api:$komponenterVersjon")
-    implementation("no.nav.aap.kelvin:server:$komponenterVersjon")
+    implementation(libs.dbconnect)
+    implementation(libs.dbmigrering)
+    implementation(libs.httpklient)
+    implementation(libs.json)
+    implementation(libs.infrastructure)
+    implementation(libs.motor)
+    implementation(libs.motorApi)
+    implementation(libs.server)
 
-    implementation("no.nav.aap.tilgang:plugin:$tilgangVersjon")
-    implementation("no.nav.aap.tilgang:plugin-kontrakt:$tilgangVersjon")
+    implementation(libs.tilgangPlugin)
+    implementation(libs.tilgangPluginKontrakt)
 
-    implementation("no.nav.aap.kelvin:ktor-openapi-generator:$komponenterVersjon")
+    implementation(libs.ktorOpenApiGenerator)
 
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
 
-    implementation("com.zaxxer:HikariCP:7.0.2")
-    implementation("org.flywaydb:flyway-database-postgresql:12.4.0")
-    implementation("org.postgresql:postgresql:42.7.10")
+    implementation(libs.hikariCp)
+    implementation(libs.flywayDatabasePostgresql)
+    implementation(libs.postgresql)
 
-    testImplementation("no.nav.aap.kelvin:dbtest:$komponenterVersjon")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersjon")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersjon")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersjon")
-    testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("org.testcontainers:testcontainers-postgresql:2.0.4")
+    testImplementation(libs.dbtest)
+    testRuntimeOnly(libs.junitJupiterEngine)
+    testImplementation(libs.junitApi)
+    testImplementation(libs.junitJupiterParams)
+    testImplementation(libs.assertJ)
+    testImplementation(libs.testcontainersPostgres)
 
     testImplementation(project(":lib-test"))
-    testImplementation("io.mockk:mockk:1.14.9")
+    testImplementation(libs.mockk)
 }
