@@ -1,8 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val komponenterVersjon = "2.0.41"
-val jupiterVersjon = "5.13.1"
-
 plugins {
     id("aap.conventions")
     `maven-publish`
@@ -45,11 +42,10 @@ publishing {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2")
+    api(libs.jacksonDatatypeJsr310)
 
     testImplementation(project(":lib-test"))
-    testImplementation("no.nav.aap.kelvin:json:$komponenterVersjon")
-    testImplementation("org.assertj:assertj-core:3.27.7")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersjon")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersjon")
+    testImplementation(libs.json)
+    testImplementation(libs.assertJ)
+    testImplementation(libs.bundles.junit)
 }
