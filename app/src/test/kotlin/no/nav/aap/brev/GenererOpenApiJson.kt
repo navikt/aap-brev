@@ -8,14 +8,14 @@ import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.request.GetRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.net.URI
 import java.nio.charset.StandardCharsets
 
 fun main() {
-    Fakes.start(azurePort = 8083)
+    Fakes.start(texasPort = 8083)
     val postgres = postgreSQLContainer()
 
     val dbConfig = DbConfig(
@@ -32,7 +32,7 @@ fun main() {
 
     val restClient = RestClient(
         config = ClientConfig(scope = "brev"),
-        tokenProvider = ClientCredentialsTokenProvider,
+        tokenProvider = AzureM2MTokenProvider(),
         responseHandler = DefaultResponseHandler()
     )
 

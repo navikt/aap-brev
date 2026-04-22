@@ -2,21 +2,19 @@ package no.nav.aap.brev.test.fakes
 
 import io.ktor.server.application.Application
 import io.ktor.server.response.respond
-import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import no.nav.aap.brev.test.AZURE_JWKS
 import no.nav.aap.brev.test.AzureTokenGen
 
-fun Application.azureFake() {
-    applicationFakeFelles("azure")
+fun Application.texasFake() {
+    applicationFakeFelles("texas")
     routing {
         post("/token") {
             val token = AzureTokenGen("brev", "brev").generate()
             call.respond(TestToken(access_token = token))
         }
-        get("/jwks") {
-            call.respond(AZURE_JWKS)
+        post("/introspect") {
+            call.respond(mapOf("active" to true))
         }
     }
 }

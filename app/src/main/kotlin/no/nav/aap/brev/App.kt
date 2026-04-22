@@ -21,8 +21,7 @@ import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureConfig
-import no.nav.aap.komponenter.server.AZURE
+import no.nav.aap.komponenter.server.auth.IdentityProvider
 import no.nav.aap.komponenter.server.commonKtorModule
 import no.nav.aap.motor.Motor
 import no.nav.aap.motor.api.motorApi
@@ -58,7 +57,7 @@ fun main() {
 
 internal fun Application.server(dbConfig: DbConfig) {
 
-    commonKtorModule(prometheus, AzureConfig(), InfoModel(title = "AAP - Brev"))
+    commonKtorModule(prometheus, InfoModel(title = "AAP - Brev"), identityProvider = IdentityProvider.ENTRA_ID)
 
     install(StatusPages, StatusPagesConfigHelper.setup())
 
@@ -73,7 +72,7 @@ internal fun Application.server(dbConfig: DbConfig) {
     val motor = module(dataSource)
 
     routing {
-        authenticate(AZURE) {
+        authenticate(IdentityProvider.ENTRA_ID.value) {
             apiRouting {
                 bestillingApi(dataSource)
                 dokumentinnhentingApi()

@@ -14,7 +14,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -39,16 +39,12 @@ class AppTest {
         )
         private val restClient = RestClient(
             config = ClientConfig(scope = "brev"),
-            tokenProvider = ClientCredentialsTokenProvider,
+            tokenProvider = AzureM2MTokenProvider(),
             responseHandler = DefaultResponseHandler()
         )
 
         // Starter server
-        private val server = embeddedServer(Netty, port = 0) {
-            server(
-                dbConfig = dbConfig,
-            )
-        }.start()
+        private val server = embeddedServer(Netty, port = 0) { server(dbConfig) }.start()
 
         @JvmStatic
         @AfterAll

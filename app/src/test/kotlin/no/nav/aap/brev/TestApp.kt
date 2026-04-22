@@ -20,7 +20,7 @@ fun main() {
 
     nomDataForAlleIdenter()
 
-    Fakes.start(azurePort = 8083)
+    Fakes.start(texasPort = 8083)
 
     val dbConfig = DbConfig(
         jdbcUrl = jdbcUrl,
