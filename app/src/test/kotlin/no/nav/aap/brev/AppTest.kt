@@ -3,6 +3,7 @@ package no.nav.aap.brev
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import kotlinx.coroutines.runBlocking
 import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -43,7 +44,7 @@ class AppTest {
         )
 
         // Starter server
-        private val server = embeddedServer(Netty, port = 8080) {
+        private val server = embeddedServer(Netty, port = 0) {
             server(
                 dbConfig = dbConfig,
             )
@@ -61,7 +62,7 @@ class AppTest {
     fun `bestiller brev`() {
         assertDoesNotThrow {
             restClient.post<_, Unit>(
-                uri = URI.create("http://localhost:8080/").resolve("/api/v2/bestill"),
+                uri = URI.create("http://localhost:${server.port()}/").resolve("/api/v2/bestill"),
                 request = PostRequest(
                     body = BestillBrevV2Request(
                         saksnummer = "SAK123",
@@ -86,3 +87,8 @@ internal fun postgreSQLContainer(): PostgreSQLContainer {
     postgres.start()
     return postgres
 }
+
+private fun EmbeddedServer<*, *>.port(): Int =
+    runBlocking { this@port.engine.resolvedConnectors() }
+        .first { it.type == ConnectorType.HTTP }
+        .port
