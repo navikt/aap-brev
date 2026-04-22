@@ -15,8 +15,6 @@ import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.brev.test.randomBrukerIdent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 
 class SignaturServiceTest {
 
@@ -34,9 +32,8 @@ class SignaturServiceTest {
         assertThat(signaturer).isEmpty()
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = [true, false])
-    fun `signaturer sorteres basert på angitt sorteringsnøkkel`(harEnhetISignatur: Boolean) {
+    @Test
+    fun `signaturer sorteres basert på angitt sorteringsnøkkel`() {
 
         every { ansattInfoGateway.hentAnsattInfo("navident1") } returns AnsattInfo(
             navIdent = "navident1",
@@ -53,19 +50,13 @@ class SignaturServiceTest {
             navn = "Ansattnavn3",
             enhetsnummer = "1234",
         )
-        every { enhetGateway.hentOverordnetFylkesenhet(any()) } returns Enhet(
-            "4321",
-            "Overordnet enhet",
-            EnhetsType.FYLKE
-        )
         every { enhetGateway.hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
 
-        val enhet = if (harEnhetISignatur) "1234" else null
         val signaturer = signaturService.signaturer(
             listOf(
-                SorterbarSignatur("navident2", 1, null, enhet),
-                SorterbarSignatur("navident1", 0, null, enhet),
-                SorterbarSignatur("navident3", 2, null, enhet)
+                SorterbarSignatur("navident2", 1, null, "1234"),
+                SorterbarSignatur("navident1", 0, null, "1234"),
+                SorterbarSignatur("navident3", 2, null, "1234")
             ),
             Brevtype.INNVILGELSE,
             personinfo = Personinfo(
@@ -84,34 +75,7 @@ class SignaturServiceTest {
     }
 
     @Test
-    fun `kvalitetssikrer signerer med navn på overordnet fylkesenhet`() {
-
-        every { ansattInfoGateway.hentAnsattInfo(any()) } returns AnsattInfo(
-            navIdent = "navident",
-            navn = "Ansattnavn",
-            enhetsnummer = "1234",
-        )
-        every { enhetGateway.hentOverordnetFylkesenhet(any()) } returns Enhet(
-            "4321",
-            "Overordnet enhet",
-            EnhetsType.FYLKE
-        )
-        every { enhetGateway.hentEnheter(any()) } returns listOf(Enhet("1234", "Enhet", EnhetsType.LOKAL))
-
-        val signaturer = signaturService.signaturer(
-            sorterbareSignaturer = listOf(SorterbarSignatur("navident", 1, Rolle.KVALITETSSIKRER, null)),
-            brevtype = Brevtype.INNVILGELSE,
-            personinfo = Personinfo(
-                personIdent = randomBrukerIdent(),
-                navn = "navn",
-                harStrengtFortroligAdresse = false
-            )
-        )
-        assertThat(signaturer).isEqualTo(listOf(Signatur(navn = "Ansattnavn", enhet = "Overordnet enhet")))
-    }
-
-    @Test
-    fun `bruker enhet fra signatur dersom definert med unntak for NAY AAP enhet, ellers ansatt-enhet`() {
+    fun `bruker enhet fra signatur dersom definert, med fallback til ansatt-enhet dersom enhet mangler eller er NAY AAP`() {
         every { ansattInfoGateway.hentAnsattInfo("navident1") } returns AnsattInfo(
             navIdent = "navident1",
             navn = "Ansattnavn1",
