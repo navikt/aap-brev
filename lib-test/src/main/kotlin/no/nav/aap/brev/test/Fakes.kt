@@ -3,7 +3,7 @@ package no.nav.aap.brev.no.nav.aap.brev.test
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import no.nav.aap.brev.test.fakes.azureFake
+import no.nav.aap.brev.test.fakes.texasFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
@@ -26,11 +26,11 @@ object Fakes : AutoCloseable {
     private val started = AtomicBoolean(false)
     private val servers = mutableListOf<EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>>()
 
-    fun start(azurePort: Int = 0) {
+    fun start(texasPort: Int = 0) {
         if (started.get()) {
             return
         }
-        val azure = embeddedServer(Netty, port = azurePort, module = { azureFake() }).start()
+        val texas = embeddedServer(Netty, port = texasPort, module = { texasFake() }).start()
         val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
         val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
@@ -44,7 +44,7 @@ object Fakes : AutoCloseable {
         val norg = embeddedServer(Netty, port = 0, module = { norgFake() }).apply { start() }
         servers.addAll(
             listOf(
-                azure,
+                texas,
                 tilgang,
                 brevSanityProxy,
                 pdfGen,
@@ -56,12 +56,9 @@ object Fakes : AutoCloseable {
             )
         )
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
-        // Azure
-        System.setProperty("azure.openid.config.token.endpoint", "http://localhost:${azure.port()}/token")
-        System.setProperty("azure.app.client.id", "brev")
-        System.setProperty("azure.app.client.secret", "")
-        System.setProperty("azure.openid.config.jwks.uri", "http://localhost:${azure.port()}/jwks")
-        System.setProperty("azure.openid.config.issuer", "brev")
+        // Texas
+        System.setProperty("nais.token.endpoint", "http://localhost:${texas.port()}/token")
+        System.setProperty("nais.token.introspection.endpoint", "http://localhost:${texas.port()}/introspect")
 
         // Tilgang
         System.setProperty("integrasjon.tilgang.url", "http://localhost:${tilgang.port()}")
@@ -74,7 +71,9 @@ object Fakes : AutoCloseable {
         System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
 
         // PdfGen
-        System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
+        if (System.getProperty("INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL").isNullOrEmpty()) {
+            System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
+        }
         System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
 
         // Regoppslag

@@ -20,7 +20,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.put
 import no.nav.aap.komponenter.httpklient.httpclient.request.PatchRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
 import no.nav.aap.komponenter.httpklient.httpclient.request.PutRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import org.slf4j.LoggerFactory
 import java.net.URI
 
@@ -33,7 +33,7 @@ class DokarkivGateway : JournalføringGateway {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
     private val client = RestClient(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider,
+        tokenProvider = AzureM2MTokenProvider(),
         responseHandler = HåndterConflictResponseHandler(),
         prometheus = prometheus
     )

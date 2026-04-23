@@ -12,7 +12,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.Header
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import java.net.URI
 
 class PdlGateway : PersoninfoGateway {
@@ -24,7 +24,7 @@ class PdlGateway : PersoninfoGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider,
+        tokenProvider = AzureM2MTokenProvider(),
         responseHandler = GraphQLResponseHandler(),
         prometheus = prometheus,
     )

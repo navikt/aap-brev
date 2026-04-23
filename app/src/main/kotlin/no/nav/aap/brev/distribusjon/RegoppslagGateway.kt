@@ -8,7 +8,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.error.DefaultResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.error.RestResponseHandler
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URI
@@ -22,7 +22,7 @@ class RegoppslagGateway : AdresseGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider,
+        tokenProvider = AzureM2MTokenProvider(),
         responseHandler = RegoppslagResponseHandler(),
         prometheus = prometheus
     )

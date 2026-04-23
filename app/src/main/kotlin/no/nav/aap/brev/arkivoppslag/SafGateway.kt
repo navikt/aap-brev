@@ -11,7 +11,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.ClientConfig
 import no.nav.aap.komponenter.httpklient.httpclient.RestClient
 import no.nav.aap.komponenter.httpklient.httpclient.post
 import no.nav.aap.komponenter.httpklient.httpclient.request.PostRequest
-import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.ClientCredentialsTokenProvider
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.azurecc.AzureM2MTokenProvider
 import java.net.URI
 
 class SafGateway : ArkivoppslagGateway {
@@ -20,7 +20,7 @@ class SafGateway : ArkivoppslagGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = ClientCredentialsTokenProvider,
+        tokenProvider = AzureM2MTokenProvider(),
         responseHandler = GraphQLResponseHandler(),
         prometheus = prometheus,
     )
