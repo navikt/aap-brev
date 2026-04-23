@@ -1,7 +1,7 @@
 [versions]
 ktor = "3.4.2"
-komponenter = "2.0.41"
-tilgang = "1.0.188"
+komponenter = "2.0.42"
+tilgang = "1.0.193"
 junit = "6.0.3"
 testcontainers = "2.0.4"
 jackson = "2.21.2"
