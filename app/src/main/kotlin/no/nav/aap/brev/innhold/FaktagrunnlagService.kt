@@ -58,13 +58,13 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.UtvidetAapFomDato ->
                         put(KjentFaktagrunnlag.UTVIDET_AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
 
-                    is Faktagrunnlag.KravdatoUføretrygd->
+                    is Faktagrunnlag.KravdatoUføretrygd ->
                         put(KjentFaktagrunnlag.KRAVDATO_UFORETRYGD, faktagrunnlag.dato.formaterFullLengde(språk))
 
                     is Faktagrunnlag.SisteDagMedYtelse ->
                         put(KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE, faktagrunnlag.dato.formaterFullLengde(språk))
 
-                    is Faktagrunnlag.DatoAvklartForJobbsøk->
+                    is Faktagrunnlag.DatoAvklartForJobbsøk ->
                         put(KjentFaktagrunnlag.DATO_AVKLART_FOR_JOBBSOK, faktagrunnlag.dato.formaterFullLengde(språk))
 
                     is Faktagrunnlag.FristDato11_7 ->
@@ -157,6 +157,12 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
+                    is Faktagrunnlag.SamordningAndreYtelser ->
+                        put(
+                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
+                            faktagrunnlag.samordninger.joinToString(separator = "\n") {
+                                "${it.fraOgMed} - ${it.tilOgMed}: ${it.ytelseNavn} ${it.gradering}%"
+                            })
                 }
             }
         }
