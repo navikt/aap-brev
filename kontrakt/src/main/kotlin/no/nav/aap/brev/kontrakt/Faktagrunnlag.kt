@@ -17,6 +17,12 @@ const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 const val FAKTAGRUNNLAG_TYPE_SAMORDNING_ANDRE_YTELSER: String = "SAMORDNING_ANDRE_YTELSER"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE: String = "SAMORDNING_UFORE"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER: String = "SAMORDNING_ARBEIDSGIVER"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_TJENESTEPENSJON: String = "SAMORDNING_TJENESTEPENSJON"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_SYKESTIPEND: String = "SAMORDNING_SYKESTIPEND"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_BARNEPENSJON: String = "SAMORDNING_BARNEPENSJON"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_FRADRAG_ANDRE_YTELSER: String = "SAMORDNING_FRADRAG_ANDRE_YTELSER"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -28,7 +34,13 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
     SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING),
-    SAMORDNING_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_SAMORDNING_ANDRE_YTELSER)
+    SAMORDNING_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_SAMORDNING_ANDRE_YTELSER),
+    SAMORDNING_UFORE(FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE),
+    SAMORDNING_ARBEIDSGIVER(FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER),
+    SAMORDNING_TJENESTEPENSJON(FAKTAGRUNNLAG_TYPE_SAMORDNING_TJENESTEPENSJON),
+    SAMORDNING_SYKESTIPEND(FAKTAGRUNNLAG_TYPE_SAMORDNING_SYKESTIPEND),
+    SAMORDNING_BARNEPENSJON(FAKTAGRUNNLAG_TYPE_SAMORDNING_BARNEPENSJON),
+    SAMORDNING_FRADRAG_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_SAMORDNING_FRADRAG_ANDRE_YTELSER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -92,14 +104,79 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_ANDRE_YTELSER)
-    data class SamordningAndreYtelser(
-        val samordninger: List<SamordningAnnenYtelse>
-    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_ANDRE_YTELSER)
+    data class SamordningerAndreYtelser(
+        val samordninger: List<SamordningAnnenYtelse>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_ANDRE_YTELSER) {
 
-    data class SamordningAnnenYtelse(
-        val ytelseNavn: String,
-        val gradering: BigDecimal,
-        val fraOgMed: LocalDate,
-        val tilOgMed: LocalDate,
-    )
+        data class SamordningAnnenYtelse(
+            val ytelseNavn: String,
+            val gradering: BigDecimal?,
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE)
+    data class SamordningerUføre(
+        val samordninger: List<SamordningUføre>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_UFORE) {
+
+        data class SamordningUføre(
+            val virkningstidspunkt: LocalDate,
+            val uføregradTilSamordning: BigDecimal,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER)
+    data class SamordningerArbeidsgiver(
+        val samordninger: List<SamordningArbeidsgiver>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_ARBEIDSGIVER) {
+
+        data class SamordningArbeidsgiver(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_TJENESTEPENSJON)
+    data class SamordningTjenestepensjon(
+        val skalEtterbetalingHoldesIgjen: Boolean,
+        val fraOgMed: LocalDate?,
+        val tilOgMed: LocalDate?,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_TJENESTEPENSJON)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_SYKESTIPEND)
+    data class SamordningerSykestipend(
+        val samordninger: List<SamordningSykestipend>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_SYKESTIPEND) {
+
+        data class SamordningSykestipend(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_BARNEPENSJON)
+    data class SamordningerBarnepensjon(
+        val samordninger: List<SamordningBarnepensjon>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_BARNEPENSJON) {
+
+        data class SamordningBarnepensjon(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate?,
+            val månedsats: BigDecimal,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_FRADRAG_ANDRE_YTELSER)
+    data class SamordningerFradragAndreYtelser(
+        val perioder: List<SamordningFradragAnnenYtelse>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_FRADRAG_ANDRE_YTELSER) {
+
+        data class SamordningFradragAnnenYtelse(
+            val ytelseNavn: String,
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+    }
 }

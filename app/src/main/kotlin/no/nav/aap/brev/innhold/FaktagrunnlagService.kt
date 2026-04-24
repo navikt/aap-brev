@@ -157,12 +157,22 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
-                    is Faktagrunnlag.SamordningAndreYtelser ->
+
+                    is Faktagrunnlag.SamordningerAndreYtelser ->
                         put(
                             KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
                             faktagrunnlag.samordninger.joinToString(separator = "\n") {
                                 "${it.fraOgMed} - ${it.tilOgMed}: ${it.ytelseNavn} ${it.gradering}%"
                             })
+
+                    is Faktagrunnlag.SamordningerUføre,
+                    is Faktagrunnlag.SamordningerArbeidsgiver,
+                    is Faktagrunnlag.SamordningTjenestepensjon,
+                    is Faktagrunnlag.SamordningerSykestipend,
+                    is Faktagrunnlag.SamordningerBarnepensjon,
+                    is Faktagrunnlag.SamordningerFradragAndreYtelser -> {
+                        // TODO: joinToString for alle disse også ?
+                    }
                 }
             }
         }
