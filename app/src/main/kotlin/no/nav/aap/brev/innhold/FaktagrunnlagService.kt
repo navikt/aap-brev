@@ -157,6 +157,16 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
+                    is Faktagrunnlag.SamordningGradering,
+                    is Faktagrunnlag.SamordningUfore,
+                    is Faktagrunnlag.SamordningArbeidsgiver,
+                    is Faktagrunnlag.TjenestepensjonRefusjonskrav,
+                    is Faktagrunnlag.Sykestipend,
+                    is Faktagrunnlag.Barnepensjon,
+                    is Faktagrunnlag.AndreStatligeYtelser -> {
+                        // Samordningsdata håndteres strukturert i brevmalen, ikke som enkle tekstfelter
+                    }
+
                 }
             }
         }

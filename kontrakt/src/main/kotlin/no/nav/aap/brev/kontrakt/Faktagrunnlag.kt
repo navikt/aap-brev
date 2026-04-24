@@ -16,6 +16,13 @@ const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
 const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_GRADERING: String = "SAMORDNING_GRADERING"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE: String = "SAMORDNING_UFORE"
+const val FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER: String = "SAMORDNING_ARBEIDSGIVER"
+const val FAKTAGRUNNLAG_TYPE_TJENESTEPENSJON_REFUSJONSKRAV: String = "TJENESTEPENSJON_REFUSJONSKRAV"
+const val FAKTAGRUNNLAG_TYPE_SYKESTIPEND: String = "SYKESTIPEND"
+const val FAKTAGRUNNLAG_TYPE_BARNEPENSJON: String = "BARNEPENSJON"
+const val FAKTAGRUNNLAG_TYPE_ANDRE_STATLIGE_YTELSER: String = "ANDRE_STATLIGE_YTELSER"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -26,7 +33,14 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     FRIST_DATO_11_7(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7),
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
-    SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
+    SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING),
+    SAMORDNING_GRADERING(FAKTAGRUNNLAG_TYPE_SAMORDNING_GRADERING),
+    SAMORDNING_UFORE(FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE),
+    SAMORDNING_ARBEIDSGIVER(FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER),
+    TJENESTEPENSJON_REFUSJONSKRAV(FAKTAGRUNNLAG_TYPE_TJENESTEPENSJON_REFUSJONSKRAV),
+    SYKESTIPEND(FAKTAGRUNNLAG_TYPE_SYKESTIPEND),
+    BARNEPENSJON(FAKTAGRUNNLAG_TYPE_BARNEPENSJON),
+    ANDRE_STATLIGE_YTELSER(FAKTAGRUNNLAG_TYPE_ANDRE_STATLIGE_YTELSER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -88,4 +102,79 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class Sykdomsvurdering(
         val begrunnelse: String,
     ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_GRADERING)
+    data class SamordningGradering(
+        val vurderinger: List<GraderingVurdering>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_GRADERING) {
+        data class GraderingVurdering(
+            val ytelseType: String,
+            val perioder: List<GraderingPeriode>,
+        )
+
+        data class GraderingPeriode(
+            val fom: LocalDate,
+            val tom: LocalDate,
+            val gradering: Int?,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_UFORE)
+    data class SamordningUfore(
+        val perioder: List<UførePeriode>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_UFORE) {
+        data class UførePeriode(
+            val virkningstidspunkt: LocalDate,
+            val uføregradTilSamordning: Int,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SAMORDNING_ARBEIDSGIVER)
+    data class SamordningArbeidsgiver(
+        val perioder: List<ArbeidsgiverPeriode>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SAMORDNING_ARBEIDSGIVER) {
+        data class ArbeidsgiverPeriode(
+            val fom: LocalDate,
+            val tom: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_TJENESTEPENSJON_REFUSJONSKRAV)
+    data class TjenestepensjonRefusjonskrav(
+        val harKrav: Boolean,
+        val fom: LocalDate?,
+        val tom: LocalDate?,
+    ) : Faktagrunnlag(FaktagrunnlagType.TJENESTEPENSJON_REFUSJONSKRAV)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_SYKESTIPEND)
+    data class Sykestipend(
+        val perioder: List<SykestipendPeriode>,
+    ) : Faktagrunnlag(FaktagrunnlagType.SYKESTIPEND) {
+        data class SykestipendPeriode(
+            val fom: LocalDate,
+            val tom: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_BARNEPENSJON)
+    data class Barnepensjon(
+        val perioder: List<BarnepensjonPeriode>,
+    ) : Faktagrunnlag(FaktagrunnlagType.BARNEPENSJON) {
+        data class BarnepensjonPeriode(
+            val fom: LocalDate,
+            val tom: LocalDate?,
+            val månedsats: BigDecimal,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_ANDRE_STATLIGE_YTELSER)
+    data class AndreStatligeYtelser(
+        val perioder: List<AndreStatligeYtelserPeriode>,
+    ) : Faktagrunnlag(FaktagrunnlagType.ANDRE_STATLIGE_YTELSER) {
+        data class AndreStatligeYtelserPeriode(
+            val ytelse: String,
+            val fom: LocalDate,
+            val tom: LocalDate,
+        )
+    }
 }
