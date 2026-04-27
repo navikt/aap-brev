@@ -72,10 +72,22 @@ class BrevbyggerService(
         return faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
                 is Faktagrunnlag.TilkjentYtelse -> {
-                    if ((faktagrunnlag.barnetillegg ?: BigDecimal.ZERO) > BigDecimal.ZERO) {
-                        setOf(KjentKategori.HAR_BARNETILLEGG)
-                    } else {
-                        emptySet()
+                    buildSet {
+                        leggTilHvis(KjentKategori.HAR_BARNETILLEGG) {
+                            (faktagrunnlag.barnetillegg ?: BigDecimal.ZERO) > BigDecimal.ZERO
+                        }
+                    }
+                }
+
+                is Faktagrunnlag.ForholdTilAndreYtelser -> {
+                    buildSet {
+                        leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
+                        leggTilHvis(KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
+                        leggTilHvis(KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
+                        leggTilHvis(KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
+                        leggTilHvis(KjentKategori.HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
+                        leggTilHvis(KjentKategori.HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
+                        leggTilHvis(KjentKategori.HAR_SYKESTIPEND) { faktagrunnlag.sykestipend.isNotEmpty() }
                     }
                 }
 
@@ -84,9 +96,15 @@ class BrevbyggerService(
         }.toSet()
     }
 
+    private fun MutableSet<KjentKategori>.leggTilHvis(kategori: KjentKategori, predikat: () -> Boolean) {
+        if (predikat()) {
+            add(kategori)
+        }
+    }
+
     private fun utledValg(brevmal: Brevmal, kategorier: Set<KjentKategori>): List<Brevdata.Valg> {
-        return brevmal.delmaler.flatMap { valgtDelmal ->
-            valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
+        return brevmal.delmaler.flatMap { delmalValg ->
+            delmalValg.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
                 .mapNotNull { valg ->
                     val forhåndsvalgt =
                         valg.valg.alternativer.filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()

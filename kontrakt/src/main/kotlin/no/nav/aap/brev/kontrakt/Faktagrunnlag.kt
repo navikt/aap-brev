@@ -16,6 +16,7 @@ const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
 const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
+const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -26,7 +27,8 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     FRIST_DATO_11_7(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7),
     GRUNNLAG_BEREGNING(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING),
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
-    SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
+    SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING),
+    FORHOLD_TIL_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -88,4 +90,56 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class Sykdomsvurdering(
         val begrunnelse: String,
     ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER)
+    data class ForholdTilAndreYtelser(
+        val fradragAndreYtelser: List<FradragYtelse>,
+        val reduksjonArbeidsgiver: List<ReduksjonArbeidsgiver>,
+        val refusjonskravTjenestepensjon: RefusjonskravTjenestepensjon?,
+        val samordningAndreYtelser: List<SamordningYtelse>,
+        val samordningBarnepensjon: List<SamordningBarnepensjon>,
+        val samordningUføre: List<SamordningUføre>,
+        val sykestipend: List<Sykestipend>,
+    ) : Faktagrunnlag(FaktagrunnlagType.FORHOLD_TIL_ANDRE_YTELSER) {
+
+        data class SamordningYtelse(
+            val ytelseNavn: String,
+            val gradering: Int,
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+
+        data class SamordningUføre(
+            val virkningstidspunkt: LocalDate,
+            val uføregradProsent: Int,
+        )
+
+        data class ReduksjonArbeidsgiver(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+
+        data class RefusjonskravTjenestepensjon(
+            val skalEtterbetalingHoldesIgjen: Boolean,
+            val fraOgMed: LocalDate?,
+            val tilOgMed: LocalDate?,
+        )
+
+        data class Sykestipend(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+
+        data class SamordningBarnepensjon(
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate?,
+            val månedsats: BigDecimal,
+        )
+
+        data class FradragYtelse(
+            val ytelseNavn: String,
+            val fraOgMed: LocalDate,
+            val tilOgMed: LocalDate,
+        )
+    }
 }
