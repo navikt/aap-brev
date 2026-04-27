@@ -79,8 +79,8 @@ class BrevbyggerService(
                     }
                 }
 
-                is Faktagrunnlag.SamordningerAndreYtelser -> {
-                    if (faktagrunnlag.samordninger.isNotEmpty()) {
+                is Faktagrunnlag.ForholdTilAndreYtelser -> {
+                    if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
                         setOf(KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER)
                     } else {
                         emptySet()

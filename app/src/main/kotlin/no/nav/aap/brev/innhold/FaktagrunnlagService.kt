@@ -158,20 +158,22 @@ class FaktagrunnlagService(
                     }
 
 
-                    is Faktagrunnlag.SamordningerAndreYtelser ->
-                        put(
-                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
-                            faktagrunnlag.samordninger.joinToString(separator = "\n") {
-                                "${it.fraOgMed} - ${it.tilOgMed}: ${it.ytelseNavn} ${it.gradering}%"
-                            })
+                    is Faktagrunnlag.ForholdTilAndreYtelser -> {
+                        //TODO fakgagrunnlag for fradragAndreYtelser
+                        //TODO fakgagrunnlag for reduksjonArbeidsgiver
+                        //TODO fakgagrunnlag for refusjonskravTjenestepensjon
 
-                    is Faktagrunnlag.SamordningerUføre,
-                    is Faktagrunnlag.SamordningerArbeidsgiver,
-                    is Faktagrunnlag.SamordningTjenestepensjon,
-                    is Faktagrunnlag.SamordningerSykestipend,
-                    is Faktagrunnlag.SamordningerBarnepensjon,
-                    is Faktagrunnlag.SamordningerFradragAndreYtelser -> {
-                        // TODO: joinToString for alle disse også ?
+                        if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
+                            put(
+                                KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
+                                faktagrunnlag.samordningAndreYtelser.joinToString(separator = "\n") {
+                                    "${it.fraOgMed} - ${it.tilOgMed}: ${it.ytelseNavn} ${it.gradering}%"
+                                })
+                        }
+
+                        //TODO fakgagrunnlag for samordningBarnepensjon
+                        //TODO fakgagrunnlag for samordningUføre
+                        //TODO fakgagrunnlag for sykestipend
                     }
                 }
             }
