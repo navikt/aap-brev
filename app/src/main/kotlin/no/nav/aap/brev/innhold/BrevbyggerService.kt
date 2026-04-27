@@ -93,8 +93,8 @@ class BrevbyggerService(
     }
 
     private fun utledValg(brevmal: Brevmal, kategorier: Set<KjentKategori>): List<Brevdata.Valg> {
-        return brevmal.delmaler.flatMap { valgtDelmal ->
-            valgtDelmal.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
+        return brevmal.delmaler.flatMap { delmalValg ->
+            delmalValg.delmal.teksteditor.filterIsInstance<Brevmal.TeksteditorElement.Valg>()
                 .mapNotNull { valg ->
                     val forhåndsvalgt =
                         valg.valg.alternativer.filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
