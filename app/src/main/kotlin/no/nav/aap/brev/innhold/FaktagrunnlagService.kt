@@ -10,6 +10,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import java.time.LocalDate
 
 class FaktagrunnlagService(
     private val brevbestillingRepository: BrevbestillingRepository,
@@ -159,25 +160,75 @@ class FaktagrunnlagService(
 
 
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
-                        //TODO fakgagrunnlag for fradragAndreYtelser
-                        //TODO fakgagrunnlag for reduksjonArbeidsgiver
-                        //TODO fakgagrunnlag for refusjonskravTjenestepensjon
+                        putHvisIkkeTom(KjentFaktagrunnlag.FRADRAG_ANDRE_YTELSER, faktagrunnlag.fradragAndreYtelser.map {
+                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn}"
+                        })
 
-                        if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
+                        putHvisIkkeTom(
+                            KjentFaktagrunnlag.REDUKSJON_ARBEIDSGIVER,
+                            faktagrunnlag.reduksjonArbeidsgiver.map {
+                                periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)
+                            })
+
+                        faktagrunnlag.refusjonskravTjenestepensjon?.let {
                             put(
-                                KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
-                                faktagrunnlag.samordningAndreYtelser.joinToString(separator = "\n") {
-                                    "${it.fraOgMed} - ${it.tilOgMed}: ${it.ytelseNavn} ${it.gradering}%"
-                                })
+                                KjentFaktagrunnlag.REFUSJONSKRAV_TJENESTEPENSJON,
+                                refusjonskravTjenestepensjonTekst(it, språk)
+                            )
                         }
 
-                        //TODO fakgagrunnlag for samordningBarnepensjon
-                        //TODO fakgagrunnlag for samordningUføre
-                        //TODO fakgagrunnlag for sykestipend
+                        putHvisIkkeTom(
+                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
+                            faktagrunnlag.samordningAndreYtelser.map {
+                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn} ${it.gradering}%"
+                            })
+
+                        putHvisIkkeTom(
+                            KjentFaktagrunnlag.SAMORDNING_BARNEPENSJON,
+                            faktagrunnlag.samordningBarnepensjon.map {
+                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.månedsats.formater(språk)}"
+                            })
+
+                        putHvisIkkeTom(KjentFaktagrunnlag.SAMORDNING_UFØRE, faktagrunnlag.samordningUføre.map {
+                            "Virkningstidspunkt: ${it.virkningstidspunkt.formaterFullLengde(språk)}, uføregrad: ${it.uføregradProsent}%"
+                        })
+
+                        putHvisIkkeTom(KjentFaktagrunnlag.SYKESTIPEND, faktagrunnlag.sykestipend.map {
+                            periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)
+                        })
                     }
                 }
             }
         }
+    }
+
+    private fun MutableMap<KjentFaktagrunnlag, String>.putHvisIkkeTom(
+        key: KjentFaktagrunnlag,
+        verdier: List<String>
+    ) {
+        if (verdier.isNotEmpty()) {
+            put(key, verdier.joinToString(separator = "\n"))
+        }
+    }
+
+    private fun periodeTilTekst(fraOgMed: LocalDate?, tilOgMed: LocalDate?, språk: Språk): String {
+        return if (fraOgMed != null && tilOgMed != null) {
+            "${fraOgMed.formaterFullLengde(språk)} - ${tilOgMed.formaterFullLengde(språk)}"
+        } else if (fraOgMed != null) {
+            "fra og med ${fraOgMed.formaterFullLengde(språk)}"
+        } else if (tilOgMed != null) {
+            "til og med ${tilOgMed.formaterFullLengde(språk)}"
+        } else {
+            ""
+        }
+    }
+
+    private fun refusjonskravTjenestepensjonTekst(
+        refusjonskravTjenestepensjon: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravTjenestepensjon,
+        språk: Språk
+    ): String {
+        return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}" +
+                periodeTilTekst(refusjonskravTjenestepensjon.fraOgMed, refusjonskravTjenestepensjon.tilOgMed, språk)
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
