@@ -82,7 +82,6 @@ class BrevbyggerService(
                 is Faktagrunnlag.ForholdTilAndreYtelser -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
                         leggTilHvis(KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
