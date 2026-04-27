@@ -95,7 +95,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class ForholdTilAndreYtelser(
         val fradragAndreYtelser: List<FradragYtelse>,
         val reduksjonArbeidsgiver: List<ReduksjonArbeidsgiver>,
-        val refusjonskravTjenestepensjon: RefusjonskravTjenestepensjon,
+        val refusjonskravTjenestepensjon: RefusjonskravTjenestepensjon?,
         val samordningAndreYtelser: List<SamordningYtelse>,
         val samordningBarnepensjon: List<SamordningBarnepensjon>,
         val samordningUføre: List<SamordningUføre>,
