@@ -186,7 +186,7 @@ class FaktagrunnlagService(
                         putHvisIkkeTom(
                             KjentFaktagrunnlag.SAMORDNING_BARNEPENSJON,
                             faktagrunnlag.samordningBarnepensjon.map {
-                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.månedsats.formater(språk)}"
+                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.månedsats.formater(språk)} Kroner per måned"
                             })
 
                         putHvisIkkeTom(KjentFaktagrunnlag.SAMORDNING_UFØRE, faktagrunnlag.samordningUføre.map {
