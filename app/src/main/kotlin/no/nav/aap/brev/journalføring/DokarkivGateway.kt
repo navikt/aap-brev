@@ -33,7 +33,7 @@ class DokarkivGateway : JournalføringGateway {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
     private val client = RestClient(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         responseHandler = HåndterConflictResponseHandler(),
         prometheus = prometheus
     )

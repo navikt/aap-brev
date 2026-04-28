@@ -22,7 +22,7 @@ class RegoppslagGateway : AdresseGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         responseHandler = RegoppslagResponseHandler(),
         prometheus = prometheus
     )

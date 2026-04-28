@@ -39,7 +39,7 @@ class AppTest {
         )
         private val restClient = RestClient(
             config = ClientConfig(scope = "brev"),
-            tokenProvider = AzureM2MTokenProvider(),
+            tokenProvider = AzureM2MTokenProvider,
             responseHandler = DefaultResponseHandler()
         )
 

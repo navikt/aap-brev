@@ -20,7 +20,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokdistfordeling.scope"))
     private val client = RestClient(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         responseHandler = HåndterConflictResponseHandler(),
         prometheus = prometheus,
     )

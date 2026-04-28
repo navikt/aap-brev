@@ -24,7 +24,7 @@ class BrevSanityProxyGateway : BrevinnholdGateway, PdfGatewayV2 {
     val config = ClientConfig(scope = requiredConfigForKey("integrasjon.brev_sanity_proxy.scope"))
     private val client = RestClient.withDefaultResponseHandler(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         prometheus = prometheus
     )
 

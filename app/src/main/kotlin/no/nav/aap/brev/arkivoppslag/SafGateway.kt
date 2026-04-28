@@ -20,7 +20,7 @@ class SafGateway : ArkivoppslagGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         responseHandler = GraphQLResponseHandler(),
         prometheus = prometheus,
     )

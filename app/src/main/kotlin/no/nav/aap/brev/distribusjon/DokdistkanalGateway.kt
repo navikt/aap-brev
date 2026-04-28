@@ -18,7 +18,7 @@ class DokdistkanalGateway : DistribusjonskanalGateway {
 
     private val client = RestClient(
         config = config,
-        tokenProvider = AzureM2MTokenProvider(),
+        tokenProvider = AzureM2MTokenProvider,
         responseHandler = DefaultResponseHandler(),
         prometheus = prometheus
     )
