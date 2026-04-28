@@ -161,7 +161,7 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
                         putHvisIkkeTom(KjentFaktagrunnlag.FRADRAG_ANDRE_YTELSER, faktagrunnlag.fradragAndreYtelser.map {
-                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.lowercase()}"
+                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.titlecase()}"
                         })
 
                         putHvisIkkeTom(
@@ -180,7 +180,7 @@ class FaktagrunnlagService(
                         putHvisIkkeTom(
                             KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
                             faktagrunnlag.samordningAndreYtelser.map {
-                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.lowercase()} ${it.gradering}%"
+                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.titlecase()} ${it.gradering}%"
                             })
 
                         putHvisIkkeTom(
