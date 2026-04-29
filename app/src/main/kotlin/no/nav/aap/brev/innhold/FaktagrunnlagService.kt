@@ -45,6 +45,12 @@ class FaktagrunnlagService(
                     ?: blokkInnhold
         }
 
+    data class KjentTabell(val tekniskNavn: String, kolonner: Map<String, >)
+
+    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>,
+                                 språk: Språk): List<KjentTabell> {
+
+    }
     fun faktagrunnlagTilTekst(
         alleFaktagrunnlag: Set<Faktagrunnlag>,
         språk: Språk
