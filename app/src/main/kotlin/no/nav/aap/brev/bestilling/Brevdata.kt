@@ -12,9 +12,17 @@ data class Brevdata(
 ) {
     data class Tabell(
         val tekniskNavn: String,
-        val overskrifter: List<String>,
-        val rader: List<List<String?>>
-    )
+        val rader: List<Rad>
+    ) {
+        data class Rad(
+            val celler: List<Celle>
+        ) {
+            data class Celle(
+                val kolonne: String,
+                val verdi: String
+            )
+        }
+    }
 
     data class Delmal(val id: String)
 

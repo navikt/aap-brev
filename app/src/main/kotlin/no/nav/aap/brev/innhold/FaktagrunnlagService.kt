@@ -3,6 +3,7 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -43,32 +44,157 @@ class FaktagrunnlagService(
     }
 
 
-    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<KjentTabell> {
+    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<Brevdata.Tabell> {
         return buildList {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
                 when (faktagrunnlag) {
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
-                        faktagrunnlag.samordningUføre.forEach {
-                            add(KjentTabell("Samordning uføre", listOf("Virkningstidspunkt: ${it.virkningstidspunkt.formaterFullLengde(språk)}", "Uføregrad: ${it.uføregradProsent}%")))
+                        if (faktagrunnlag.samordningUføre.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "SAMORDNING_UFØRE",
+                                    rader = faktagrunnlag.samordningUføre.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "VIRKNINGSTIDSPUNKT",
+                                                    verdi = it.virkningstidspunkt.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "UFØREGRAD",
+                                                    verdi = "${it.uføregradProsent}%"
+                                                )
+                                            )
+                                        )
+                                    }
+                                ))
                         }
-                        faktagrunnlag.reduksjonArbeidsgiver.forEach {
-                            add(KjentTabell("Reduksjon arbeidsgiver", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+                        if (faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "REDUKSJON_ARBEIDSGIVER",
+                                    rader = faktagrunnlag.reduksjonArbeidsgiver.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "FRA_OG_MED",
+                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "TIL_OG_MED",
+                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
                         }
-                        faktagrunnlag.samordningBarnepensjon.forEach {
-                            add(KjentTabell("Samordning barnepensjon", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed?.formaterFullLengde(språk), "${it.månedsats.formater(språk)} Kroner per måned")))
+
+                        if (faktagrunnlag.samordningBarnepensjon.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "SAMORDNING_BARNEPENSJON",
+                                    rader = faktagrunnlag.samordningBarnepensjon.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "FRA_OG_MED",
+                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "TIL_OG_MED",
+                                                    verdi = it.tilOgMed?.formaterFullLengde(språk) ?: ""
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "MÅNEDSATS",
+                                                    verdi = "${it.månedsats.formater(språk)} Kroner per måned"
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
                         }
-                        faktagrunnlag.samordningAndreYtelser.forEach {
-                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk), "${it.gradering}%")))
+
+                        if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "SAMORDNING_ANDRE_YTELSER",
+                                    rader = faktagrunnlag.samordningAndreYtelser.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "YTELSE_NAVN",
+                                                    verdi = it.ytelseNavn
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "FRA_OG_MED",
+                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "TIL_OG_MED",
+                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "GRADERING",
+                                                    verdi = "${it.gradering}%"
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
                         }
-                        faktagrunnlag.sykestipend.forEach {
-                            add(KjentTabell("Sykestipend", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+
+                        if (faktagrunnlag.sykestipend.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "SYKESTIPEND",
+                                    rader = faktagrunnlag.sykestipend.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "FRA_OG_MED",
+                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "TIL_OG_MED",
+                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
                         }
-                        faktagrunnlag.fradragAndreYtelser.forEach {
-                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+
+                        if (faktagrunnlag.fradragAndreYtelser.isNotEmpty()) {
+                            add(
+                                Brevdata.Tabell(
+                                    tekniskNavn = "FRADRAG_ANDRE_YTELSER",
+                                    rader = faktagrunnlag.fradragAndreYtelser.map {
+                                        Brevdata.Tabell.Rad(
+                                            celler = listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "YTELSE_NAVN",
+                                                    verdi = it.ytelseNavn
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "FRA_OG_MED",
+                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
+                                                ),
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "TIL_OG_MED",
+                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
+                                                )
+                                            )
+                                        )
+                                    }
+                                )
+                            )
                         }
-                        faktagrunnlag.fradragAndreYtelser.forEach {
-                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
-                        }
+
                     }
 
                     else -> {
@@ -195,49 +321,13 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
-
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
-                        putHvisIkkeTom(KjentFaktagrunnlag.FRADRAG_ANDRE_YTELSER, faktagrunnlag.fradragAndreYtelser.map {
-                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${
-                                it.ytelseNavn.lowercase().replaceFirstChar { it.titlecase() }
-                            }"
-                        })
-
-                        putHvisIkkeTom(
-                            KjentFaktagrunnlag.REDUKSJON_ARBEIDSGIVER, faktagrunnlag.reduksjonArbeidsgiver.map {
-                                periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)
-                            })
-
                         faktagrunnlag.refusjonskravTjenestepensjon?.let {
                             put(
                                 KjentFaktagrunnlag.REFUSJONSKRAV_TJENESTEPENSJON,
                                 refusjonskravTjenestepensjonTekst(it, språk)
                             )
                         }
-
-                        putHvisIkkeTom(
-                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER, faktagrunnlag.samordningAndreYtelser.map {
-                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${
-                                    it.ytelseNavn.lowercase().replaceFirstChar { it.titlecase() }
-                                } ${it.gradering}%"
-                            })
-
-                        putHvisIkkeTom(
-                            KjentFaktagrunnlag.SAMORDNING_BARNEPENSJON, faktagrunnlag.samordningBarnepensjon.map {
-                                "${
-                                    periodeTilTekst(
-                                        it.fraOgMed, it.tilOgMed, språk
-                                    )
-                                }: ${it.månedsats.formater(språk)} Kroner per måned"
-                            })
-
-                        putHvisIkkeTom(KjentFaktagrunnlag.SAMORDNING_UFØRE, faktagrunnlag.samordningUføre.map {
-                            "Virkningstidspunkt: ${it.virkningstidspunkt.formaterFullLengde(språk)}, uføregrad: ${it.uføregradProsent}%"
-                        })
-
-                        putHvisIkkeTom(KjentFaktagrunnlag.SYKESTIPEND, faktagrunnlag.sykestipend.map {
-                            periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)
-                        })
                     }
                 }
             }
@@ -280,6 +370,3 @@ class FaktagrunnlagService(
         )
     }
 }
-
-data class KjentTabell(val tekniskNavn: String, val rader: List<String?>)
-
