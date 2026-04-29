@@ -36,46 +36,84 @@ class FaktagrunnlagService(
     private fun erstattFaktagrunnlagMedTekst(
         blokkInnhold: BlokkInnhold,
         faktagrunnlagTekst: Map<KjentFaktagrunnlag, String>,
-    ): BlokkInnhold =
-        when (blokkInnhold) {
-            is BlokkInnhold.FormattertTekst -> blokkInnhold
-            is BlokkInnhold.Faktagrunnlag ->
-                blokkInnhold.kjentFaktagrunnlag()?.let { faktagrunnlagTekst[it] }
-                    ?.let { blokkInnhold.tilFormattertTekst(it) }
-                    ?: blokkInnhold
-        }
-
-    data class KjentTabell(val tekniskNavn: String, kolonner: Map<String, >)
-
-    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>,
-                                 språk: Språk): List<KjentTabell> {
-
+    ): BlokkInnhold = when (blokkInnhold) {
+        is BlokkInnhold.FormattertTekst -> blokkInnhold
+        is BlokkInnhold.Faktagrunnlag -> blokkInnhold.kjentFaktagrunnlag()?.let { faktagrunnlagTekst[it] }
+            ?.let { blokkInnhold.tilFormattertTekst(it) } ?: blokkInnhold
     }
+
+
+    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<KjentTabell> {
+        return buildList {
+            alleFaktagrunnlag.forEach { faktagrunnlag ->
+                when (faktagrunnlag) {
+                    is Faktagrunnlag.ForholdTilAndreYtelser -> {
+                        faktagrunnlag.samordningUføre.forEach {
+                            add(KjentTabell("Samordning uføre", listOf("Virkningstidspunkt: ${it.virkningstidspunkt.formaterFullLengde(språk)}", "Uføregrad: ${it.uføregradProsent}%")))
+                        }
+                        faktagrunnlag.reduksjonArbeidsgiver.forEach {
+                            add(KjentTabell("Reduksjon arbeidsgiver", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+                        }
+                        faktagrunnlag.samordningBarnepensjon.forEach {
+                            add(KjentTabell("Samordning barnepensjon", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed?.formaterFullLengde(språk), "${it.månedsats.formater(språk)} Kroner per måned")))
+                        }
+                        faktagrunnlag.samordningAndreYtelser.forEach {
+                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk), "${it.gradering}%")))
+                        }
+                        faktagrunnlag.sykestipend.forEach {
+                            add(KjentTabell("Sykestipend", listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+                        }
+                        faktagrunnlag.fradragAndreYtelser.forEach {
+                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+                        }
+                        faktagrunnlag.fradragAndreYtelser.forEach {
+                            add(KjentTabell(it.ytelseNavn, listOf(it.fraOgMed.formaterFullLengde(språk), it.tilOgMed.formaterFullLengde(språk))))
+                        }
+                    }
+
+                    else -> {
+                    }
+                }
+            }
+        }
+    }
+
     fun faktagrunnlagTilTekst(
-        alleFaktagrunnlag: Set<Faktagrunnlag>,
-        språk: Språk
+        alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk
     ): Map<KjentFaktagrunnlag, String> {
         return buildMap {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
                 when (faktagrunnlag) {
 
-                    is Faktagrunnlag.AapFomDato ->
-                        put(KjentFaktagrunnlag.AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
+                    is Faktagrunnlag.AapFomDato -> put(
+                        KjentFaktagrunnlag.AAP_FOM_DATO,
+                        faktagrunnlag.dato.formaterFullLengde(språk)
+                    )
 
-                    is Faktagrunnlag.UtvidetAapFomDato ->
-                        put(KjentFaktagrunnlag.UTVIDET_AAP_FOM_DATO, faktagrunnlag.dato.formaterFullLengde(språk))
+                    is Faktagrunnlag.UtvidetAapFomDato -> put(
+                        KjentFaktagrunnlag.UTVIDET_AAP_FOM_DATO,
+                        faktagrunnlag.dato.formaterFullLengde(språk)
+                    )
 
-                    is Faktagrunnlag.KravdatoUføretrygd ->
-                        put(KjentFaktagrunnlag.KRAVDATO_UFORETRYGD, faktagrunnlag.dato.formaterFullLengde(språk))
+                    is Faktagrunnlag.KravdatoUføretrygd -> put(
+                        KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
+                        faktagrunnlag.dato.formaterFullLengde(språk)
+                    )
 
-                    is Faktagrunnlag.SisteDagMedYtelse ->
-                        put(KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE, faktagrunnlag.dato.formaterFullLengde(språk))
+                    is Faktagrunnlag.SisteDagMedYtelse -> put(
+                        KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
+                        faktagrunnlag.dato.formaterFullLengde(språk)
+                    )
 
-                    is Faktagrunnlag.DatoAvklartForJobbsøk ->
-                        put(KjentFaktagrunnlag.DATO_AVKLART_FOR_JOBBSOK, faktagrunnlag.dato.formaterFullLengde(språk))
+                    is Faktagrunnlag.DatoAvklartForJobbsøk -> put(
+                        KjentFaktagrunnlag.DATO_AVKLART_FOR_JOBBSOK,
+                        faktagrunnlag.dato.formaterFullLengde(språk)
+                    )
 
-                    is Faktagrunnlag.FristDato11_7 ->
-                        put(KjentFaktagrunnlag.FRIST_DATO_11_7, faktagrunnlag.frist.formaterFullLengde(språk))
+                    is Faktagrunnlag.FristDato11_7 -> put(
+                        KjentFaktagrunnlag.FRIST_DATO_11_7,
+                        faktagrunnlag.frist.formaterFullLengde(språk)
+                    )
 
                     is Faktagrunnlag.GrunnlagBeregning -> {
                         faktagrunnlag.beregningstidspunkt?.let { beregningstidspunkt ->
@@ -106,20 +144,17 @@ class FaktagrunnlagService(
                         }
                         faktagrunnlag.gradertDagsats?.let { gradertDagsats ->
                             put(
-                                KjentFaktagrunnlag.GRADERT_DAGSATS,
-                                gradertDagsats.formater(språk)
+                                KjentFaktagrunnlag.GRADERT_DAGSATS, gradertDagsats.formater(språk)
                             )
                         }
                         faktagrunnlag.barnetilleggSats?.let { barnetilleggSats ->
                             put(
-                                KjentFaktagrunnlag.BARNETILLEGG_SATS,
-                                barnetilleggSats.formater(språk)
+                                KjentFaktagrunnlag.BARNETILLEGG_SATS, barnetilleggSats.formater(språk)
                             )
                         }
                         faktagrunnlag.gradertBarnetillegg?.let { gradertBarnetillegg ->
                             put(
-                                KjentFaktagrunnlag.GRADERT_BARNETILLEGG,
-                                gradertBarnetillegg.formater(språk)
+                                KjentFaktagrunnlag.GRADERT_BARNETILLEGG, gradertBarnetillegg.formater(språk)
                             )
                         }
                         faktagrunnlag.gradertDagsatsInkludertBarnetillegg?.let { gradertDagsatsInkludertBarnetillegg ->
@@ -130,20 +165,17 @@ class FaktagrunnlagService(
                         }
                         faktagrunnlag.barnetillegg?.let { barnetillegg ->
                             put(
-                                KjentFaktagrunnlag.BARNETILLEGG,
-                                barnetillegg.formater(språk)
+                                KjentFaktagrunnlag.BARNETILLEGG, barnetillegg.formater(språk)
                             )
                         }
                         faktagrunnlag.antallBarn?.let { antallBarn ->
                             put(
-                                KjentFaktagrunnlag.ANTALL_BARN,
-                                antallBarn.toString()
+                                KjentFaktagrunnlag.ANTALL_BARN, antallBarn.toString()
                             )
                         }
                         faktagrunnlag.minsteÅrligYtelse?.let { minsteÅrligYtelse ->
                             put(
-                                KjentFaktagrunnlag.MINSTE_AARLIG_YTELSE,
-                                minsteÅrligYtelse.formater(språk)
+                                KjentFaktagrunnlag.MINSTE_AARLIG_YTELSE, minsteÅrligYtelse.formater(språk)
                             )
                         }
                         faktagrunnlag.minsteÅrligYtelseUnder25?.let { minsteÅrligYtelseUnder25 ->
@@ -154,8 +186,7 @@ class FaktagrunnlagService(
                         }
                         faktagrunnlag.årligYtelse?.let { årligYtelse ->
                             put(
-                                KjentFaktagrunnlag.AARLIG_YTELSE,
-                                årligYtelse.formater(språk)
+                                KjentFaktagrunnlag.AARLIG_YTELSE, årligYtelse.formater(språk)
                             )
                         }
                     }
@@ -167,12 +198,13 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
                         putHvisIkkeTom(KjentFaktagrunnlag.FRADRAG_ANDRE_YTELSER, faktagrunnlag.fradragAndreYtelser.map {
-                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.lowercase().replaceFirstChar {it.titlecase()} }"
+                            "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${
+                                it.ytelseNavn.lowercase().replaceFirstChar { it.titlecase() }
+                            }"
                         })
 
                         putHvisIkkeTom(
-                            KjentFaktagrunnlag.REDUKSJON_ARBEIDSGIVER,
-                            faktagrunnlag.reduksjonArbeidsgiver.map {
+                            KjentFaktagrunnlag.REDUKSJON_ARBEIDSGIVER, faktagrunnlag.reduksjonArbeidsgiver.map {
                                 periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)
                             })
 
@@ -184,15 +216,19 @@ class FaktagrunnlagService(
                         }
 
                         putHvisIkkeTom(
-                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER,
-                            faktagrunnlag.samordningAndreYtelser.map {
-                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.ytelseNavn.lowercase().replaceFirstChar {it.titlecase()} } ${it.gradering}%"
+                            KjentFaktagrunnlag.SAMORDNING_ANDRE_YTELSER, faktagrunnlag.samordningAndreYtelser.map {
+                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${
+                                    it.ytelseNavn.lowercase().replaceFirstChar { it.titlecase() }
+                                } ${it.gradering}%"
                             })
 
                         putHvisIkkeTom(
-                            KjentFaktagrunnlag.SAMORDNING_BARNEPENSJON,
-                            faktagrunnlag.samordningBarnepensjon.map {
-                                "${periodeTilTekst(it.fraOgMed, it.tilOgMed, språk)}: ${it.månedsats.formater(språk)} Kroner per måned"
+                            KjentFaktagrunnlag.SAMORDNING_BARNEPENSJON, faktagrunnlag.samordningBarnepensjon.map {
+                                "${
+                                    periodeTilTekst(
+                                        it.fraOgMed, it.tilOgMed, språk
+                                    )
+                                }: ${it.månedsats.formater(språk)} Kroner per måned"
                             })
 
                         putHvisIkkeTom(KjentFaktagrunnlag.SAMORDNING_UFØRE, faktagrunnlag.samordningUføre.map {
@@ -209,8 +245,7 @@ class FaktagrunnlagService(
     }
 
     private fun MutableMap<KjentFaktagrunnlag, String>.putHvisIkkeTom(
-        key: KjentFaktagrunnlag,
-        verdier: List<String>
+        key: KjentFaktagrunnlag, verdier: List<String>
     ) {
         if (verdier.isNotEmpty()) {
             put(key, verdier.joinToString(separator = "\n"))
@@ -230,18 +265,21 @@ class FaktagrunnlagService(
     }
 
     private fun refusjonskravTjenestepensjonTekst(
-        refusjonskravTjenestepensjon: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravTjenestepensjon,
-        språk: Språk
+        refusjonskravTjenestepensjon: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravTjenestepensjon, språk: Språk
     ): String {
-        return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " +
-                periodeTilTekst(refusjonskravTjenestepensjon.fraOgMed, refusjonskravTjenestepensjon.tilOgMed, språk)
+        return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " + periodeTilTekst(
+            refusjonskravTjenestepensjon.fraOgMed,
+            refusjonskravTjenestepensjon.tilOgMed,
+            språk
+        )
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
         return FormattertTekst(
-            id = id,
-            tekst = tekst,
-            formattering = emptyList()
+            id = id, tekst = tekst, formattering = emptyList()
         )
     }
 }
+
+data class KjentTabell(val tekniskNavn: String, val rader: List<String?>)
+
