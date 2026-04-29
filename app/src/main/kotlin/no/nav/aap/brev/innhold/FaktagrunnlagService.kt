@@ -51,136 +51,46 @@ class FaktagrunnlagService(
             alleFaktagrunnlag.forEach { faktagrunnlag ->
                 when (faktagrunnlag) {
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
-                        faktagrunnlag.samordningUføre.map {
+                        val samordningUføre = faktagrunnlag.samordningUføre.map {
                             Rad(tilCeller(it, språk))
-                        }.ifNotEmpty {
-                            add(tilTabell("SAMORDNING_UFØRE", it))
+                        }
+                        if (samordningUføre.isNotEmpty()) {
+                            add(tilTabell("SAMORDNING_UFØRE", samordningUføre))
                         }
 
-                        if (faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty()) {
-                            add(
-                                Tabell(
-                                    tekniskNavn = "REDUKSJON_ARBEIDSGIVER",
-                                    rader = faktagrunnlag.reduksjonArbeidsgiver.map {
-                                        Rad(
-                                            celler = listOf(
-                                                Celle(
-                                                    kolonne = "FRA_OG_MED",
-                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "TIL_OG_MED",
-                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-                            )
+                        val reduksjonArbeidsgiver = faktagrunnlag.reduksjonArbeidsgiver.map {
+                            Rad(tilCeller(it, språk))
+                        }
+                        if (reduksjonArbeidsgiver.isNotEmpty()) {
+                            add(tilTabell("REDUKSJON_ARBEIDSGIVER", reduksjonArbeidsgiver))
                         }
 
-                        if (faktagrunnlag.samordningBarnepensjon.isNotEmpty()) {
-                            add(
-                                Tabell(
-                                    tekniskNavn = "SAMORDNING_BARNEPENSJON",
-                                    rader = faktagrunnlag.samordningBarnepensjon.map {
-                                        Rad(
-                                            celler = listOf(
-                                                Celle(
-                                                    kolonne = "FRA_OG_MED",
-                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "TIL_OG_MED",
-                                                    verdi = it.tilOgMed?.formaterFullLengde(språk) ?: ""
-                                                ),
-                                                Celle(
-                                                    kolonne = "MÅNEDSATS",
-                                                    verdi = "${it.månedsats.formater(språk)} Kroner per måned"
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-                            )
+                        val samordningBarnepensjon = faktagrunnlag.samordningBarnepensjon.map {
+                            Rad(tilCeller(it, språk))
+                        }
+                        if(samordningBarnepensjon.isNotEmpty()) {
+                            add(tilTabell("SAMORDNING_BARNEPENSJON", samordningBarnepensjon))
                         }
 
-                        if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
-                            add(
-                                Tabell(
-                                    tekniskNavn = "SAMORDNING_ANDRE_YTELSER",
-                                    rader = faktagrunnlag.samordningAndreYtelser.map {
-                                        Rad(
-                                            celler = listOf(
-                                                Celle(
-                                                    kolonne = "YTELSE_NAVN",
-                                                    verdi = it.ytelseNavn
-                                                ),
-                                                Celle(
-                                                    kolonne = "FRA_OG_MED",
-                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "TIL_OG_MED",
-                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "GRADERING",
-                                                    verdi = "${it.gradering}%"
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-                            )
+                        val samordningAndreYtelser = faktagrunnlag.samordningAndreYtelser.map {
+                            Rad(tilCeller(it, språk))
+                        }
+                        if( samordningAndreYtelser.isNotEmpty()) {
+                            add(tilTabell("SAMORDNING_ANDRE_YTELSER", samordningAndreYtelser))
                         }
 
-                        if (faktagrunnlag.sykestipend.isNotEmpty()) {
-                            add(
-                                Tabell(
-                                    tekniskNavn = "SYKESTIPEND",
-                                    rader = faktagrunnlag.sykestipend.map {
-                                        Rad(
-                                            celler = listOf(
-                                                Celle(
-                                                    kolonne = "FRA_OG_MED",
-                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "TIL_OG_MED",
-                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-                            )
+                        val sykestipend = faktagrunnlag.sykestipend.map {
+                            Rad(tilCeller(it, språk))
+                        }
+                        if(sykestipend.isNotEmpty()){
+                            add(tilTabell("SYKESTIPEND", sykestipend))
                         }
 
-                        if (faktagrunnlag.fradragAndreYtelser.isNotEmpty()) {
-                            add(
-                                Tabell(
-                                    tekniskNavn = "FRADRAG_ANDRE_YTELSER",
-                                    rader = faktagrunnlag.fradragAndreYtelser.map {
-                                        Rad(
-                                            celler = listOf(
-                                                Celle(
-                                                    kolonne = "YTELSE_NAVN",
-                                                    verdi = it.ytelseNavn
-                                                ),
-                                                Celle(
-                                                    kolonne = "FRA_OG_MED",
-                                                    verdi = it.fraOgMed.formaterFullLengde(språk)
-                                                ),
-                                                Celle(
-                                                    kolonne = "TIL_OG_MED",
-                                                    verdi = it.tilOgMed.formaterFullLengde(språk)
-                                                )
-                                            )
-                                        )
-                                    }
-                                )
-                            )
+                        val fradragAndreYtelser = faktagrunnlag.fradragAndreYtelser.map {
+                            Rad(tilCeller(it, språk))
+                        }
+                        if(fradragAndreYtelser.isNotEmpty()){
+                            add(tilTabell("FRADRAG_ANDRE_YTELSER", fradragAndreYtelser))
                         }
 
                     }
@@ -213,10 +123,92 @@ class FaktagrunnlagService(
         )
     )
 
-    inline fun <T> List<T>.ifNotEmpty(block: (List<T>) -> Unit): List<T> {
-        if (isNotEmpty()) block(this)
-        return this
-    }
+    private fun tilCeller(
+        reduksjonArbeidsgiver: Faktagrunnlag.ForholdTilAndreYtelser.ReduksjonArbeidsgiver,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "FRA_OG_MED",
+            verdi = reduksjonArbeidsgiver.fraOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "TIL_OG_MED",
+            verdi = reduksjonArbeidsgiver.tilOgMed.formaterFullLengde(språk)
+        )
+    )
+
+    private fun tilCeller(
+        samordningBarnepensjon: Faktagrunnlag.ForholdTilAndreYtelser.SamordningBarnepensjon,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "FRA_OG_MED",
+            verdi = samordningBarnepensjon.fraOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "TIL_OG_MED",
+            verdi = samordningBarnepensjon.tilOgMed?.formaterFullLengde(språk) ?: ""
+        ),
+        Celle(
+            kolonne = "MÅNEDSATS",
+            verdi = "${samordningBarnepensjon.månedsats.formater(språk)} Kroner per måned"
+        )
+    )
+
+    private fun tilCeller(
+        samordningYtelse: Faktagrunnlag.ForholdTilAndreYtelser.SamordningYtelse,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "YTELSE_NAVN",
+            verdi = samordningYtelse.ytelseNavn
+        ),
+        Celle(
+            kolonne = "FRA_OG_MED",
+            verdi = samordningYtelse.fraOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "TIL_OG_MED",
+            verdi = samordningYtelse.tilOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "GRADERING",
+            verdi = "${samordningYtelse.gradering}%"
+        )
+    )
+
+    private fun tilCeller(
+        sykestipend: Faktagrunnlag.ForholdTilAndreYtelser.Sykestipend,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "FRA_OG_MED",
+            verdi = sykestipend.fraOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "TIL_OG_MED",
+            verdi = sykestipend.tilOgMed.formaterFullLengde(språk)
+        )
+    )
+
+    private fun tilCeller(
+        fradragYtelse: Faktagrunnlag.ForholdTilAndreYtelser.FradragYtelse,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "YTELSE_NAVN",
+            verdi = fradragYtelse.ytelseNavn
+        ),
+        Celle(
+            kolonne = "FRA_OG_MED",
+            verdi = fradragYtelse.fraOgMed.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "TIL_OG_MED",
+            verdi = fradragYtelse.tilOgMed.formaterFullLengde(språk)
+        )
+    )
+
 
     fun faktagrunnlagTilTekst(
         alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk
