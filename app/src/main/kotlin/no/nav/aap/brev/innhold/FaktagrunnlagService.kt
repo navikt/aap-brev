@@ -3,7 +3,9 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.Brevdata
+import no.nav.aap.brev.bestilling.Celle
+import no.nav.aap.brev.bestilling.Rad
+import no.nav.aap.brev.bestilling.Tabell
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -44,43 +46,29 @@ class FaktagrunnlagService(
     }
 
 
-    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<Brevdata.Tabell> {
+    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<Tabell> {
         return buildList {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
                 when (faktagrunnlag) {
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
-                        if (faktagrunnlag.samordningUføre.isNotEmpty()) {
-                            add(
-                                Brevdata.Tabell(
-                                    tekniskNavn = "SAMORDNING_UFØRE",
-                                    rader = faktagrunnlag.samordningUføre.map {
-                                        Brevdata.Tabell.Rad(
-                                            celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
-                                                    kolonne = "VIRKNINGSTIDSPUNKT",
-                                                    verdi = it.virkningstidspunkt.formaterFullLengde(språk)
-                                                ),
-                                                Brevdata.Tabell.Rad.Celle(
-                                                    kolonne = "UFØREGRAD",
-                                                    verdi = "${it.uføregradProsent}%"
-                                                )
-                                            )
-                                        )
-                                    }
-                                ))
+                        faktagrunnlag.samordningUføre.map {
+                            Rad(tilCeller(it, språk))
+                        }.ifNotEmpty {
+                            add(tilTabell("SAMORDNING_UFØRE", it))
                         }
+
                         if (faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty()) {
                             add(
-                                Brevdata.Tabell(
+                                Tabell(
                                     tekniskNavn = "REDUKSJON_ARBEIDSGIVER",
                                     rader = faktagrunnlag.reduksjonArbeidsgiver.map {
-                                        Brevdata.Tabell.Rad(
+                                        Rad(
                                             celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "FRA_OG_MED",
                                                     verdi = it.fraOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "TIL_OG_MED",
                                                     verdi = it.tilOgMed.formaterFullLengde(språk)
                                                 )
@@ -93,20 +81,20 @@ class FaktagrunnlagService(
 
                         if (faktagrunnlag.samordningBarnepensjon.isNotEmpty()) {
                             add(
-                                Brevdata.Tabell(
+                                Tabell(
                                     tekniskNavn = "SAMORDNING_BARNEPENSJON",
                                     rader = faktagrunnlag.samordningBarnepensjon.map {
-                                        Brevdata.Tabell.Rad(
+                                        Rad(
                                             celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "FRA_OG_MED",
                                                     verdi = it.fraOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "TIL_OG_MED",
                                                     verdi = it.tilOgMed?.formaterFullLengde(språk) ?: ""
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "MÅNEDSATS",
                                                     verdi = "${it.månedsats.formater(språk)} Kroner per måned"
                                                 )
@@ -119,24 +107,24 @@ class FaktagrunnlagService(
 
                         if (faktagrunnlag.samordningAndreYtelser.isNotEmpty()) {
                             add(
-                                Brevdata.Tabell(
+                                Tabell(
                                     tekniskNavn = "SAMORDNING_ANDRE_YTELSER",
                                     rader = faktagrunnlag.samordningAndreYtelser.map {
-                                        Brevdata.Tabell.Rad(
+                                        Rad(
                                             celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "YTELSE_NAVN",
                                                     verdi = it.ytelseNavn
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "FRA_OG_MED",
                                                     verdi = it.fraOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "TIL_OG_MED",
                                                     verdi = it.tilOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "GRADERING",
                                                     verdi = "${it.gradering}%"
                                                 )
@@ -149,16 +137,16 @@ class FaktagrunnlagService(
 
                         if (faktagrunnlag.sykestipend.isNotEmpty()) {
                             add(
-                                Brevdata.Tabell(
+                                Tabell(
                                     tekniskNavn = "SYKESTIPEND",
                                     rader = faktagrunnlag.sykestipend.map {
-                                        Brevdata.Tabell.Rad(
+                                        Rad(
                                             celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "FRA_OG_MED",
                                                     verdi = it.fraOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "TIL_OG_MED",
                                                     verdi = it.tilOgMed.formaterFullLengde(språk)
                                                 )
@@ -171,20 +159,20 @@ class FaktagrunnlagService(
 
                         if (faktagrunnlag.fradragAndreYtelser.isNotEmpty()) {
                             add(
-                                Brevdata.Tabell(
+                                Tabell(
                                     tekniskNavn = "FRADRAG_ANDRE_YTELSER",
                                     rader = faktagrunnlag.fradragAndreYtelser.map {
-                                        Brevdata.Tabell.Rad(
+                                        Rad(
                                             celler = listOf(
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "YTELSE_NAVN",
                                                     verdi = it.ytelseNavn
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "FRA_OG_MED",
                                                     verdi = it.fraOgMed.formaterFullLengde(språk)
                                                 ),
-                                                Brevdata.Tabell.Rad.Celle(
+                                                Celle(
                                                     kolonne = "TIL_OG_MED",
                                                     verdi = it.tilOgMed.formaterFullLengde(språk)
                                                 )
@@ -202,6 +190,32 @@ class FaktagrunnlagService(
                 }
             }
         }
+    }
+
+    private fun tilTabell(tekniskNavn: String, rader: List<Rad>) =
+        Tabell(
+            tekniskNavn = tekniskNavn,
+            rader = rader
+        )
+
+
+    private fun tilCeller(
+        samordningUføre: Faktagrunnlag.ForholdTilAndreYtelser.SamordningUføre,
+        språk: Språk
+    ): List<Celle> = listOf(
+        Celle(
+            kolonne = "VIRKNINGSTIDSPUNKT",
+            verdi = samordningUføre.virkningstidspunkt.formaterFullLengde(språk)
+        ),
+        Celle(
+            kolonne = "UFØREGRAD",
+            verdi = "${samordningUføre.uføregradProsent}%"
+        )
+    )
+
+    inline fun <T> List<T>.ifNotEmpty(block: (List<T>) -> Unit): List<T> {
+        if (isNotEmpty()) block(this)
+        return this
     }
 
     fun faktagrunnlagTilTekst(
