@@ -3,9 +3,7 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
-import no.nav.aap.brev.bestilling.Celle
-import no.nav.aap.brev.bestilling.Rad
-import no.nav.aap.brev.bestilling.Tabell
+import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -46,48 +44,48 @@ class FaktagrunnlagService(
     }
 
 
-    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<Tabell> {
+    fun faktagrunnlagTilTabeller(alleFaktagrunnlag: Set<Faktagrunnlag>, språk: Språk): List<Brevdata.Tabell> {
         return buildList {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
                 when (faktagrunnlag) {
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
                         val samordningUføre = faktagrunnlag.samordningUføre.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if (samordningUføre.isNotEmpty()) {
                             add(tilTabell("SAMORDNING_UFØRE", samordningUføre))
                         }
 
                         val reduksjonArbeidsgiver = faktagrunnlag.reduksjonArbeidsgiver.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if (reduksjonArbeidsgiver.isNotEmpty()) {
                             add(tilTabell("REDUKSJON_ARBEIDSGIVER", reduksjonArbeidsgiver))
                         }
 
                         val samordningBarnepensjon = faktagrunnlag.samordningBarnepensjon.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if(samordningBarnepensjon.isNotEmpty()) {
                             add(tilTabell("SAMORDNING_BARNEPENSJON", samordningBarnepensjon))
                         }
 
                         val samordningAndreYtelser = faktagrunnlag.samordningAndreYtelser.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if( samordningAndreYtelser.isNotEmpty()) {
                             add(tilTabell("SAMORDNING_ANDRE_YTELSER", samordningAndreYtelser))
                         }
 
                         val sykestipend = faktagrunnlag.sykestipend.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if(sykestipend.isNotEmpty()){
                             add(tilTabell("SYKESTIPEND", sykestipend))
                         }
 
                         val fradragAndreYtelser = faktagrunnlag.fradragAndreYtelser.map {
-                            Rad(tilCeller(it, språk))
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if(fradragAndreYtelser.isNotEmpty()){
                             add(tilTabell("FRADRAG_ANDRE_YTELSER", fradragAndreYtelser))
@@ -102,8 +100,8 @@ class FaktagrunnlagService(
         }
     }
 
-    private fun tilTabell(tekniskNavn: String, rader: List<Rad>) =
-        Tabell(
+    private fun tilTabell(tekniskNavn: String, rader: List<Brevdata.Tabell.Rad>) =
+        Brevdata.Tabell(
             tekniskNavn = tekniskNavn,
             rader = rader
         )
@@ -112,12 +110,12 @@ class FaktagrunnlagService(
     private fun tilCeller(
         samordningUføre: Faktagrunnlag.ForholdTilAndreYtelser.SamordningUføre,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "VIRKNINGSTIDSPUNKT",
             verdi = samordningUføre.virkningstidspunkt.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "UFØREGRAD",
             verdi = "${samordningUføre.uføregradProsent}%"
         )
@@ -126,12 +124,12 @@ class FaktagrunnlagService(
     private fun tilCeller(
         reduksjonArbeidsgiver: Faktagrunnlag.ForholdTilAndreYtelser.ReduksjonArbeidsgiver,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "FRA_OG_MED",
             verdi = reduksjonArbeidsgiver.fraOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = reduksjonArbeidsgiver.tilOgMed.formaterFullLengde(språk)
         )
@@ -140,16 +138,16 @@ class FaktagrunnlagService(
     private fun tilCeller(
         samordningBarnepensjon: Faktagrunnlag.ForholdTilAndreYtelser.SamordningBarnepensjon,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "FRA_OG_MED",
             verdi = samordningBarnepensjon.fraOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = samordningBarnepensjon.tilOgMed?.formaterFullLengde(språk) ?: ""
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "MÅNEDSATS",
             verdi = "${samordningBarnepensjon.månedsats.formater(språk)} Kroner per måned"
         )
@@ -158,20 +156,20 @@ class FaktagrunnlagService(
     private fun tilCeller(
         samordningYtelse: Faktagrunnlag.ForholdTilAndreYtelser.SamordningYtelse,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "YTELSE_NAVN",
             verdi = samordningYtelse.ytelseNavn
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "FRA_OG_MED",
             verdi = samordningYtelse.fraOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = samordningYtelse.tilOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "GRADERING",
             verdi = "${samordningYtelse.gradering}%"
         )
@@ -180,12 +178,12 @@ class FaktagrunnlagService(
     private fun tilCeller(
         sykestipend: Faktagrunnlag.ForholdTilAndreYtelser.Sykestipend,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "FRA_OG_MED",
             verdi = sykestipend.fraOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = sykestipend.tilOgMed.formaterFullLengde(språk)
         )
@@ -194,16 +192,16 @@ class FaktagrunnlagService(
     private fun tilCeller(
         fradragYtelse: Faktagrunnlag.ForholdTilAndreYtelser.FradragYtelse,
         språk: Språk
-    ): List<Celle> = listOf(
-        Celle(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "YTELSE_NAVN",
             verdi = fradragYtelse.ytelseNavn
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "FRA_OG_MED",
             verdi = fradragYtelse.fraOgMed.formaterFullLengde(språk)
         ),
-        Celle(
+        Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = fradragYtelse.tilOgMed.formaterFullLengde(språk)
         )

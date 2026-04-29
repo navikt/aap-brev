@@ -1,9 +1,11 @@
 package no.nav.aap.brev.api
 
+import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.NavnOgAdresse
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.BrevdataDto
@@ -49,9 +51,9 @@ internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mo
     },
     bestillingMottakerReferanse = "$bestillingReferanse-${index + 1}",
     navnOgAdresse = navnOgAdresse?.let {
-        no.nav.aap.brev.bestilling.NavnOgAdresse(
+        NavnOgAdresse(
             navn = it.navn,
-            adresse = no.nav.aap.brev.bestilling.Adresse(
+            adresse = Adresse(
                 landkode = it.adresse.landkode,
                 adresselinje1 = it.adresse.adresselinje1,
                 adresselinje2 = it.adresse.adresselinje2,
