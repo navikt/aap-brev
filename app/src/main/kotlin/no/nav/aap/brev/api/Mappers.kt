@@ -70,41 +70,9 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
     )
 }
 
-fun BrevdataDto.tilBrevdata(): Brevdata {
-    return Brevdata(
-        delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
-        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            Brevdata.Faktagrunnlag(
-                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                verdi = faktagrunnlagMedVerdi.verdi
-            )
-        },
-        valg = valg.map { valg ->
-            Brevdata.Valg(
-                id = valg.id,
-                key = valg.key,
-            )
-        },
-        betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
-        fritekster = fritekster.map { fritekst ->
-            Brevdata.Fritekst(
-                parentId = fritekst.parentId,
-                key = fritekst.key,
-                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
-            )
-        },
-    )
-}
-
 fun Brevdata.tilBrevdataDto(): BrevdataDto {
     return BrevdataDto(
         delmaler = delmaler.map { delmal -> BrevdataDto.Delmal(id = delmal.id) },
-        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            BrevdataDto.Faktagrunnlag(
-                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                verdi = faktagrunnlagMedVerdi.verdi
-            )
-        },
         valg = valg.map { valg ->
             BrevdataDto.Valg(
                 id = valg.id,

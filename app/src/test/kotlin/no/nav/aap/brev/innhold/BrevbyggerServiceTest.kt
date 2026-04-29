@@ -540,6 +540,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val eksisterendeBrevdata = bestilling.brevdata ?: Brevdata(
                 delmaler = emptyList(),
                 faktagrunnlag = emptyList(),
+                tabeller = emptyList(),
                 valg = emptyList(),
                 betingetTekst = emptyList(),
                 fritekster = emptyList()

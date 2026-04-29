@@ -2,7 +2,6 @@ package no.nav.aap.brev.kontrakt
 
 data class BrevdataDto(
     val delmaler: List<Delmal>,
-    val faktagrunnlag: List<Faktagrunnlag>,
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
     val fritekster: List<Fritekst>

@@ -36,13 +36,14 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
+        val tabeller = faktagrunnlagService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 
         val brevdata = Brevdata(
             delmaler = delmaler,
             faktagrunnlag = faktagrunnlagMedVerdi,
-            tabeller = utledTabellerMedVerdi(faktagrunnlag, bestilling.språk),
+            tabeller = tabeller,
             valg = valg,
             betingetTekst = betingetTekst,
             fritekster = emptyList()
@@ -67,14 +68,6 @@ class BrevbyggerService(
                 faktagrunnlag.value
             )
         }
-    }
-
-    private fun utledTabellerMedVerdi(
-        faktagrunnlag: Set<Faktagrunnlag>,
-        språk: Språk
-    ): List<Brevdata.Tabell> {
-        val faktagrunnlagTekst = faktagrunnlagService.faktagrunnlagTilTabeller(faktagrunnlag, språk)
-        TODO()
     }
 
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {

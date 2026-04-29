@@ -59,6 +59,30 @@ class BrevbestillingRepositoryImplTest {
                     Brevdata.Faktagrunnlag("A", "v1"),
                     Brevdata.Faktagrunnlag("B", "v2")
                 ),
+                tabeller = listOf(
+                    Brevdata.Tabell(
+                        tekniskNavn = "TABELL_1",
+                        rader = listOf(
+                            Brevdata.Tabell.Rad(
+                                celler = listOf(
+                                    Brevdata.Tabell.Rad.Celle("KOLONNE_A", "Verdi A1"),
+                                    Brevdata.Tabell.Rad.Celle("KOLONNE_B", "Verdi B1"),
+                                )
+                            )
+                        )
+                    ),
+                    Brevdata.Tabell(
+                        tekniskNavn = "TABELL_2",
+                        rader = listOf(
+                            Brevdata.Tabell.Rad(
+                                celler = listOf(
+                                    Brevdata.Tabell.Rad.Celle("KOLONNE_X", "Verdi X1"),
+                                    Brevdata.Tabell.Rad.Celle("KOLONNE_Y", "Verdi Y1"),
+                                )
+                            )
+                        )
+                    ),
+                ),
                 valg = listOf(
                     Brevdata.Valg("4", "5"),
                 ),

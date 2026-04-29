@@ -161,7 +161,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
                             dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection)
-                                    .oppdaterBrevdata(referanse.brevbestillingReferanse, brevdata.tilBrevdata())
+                                    .oppdaterBrevdata(referanse.brevbestillingReferanse, brevdata)
                             }
                             respondWithStatus(HttpStatusCode.NoContent)
                         }
