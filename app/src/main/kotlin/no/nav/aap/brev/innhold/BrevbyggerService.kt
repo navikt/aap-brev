@@ -265,6 +265,10 @@ class BrevbyggerService(
                     is Brevmal.TeksteditorElement.Fritekst -> {
                         emptyList()
                     }
+
+                    is Brevmal.TeksteditorElement.Tabell -> {
+                        emptyList()
+                    }
                 }
             }
         }

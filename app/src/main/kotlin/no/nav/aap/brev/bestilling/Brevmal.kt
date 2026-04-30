@@ -48,6 +48,18 @@ data class Brevmal(
 
         @JsonTypeName("fritekst")
         data class Fritekst(override val _key: String) : TeksteditorElement
+
+        @JsonTypeName("tabell")
+        data class Tabell(
+            override val _key: String,
+            val tekniskNavn: String,
+            val kolonner: List<Kolonne>,
+        ) : TeksteditorElement {
+            data class Kolonne(
+                val overskrift: String,
+                val tekniskNavn: String,
+            )
+        }
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_type", visible = true)
@@ -64,19 +76,6 @@ data class Brevmal(
             val tekniskNavn: String,
             val visningsnavn: String
         ) : Document, BlockChildren
-
-        @JsonTypeName("tabell")
-        data class Tabell(
-            override val _key: String,
-            override val _id: String,
-            val tekniskNavn: String,
-            val kolonner: List<Kolonne>,
-        ) : Document, BlockChildren {
-            data class Kolonne(
-                val overskrift: String,
-                val tekniskNavn: String,
-            )
-        }
     }
 
     data class ValgAlternativer(
