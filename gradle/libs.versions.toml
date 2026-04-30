@@ -36,7 +36,7 @@ jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.10" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.4.0" }
+flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.5.0" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9" }
 
