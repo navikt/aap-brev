@@ -151,6 +151,22 @@
                                                 "_type": "block",
                                                 "style": "normal",
                                                 "_key": "83cd9b6568e1"
+                                            },
+                                            {
+                                                "_key": "b44f27948934",
+                                                "_ref": "897f47fe-3e5c-414c-99e5-89eee32bb378",
+                                                "_type": "tabell",
+                                                "kolonner": [
+                                                    {
+                                                        "overskrift": "Kol 1",
+                                                        "tekniskNavn": "KOL_1"
+                                                    },
+                                                    {
+                                                        "overskrift": "Kol 2",
+                                                        "tekniskNavn": "KOL_2"
+                                                    }
+                                                ],
+                                                "tekniskNavn": "TABELL_1"
                                             }
                                         ],
                                         "_createdAt": "2025-09-26T09:41:07Z",
@@ -343,6 +359,22 @@
                             "_rev": "AS5i4RvL5zgUXbbUgbsdU1"
                         },
                         "_type": "valgRef"
+                    },
+                    {
+                        "_key": "3599d1e3fb48",
+                        "_ref": "897f47fe-3e5c-414c-99e5-89eee32bb378",
+                        "_type": "tabell",
+                        "kolonner": [
+                            {
+                                "overskrift": "Kol 1",
+                                "tekniskNavn": "KOL_1"
+                            },
+                            {
+                                "overskrift": "Kol 2",
+                                "tekniskNavn": "KOL_2"
+                            }
+                        ],
+                        "tekniskNavn": "TABELL_1"
                     },
                     {
                         "children": [

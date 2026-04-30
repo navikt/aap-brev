@@ -246,7 +246,9 @@ class BrevbyggerService(
                     }
 
                     is Brevmal.TeksteditorElement.BetingetTekst -> {
-                        teksteditorElement.tekst.teksteditor.flatMap { filtrerFaktagrunnlag(it) }
+                        teksteditorElement.tekst.teksteditor
+                            .filterIsInstance<Brevmal.TeksteditorElement.Block>()
+                            .flatMap { filtrerFaktagrunnlag(it) }
                     }
 
                     is Brevmal.TeksteditorElement.Valg -> {
@@ -256,6 +258,7 @@ class BrevbyggerService(
                                 .filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
                                 .find { it._key == valgData.key }
                                 ?.tekst?.teksteditor
+                                ?.filterIsInstance<Brevmal.TeksteditorElement.Block>()
                                 ?.flatMap { filtrerFaktagrunnlag(it) } ?: emptyList()
                         } else {
                             emptyList()

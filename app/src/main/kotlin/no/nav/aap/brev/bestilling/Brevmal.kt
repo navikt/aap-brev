@@ -2,6 +2,7 @@ package no.nav.aap.brev.bestilling
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import no.nav.aap.brev.bestilling.Brevmal.TeksteditorElement.DelmalTeksteditorElement
 
 data class Brevmal(
     override val _id: String,
@@ -20,41 +21,44 @@ data class Brevmal(
     data class Delmal(
         override val _id: String,
         val overskrift: String?,
-        val teksteditor: List<TeksteditorElement>
+        val teksteditor: List<DelmalTeksteditorElement>
     ) : Document
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "_type", visible = true)
     sealed interface TeksteditorElement : ArrayElement {
 
+        sealed interface EnkelTeksteditorElement : TeksteditorElement
+        sealed interface DelmalTeksteditorElement : TeksteditorElement
+
         @JsonTypeName("block")
         data class Block(
             override val _key: String,
             val children: List<BlockChildren>
-        ) : TeksteditorElement
+        ) : EnkelTeksteditorElement, DelmalTeksteditorElement
 
         @JsonTypeName("valgRef")
         data class Valg(
             override val _key: String,
             val obligatorisk: Boolean,
             val valg: ValgAlternativer
-        ) : TeksteditorElement
+        ) : DelmalTeksteditorElement
 
         @JsonTypeName("betingetTekstRef")
         data class BetingetTekst(
             override val _key: String,
             val kategorier: List<Kategori>?,
             val tekst: Teksteditor,
-        ) : TeksteditorElement
+        ) : DelmalTeksteditorElement
 
         @JsonTypeName("fritekst")
-        data class Fritekst(override val _key: String) : TeksteditorElement
+        data class Fritekst(override val _key: String) : DelmalTeksteditorElement
 
         @JsonTypeName("tabell")
         data class Tabell(
             override val _key: String,
             val tekniskNavn: String,
             val kolonner: List<Kolonne>,
-        ) : TeksteditorElement {
+        ) : EnkelTeksteditorElement, DelmalTeksteditorElement {
             data class Kolonne(
                 val overskrift: String,
                 val tekniskNavn: String,
@@ -85,7 +89,7 @@ data class Brevmal(
 
     data class Teksteditor(
         override val _id: String,
-        val teksteditor: List<TeksteditorElement.Block>
+        val teksteditor: List<TeksteditorElement.EnkelTeksteditorElement>
     ) : Document
 
     data class Kategori(
