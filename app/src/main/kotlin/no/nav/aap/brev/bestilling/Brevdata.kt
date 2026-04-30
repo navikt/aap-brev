@@ -5,10 +5,25 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 data class Brevdata(
     val delmaler: List<Delmal>,
     val faktagrunnlag: List<Faktagrunnlag>,
+    val tabeller: List<Tabell>? = emptyList(),
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
     val fritekster: List<Fritekst>
 ) {
+    data class Tabell(
+        val tekniskNavn: String,
+        val rader: List<Rad>
+    ) {
+        data class Rad(
+            val celler: List<Celle>
+        ) {
+            data class Celle(
+                val kolonne: String,
+                val verdi: String
+            )
+        }
+    }
+
     data class Delmal(val id: String)
 
     data class Faktagrunnlag(

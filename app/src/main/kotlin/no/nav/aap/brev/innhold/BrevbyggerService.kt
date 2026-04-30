@@ -36,12 +36,14 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
+        val tabeller = faktagrunnlagService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 
         val brevdata = Brevdata(
             delmaler = delmaler,
             faktagrunnlag = faktagrunnlagMedVerdi,
+            tabeller = tabeller,
             valg = valg,
             betingetTekst = betingetTekst,
             fritekster = emptyList()
@@ -244,7 +246,9 @@ class BrevbyggerService(
                     }
 
                     is Brevmal.TeksteditorElement.BetingetTekst -> {
-                        teksteditorElement.tekst.teksteditor.flatMap { filtrerFaktagrunnlag(it) }
+                        teksteditorElement.tekst.teksteditor
+                            .filterIsInstance<Brevmal.TeksteditorElement.Block>()
+                            .flatMap { filtrerFaktagrunnlag(it) }
                     }
 
                     is Brevmal.TeksteditorElement.Valg -> {
@@ -254,6 +258,7 @@ class BrevbyggerService(
                                 .filterIsInstance<Brevmal.ValgAlternativ.KategorisertTekst>()
                                 .find { it._key == valgData.key }
                                 ?.tekst?.teksteditor
+                                ?.filterIsInstance<Brevmal.TeksteditorElement.Block>()
                                 ?.flatMap { filtrerFaktagrunnlag(it) } ?: emptyList()
                         } else {
                             emptyList()
@@ -261,6 +266,10 @@ class BrevbyggerService(
                     }
 
                     is Brevmal.TeksteditorElement.Fritekst -> {
+                        emptyList()
+                    }
+
+                    is Brevmal.TeksteditorElement.Tabell -> {
                         emptyList()
                     }
                 }

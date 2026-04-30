@@ -54,7 +54,7 @@ class DelmalBuilder {
     var _key = randomUUID().toString()
     var obligatorisk = false
     var overskrift = "Overskrift"
-    var teksteditor = mutableListOf<TeksteditorElement>()
+    var teksteditor = mutableListOf<TeksteditorElement.DelmalTeksteditorElement>()
 
     fun faktagrunnlag(tekniskNavn: String) {
         teksteditor.add(

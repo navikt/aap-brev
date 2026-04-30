@@ -86,6 +86,21 @@
                                                         "_key": "1cb99dab8656"
                                                     }
                                                 ]
+                                            },
+                                            {
+                                                "_type": "tabell",
+                                                "_key": "b44f27948934",
+                                                "tekniskNavn": "TABELL_1",
+                                                "kolonner": [
+                                                    {
+                                                        "overskrift": "Kol 1",
+                                                        "tekniskNavn": "KOL_1"
+                                                    },
+                                                    {
+                                                        "overskrift": "Kol 2",
+                                                        "tekniskNavn": "KOL_2"
+                                                    }
+                                                ]
                                             }
                                         ]
                                     },
@@ -203,6 +218,21 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "_type": "tabell",
+                        "_key": "3599d1e3fb48",
+                        "tekniskNavn": "TABELL_1",
+                        "kolonner": [
+                            {
+                                "overskrift": "Kol 1",
+                                "tekniskNavn": "KOL_1"
+                            },
+                            {
+                                "overskrift": "Kol 2",
+                                "tekniskNavn": "KOL_2"
+                            }
+                        ]
                     },
                     {
                         "_type": "block",
