@@ -11,6 +11,7 @@ import no.nav.aap.brev.innhold.alleFaktagrunnlag
 import no.nav.aap.brev.innhold.ikkeRedigerbartInnhold
 import no.nav.aap.brev.innhold.kanFerdigstillesAutomatisk
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
@@ -20,6 +21,7 @@ import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
@@ -217,10 +219,12 @@ class BrevbestillingService(
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
     }
 
-    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, brevdata: Brevdata) {
+    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, dto: BrevdataDto) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        validerOppdaterBrevdata(bestilling, brevdata)
-        brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
+        validerOppdaterBrevdata(bestilling)
+        val eksisterendeBrevdata = bestilling.brevdata
+            ?: throw IllegalStateException("Forsøker å oppdatere brevdata på bestilling som mangler brevdata")
+        brevbestillingRepository.oppdaterBrevdata(bestilling.id, eksisterendeBrevdata.oppdater(dto))
     }
 
     fun ferdigstill(
@@ -377,19 +381,29 @@ class BrevbestillingService(
 
     private fun validerOppdaterBrevdata(
         bestilling: Brevbestilling,
-        nyBrevdata: Brevdata
     ) {
         valider(bestilling.status == Status.UNDER_ARBEID) {
             "Forsøkte å oppdatere brev i bestilling med status=${bestilling.status}"
         }
-        val eksisterendeFaktagrunnlag = bestilling.brevdata?.faktagrunnlag ?: emptyList()
-        val nyFaktagrunnlag = nyBrevdata.faktagrunnlag
+    }
 
-        valider(
-            nyFaktagrunnlag.containsAll(eksisterendeFaktagrunnlag) &&
-                    nyFaktagrunnlag.size == eksisterendeFaktagrunnlag.size
-        ) {
-            "Kan ikke oppdatere faktagrunnlag"
-        }
+    private fun Brevdata.oppdater(dto: BrevdataDto): Brevdata {
+        return this.copy(
+            delmaler = dto.delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
+            valg = dto.valg.map { valg ->
+                Brevdata.Valg(
+                    id = valg.id,
+                    key = valg.key,
+                )
+            },
+            betingetTekst = dto.betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
+            fritekster = dto.fritekster.map { fritekst ->
+                Brevdata.Fritekst(
+                    parentId = fritekst.parentId,
+                    key = fritekst.key,
+                    fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
+                )
+            },
+        )
     }
 }

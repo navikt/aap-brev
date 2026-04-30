@@ -6,12 +6,12 @@ import no.nav.aap.brev.bestilling.BrevbestillingId
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.OpprettBrevbestillingResultat
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
@@ -107,10 +107,10 @@ abstract class IntegrationTest {
         }
     }
 
-    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, brevdata: Brevdata) {
+    fun oppdaterBrevdata(referanse: BrevbestillingReferanse, dto: BrevdataDto) {
         dataSource.transaction { connection ->
             val brevbestillingService = BrevbestillingService.konstruer(connection)
-            brevbestillingService.oppdaterBrevdata(referanse, brevdata)
+            brevbestillingService.oppdaterBrevdata(referanse, dto)
         }
     }
 

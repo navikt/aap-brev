@@ -1,9 +1,11 @@
 package no.nav.aap.brev.api
 
+import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.Mottaker
+import no.nav.aap.brev.bestilling.NavnOgAdresse
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
 import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.BrevdataDto
@@ -49,9 +51,9 @@ internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mo
     },
     bestillingMottakerReferanse = "$bestillingReferanse-${index + 1}",
     navnOgAdresse = navnOgAdresse?.let {
-        no.nav.aap.brev.bestilling.NavnOgAdresse(
+        NavnOgAdresse(
             navn = it.navn,
-            adresse = no.nav.aap.brev.bestilling.Adresse(
+            adresse = Adresse(
                 landkode = it.adresse.landkode,
                 adresselinje1 = it.adresse.adresselinje1,
                 adresselinje2 = it.adresse.adresselinje2,
@@ -70,41 +72,9 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
     )
 }
 
-fun BrevdataDto.tilBrevdata(): Brevdata {
-    return Brevdata(
-        delmaler = delmaler.map { delmal -> Brevdata.Delmal(id = delmal.id) },
-        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            Brevdata.Faktagrunnlag(
-                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                verdi = faktagrunnlagMedVerdi.verdi
-            )
-        },
-        valg = valg.map { valg ->
-            Brevdata.Valg(
-                id = valg.id,
-                key = valg.key,
-            )
-        },
-        betingetTekst = betingetTekst.map { tekst -> Brevdata.BetingetTekst(tekst.id) },
-        fritekster = fritekster.map { fritekst ->
-            Brevdata.Fritekst(
-                parentId = fritekst.parentId,
-                key = fritekst.key,
-                fritekst = DefaultJsonMapper.fromJson(fritekst.fritekst)
-            )
-        },
-    )
-}
-
 fun Brevdata.tilBrevdataDto(): BrevdataDto {
     return BrevdataDto(
         delmaler = delmaler.map { delmal -> BrevdataDto.Delmal(id = delmal.id) },
-        faktagrunnlag = faktagrunnlag.map { faktagrunnlagMedVerdi ->
-            BrevdataDto.Faktagrunnlag(
-                tekniskNavn = faktagrunnlagMedVerdi.tekniskNavn,
-                verdi = faktagrunnlagMedVerdi.verdi
-            )
-        },
         valg = valg.map { valg ->
             BrevdataDto.Valg(
                 id = valg.id,

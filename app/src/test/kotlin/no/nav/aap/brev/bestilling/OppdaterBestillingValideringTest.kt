@@ -1,8 +1,8 @@
 package no.nav.aap.brev.bestilling
 
 import no.nav.aap.brev.IntegrationTest
-import no.nav.aap.brev.bestilling.Brevdata.Faktagrunnlag
 import no.nav.aap.brev.feil.ValideringsfeilException
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.test.fakes.brev
 import org.assertj.core.api.Assertions.assertThat
@@ -30,9 +30,8 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
         ).brevbestilling
         assertThat(bestilling.status).isEqualTo(Status.UNDER_ARBEID)
         oppdaterBrevdata(
-            bestilling.referanse, brevdata = Brevdata(
+            bestilling.referanse, dto = BrevdataDto(
                 delmaler = emptyList(),
-                faktagrunnlag = emptyList(),
                 valg = emptyList(),
                 betingetTekst = emptyList(),
                 fritekster = emptyList(),
@@ -71,9 +70,8 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
 
         val exception = assertThrows<ValideringsfeilException> {
             oppdaterBrevdata(
-                bestilling.referanse, brevdata = Brevdata(
+                bestilling.referanse, dto = BrevdataDto(
                     delmaler = emptyList(),
-                    faktagrunnlag = emptyList(),
                     valg = emptyList(),
                     betingetTekst = emptyList(),
                     fritekster = emptyList(),
@@ -83,26 +81,5 @@ class OppdaterBestillingValideringTest : IntegrationTest() {
         assertThat(exception.message).endsWith(
             "Forsøkte å oppdatere brev i bestilling med status=$status"
         )
-    }
-
-    @Test
-    fun `validering feiler ved forsøk på å oppdatere faktagrunnlag i brevdata`() {
-        val bestilling = opprettBrevbestilling(
-            brukV3 = true,
-            ferdigstillAutomatisk = false,
-        ).brevbestilling
-
-        val exception = assertThrows<ValideringsfeilException> {
-            oppdaterBrevdata(
-                bestilling.referanse, brevdata = Brevdata(
-                    delmaler = emptyList(),
-                    faktagrunnlag = listOf(Faktagrunnlag("tekniskNavn", "verdi")),
-                    valg = emptyList(),
-                    betingetTekst = emptyList(),
-                    fritekster = emptyList(),
-                )
-            )
-        }
-        assertThat(exception.message).isEqualTo("Kan ikke oppdatere faktagrunnlag")
     }
 }
