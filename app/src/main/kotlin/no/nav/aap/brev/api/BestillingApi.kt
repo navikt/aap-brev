@@ -179,8 +179,22 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         respond(pdf.bytes)
                     }
                 }
+
+                route("/forhandsvis-html") {
+                    authorizedPost<BrevbestillingReferansePathParam, String, ForhandsvisBrevRequest>(
+                        authorizationBodyPathConfig
+                    ) { referanse, request ->
+                        val html = dataSource.transaction { connection ->
+                            PdfService.konstruer(connection)
+                                .genererHtmlForForhåndsvisning(referanse.brevbestillingReferanse, request.signaturer)
+
+                        }
+                        respond(html)
+                    }
+                }
             }
         }
+        
         route("/ferdigstill") {
             authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {

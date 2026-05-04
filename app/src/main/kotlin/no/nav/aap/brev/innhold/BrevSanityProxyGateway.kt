@@ -78,4 +78,24 @@ class BrevSanityProxyGateway : BrevinnholdGateway, PdfGatewayV2 {
 
         return Pdf(bytes)
     }
+
+    override fun genererHtml(request: GenererPdfRequest): String {
+        val uri = baseUri.resolve("/api/html-preview")
+        val httpRequest = PostRequest(
+            body = request,
+            additionalHeaders = listOf(
+                Header("Accept", "text/html")
+            )
+        )
+
+        val bytes = client.post(uri, httpRequest, { body, _ ->
+            body.readAllBytes()
+        })
+
+        require(bytes != null) {
+            "Fikk tom respons fra pdfgen"
+        }
+
+        return bytes.toString(Charsets.UTF_8)
+    }
 }
