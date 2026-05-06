@@ -16,14 +16,16 @@ import kotlin.collections.joinToString
 
 class BrevbyggerService(
     val brevbestillingRepository: BrevbestillingRepository,
-    val faktagrunnlagService: FaktagrunnlagService
+    val faktagrunnlagService: FaktagrunnlagService,
+    val tabellerService: TabellerService
 ) {
 
     companion object {
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
-                FaktagrunnlagService.konstruer(connection)
+                FaktagrunnlagService.konstruer(connection),
+                TabellerService.konstruer()
             )
         }
     }
@@ -35,7 +37,7 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
-        val tabeller = faktagrunnlagService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
+        val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 
