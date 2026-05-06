@@ -15,7 +15,7 @@ interface MottakerRepository {
     }
 }
 
-class MottakerRepositoryImpl (private val connection: DBConnection) : MottakerRepository {
+internal class MottakerRepositoryImpl (private val connection: DBConnection) : MottakerRepository {
 
     override fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
         val eksisterendeMottakere = hentMottakere(brevbestillingId)

@@ -16,7 +16,7 @@ import no.nav.aap.komponenter.json.DefaultJsonMapper
 import java.time.LocalDateTime
 import java.util.UUID
 
-class BrevbestillingRepositoryImpl(private val connection: DBConnection) : BrevbestillingRepository {
+internal class BrevbestillingRepositoryImpl(private val connection: DBConnection) : BrevbestillingRepository {
 
     override fun opprettBestilling(
         saksnummer: Saksnummer,
