@@ -13,12 +13,23 @@
 - **Build**: Gradle med custom `aap.conventions`-plugin i `buildSrc`
 - **Testing**: JUnit 5, AssertJ, Testcontainers, MockK
 
+## Arkitektur – Heksagonal (Ports & Adapters)
+
+Prosjektet følger heksagonal arkitektur. Reglene er:
+
+- **Porter (interfaces)**: `*Gateway` og `*Repository` interfaces definerer hva domenet trenger utenfra. Disse eies av domenet og ligger i domenepakken (f.eks. `bestilling/PdfGateway.kt`).
+- **Adaptere (implementasjoner)**: Konkrete klasser som `DokarkivGateway`, `BrevbestillingRepositoryImpl` implementerer portene. De kan avhenge av infrastruktur (DB, HTTP), men domenet skal *ikke* importere dem direkte.
+- **Avhengighetsregelen**: Domene-services (`*Service`) skal kun importere interfaces, aldri konkrete implementasjoner (`*Impl`, spesifikke gateway-klasser). Dette sikrer at domenet er testbart og uavhengig av infrastruktur.
+- **Komposisjon via `konstruer()`**: Wiring gjøres i `companion object fun konstruer(connection: DBConnection)` i hver klasse. Det er her konkrete implementasjoner velges – dette er det eneste stedet det er akseptabelt å referere til `*Impl`-klasser.
+- **API-laget** (`api/`) er inngående adaptere (inbound). De kaller `Service.konstruer(connection)` og videresender til domenet.
+
+**Kjent avvik å unngå å gjenta**: `JournalføringService` importerer `BrevbestillingRepositoryImpl` direkte — dette er en feil som ikke skal kopieres.
+
 ## Kodekonvensjoner
 
 - Skriv Kotlin idiomatisk – bruk `data class`, `sealed class`, extension functions og `when`-uttrykk fremfor lange if/else-kjeder.
 - Følg eksisterende pakkestruktur under `no.nav.aap.brev`. Gruppér etter domene/funksjonelt område (f.eks. `bestilling`, `distribusjon`, `journalføring`, `innhold`).
 - Bruk norsk for domene-relaterte navn (klasser, funksjoner, variabler) som speiler NAV-fagbegreper. Bruk engelsk for teknisk infrastrukturkode.
-- Eksponér grensesnitt/ports via interfaces (f.eks. `Gateway`, `Repository`, `Service`) og la implementasjoner injiseres – unngå direkte avhengigheter mellom lag.
 - Databasetilgang gjøres via `dbConnection.transaction { }` – ikke åpne egne connections manuelt.
 
 ## Logging

@@ -3,12 +3,9 @@ package no.nav.aap.brev.journalføring
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.JournalpostRepository
-import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.MottakerRepository
-import no.nav.aap.brev.bestilling.MottakerRepositoryImpl
 import no.nav.aap.brev.bestilling.Pdf
 import no.nav.aap.brev.bestilling.PdfService
 import no.nav.aap.brev.bestilling.Personinfo
@@ -30,11 +27,11 @@ class JournalføringService(
         fun konstruer(connection: DBConnection): JournalføringService {
             return JournalføringService(
                 pdfService = PdfService.konstruer(connection),
-                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 personinfoGateway = PdlGateway(),
                 journalføringGateway = DokarkivGateway(),
-                journalpostRepository = JournalpostRepositoryImpl(connection),
-                mottakerRepository = MottakerRepositoryImpl(connection),
+                journalpostRepository = JournalpostRepository.konstruer(connection),
+                mottakerRepository = MottakerRepository.konstruer(connection),
             )
         }
     }

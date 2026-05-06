@@ -2,7 +2,6 @@ package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
@@ -19,7 +18,7 @@ class FaktagrunnlagService(
     companion object {
         fun konstruer(connection: DBConnection): FaktagrunnlagService {
             return FaktagrunnlagService(
-                BrevbestillingRepositoryImpl(connection),
+                BrevbestillingRepository.konstruer(connection),
             )
         }
     }

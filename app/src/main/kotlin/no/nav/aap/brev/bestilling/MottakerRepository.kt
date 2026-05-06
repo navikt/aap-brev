@@ -7,9 +7,15 @@ import no.nav.aap.komponenter.json.DefaultJsonMapper
 interface MottakerRepository {
     fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>)
     fun hentMottakere(brevbestillingId: BrevbestillingId): List<Mottaker>
+
+    companion object {
+        fun konstruer(connection: DBConnection): MottakerRepository {
+            return MottakerRepositoryImpl(connection)
+        }
+    }
 }
 
-class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRepository {
+class MottakerRepositoryImpl (private val connection: DBConnection) : MottakerRepository {
 
     override fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
         val eksisterendeMottakere = hentMottakere(brevbestillingId)

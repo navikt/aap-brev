@@ -25,6 +25,12 @@ interface JournalpostRepository {
         mottakerId: Long
     )
     fun lagreDistribusjonBestilling(journalpostId: JournalpostId, distribusjonBestillingId: DistribusjonBestillingId)
+
+    companion object {
+        fun konstruer(connection: DBConnection): JournalpostRepository {
+            return JournalpostRepositoryImpl(connection)
+        }
+    }
 }
 
 class JournalpostRepositoryImpl(private val connection: DBConnection) : JournalpostRepository {

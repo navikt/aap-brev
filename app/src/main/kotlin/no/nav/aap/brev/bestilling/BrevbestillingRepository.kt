@@ -8,6 +8,7 @@ import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Status
+import no.nav.aap.komponenter.dbconnect.DBConnection
 
 interface BrevbestillingRepository {
     fun opprettBestilling(
@@ -59,4 +60,10 @@ interface BrevbestillingRepository {
     fun lagreJournalpostFerdigstilt(id: BrevbestillingId, journalpostFerdigstilt: Boolean)
 
     fun lagreDistribusjonBestilling(id: BrevbestillingId, distribusjonBestillingId: DistribusjonBestillingId)
+
+    companion object {
+        fun konstruer(connection: DBConnection): BrevbestillingRepository {
+            return BrevbestillingRepositoryImpl(connection)
+        }
+    }
 }

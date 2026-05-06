@@ -1,7 +1,7 @@
 package no.nav.aap.brev.prosessering
 
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
+import no.nav.aap.brev.bestilling.BrevbestillingRepository
 import no.nav.aap.brev.prosessering.steg.DistribuerJournalpostSteg
 import no.nav.aap.brev.prosessering.steg.FerdigSteg
 import no.nav.aap.brev.prosessering.steg.FerdigstillBrevSteg
@@ -24,7 +24,7 @@ class ProsesserStegService(
     }
 
     private val log = LoggerFactory.getLogger(ProsesserStegService::class.java)
-    private val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+    private val brevbestillingRepository = BrevbestillingRepository.konstruer(connection)
 
     private val flyt = ProsesseringFlyt.Builder()
         .med(steg = StarterSteg, utfall = ProsesseringStatus.STARTET)

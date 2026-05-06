@@ -3,7 +3,6 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
@@ -23,7 +22,7 @@ class BrevbyggerService(
     companion object {
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
-                BrevbestillingRepositoryImpl(connection),
+                BrevbestillingRepository.konstruer(connection),
                 FaktagrunnlagService.konstruer(connection)
             )
         }

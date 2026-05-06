@@ -7,7 +7,7 @@ class FerdigstillService(private val brevbestillingRepository: BrevbestillingRep
     companion object {
         fun konstruer(connection: DBConnection): FerdigstillService {
             return FerdigstillService(
-                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
             )
         }
     }
