@@ -30,7 +30,7 @@ class PdfService(
         fun konstruer(connection: DBConnection): PdfService {
             return PdfService(
                 signaturService = SignaturService.konstruer(),
-                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
+                brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 personinfoGateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
                 pdfGatewayV2 = BrevSanityProxyGateway()

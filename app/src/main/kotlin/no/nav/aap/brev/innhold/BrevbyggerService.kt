@@ -3,7 +3,6 @@ package no.nav.aap.brev.innhold
 import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
@@ -17,14 +16,16 @@ import kotlin.collections.joinToString
 
 class BrevbyggerService(
     val brevbestillingRepository: BrevbestillingRepository,
-    val faktagrunnlagService: FaktagrunnlagService
+    val faktagrunnlagService: FaktagrunnlagService,
+    val tabellerService: TabellerService
 ) {
 
     companion object {
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
-                BrevbestillingRepositoryImpl(connection),
-                FaktagrunnlagService.konstruer(connection)
+                BrevbestillingRepository.konstruer(connection),
+                FaktagrunnlagService.konstruer(connection),
+                TabellerService.konstruer()
             )
         }
     }
@@ -36,7 +37,7 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
-        val tabeller = faktagrunnlagService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
+        val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
 

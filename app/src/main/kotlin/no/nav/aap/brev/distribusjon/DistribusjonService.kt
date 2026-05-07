@@ -3,10 +3,8 @@ package no.nav.aap.brev.distribusjon
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingRepositoryImpl
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepository
-import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.OpprettetJournalpost
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
@@ -23,8 +21,8 @@ class DistribusjonService(
     companion object {
         fun konstruer(connection: DBConnection): DistribusjonService {
             return DistribusjonService(
-                BrevbestillingRepositoryImpl(connection),
-                JournalpostRepositoryImpl(connection),
+                BrevbestillingRepository.konstruer(connection),
+                JournalpostRepository.konstruer(connection),
                 DokdistfordelingGateway(),
                 RegoppslagGateway(),
                 DokdistkanalGateway()

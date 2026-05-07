@@ -25,9 +25,15 @@ interface JournalpostRepository {
         mottakerId: Long
     )
     fun lagreDistribusjonBestilling(journalpostId: JournalpostId, distribusjonBestillingId: DistribusjonBestillingId)
+
+    companion object {
+        fun konstruer(connection: DBConnection): JournalpostRepository {
+            return JournalpostRepositoryImpl(connection)
+        }
+    }
 }
 
-class JournalpostRepositoryImpl(private val connection: DBConnection) : JournalpostRepository {
+internal class JournalpostRepositoryImpl(private val connection: DBConnection) : JournalpostRepository {
     override fun hentHvisEksisterer(mottakerId: Long): OpprettetJournalpost? {
         val query = """
             SELECT JOURNALPOST_ID, MOTTAKER.ID AS MOTTAKER_ID, BESTILLING_MOTTAKER_REFERANSE, IDENT_TYPE, IDENT, FERDIGSTILT, NAVN_OG_ADRESSE, BREVBESTILLING_ID, DISTRIBUSJON_BESTILLING_ID FROM OPPRETTET_JOURNALPOST

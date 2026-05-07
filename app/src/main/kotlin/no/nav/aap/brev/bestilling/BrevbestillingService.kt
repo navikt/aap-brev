@@ -40,8 +40,8 @@ class BrevbestillingService(
     companion object {
         fun konstruer(connection: DBConnection): BrevbestillingService {
             return BrevbestillingService(
-                brevbestillingRepository = BrevbestillingRepositoryImpl(connection),
-                mottakerRepository = MottakerRepositoryImpl(connection),
+                brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
+                mottakerRepository = MottakerRepository.konstruer(connection),
                 jobbRepository = FlytJobbRepository(connection),
                 arkivoppslagGateway = SafGateway(),
                 brevinnholdService = BrevinnholdService.konstruer(connection),
