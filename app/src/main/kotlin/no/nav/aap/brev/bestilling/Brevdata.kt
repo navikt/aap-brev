@@ -26,6 +26,7 @@ data class Brevdata(
 
     data class Delmal(val id: String)
 
+    /** Utfylt inline tekst-verdi i brevet — resultat av [no.nav.aap.brev.innhold.FaktagrunnlagService]. Ikke det samme som tabeller, se [Tabell]. */
     data class Faktagrunnlag(
         val tekniskNavn: String,
         val verdi: String

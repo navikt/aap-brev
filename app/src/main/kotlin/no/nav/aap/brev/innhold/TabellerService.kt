@@ -6,6 +6,11 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 
+/**
+ * Bygger [no.nav.aap.brev.bestilling.Brevdata.Tabell]-strukturer fra faktagrunnlag-input.
+ *
+ * For faktagrunnlag som skal vises som inline tekst, se [FaktagrunnlagService].
+ */
 class TabellerService {
 
     companion object {

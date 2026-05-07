@@ -11,6 +11,12 @@ import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import java.time.LocalDate
 
+/**
+ * Fyller inn inline tekst-verdier i brevet ved å erstatte [no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag]-placeholders
+ * fra Sanity med formaterte verdier fra faktagrunnlag-input.
+ *
+ * For faktagrunnlag som skal vises som tabeller, se [TabellerService].
+ */
 class FaktagrunnlagService(
     private val brevbestillingRepository: BrevbestillingRepository,
 ) {
