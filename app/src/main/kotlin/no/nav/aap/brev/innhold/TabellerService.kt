@@ -65,6 +65,15 @@ class TabellerService {
                         }
                     }
 
+                    is Faktagrunnlag.YrkesskadeBeregning -> {
+                        val rader = faktagrunnlag.yrkesskader.map {
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
+                        }
+                        if (rader.isNotEmpty()) {
+                            add(tilTabell("YRKESSKADE_BEREGNING", rader))
+                        }
+                    }
+
                     else -> {}
                 }
             }
@@ -156,6 +165,20 @@ class TabellerService {
         Brevdata.Tabell.Rad.Celle(
             kolonne = "TIL_OG_MED",
             verdi = sykestipend.tilOgMed.formaterFullLengde(språk)
+        )
+    )
+
+    private fun tilCeller(
+        yrkesskade: Faktagrunnlag.YrkesskadeBeregning.Yrkesskade,
+        språk: Språk
+    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        Brevdata.Tabell.Rad.Celle(
+            kolonne = "YRKESSKADEDATO",
+            verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
+        ),
+        Brevdata.Tabell.Rad.Celle(
+            kolonne = "ARBEIDSINNTEKT",
+            verdi = yrkesskade.arbeidsinntektPaaSkadetidspunktet.formater(språk)
         )
     )
 

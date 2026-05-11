@@ -17,6 +17,7 @@ const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
+const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -29,6 +30,7 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     TILKJENT_YTELSE(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE),
     SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING),
     FORHOLD_TIL_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER),
+    YRKESSKADE_BEREGNING(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -140,6 +142,17 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             val ytelseNavn: String,
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
+        )
+    }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING)
+    data class YrkesskadeBeregning(
+        val yrkesskader: List<Yrkesskade>,
+        val andelAvNedsettelseSomSkyldesYrkesskade: Int?,
+    ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_BEREGNING) {
+        data class Yrkesskade(
+            val yrkesskadedato: LocalDate,
+            val arbeidsinntektPaaSkadetidspunktet: BigDecimal,
         )
     }
 }
