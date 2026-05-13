@@ -74,6 +74,15 @@ class TabellerService {
                         }
                     }
 
+                    is Faktagrunnlag.YrkesskadeBeregning -> {
+                        val yrkesskader = faktagrunnlag.yrkesskader.map {
+                            Brevdata.Tabell.Rad(tilCeller(it, språk))
+                        }
+                        if(yrkesskader.isNotEmpty()) {
+                            add(tilTabell("ALLE_YRKESSKADER", yrkesskader))
+                        }
+                    }
+
                     else -> {}
                 }
             }
