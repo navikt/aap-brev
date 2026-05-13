@@ -23,7 +23,6 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
-import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
@@ -32,7 +31,6 @@ import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.Operasjon
@@ -102,14 +100,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                                     unikReferanse = UnikReferanse(request.unikReferanse),
                                     brevtype = request.brevtype,
                                     språk = request.sprak,
-                                    faktagrunnlag = request.faktagrunnlag.also {
-                                        if (Miljø.erDev()){
-                                            val yrkesskade = it.firstOrNull() { it is Faktagrunnlag.YrkesskadeBeregning }
-                                            yrkesskade
-                                                ?.let { no.nav.aap.tilgang.log.warn("Yrkesskade er $it") }
-                                                ?: no.nav.aap.tilgang.log.warn("Ingen yrkesskade i faktagrunnlag")
-                                        }
-                                    },
+                                    faktagrunnlag = request.faktagrunnlag,
                                     vedlegg = request.vedlegg.map {
                                         Vedlegg(
                                             JournalpostId(it.journalpostId),
