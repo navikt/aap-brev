@@ -170,15 +170,21 @@ class TabellerService {
 
     private fun tilCeller(
         yrkesskade: Faktagrunnlag.YrkesskadeBeregning.Yrkesskade,
-        språk: Språk
-    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        språk: Språk,
+    ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull(
         Brevdata.Tabell.Rad.Celle(
             kolonne = "YRKESSKADEDATO",
             verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
         ),
+        yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let{
+            Brevdata.Tabell.Rad.Celle(
+                kolonne = "ARBEIDSINNTEKT",
+                verdi = it.formater(språk)
+            )
+        },
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "ARBEIDSINNTEKT",
-            verdi = yrkesskade.arbeidsinntektPaaSkadetidspunktet.formater(språk)
+            kolonne = "RELEVANT_FOR_ARBEIDSEVNE",
+            verdi = if (yrkesskade.relevantForArbeidsevne) "Ja" else "Nei"
         )
     )
 

@@ -152,7 +152,8 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_BEREGNING) {
         data class Yrkesskade(
             val yrkesskadedato: LocalDate,
-            val arbeidsinntektPaaSkadetidspunktet: BigDecimal,
+            val arbeidsinntektPaaSkadetidspunktet: BigDecimal?,
+            val relevantForArbeidsevne: Boolean,
         )
     }
 }
