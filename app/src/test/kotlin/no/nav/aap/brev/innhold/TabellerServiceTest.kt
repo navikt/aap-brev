@@ -21,6 +21,8 @@ class TabellerServiceTest {
                     Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
                         yrkesskadedato = LocalDate.of(2020, 3, 15),
                         arbeidsinntektPaaSkadetidspunktet = BigDecimal("450000"),
+                        relevantForArbeidsevne = true,
+                        diagnose = "M54",
                     )
                 ),
                 andelAvNedsettelseSomSkyldesYrkesskade = 70,
@@ -31,13 +33,16 @@ class TabellerServiceTest {
 
         assertThat(tabeller).hasSize(1)
         val tabell = tabeller.single()
-        assertThat(tabell.tekniskNavn).isEqualTo("YRKESSKADE_BEREGNING")
+        assertThat(tabell.tekniskNavn).isEqualTo("ALLE_YRKESSKADER")
         assertThat(tabell.rader).hasSize(1)
         val celler = tabell.rader.single().celler
         assertThat(celler.first { it.kolonne == "YRKESSKADEDATO" }.verdi)
             .isEqualTo(LocalDate.of(2020, 3, 15).formaterFullLengde(Språk.NB))
         assertThat(celler.first { it.kolonne == "ARBEIDSINNTEKT" }.verdi)
             .isEqualTo(BigDecimal("450000").formater(Språk.NB))
+        assertThat(celler.first { it.kolonne == "RELEVANT_FOR_ARBEIDSEVNE" }.verdi)
+            .isEqualTo("Ja")
+        assertThat(celler.first { it.kolonne == "DIAGNOSE" }.verdi).isEqualTo("M54")
     }
 
     @Test
@@ -48,10 +53,14 @@ class TabellerServiceTest {
                     Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
                         yrkesskadedato = LocalDate.of(2018, 6, 1),
                         arbeidsinntektPaaSkadetidspunktet = BigDecimal("300000"),
+                        relevantForArbeidsevne = true,
+                        diagnose = null,
                     ),
                     Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
                         yrkesskadedato = LocalDate.of(2020, 3, 15),
                         arbeidsinntektPaaSkadetidspunktet = BigDecimal("450000"),
+                        relevantForArbeidsevne = false,
+                        diagnose = null,
                     ),
                 ),
                 andelAvNedsettelseSomSkyldesYrkesskade = 70,

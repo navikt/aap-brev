@@ -66,7 +66,10 @@ class TabellerService {
                     }
                     
                     is Faktagrunnlag.YrkesskadeBeregning -> {
-                        val yrkesskader = faktagrunnlag.yrkesskader.map {
+                        val sortert = faktagrunnlag.yrkesskader.partition { it.relevantForArbeidsevne }.let {
+                            it.first.sortedBy { it.yrkesskadedato } + it.second.sortedBy { it.yrkesskadedato }
+                        }
+                        val yrkesskader = sortert.map {
                             Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
                         if(yrkesskader.isNotEmpty()) {
@@ -171,12 +174,12 @@ class TabellerService {
     private fun tilCeller(
         yrkesskade: Faktagrunnlag.YrkesskadeBeregning.Yrkesskade,
         språk: Språk,
-    ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull(
+    ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull<Brevdata.Tabell.Rad.Celle>(
         Brevdata.Tabell.Rad.Celle(
             kolonne = "YRKESSKADEDATO",
             verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
         ),
-        yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let{
+        yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let {
             Brevdata.Tabell.Rad.Celle(
                 kolonne = "ARBEIDSINNTEKT",
                 verdi = it.formater(språk)
@@ -185,7 +188,10 @@ class TabellerService {
         Brevdata.Tabell.Rad.Celle(
             kolonne = "RELEVANT_FOR_ARBEIDSEVNE",
             verdi = if (yrkesskade.relevantForArbeidsevne) "Ja" else "Nei"
-        )
+        ),
+        yrkesskade.diagnose?.let {
+            Brevdata.Tabell.Rad.Celle(kolonne = "DIAGNOSE", verdi = it)
+        },
     )
 
     private fun tilCeller(

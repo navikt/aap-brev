@@ -154,6 +154,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             val yrkesskadedato: LocalDate,
             val arbeidsinntektPaaSkadetidspunktet: BigDecimal?,
             val relevantForArbeidsevne: Boolean,
+            val diagnose: String?,
         )
     }
 }
