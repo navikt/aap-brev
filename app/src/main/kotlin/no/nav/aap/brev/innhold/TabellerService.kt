@@ -64,16 +64,7 @@ class TabellerService {
                             add(tilTabell("FRADRAG_ANDRE_YTELSER", fradragAndreYtelser))
                         }
                     }
-
-                    is Faktagrunnlag.YrkesskadeBeregning -> {
-                        val rader = faktagrunnlag.yrkesskader.map {
-                            Brevdata.Tabell.Rad(tilCeller(it, språk))
-                        }
-                        if (rader.isNotEmpty()) {
-                            add(tilTabell("YRKESSKADE_BEREGNING", rader))
-                        }
-                    }
-
+                    
                     is Faktagrunnlag.YrkesskadeBeregning -> {
                         val yrkesskader = faktagrunnlag.yrkesskader.map {
                             Brevdata.Tabell.Rad(tilCeller(it, språk))
