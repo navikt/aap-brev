@@ -6,6 +6,8 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.miljo.Miljø
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import kotlin.random.Random
 
@@ -15,6 +17,8 @@ import kotlin.random.Random
  * For faktagrunnlag som skal vises som inline tekst, se [FaktagrunnlagService].
  */
 class TabellerService {
+
+    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
         fun konstruer(): TabellerService = TabellerService()
@@ -69,13 +73,7 @@ class TabellerService {
                     }
 
                     is Faktagrunnlag.YrkesskadeBeregning -> {
-                        val sortert =
-                            /**
-                             * TODO
-                             * Dette er _kun_ for å teste yrkesskade i brevbygger i dev.
-                             * Legges bak env-sjekk og fjernes når ferdig utviklet.
-                             */
-                            sorterEtterRelevansOgDato(if (Miljø.erDev() && faktagrunnlag.yrkesskader.isEmpty()) fakeYrkesskader else faktagrunnlag)
+                        val sortert = sorterEtterRelevansOgDato(faktagrunnlag)
                         val yrkesskader = sortert.map {
                             Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
@@ -86,6 +84,16 @@ class TabellerService {
 
                     else -> {}
                 }
+            }
+
+            if (alleFaktagrunnlag.none { it is Faktagrunnlag.YrkesskadeBeregning } && Miljø.erDev()) {
+                add(tilTabell(
+                    "ALLE_YRKESSKADER",
+                    sorterEtterRelevansOgDato(fakeYrkesskader).map {
+                        Brevdata.Tabell.Rad(tilCeller(it, språk))
+                    }
+                )
+                )
             }
         }
     }
