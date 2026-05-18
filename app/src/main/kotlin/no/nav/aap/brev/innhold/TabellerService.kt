@@ -5,6 +5,9 @@ import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
+import no.nav.aap.komponenter.miljo.Miljø
+import java.time.LocalDate
+import kotlin.random.Random
 
 /**
  * Bygger [no.nav.aap.brev.bestilling.Brevdata.Tabell]-strukturer fra faktagrunnlag-input.
@@ -66,19 +69,17 @@ class TabellerService {
                     }
 
                     is Faktagrunnlag.YrkesskadeBeregning -> {
-                        val rader = faktagrunnlag.yrkesskader.map {
+                        val sortert =
+                            /**
+                             * TODO
+                             * Dette er _kun_ for å teste yrkesskade i brevbygger i dev.
+                             * Legges bak env-sjekk og fjernes når ferdig utviklet.
+                             */
+                            sorterEtterRelevansOgDato(if (Miljø.erDev() && faktagrunnlag.yrkesskader.isEmpty()) fakeYrkesskader else faktagrunnlag)
+                        val yrkesskader = sortert.map {
                             Brevdata.Tabell.Rad(tilCeller(it, språk))
                         }
-                        if (rader.isNotEmpty()) {
-                            add(tilTabell("YRKESSKADE_BEREGNING", rader))
-                        }
-                    }
-
-                    is Faktagrunnlag.YrkesskadeBeregning -> {
-                        val yrkesskader = faktagrunnlag.yrkesskader.map {
-                            Brevdata.Tabell.Rad(tilCeller(it, språk))
-                        }
-                        if(yrkesskader.isNotEmpty()) {
+                        if (yrkesskader.isNotEmpty()) {
                             add(tilTabell("ALLE_YRKESSKADER", yrkesskader))
                         }
                     }
@@ -88,6 +89,43 @@ class TabellerService {
             }
         }
     }
+
+    private fun sorterEtterRelevansOgDato(faktagrunnlag: Faktagrunnlag.YrkesskadeBeregning): List<Faktagrunnlag.YrkesskadeBeregning.Yrkesskade> =
+        faktagrunnlag.yrkesskader.partition { it.relevantForArbeidsevne }.let {
+            it.first.sortedBy { it.yrkesskadedato } + it.second.sortedBy { it.yrkesskadedato }
+        }
+
+    /**
+     * TODO
+     * Dette er _kun_ for å teste yrkesskade i brevbygger i dev.
+     * Legges bak env-sjekk og fjernes når ferdig utviklet.
+     */
+    val fakeYrkesskader =
+        Faktagrunnlag.YrkesskadeBeregning(
+            yrkesskader =
+                listOf(
+                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                        yrkesskadedato = LocalDate.of(2026, 1, 1),
+                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                        diagnose = "pjusk",
+                        relevantForArbeidsevne = true,
+                    ),
+                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                        yrkesskadedato = LocalDate.of(2025, 1, 1),
+                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                        diagnose = "sleten",
+                        relevantForArbeidsevne = false,
+                    ),
+                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                        yrkesskadedato = LocalDate.of(2024, 1, 1),
+                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                        diagnose = "vondt i bcg",
+                        relevantForArbeidsevne = true,
+                    )
+                ),
+            andelAvNedsettelseSomSkyldesYrkesskade = (Random.nextInt(40) + 60)
+
+        )
 
     private fun tilTabell(tekniskNavn: String, rader: List<Brevdata.Tabell.Rad>) =
         Brevdata.Tabell(
@@ -179,16 +217,25 @@ class TabellerService {
 
     private fun tilCeller(
         yrkesskade: Faktagrunnlag.YrkesskadeBeregning.Yrkesskade,
-        språk: Språk
-    ): List<Brevdata.Tabell.Rad.Celle> = listOf(
+        språk: Språk,
+    ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull<Brevdata.Tabell.Rad.Celle>(
         Brevdata.Tabell.Rad.Celle(
             kolonne = "YRKESSKADEDATO",
             verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
         ),
+        yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let {
+            Brevdata.Tabell.Rad.Celle(
+                kolonne = "ARBEIDSINNTEKT",
+                verdi = it.formater(språk)
+            )
+        },
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "ARBEIDSINNTEKT",
-            verdi = yrkesskade.arbeidsinntektPaaSkadetidspunktet.formater(språk)
-        )
+            kolonne = "RELEVANT_FOR_ARBEIDSEVNE",
+            verdi = if (yrkesskade.relevantForArbeidsevne) "Ja" else "Nei"
+        ),
+        yrkesskade.diagnose?.let {
+            Brevdata.Tabell.Rad.Celle(kolonne = "DIAGNOSE", verdi = it)
+        },
     )
 
     private fun tilCeller(
