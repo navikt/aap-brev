@@ -73,7 +73,7 @@ class BrevbyggerService(
     }
 
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
-        return faktagrunnlag.flatMap { faktagrunnlag ->
+        val kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
                 is Faktagrunnlag.TilkjentYtelse -> {
                     buildSet {
@@ -82,6 +82,7 @@ class BrevbyggerService(
                         }
                     }
                 }
+
                 is Faktagrunnlag.ForholdTilAndreYtelser -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
@@ -91,13 +92,14 @@ class BrevbyggerService(
                         leggTilHvis(KjentKategori.HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_SYKESTIPEND) { faktagrunnlag.sykestipend.isNotEmpty() }
-                     }
+                    }
                 }
 
                 else -> emptySet()
             }
-            setOf(KjentKategori.HAR_YRKESSKADE).takeIf { Miljø.erDev() } ?: emptySet()
         }.toSet()
+
+        return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 
     private fun MutableSet<KjentKategori>.leggTilHvis(kategori: KjentKategori, predikat: () -> Boolean) {
