@@ -9,4 +9,5 @@ enum class KjentKategori {
     HAR_SAMORDNING_BARNEPENSJON,
     HAR_SAMORDNING_UFØRE,
     HAR_SYKESTIPEND,
+    HAR_YRKESSKADE,
 }

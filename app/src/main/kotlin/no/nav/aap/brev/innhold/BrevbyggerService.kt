@@ -10,6 +10,7 @@ import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.miljo.Miljø
 import java.math.BigDecimal
 import kotlin.collections.filterIsInstance
 import kotlin.collections.joinToString
@@ -81,7 +82,11 @@ class BrevbyggerService(
                         }
                     }
                 }
-
+                is Faktagrunnlag.YrkesskadeBeregning -> {
+                    buildSet {
+                        leggTilHvis(KjentKategori.HAR_YRKESSKADE) { Miljø.erDev()}
+                    }
+                }
                 is Faktagrunnlag.ForholdTilAndreYtelser -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
@@ -91,7 +96,7 @@ class BrevbyggerService(
                         leggTilHvis(KjentKategori.HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
                         leggTilHvis(KjentKategori.HAR_SYKESTIPEND) { faktagrunnlag.sykestipend.isNotEmpty() }
-                    }
+                     }
                 }
 
                 else -> emptySet()
