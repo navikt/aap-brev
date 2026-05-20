@@ -82,11 +82,6 @@ class BrevbyggerService(
                         }
                     }
                 }
-                is Faktagrunnlag.YrkesskadeBeregning -> {
-                    buildSet {
-                        leggTilHvis(KjentKategori.HAR_YRKESSKADE) { Miljø.erDev()}
-                    }
-                }
                 is Faktagrunnlag.ForholdTilAndreYtelser -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
@@ -101,6 +96,7 @@ class BrevbyggerService(
 
                 else -> emptySet()
             }
+            setOf(KjentKategori.HAR_YRKESSKADE).takeIf { Miljø.erDev() } ?: emptySet()
         }.toSet()
     }
 
