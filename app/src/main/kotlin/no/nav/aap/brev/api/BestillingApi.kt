@@ -192,9 +192,22 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                         respond(html)
                     }
                 }
+
+                route("/brevbygger-preview") {
+                    authorizedPost<BrevbestillingReferansePathParam, String, ForhandsvisBrevRequest>(
+                        authorizationBodyPathConfig
+                    ) { referanse, request ->
+                        val json = dataSource.transaction { connection ->
+                            PdfService.konstruer(connection)
+                                .genererJsonForForhåndsvisning(referanse.brevbestillingReferanse, request.signaturer)
+
+                        }
+                        respond(json)
+                    }
+                }
             }
         }
-        
+
         route("/ferdigstill") {
             authorizedPost<Unit, String, FerdigstillBrevRequest>(authorizationBodyPathConfig) { _, request ->
                 MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, request.referanse.toString()).use {
