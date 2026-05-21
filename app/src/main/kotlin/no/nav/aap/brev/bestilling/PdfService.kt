@@ -58,6 +58,16 @@ class PdfService(
         return genererHtml(bestilling, personinfo, signaturer.tilSorterbareSignaturer())
     }
 
+    fun genererJsonForForhåndsvisning(referanse: BrevbestillingReferanse, signaturer: List<SignaturGrunnlag>): String {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        check(bestilling.brukerIdent != null) {
+            "Kan ikke generere html for bestilling der brukerIdent er null"
+        }
+        val personinfo = personinfoGateway.hentPersoninfo(bestilling.brukerIdent)
+
+        return genererJsonForForhåndsvisning(bestilling, personinfo, signaturer.tilSorterbareSignaturer())
+    }
+
     fun genererPdfForJournalføring(bestilling: Brevbestilling, personinfo: Personinfo): Pdf {
         return genererPdf(bestilling, personinfo, bestilling.signaturer)
     }
@@ -146,6 +156,41 @@ class PdfService(
         )
 
         return pdfGatewayV2.genererHtml(request)
+
+    }
+
+    private fun genererJsonForForhåndsvisning(
+        bestilling: Brevbestilling,
+        personinfo: Personinfo,
+        sorterbareSignaturer: List<SorterbarSignatur>
+    ): String {
+        val signaturer: List<Signatur> =
+            signaturService.signaturer(sorterbareSignaturer, bestilling.brevtype, personinfo)
+
+        checkNotNull(bestilling.brevmal) {
+            "Kan ikke generere html av brevbestilling uten brevmal."
+        }
+        checkNotNull(bestilling.brevdata) {
+            "Kan ikke generere html av brevbestilling uten brevdata."
+        }
+
+        val request = GenererPdfRequest(
+            brukerIdent = personinfo.personIdent,
+            navn = personinfo.navn,
+            saksnummer = bestilling.saksnummer,
+            brevmal = bestilling.brevmal,
+            brevdata = bestilling.brevdata,
+            dato = LocalDate.now(),
+            språk = bestilling.språk,
+            signaturer = signaturer,
+            mottaker = GenererPdfRequest.Mottaker(
+                navn = personinfo.navn,
+                ident = personinfo.personIdent,
+                identType = GenererPdfRequest.Mottaker.IdentType.FNR
+            )
+        )
+
+        return pdfGatewayV2.genererJsonForForhåndsvisning(request)
 
     }
 
