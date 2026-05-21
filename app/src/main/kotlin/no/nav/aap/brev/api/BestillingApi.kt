@@ -197,12 +197,12 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                     authorizedPost<BrevbestillingReferansePathParam, String, ForhandsvisBrevRequest>(
                         authorizationBodyPathConfig
                     ) { referanse, request ->
-                        val html = dataSource.transaction { connection ->
+                        val json = dataSource.transaction { connection ->
                             PdfService.konstruer(connection)
                                 .genererJsonForForhåndsvisning(referanse.brevbestillingReferanse, request.signaturer)
 
                         }
-                        respond(html)
+                        respond(json)
                     }
                 }
             }

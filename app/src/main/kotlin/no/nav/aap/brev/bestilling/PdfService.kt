@@ -61,7 +61,7 @@ class PdfService(
     fun genererJsonForForhåndsvisning(referanse: BrevbestillingReferanse, signaturer: List<SignaturGrunnlag>): String {
         val bestilling = brevbestillingRepository.hent(referanse)
         check(bestilling.brukerIdent != null) {
-            "Kan ikke generere html for bestilling der brukerIdent er null"
+            "Kan ikke generere json for bestilling der brukerIdent er null"
         }
         val personinfo = personinfoGateway.hentPersoninfo(bestilling.brukerIdent)
 
@@ -168,10 +168,10 @@ class PdfService(
             signaturService.signaturer(sorterbareSignaturer, bestilling.brevtype, personinfo)
 
         checkNotNull(bestilling.brevmal) {
-            "Kan ikke generere html av brevbestilling uten brevmal."
+            "Kan ikke generere json av brevbestilling uten brevmal."
         }
         checkNotNull(bestilling.brevdata) {
-            "Kan ikke generere html av brevbestilling uten brevdata."
+            "Kan ikke generere json av brevbestilling uten brevdata."
         }
 
         val request = GenererPdfRequest(
