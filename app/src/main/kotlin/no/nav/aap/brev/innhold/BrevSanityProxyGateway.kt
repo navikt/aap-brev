@@ -104,7 +104,7 @@ class BrevSanityProxyGateway : BrevinnholdGateway, PdfGatewayV2 {
         val httpRequest = PostRequest(
             body = request,
             additionalHeaders = listOf(
-                Header("Accept", "text/html")
+                Header("Accept", "application/json")
             )
         )
 
