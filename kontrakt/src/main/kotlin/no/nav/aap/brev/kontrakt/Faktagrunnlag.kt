@@ -83,9 +83,18 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class GrunnlagBeregning(
         val beregningstidspunkt: LocalDate?,
         val beregningsgrunnlag: BigDecimal?,
-        val inntekterPerÅr: List<InntektPerÅr>
+        val inntekterPerÅr: List<InntektPerÅr>,
+        val beregningsutfallKategori: BeregningsutfallKategori? = null,
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_BEREGNING) {
         data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)
+
+        enum class BeregningsutfallKategori {
+            SISTE_AAR,
+            GJENNOMSNITT,
+            MINSTESATS_OVER_25,
+            MINSTESATS_UNDER_25,
+            INNTEKT_OVER_6G,
+        }
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
