@@ -95,6 +95,19 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.GrunnlagBeregning -> {
+                    buildSet {
+                        when (faktagrunnlag.beregningsutfallKategori) {
+                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.SISTE_AAR -> add(KjentKategori.BEREGNINGSUTFALL_SISTE_AAR)
+                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.GJENNOMSNITT -> add(KjentKategori.BEREGNINGSUTFALL_GJENNOMSNITT)
+                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.MINSTESATS_OVER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_OVER_25)
+                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.MINSTESATS_UNDER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_UNDER_25)
+                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.INNTEKT_OVER_6G -> add(KjentKategori.BEREGNINGSUTFALL_INNTEKT_OVER_6G)
+                            null -> Unit
+                        }
+                    }
+                }
+
                 else -> emptySet()
             }
         }.toSet()
