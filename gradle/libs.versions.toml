@@ -1,8 +1,8 @@
 [versions]
-ktor = "3.4.3"
+ktor = "3.5.0"
 komponenter = "2.0.58"
 tilgang = "1.0.224"
-junit = "6.0.3"
+junit = "6.1.0"
 testcontainers = "2.0.5"
 jackson = "2.21.3"
 
@@ -36,7 +36,7 @@ jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.11" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.5.0" }
+flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.6.2" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9" }
 
