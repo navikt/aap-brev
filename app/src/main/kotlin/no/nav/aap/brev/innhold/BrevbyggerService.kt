@@ -120,7 +120,6 @@ class BrevbyggerService(
                         when (faktagrunnlag.uføreValgKategori) {
                             Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.UFORETIDSPUNKT -> add(KjentKategori.UFØRE_VALG_UFORETIDSPUNKT)
                             Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.YTTERLIGERE_NEDSATT -> add(KjentKategori.UFØRE_VALG_YTTERLIGERE_NEDSATT)
-                            Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.YTTERLIGERE_NEDSATT_OKT_UFOREGRAD -> add(KjentKategori.UFØRE_VALG_YTTERLIGERE_NEDSATT_OKT_UFOREGRAD)
                             null -> Unit
                         }
                         when (faktagrunnlag.yrkesskadeValgKategori) {

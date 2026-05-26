@@ -26,7 +26,6 @@ enum class KjentKategori {
     // Uføre-valgkategori (§11-28 fjerde ledd)
     UFØRE_VALG_UFORETIDSPUNKT,
     UFØRE_VALG_YTTERLIGERE_NEDSATT,
-    UFØRE_VALG_YTTERLIGERE_NEDSATT_OKT_UFOREGRAD,
     // Yrkesskade-valgkategori (§11-22)
     YRKESSKADE_VALG_STANDARD_VINNER,
     YRKESSKADE_VALG_SYKEPENGEGRUNNLAG,

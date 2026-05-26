@@ -115,7 +115,6 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         enum class UføreValgKategori {
             UFORETIDSPUNKT,
             YTTERLIGERE_NEDSATT,
-            YTTERLIGERE_NEDSATT_OKT_UFOREGRAD,
         }
 
         enum class YrkesskadeValgKategori {
