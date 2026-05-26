@@ -85,6 +85,10 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val beregningsgrunnlag: BigDecimal?,
         val inntekterPerÅr: List<InntektPerÅr>,
         val beregningsutfallKategori: BeregningsutfallKategori? = null,
+        val beregningstype: Beregningstype? = null,
+        val beregningsmetode: Beregningsmetode? = null,
+        val uføreValgKategori: UføreValgKategori? = null,
+        val yrkesskadeValgKategori: YrkesskadeValgKategori? = null,
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_BEREGNING) {
         data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)
 
@@ -94,6 +98,30 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             MINSTESATS_OVER_25,
             MINSTESATS_UNDER_25,
             INNTEKT_OVER_6G,
+        }
+
+        enum class Beregningstype {
+            STANDARD,
+            UFØRE,
+            YRKESSKADE,
+            YRKESSKADE_UFØRE,
+        }
+
+        enum class Beregningsmetode {
+            SISTE_ÅR,
+            TREÅRS_GJENNOMSNITT,
+        }
+
+        enum class UføreValgKategori {
+            UFORETIDSPUNKT,
+            YTTERLIGERE_NEDSATT,
+            YTTERLIGERE_NEDSATT_OKT_UFOREGRAD,
+        }
+
+        enum class YrkesskadeValgKategori {
+            STANDARD_VINNER,
+            SYKEPENGEGRUNNLAG,
+            FORDEL_70_ELLER_MINDRE,
         }
     }
 

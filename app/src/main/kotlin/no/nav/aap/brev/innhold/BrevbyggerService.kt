@@ -105,6 +105,30 @@ class BrevbyggerService(
                             Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.INNTEKT_OVER_6G -> add(KjentKategori.BEREGNINGSUTFALL_INNTEKT_OVER_6G)
                             null -> Unit
                         }
+                        when (faktagrunnlag.beregningstype) {
+                            Faktagrunnlag.GrunnlagBeregning.Beregningstype.STANDARD -> add(KjentKategori.BEREGNINGSTYPE_STANDARD)
+                            Faktagrunnlag.GrunnlagBeregning.Beregningstype.UFØRE -> add(KjentKategori.BEREGNINGSTYPE_UFØRE)
+                            Faktagrunnlag.GrunnlagBeregning.Beregningstype.YRKESSKADE -> add(KjentKategori.BEREGNINGSTYPE_YRKESSKADE)
+                            Faktagrunnlag.GrunnlagBeregning.Beregningstype.YRKESSKADE_UFØRE -> add(KjentKategori.BEREGNINGSTYPE_YRKESSKADE_UFØRE)
+                            null -> Unit
+                        }
+                        when (faktagrunnlag.beregningsmetode) {
+                            Faktagrunnlag.GrunnlagBeregning.Beregningsmetode.SISTE_ÅR -> add(KjentKategori.BEREGNINGSMETODE_SISTE_ÅR)
+                            Faktagrunnlag.GrunnlagBeregning.Beregningsmetode.TREÅRS_GJENNOMSNITT -> add(KjentKategori.BEREGNINGSMETODE_TREÅRS_GJENNOMSNITT)
+                            null -> Unit
+                        }
+                        when (faktagrunnlag.uføreValgKategori) {
+                            Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.UFORETIDSPUNKT -> add(KjentKategori.UFØRE_VALG_UFORETIDSPUNKT)
+                            Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.YTTERLIGERE_NEDSATT -> add(KjentKategori.UFØRE_VALG_YTTERLIGERE_NEDSATT)
+                            Faktagrunnlag.GrunnlagBeregning.UføreValgKategori.YTTERLIGERE_NEDSATT_OKT_UFOREGRAD -> add(KjentKategori.UFØRE_VALG_YTTERLIGERE_NEDSATT_OKT_UFOREGRAD)
+                            null -> Unit
+                        }
+                        when (faktagrunnlag.yrkesskadeValgKategori) {
+                            Faktagrunnlag.GrunnlagBeregning.YrkesskadeValgKategori.STANDARD_VINNER -> add(KjentKategori.YRKESSKADE_VALG_STANDARD_VINNER)
+                            Faktagrunnlag.GrunnlagBeregning.YrkesskadeValgKategori.SYKEPENGEGRUNNLAG -> add(KjentKategori.YRKESSKADE_VALG_SYKEPENGEGRUNNLAG)
+                            Faktagrunnlag.GrunnlagBeregning.YrkesskadeValgKategori.FORDEL_70_ELLER_MINDRE -> add(KjentKategori.YRKESSKADE_VALG_FORDEL_70_ELLER_MINDRE)
+                            null -> Unit
+                        }
                     }
                 }
 
