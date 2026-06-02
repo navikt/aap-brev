@@ -85,7 +85,7 @@ class BrevbyggerService(
     }
 
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
-        val kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
+        var kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
                 is TilkjentYtelse -> {
                     buildSet {
@@ -128,7 +128,7 @@ class BrevbyggerService(
                 else -> emptySet()
             }
         }.toSet()
-
+        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.ER_FOSTERFORELDER_UTEN_FORELDREANSVAR}
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 

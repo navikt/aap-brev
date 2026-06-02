@@ -178,7 +178,17 @@ class FaktagrunnlagService(
                         faktagrunnlag.andelAvNedsettelseSomSkyldesYrkesskade?.let { andel ->
                             put(KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN, "$andel%")
                         }
+
                     }
+
+
+                    is Faktagrunnlag.ForeldreAnsvar ->
+                    {
+                        faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
+                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER, erFosterforelder.toString())
+                        }
+                    }
+
                     else -> {}
                 }
             }

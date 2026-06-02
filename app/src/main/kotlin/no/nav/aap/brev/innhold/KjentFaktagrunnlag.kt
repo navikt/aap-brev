@@ -34,4 +34,5 @@ enum class KjentFaktagrunnlag {
     SAMORDNING_UFØRE,
     SYKESTIPEND,
     YRKESSKADE_ANDEL_AV_NEDSETTELSEN,
+    ER_FOSTERFORELDER,
 }
