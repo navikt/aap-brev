@@ -82,18 +82,38 @@ class TabellerService {
                         }
                     }
 
+                    is Faktagrunnlag.ForeldreAnsvar -> {
+
+                        val fosterforelderIkkeVarig = faktagrunnlag.erFosterforelder == false
+
+                        if (fosterforelderIkkeVarig) {
+                            add(
+                                tilTabell(
+                                    "FORELDREANSVAR", listOf(
+                                        Brevdata.Tabell.Rad(
+                                            listOf(
+                                                Brevdata.Tabell.Rad.Celle(
+                                                    kolonne = "ER_FOSTERFORELDER", verdi = "Nei"
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        }
+
+                    }
+
                     else -> {}
                 }
             }
 
             if (alleFaktagrunnlag.none { it is Faktagrunnlag.YrkesskadeBeregning } && Miljø.erDev()) {
-                add(tilTabell(
-                    "ALLE_YRKESSKADER",
-                    sorterEtterRelevansOgDato(fakeYrkesskader).map {
+                add(
+                    tilTabell(
+                    "ALLE_YRKESSKADER", sorterEtterRelevansOgDato(fakeYrkesskader).map {
                         Brevdata.Tabell.Rad(tilCeller(it, språk))
-                    }
-                )
-                )
+                    }))
             }
         }
     }
@@ -108,118 +128,85 @@ class TabellerService {
      * Dette er _kun_ for å teste yrkesskade i brevbygger i dev.
      * Legges bak env-sjekk og fjernes når ferdig utviklet.
      */
-    val fakeYrkesskader =
-        Faktagrunnlag.YrkesskadeBeregning(
-            yrkesskader =
-                listOf(
-                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
-                        yrkesskadedato = LocalDate.of(2026, 1, 1),
-                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
-                        diagnose = "pjusk",
-                        relevantForArbeidsevne = true,
-                    ),
-                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
-                        yrkesskadedato = LocalDate.of(2025, 1, 1),
-                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
-                        diagnose = "sleten",
-                        relevantForArbeidsevne = false,
-                    ),
-                    Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
-                        yrkesskadedato = LocalDate.of(2024, 1, 1),
-                        arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
-                        diagnose = "vondt i bcg",
-                        relevantForArbeidsevne = true,
-                    )
-                ),
-            andelAvNedsettelseSomSkyldesYrkesskade = (Random.nextInt(40) + 60)
+    val fakeYrkesskader = Faktagrunnlag.YrkesskadeBeregning(
+        yrkesskader = listOf(
+            Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                yrkesskadedato = LocalDate.of(2026, 1, 1),
+                arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                diagnose = "pjusk",
+                relevantForArbeidsevne = true,
+            ), Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                yrkesskadedato = LocalDate.of(2025, 1, 1),
+                arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                diagnose = "sleten",
+                relevantForArbeidsevne = false,
+            ), Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
+                yrkesskadedato = LocalDate.of(2024, 1, 1),
+                arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
+                diagnose = "vondt i bcg",
+                relevantForArbeidsevne = true,
+            )
+        ), andelAvNedsettelseSomSkyldesYrkesskade = (Random.nextInt(40) + 60)
 
-        )
+    )
 
-    private fun tilTabell(tekniskNavn: String, rader: List<Brevdata.Tabell.Rad>) =
-        Brevdata.Tabell(
-            tekniskNavn = tekniskNavn,
-            rader = rader
-        )
+    private fun tilTabell(tekniskNavn: String, rader: List<Brevdata.Tabell.Rad>) = Brevdata.Tabell(
+        tekniskNavn = tekniskNavn, rader = rader
+    )
 
     private fun tilCeller(
-        samordningUføre: Faktagrunnlag.ForholdTilAndreYtelser.SamordningUføre,
-        språk: Språk
+        samordningUføre: Faktagrunnlag.ForholdTilAndreYtelser.SamordningUføre, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "VIRKNINGSTIDSPUNKT",
-            verdi = samordningUføre.virkningstidspunkt.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "UFØREGRAD",
-            verdi = "${samordningUføre.uføregradProsent}%"
+            kolonne = "VIRKNINGSTIDSPUNKT", verdi = samordningUføre.virkningstidspunkt.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "UFØREGRAD", verdi = "${samordningUføre.uføregradProsent}%"
         )
     )
 
     private fun tilCeller(
-        reduksjonArbeidsgiver: Faktagrunnlag.ForholdTilAndreYtelser.ReduksjonArbeidsgiver,
-        språk: Språk
+        reduksjonArbeidsgiver: Faktagrunnlag.ForholdTilAndreYtelser.ReduksjonArbeidsgiver, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "FRA_OG_MED",
-            verdi = reduksjonArbeidsgiver.fraOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "TIL_OG_MED",
-            verdi = reduksjonArbeidsgiver.tilOgMed.formaterFullLengde(språk)
+            kolonne = "FRA_OG_MED", verdi = reduksjonArbeidsgiver.fraOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "TIL_OG_MED", verdi = reduksjonArbeidsgiver.tilOgMed.formaterFullLengde(språk)
         )
     )
 
     private fun tilCeller(
-        samordningBarnepensjon: Faktagrunnlag.ForholdTilAndreYtelser.SamordningBarnepensjon,
-        språk: Språk
+        samordningBarnepensjon: Faktagrunnlag.ForholdTilAndreYtelser.SamordningBarnepensjon, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "FRA_OG_MED",
-            verdi = samordningBarnepensjon.fraOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "TIL_OG_MED",
-            verdi = samordningBarnepensjon.tilOgMed?.formaterFullLengde(språk) ?: ""
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "MÅNEDSATS",
-            verdi = "${samordningBarnepensjon.månedsats.formater(språk)} Kroner per måned"
+            kolonne = "FRA_OG_MED", verdi = samordningBarnepensjon.fraOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "TIL_OG_MED", verdi = samordningBarnepensjon.tilOgMed?.formaterFullLengde(språk) ?: ""
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "MÅNEDSATS", verdi = "${samordningBarnepensjon.månedsats.formater(språk)} Kroner per måned"
         )
     )
 
     private fun tilCeller(
-        samordningYtelse: Faktagrunnlag.ForholdTilAndreYtelser.SamordningYtelse,
-        språk: Språk
+        samordningYtelse: Faktagrunnlag.ForholdTilAndreYtelser.SamordningYtelse, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "YTELSE_NAVN",
-            verdi = samordningYtelse.ytelseNavn
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "FRA_OG_MED",
-            verdi = samordningYtelse.fraOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "TIL_OG_MED",
-            verdi = samordningYtelse.tilOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "GRADERING",
-            verdi = "${samordningYtelse.gradering}%"
+            kolonne = "YTELSE_NAVN", verdi = samordningYtelse.ytelseNavn
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "FRA_OG_MED", verdi = samordningYtelse.fraOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "TIL_OG_MED", verdi = samordningYtelse.tilOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "GRADERING", verdi = "${samordningYtelse.gradering}%"
         )
     )
 
     private fun tilCeller(
-        sykestipend: Faktagrunnlag.ForholdTilAndreYtelser.Sykestipend,
-        språk: Språk
+        sykestipend: Faktagrunnlag.ForholdTilAndreYtelser.Sykestipend, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "FRA_OG_MED",
-            verdi = sykestipend.fraOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "TIL_OG_MED",
-            verdi = sykestipend.tilOgMed.formaterFullLengde(språk)
+            kolonne = "FRA_OG_MED", verdi = sykestipend.fraOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "TIL_OG_MED", verdi = sykestipend.tilOgMed.formaterFullLengde(språk)
         )
     )
 
@@ -228,18 +215,15 @@ class TabellerService {
         språk: Språk,
     ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull<Brevdata.Tabell.Rad.Celle>(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "YRKESSKADEDATO",
-            verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
+            kolonne = "YRKESSKADEDATO", verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
         ),
         yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let {
             Brevdata.Tabell.Rad.Celle(
-                kolonne = "ARBEIDSINNTEKT",
-                verdi = it.formater(språk)
+                kolonne = "ARBEIDSINNTEKT", verdi = it.formater(språk)
             )
         },
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "RELEVANT_FOR_ARBEIDSEVNE",
-            verdi = if (yrkesskade.relevantForArbeidsevne) "Ja" else "Nei"
+            kolonne = "RELEVANT_FOR_ARBEIDSEVNE", verdi = if (yrkesskade.relevantForArbeidsevne) "Ja" else "Nei"
         ),
         yrkesskade.diagnose?.let {
             Brevdata.Tabell.Rad.Celle(kolonne = "DIAGNOSE", verdi = it)
@@ -247,20 +231,14 @@ class TabellerService {
     )
 
     private fun tilCeller(
-        fradragYtelse: Faktagrunnlag.ForholdTilAndreYtelser.FradragYtelse,
-        språk: Språk
+        fradragYtelse: Faktagrunnlag.ForholdTilAndreYtelser.FradragYtelse, språk: Språk
     ): List<Brevdata.Tabell.Rad.Celle> = listOf(
         Brevdata.Tabell.Rad.Celle(
-            kolonne = "YTELSE_NAVN",
-            verdi = fradragYtelse.ytelseNavn
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "FRA_OG_MED",
-            verdi = fradragYtelse.fraOgMed.formaterFullLengde(språk)
-        ),
-        Brevdata.Tabell.Rad.Celle(
-            kolonne = "TIL_OG_MED",
-            verdi = fradragYtelse.tilOgMed.formaterFullLengde(språk)
+            kolonne = "YTELSE_NAVN", verdi = fradragYtelse.ytelseNavn
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "FRA_OG_MED", verdi = fradragYtelse.fraOgMed.formaterFullLengde(språk)
+        ), Brevdata.Tabell.Rad.Celle(
+            kolonne = "TIL_OG_MED", verdi = fradragYtelse.tilOgMed.formaterFullLengde(språk)
         )
     )
 }
