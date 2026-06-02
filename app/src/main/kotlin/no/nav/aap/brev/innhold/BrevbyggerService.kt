@@ -128,7 +128,7 @@ class BrevbyggerService(
                 else -> emptySet()
             }
         }.toSet()
-        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.ER_FOSTERFORELDER_UTEN_FORELDREANSVAR}
+        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.ER_FOSTERFORELDER}
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 
