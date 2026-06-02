@@ -187,6 +187,15 @@ class FaktagrunnlagService(
                         )
                     }
 
+
+
+                    is Faktagrunnlag.ForeldreAnsvar ->
+                    {
+                        faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
+                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER, erFosterforelder.toString())
+                        }
+                    }
+
                     else -> {}
                 }
             }
