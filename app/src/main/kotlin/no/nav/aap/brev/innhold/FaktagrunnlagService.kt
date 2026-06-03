@@ -185,7 +185,7 @@ class FaktagrunnlagService(
                         val barnUtenForeldreAnsvar = faktagrunnlag.barn.filter { !it.harForeldreAnsvar }
                         if (barnUtenForeldreAnsvar.isNotEmpty()) {
                             put(
-                                KjentFaktagrunnlag.HAR_BARN_UTEN_BARNETILLEGG,
+                                KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG,
                                 barnUtenForeldreAnsvar.joinToString(separator = "\n") { barnUtenBarnetilleggTekst(it) }
                             )
                         }
