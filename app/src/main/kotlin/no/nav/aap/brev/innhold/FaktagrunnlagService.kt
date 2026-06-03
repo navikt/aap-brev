@@ -181,9 +181,13 @@ class FaktagrunnlagService(
 
                     }
 
-                    is Faktagrunnlag.ForeldreAnsvar -> {
-                        faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
-                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER,  fosterforelderTekst(erFosterforelder))
+                    is Faktagrunnlag.BarnUtenBarnetillegg -> {
+                        val barnUtenForeldreAnsvar = faktagrunnlag.barn.filter { !it.harForeldreAnsvar }
+                        if (barnUtenForeldreAnsvar.isNotEmpty()) {
+                            put(
+                                KjentFaktagrunnlag.HAR_BARN_UTEN_BARNETILLEGG,
+                                barnUtenForeldreAnsvar.joinToString(separator = "\n") { barnUtenBarnetilleggTekst(it) }
+                            )
                         }
                     }
 
@@ -223,10 +227,10 @@ class FaktagrunnlagService(
         )
     }
 
-    private fun fosterforelderTekst(
-        erFosterforelder: Boolean
+    private fun barnUtenBarnetilleggTekst(
+        barn: Faktagrunnlag.BarnUtenBarnetillegg.Barn
     ): String {
-        return "Er fosterforelder:" +  if (erFosterforelder) "Ja" else "Nei"
+        return "Har foreldreansvar: ${if (barn.harForeldreAnsvar) "Ja" else "Nei"}"
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
