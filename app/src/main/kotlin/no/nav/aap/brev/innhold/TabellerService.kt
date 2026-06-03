@@ -82,28 +82,6 @@ class TabellerService {
                         }
                     }
 
-                    is Faktagrunnlag.ForeldreAnsvar -> {
-
-                        val fosterforelderIkkeVarig = faktagrunnlag.erFosterforelder == false
-
-                        if (fosterforelderIkkeVarig) {
-                            add(
-                                tilTabell(
-                                    "FORELDREANSVAR", listOf(
-                                        Brevdata.Tabell.Rad(
-                                            listOf(
-                                                Brevdata.Tabell.Rad.Celle(
-                                                    kolonne = "ER_FOSTERFORELDER", verdi = "Nei"
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        }
-
-                    }
-
                     else -> {}
                 }
             }

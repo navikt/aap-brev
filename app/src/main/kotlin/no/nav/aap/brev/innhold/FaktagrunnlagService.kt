@@ -180,12 +180,11 @@ class FaktagrunnlagService(
                         }
 
                     }
-
-
+                    
                     is Faktagrunnlag.ForeldreAnsvar ->
                     {
                         faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
-                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER, erFosterforelder.toString())
+                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER,  fosterforelderTekst(erFosterforelder))
                         }
                     }
 
@@ -223,6 +222,12 @@ class FaktagrunnlagService(
             refusjonskravTjenestepensjon.tilOgMed,
             språk
         )
+    }
+
+    private fun fosterforelderTekst(
+        erFosterforelder: Boolean
+    ): String {
+        return "Er fosterforelder:" +  if (erFosterforelder) "Ja" else "Nei"
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
