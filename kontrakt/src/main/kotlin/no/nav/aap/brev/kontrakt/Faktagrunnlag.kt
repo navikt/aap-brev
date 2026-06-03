@@ -21,6 +21,7 @@ const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNIN
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
 
 const val FAKTAGRUNNLAG_FORELDRE_ANSVAR : String = "FORELDRE_ANSVAR"
+const val FAKTAGRUNNLAG_TYPE_FORELDREANSVAR : String = "FORELDREANSVAR"
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
     KRAVDATO_UFORETRYGD(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD),
@@ -34,7 +35,7 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     FORHOLD_TIL_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER),
     YRKESSKADE_BEREGNING(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING),
     YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
-    FORELDRE_ANSVAR(FAKTAGRUNNLAG_FORELDRE_ANSVAR)
+    FORELDREANSVAR(FAKTAGRUNNLAG_TYPE_FORELDREANSVAR)
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -178,8 +179,8 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val verdi: Boolean,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
 
-    @JsonTypeName(FAKTAGRUNNLAG_FORELDRE_ANSVAR)
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_FORELDREANSVAR)
     data class ForeldreAnsvar(
         val harForeldreAnsvar: Boolean, val begrunnelse: String, val erFosterforelder: Boolean? = null
-    ) : Faktagrunnlag(FaktagrunnlagType.FORELDRE_ANSVAR)
+    ) : Faktagrunnlag(FaktagrunnlagType.FORELDREANSVAR)
 }
