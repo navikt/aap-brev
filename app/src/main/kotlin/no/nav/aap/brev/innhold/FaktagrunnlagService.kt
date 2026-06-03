@@ -180,9 +180,8 @@ class FaktagrunnlagService(
                         }
 
                     }
-                    
-                    is Faktagrunnlag.ForeldreAnsvar ->
-                    {
+
+                    is Faktagrunnlag.ForeldreAnsvar -> {
                         faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
                             put(KjentFaktagrunnlag.ER_FOSTERFORELDER,  fosterforelderTekst(erFosterforelder))
                         }
