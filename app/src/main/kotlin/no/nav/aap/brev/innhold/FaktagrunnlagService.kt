@@ -182,24 +182,9 @@ class FaktagrunnlagService(
                     }
 
                     is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                        val barnUtenForeldreAnsvar = faktagrunnlag.barn.filter { !it.harForeldreAnsvar }
-                        if (barnUtenForeldreAnsvar.isNotEmpty()) {
-                            put(
-                                KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG,
-                                barnUtenForeldreAnsvar.joinToString(separator = "\n") { barnUtenBarnetilleggTekst(it) }
-                            )
                         put(
                             KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.toString()
                         )
-                    }
-
-
-
-                    is Faktagrunnlag.ForeldreAnsvar ->
-                    {
-                        faktagrunnlag.erFosterforelder?.let { erFosterforelder ->
-                            put(KjentFaktagrunnlag.ER_FOSTERFORELDER, erFosterforelder.toString())
-                        }
                     }
 
                     else -> {}
