@@ -172,7 +172,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
-    data class YrkesskadeISoknadIkkeIRegister(
+    data class YrkesskadeISøknadIkkeIRegister(
         val verdi: Boolean,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
 }

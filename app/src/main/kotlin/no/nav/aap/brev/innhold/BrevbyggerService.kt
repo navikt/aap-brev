@@ -7,7 +7,19 @@ import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
 import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
+import no.nav.aap.brev.innhold.KjentKategori.HAR_FRADRAG_ANDRE_YTELSER
+import no.nav.aap.brev.innhold.KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER
+import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON
+import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
+import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
+import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
+import no.nav.aap.brev.innhold.KjentKategori.HAR_SYKESTIPEND
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
+import no.nav.aap.brev.kontrakt.Faktagrunnlag.ForholdTilAndreYtelser
+import no.nav.aap.brev.kontrakt.Faktagrunnlag.GrunnlagBeregning
+import no.nav.aap.brev.kontrakt.Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori
+import no.nav.aap.brev.kontrakt.Faktagrunnlag.TilkjentYtelse
+import no.nav.aap.brev.kontrakt.Faktagrunnlag.YrkesskadeISøknadIkkeIRegister
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
@@ -75,7 +87,7 @@ class BrevbyggerService(
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
         val kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
-                is Faktagrunnlag.TilkjentYtelse -> {
+                is TilkjentYtelse -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_BARNETILLEGG) {
                             (faktagrunnlag.barnetillegg ?: BigDecimal.ZERO) > BigDecimal.ZERO
@@ -83,31 +95,36 @@ class BrevbyggerService(
                     }
                 }
 
-                is Faktagrunnlag.ForholdTilAndreYtelser -> {
+                is ForholdTilAndreYtelser -> {
                     buildSet {
-                        leggTilHvis(KjentKategori.HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
-                        leggTilHvis(KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
-                        leggTilHvis(KjentKategori.HAR_SYKESTIPEND) { faktagrunnlag.sykestipend.isNotEmpty() }
+                        leggTilHvis(HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
+                        leggTilHvis(HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
+                        leggTilHvis(HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
+                        leggTilHvis(HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
+                        leggTilHvis(HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
+                        leggTilHvis(HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
+                        leggTilHvis(HAR_SYKESTIPEND) { faktagrunnlag.sykestipend.isNotEmpty() }
                     }
                 }
 
-                is Faktagrunnlag.GrunnlagBeregning -> {
+                is GrunnlagBeregning -> {
                     buildSet {
                         when (faktagrunnlag.beregningsutfallKategori) {
-                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.SISTE_AAR -> add(KjentKategori.BEREGNINGSUTFALL_SISTE_AAR)
-                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.GJENNOMSNITT -> add(KjentKategori.BEREGNINGSUTFALL_GJENNOMSNITT)
-                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.MINSTESATS_OVER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_OVER_25)
-                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.MINSTESATS_UNDER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_UNDER_25)
-                            Faktagrunnlag.GrunnlagBeregning.BeregningsutfallKategori.INNTEKT_OVER_6G -> add(KjentKategori.BEREGNINGSUTFALL_INNTEKT_OVER_6G)
+                            BeregningsutfallKategori.SISTE_AAR -> add(KjentKategori.BEREGNINGSUTFALL_SISTE_AAR)
+                            BeregningsutfallKategori.GJENNOMSNITT -> add(KjentKategori.BEREGNINGSUTFALL_GJENNOMSNITT)
+                            BeregningsutfallKategori.MINSTESATS_OVER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_OVER_25)
+                            BeregningsutfallKategori.MINSTESATS_UNDER_25 -> add(KjentKategori.BEREGNINGSUTFALL_MINSTESATS_UNDER_25)
+                            BeregningsutfallKategori.INNTEKT_OVER_6G -> add(KjentKategori.BEREGNINGSUTFALL_INNTEKT_OVER_6G)
                             null -> Unit
                         }
                     }
                 }
 
+                is YrkesskadeISøknadIkkeIRegister -> {
+                    buildSet {
+                        leggTilHvis(KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT) { faktagrunnlag.verdi }
+                    }
+                }
                 else -> emptySet()
             }
         }.toSet()
