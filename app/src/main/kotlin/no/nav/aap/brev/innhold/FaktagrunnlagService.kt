@@ -179,6 +179,7 @@ class FaktagrunnlagService(
                             put(KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN, "$andel%")
                         }
                     }
+                    else -> {}
                 }
             }
         }
