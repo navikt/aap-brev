@@ -183,7 +183,7 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.BarnUtenBarnetillegg -> {
                         put(
-                            KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.toString()
+                            KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
                         )
                     }
 
