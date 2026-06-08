@@ -181,11 +181,11 @@ class FaktagrunnlagService(
 
                     }
 
-                    is Faktagrunnlag.BarnUtenBarnetillegg -> {
+                   /* is Faktagrunnlag.BarnUtenBarnetillegg -> {
                         put(
                             KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
                         )
-                    }
+                    }*/
 
                     else -> {}
                 }
@@ -224,9 +224,9 @@ class FaktagrunnlagService(
     }
 
     private fun barnUtenBarnetilleggTekst(
-        barn: Faktagrunnlag.BarnUtenBarnetillegg.Barn
+        barn: List<Faktagrunnlag.BarnUtenBarnetillegg.Barn>
     ): String {
-        return "Har foreldreansvar: ${if (barn.harForeldreAnsvar) "Ja" else "Nei"}"
+        return "Har barn man ikke får barnetillegg for: ${if (barn.any {!it.harForeldreAnsvar}) "Nei" else "Ja"}"
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
