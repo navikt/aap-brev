@@ -18,8 +18,9 @@ const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
 const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNING"
+const val FAKTAGRUNNLAG_TYPE_FORELDREANSVAR : String = "FORELDREANSVAR"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
-
+const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
     KRAVDATO_UFORETRYGD(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD),
@@ -32,7 +33,8 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     SYKDOMSVURDERING(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING),
     FORHOLD_TIL_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER),
     YRKESSKADE_BEREGNING(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING),
-    YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
+    BARN_UTEN_BARNETILLEGG(FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG),
+    YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -158,6 +160,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
 
 
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING)
     data class YrkesskadeBeregning(
         val yrkesskader: List<Yrkesskade>,
@@ -171,8 +174,21 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         )
     }
 
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG)
+    data class BarnUtenBarnetillegg(
+        val barn: List<Barn>
+    ) : Faktagrunnlag(FaktagrunnlagType.BARN_UTEN_BARNETILLEGG) {
+        data class Barn(
+            val harForeldreAnsvar: Boolean,
+            val begrunnelse: String,
+            val erFosterforelder: Boolean? = null,
+        )
+    }
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
     data class YrkesskadeISøknadIkkeIRegister(
         val verdi: Boolean,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
+
+
 }

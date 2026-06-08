@@ -178,7 +178,15 @@ class FaktagrunnlagService(
                         faktagrunnlag.andelAvNedsettelseSomSkyldesYrkesskade?.let { andel ->
                             put(KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN, "$andel%")
                         }
+
                     }
+
+                   /* is Faktagrunnlag.BarnUtenBarnetillegg -> {
+                        put(
+                            KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
+                        )
+                    }*/
+
                     else -> {}
                 }
             }
@@ -213,6 +221,12 @@ class FaktagrunnlagService(
             refusjonskravTjenestepensjon.tilOgMed,
             språk
         )
+    }
+
+    private fun barnUtenBarnetilleggTekst(
+        barn: List<Faktagrunnlag.BarnUtenBarnetillegg.Barn>
+    ): String {
+        return "Har barn man ikke får barnetillegg for: ${if (barn.any {!it.harForeldreAnsvar}) "Nei" else "Ja"}"
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
