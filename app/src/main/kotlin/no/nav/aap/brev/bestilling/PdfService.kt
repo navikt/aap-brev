@@ -94,7 +94,7 @@ class PdfService(
                 saksnummer = bestilling.saksnummer,
                 brevmal = bestilling.brevmal,
                 brevdata = bestilling.brevdata,
-                dato = LocalDate.now(),
+                dato = LocalDate.now().formaterFullLengde(bestilling.språk),
                 språk = bestilling.språk,
                 signaturer = signaturer,
                 mottaker = GenererPdfRequest.Mottaker(
@@ -145,7 +145,7 @@ class PdfService(
             saksnummer = bestilling.saksnummer,
             brevmal = bestilling.brevmal,
             brevdata = bestilling.brevdata,
-            dato = LocalDate.now(),
+            dato = LocalDate.now().formaterFullLengde(bestilling.språk),
             språk = bestilling.språk,
             signaturer = signaturer,
             mottaker = GenererPdfRequest.Mottaker(
@@ -180,7 +180,7 @@ class PdfService(
             saksnummer = bestilling.saksnummer,
             brevmal = bestilling.brevmal,
             brevdata = bestilling.brevdata,
-            dato = LocalDate.now(),
+            dato = LocalDate.now().formaterFullLengde(bestilling.språk),
             språk = bestilling.språk,
             signaturer = signaturer,
             mottaker = GenererPdfRequest.Mottaker(
