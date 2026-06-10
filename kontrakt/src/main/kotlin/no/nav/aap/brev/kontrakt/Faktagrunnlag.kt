@@ -156,6 +156,12 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
         )
+
+        data class FritakMeldeplikt(
+            val harFritak: Boolean,
+            val fraDato: LocalDate,
+            val tilDato: LocalDate?,
+        )
     }
 
 
