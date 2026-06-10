@@ -19,6 +19,7 @@ const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
 const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNING"
 const val FAKTAGRUNNLAG_TYPE_FORELDREANSVAR : String = "FORELDREANSVAR"
+const val FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT: String = "FRITAK_MELDEPLIKT"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
 const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
@@ -35,6 +36,7 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     YRKESSKADE_BEREGNING(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING),
     BARN_UTEN_BARNETILLEGG(FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG),
     YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
+    FRITAK_MELDEPLIKT(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -156,16 +158,21 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
         )
+    }
 
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT)
+    data class FritakMeldepliktGrunnlag(
+        val harFritak: Boolean,
+        val fraDato: LocalDate,
+        val tilDato: LocalDate?,
+    ): Faktagrunnlag(FaktagrunnlagType.FRITAK_MELDEPLIKT) {
         data class FritakMeldeplikt(
             val harFritak: Boolean,
             val fraDato: LocalDate,
             val tilDato: LocalDate?,
         )
     }
-
-
-
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING)
     data class YrkesskadeBeregning(
