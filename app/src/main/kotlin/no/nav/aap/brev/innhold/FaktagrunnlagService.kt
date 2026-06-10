@@ -9,6 +9,7 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.miljo.Miljø
 import java.time.LocalDate
 
 /**
@@ -181,12 +182,13 @@ class FaktagrunnlagService(
 
                     }
 
-                   /* is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                        put(
-                            KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
-                        )
-                    }*/
-
+                    is Faktagrunnlag.BarnUtenBarnetillegg -> {
+                        if (Miljø.erDev()) {
+                            put(
+                                KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
+                            )
+                        }
+                    }
                     else -> {}
                 }
             }
@@ -221,12 +223,6 @@ class FaktagrunnlagService(
             refusjonskravTjenestepensjon.tilOgMed,
             språk
         )
-    }
-
-    private fun barnUtenBarnetilleggTekst(
-        barn: List<Faktagrunnlag.BarnUtenBarnetillegg.Barn>
-    ): String {
-        return "Har barn man ikke får barnetillegg for: ${if (barn.any {!it.harForeldreAnsvar}) "Nei" else "Ja"}"
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
