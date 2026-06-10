@@ -1,10 +1,10 @@
 [versions]
-ktor = "3.4.3"
+ktor = "3.5.0"
 komponenter = "2.0.71"
 tilgang = "1.0.225"
-junit = "6.0.3"
+junit = "6.1.0"
 testcontainers = "2.0.5"
-jackson = "2.21.3"
+jackson = "2.22.0"
 
 [libraries]
 ktorServerContentNegotation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -36,11 +36,11 @@ jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.11" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.5.0" }
+flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.8.1" }
 
-joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9" }
+joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
-logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.32" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.34" }
 logstashLogbackEncoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "9.0" }
 micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.16.5" }
 
@@ -50,7 +50,7 @@ junitJupiterParams = { module = "org.junit.jupiter:junit-jupiter-params", versio
 
 assertJ = { module = "org.assertj:assertj-core", version = "3.27.7" }
 testcontainersPostgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
-mockk = { module = "io.mockk:mockk", version = "1.14.9" }
+mockk = { module = "io.mockk:mockk", version = "1.14.11" }
 
 ktorOpenApiGenerator = { module = "no.nav.aap.kelvin:ktor-openapi-generator", version.ref = "komponenter" }
 
