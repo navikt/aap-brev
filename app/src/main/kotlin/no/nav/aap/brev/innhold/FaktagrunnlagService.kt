@@ -189,6 +189,15 @@ class FaktagrunnlagService(
                             )
                         }
                     }
+
+                    is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
+                        if (Miljø.erDev()) {
+                            put(
+                                KjentFaktagrunnlag.REFUSJONSKRAV_TJENESTEPENSJON,
+                                fritakMeldepliktTekst(faktagrunnlag, språk)
+                            )
+                        }
+                    }
                     else -> {}
                 }
             }
@@ -221,6 +230,16 @@ class FaktagrunnlagService(
         return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " + periodeTilTekst(
             refusjonskravTjenestepensjon.fraOgMed,
             refusjonskravTjenestepensjon.tilOgMed,
+            språk
+        )
+    }
+
+    private fun fritakMeldepliktTekst(
+        fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag, språk: Språk
+    ): String {
+        return "Bruker har meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
+            fritakMeldeplikt.fraDato,
+            fritakMeldeplikt.tilDato,
             språk
         )
     }
