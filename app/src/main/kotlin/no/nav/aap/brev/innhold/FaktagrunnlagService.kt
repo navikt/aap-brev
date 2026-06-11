@@ -194,7 +194,7 @@ class FaktagrunnlagService(
                         if (Miljø.erDev()) {
                             put(
                                 KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
-                                fritakMeldepliktTekst(faktagrunnlag, språk)
+                                fritakMeldepliktTekst(faktagrunnlag.fritakframeldpliktGrunnlag, språk)
                             )
                         }
                     }
@@ -235,9 +235,9 @@ class FaktagrunnlagService(
     }
 
     private fun fritakMeldepliktTekst(
-        fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag, språk: Språk
+        fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldeplikt, språk: Språk
     ): String {
-        return "Bruker har meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
+        return "Bruker har fritak fra meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
             fritakMeldeplikt.fraDato,
             fritakMeldeplikt.tilDato,
             språk
