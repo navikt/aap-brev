@@ -193,7 +193,7 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
                         if (Miljø.erDev()) {
                             put(
-                                KjentFaktagrunnlag.REFUSJONSKRAV_TJENESTEPENSJON,
+                                KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
                                 fritakMeldepliktTekst(faktagrunnlag, språk)
                             )
                         }
