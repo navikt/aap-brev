@@ -163,9 +163,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT)
     data class FritakMeldepliktGrunnlag(
-        val harFritak: Boolean,
-        val fraDato: LocalDate,
-        val tilDato: LocalDate?,
+        val fritakframeldpliktGrunnlag: List<FritakMeldeplikt>
     ): Faktagrunnlag(FaktagrunnlagType.FRITAK_MELDEPLIKT) {
         data class FritakMeldeplikt(
             val harFritak: Boolean,
