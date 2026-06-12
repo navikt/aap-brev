@@ -68,6 +68,8 @@ class SignaturService(
             Brevtype.FORVALTNINGSMELDING,
             Brevtype.KLAGE_MOTTATT,
             Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
+            Brevtype.VEDTAK_11_18_OPPHØR_FULL_UFØR,
+            Brevtype.VEDTAK_11_18_OPPHØR_DELVIS_UFØR,
                 -> {
                 true
             }

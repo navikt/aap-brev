@@ -198,6 +198,14 @@ class FaktagrunnlagService(
                             )
                         }
                     }
+
+                    is Faktagrunnlag.InnvilgetUføretrygd -> {
+                        put(
+                            KjentFaktagrunnlag.INNVILGET_UFØRETRYGD_VIRKNINGSTIDSPUNKT,
+                            faktagrunnlag.virkningsTidspunkt.formaterFullLengde(språk)
+                        )
+                    }
+
                     else -> {}
                 }
             }
