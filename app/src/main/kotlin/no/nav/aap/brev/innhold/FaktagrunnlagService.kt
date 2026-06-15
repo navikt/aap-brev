@@ -12,6 +12,7 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
+import kotlin.collections.joinToString
 
 /**
  * Fyller inn inline tekst-verdier i brevet ved å erstatte [no.nav.aap.brev.kontrakt.BlokkInnhold.Faktagrunnlag]-placeholders
@@ -247,13 +248,15 @@ class FaktagrunnlagService(
     }
 
     private fun fritakMeldepliktTekst(
-        fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldeplikt, språk: Språk
+        fritakMeldepliktListe: List<Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldepliktVurdering>, språk: Språk
     ): String {
-        return "Bruker har fritak fra meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
-            fritakMeldeplikt.fraDato,
-            fritakMeldeplikt.tilDato,
-            språk
-        )
+        return fritakMeldepliktListe.joinToString(separator = "\n") { fritakMeldeplikt ->
+            "Bruker har fritak fra meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
+                fritakMeldeplikt.fraDato,
+                fritakMeldeplikt.tilDato,
+                språk
+            )
+        }
     }
 
     private fun BlokkInnhold.Faktagrunnlag.tilFormattertTekst(tekst: String): FormattertTekst {
