@@ -57,7 +57,6 @@ class FaktagrunnlagService(
     ): Map<KjentFaktagrunnlag, String> {
         return buildMap {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
-                log.info("Hva slags faktagrunnlag finnes? $faktagrunnlag")
                 when (faktagrunnlag) {
 
 
@@ -197,7 +196,6 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
                         if (Miljø.erDev()) {
-                            log.info("Fritak meldeplikt grunnlag skal med")
                             put(
                                 KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
                                 fritakMeldepliktTekst(faktagrunnlag.fritakMeldepliktGrunnlag, språk)
@@ -251,7 +249,6 @@ class FaktagrunnlagService(
     private fun fritakMeldepliktTekst(
         fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldeplikt, språk: Språk
     ): String {
-        log.info("Genererer tekst for fritak meldeplikt: harFritak=${fritakMeldeplikt.harFritak}, fraDato=${fritakMeldeplikt.fraDato}, tilDato=${fritakMeldeplikt.tilDato}")
         return "Bruker har fritak fra meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
             fritakMeldeplikt.fraDato,
             fritakMeldeplikt.tilDato,
