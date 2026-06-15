@@ -58,7 +58,9 @@ class FaktagrunnlagService(
     ): Map<KjentFaktagrunnlag, String> {
         return buildMap {
             alleFaktagrunnlag.forEach { faktagrunnlag ->
+                log.info("Hva slags faktagrunnlag finnes? $faktagrunnlag")
                 when (faktagrunnlag) {
+
 
                     is Faktagrunnlag.AapFomDato -> put(
                         KjentFaktagrunnlag.AAP_FOM_DATO,
