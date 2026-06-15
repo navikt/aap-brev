@@ -2,6 +2,7 @@ package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
+import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -10,6 +11,7 @@ import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 /**
@@ -28,6 +30,8 @@ class FaktagrunnlagService(
             )
         }
     }
+
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     fun fyllInnFaktagrunnlag(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
@@ -192,9 +196,10 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
                         if (Miljø.erDev()) {
+                            log.info("Fritak meldeplikt grunnlag skal med")
                             put(
                                 KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
-                                fritakMeldepliktTekst(faktagrunnlag.fritakframeldpliktGrunnlag, språk)
+                                fritakMeldepliktTekst(faktagrunnlag.fritakframeldepliktGrunnlag, språk)
                             )
                         }
                     }
@@ -245,6 +250,7 @@ class FaktagrunnlagService(
     private fun fritakMeldepliktTekst(
         fritakMeldeplikt: Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldeplikt, språk: Språk
     ): String {
+        log.info("Genererer tekst for fritak meldeplikt: harFritak=${fritakMeldeplikt.harFritak}, fraDato=${fritakMeldeplikt.fraDato}, tilDato=${fritakMeldeplikt.tilDato}")
         return "Bruker har fritak fra meldeplikt: ${if (fritakMeldeplikt.harFritak) "Ja" else "Nei"}, " + periodeTilTekst(
             fritakMeldeplikt.fraDato,
             fritakMeldeplikt.tilDato,
