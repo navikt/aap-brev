@@ -2,7 +2,6 @@ package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
-import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.BlokkInnhold.FormattertTekst
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -201,7 +200,7 @@ class FaktagrunnlagService(
                             log.info("Fritak meldeplikt grunnlag skal med")
                             put(
                                 KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
-                                fritakMeldepliktTekst(faktagrunnlag.fritakframeldepliktGrunnlag, språk)
+                                fritakMeldepliktTekst(faktagrunnlag.fritakMeldepliktGrunnlag, språk)
                             )
                         }
                     }

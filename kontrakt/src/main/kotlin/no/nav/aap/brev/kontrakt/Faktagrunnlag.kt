@@ -166,7 +166,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT)
     data class FritakMeldepliktGrunnlag(
-        val fritakframeldepliktGrunnlag: FritakMeldeplikt
+        val fritakMeldepliktGrunnlag: FritakMeldeplikt
     ): Faktagrunnlag(FaktagrunnlagType.FRITAK_MELDEPLIKT) {
         data class FritakMeldeplikt(
             val harFritak: Boolean,
