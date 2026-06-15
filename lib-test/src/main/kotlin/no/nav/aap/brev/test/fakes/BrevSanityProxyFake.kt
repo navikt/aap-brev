@@ -111,6 +111,8 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,
                 Brevtype.VEDTAK_11_17,
                 Brevtype.VEDTAK_11_18,
+                Brevtype.VEDTAK_11_18_OPPHØR_FULL_UFØR,
+                Brevtype.VEDTAK_11_18_OPPHØR_DELVIS_UFØR,
                 Brevtype.AVSLAG,
                 Brevtype.VEDTAK_ENDRING,
                 Brevtype.BARNETILLEGG_SATS_REGULERING,
