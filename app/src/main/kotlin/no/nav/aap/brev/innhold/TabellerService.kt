@@ -115,7 +115,7 @@ class TabellerService {
                     Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
                         yrkesskadedato = LocalDate.of(2026, 1, 1),
                         arbeidsinntektPaaSkadetidspunktet = (Random.nextInt(300000) + 200000).toBigDecimal(),
-                        diagnose = "pjusk",
+                        diagnose = "Personlighetsforstyrrelse",
                         relevantForArbeidsevne = true,
                     ),
                     Faktagrunnlag.YrkesskadeBeregning.Yrkesskade(
