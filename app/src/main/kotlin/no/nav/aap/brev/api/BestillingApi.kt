@@ -31,17 +31,19 @@ import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
 import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedGet
 import no.nav.aap.tilgang.authorizedPost
 import no.nav.aap.tilgang.authorizedPut
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import javax.sql.DataSource
 
 fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
-
+    val logger = LoggerFactory.getLogger(this::class.java)
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
         applicationRole = "bestill-brev",
@@ -54,6 +56,8 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
                 MDC.putCloseable(MDCNøkler.SAKSNUMMER.key, request.saksnummer).use {
                     MDC.putCloseable(MDCNøkler.BEHANDLING_REFERANSE.key, request.behandlingReferanse.toString())
                         .use {
+                            if (Miljø.erDev())
+                                logger.info("/v2/bestill: $request")
                             val bestillingResultat = dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection).opprettBestillingV2(
                                     saksnummer = Saksnummer(request.saksnummer),
