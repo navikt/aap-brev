@@ -8,6 +8,7 @@ import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.bestilling.Brevmal
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.test.BrevmalBuilder
@@ -546,6 +547,59 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 fritekster = emptyList()
             )
             brevbestillingRepository.oppdaterBrevdata(bestilling.id, oppdater(eksisterendeBrevdata))
+        }
+    }
+
+    @Test
+    fun `lagreInitiellBrevdata velger arbeidsevne-delmalen automatisk ved INNVILGELSE`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.INNVILGELSE
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID
+                }
+            })
+
+            lagreInitiellBrevdata(bestilling.referanse, emptySet())
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(2)
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .contains(BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID)
+        }
+    }
+
+    @Test
+    fun `lagreInitiellBrevdata velger IKKE arbeidsevne-delmalen ved AVSLAG`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.AVSLAG
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID
+                }
+            })
+
+            lagreInitiellBrevdata(bestilling.referanse, emptySet())
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(1)  // Only obligatorisk
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .doesNotContain(BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID)
         }
     }
 }
