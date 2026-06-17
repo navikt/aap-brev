@@ -72,21 +72,25 @@ class BrevbyggerService(
     }
 
     private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype): List<Brevdata.Delmal> {
-        val alleValgteDelmaler = mutableSetOf<String>()
+        if (Miljø.erDev()) {
+            val alleValgteDelmaler = mutableSetOf<String>()
 
-        brevmal.delmaler.filter { it.obligatorisk }
-            .forEach { alleValgteDelmaler.add(it.delmal._id) }
+            brevmal.delmaler.filter { it.obligatorisk }
+                .forEach { alleValgteDelmaler.add(it.delmal._id) }
 
-        when (brevtype) {
-            Brevtype.INNVILGELSE -> {
-                brevmal.delmaler
-                    .find { it.delmal._id == ARBEIDSEVNE_OG_BEHOV_DELMAL_ID }
-                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
+            when (brevtype) {
+                Brevtype.INNVILGELSE -> {
+                    brevmal.delmaler
+                        .find { it.delmal._id == ARBEIDSEVNE_OG_BEHOV_DELMAL_ID }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+
+                else -> {}
             }
-            else -> {}
+            return alleValgteDelmaler.map { Brevdata.Delmal(it) }
+        } else {
+            return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
         }
-
-        return alleValgteDelmaler.map { Brevdata.Delmal(it) }
     }
 
     private fun utledFaktagrunnlagMedVerdi(
@@ -144,11 +148,16 @@ class BrevbyggerService(
                         leggTilHvis(KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT) { faktagrunnlag.verdi }
                     }
                 }
+
                 else -> emptySet()
             }
         }.toSet()
-        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG}
-        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.HAR_FRITAK_MELDEPLIKT}
+        if (Miljø.erDev()) {
+            kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG
+        }
+        if (Miljø.erDev()) {
+            kategorier = kategorier + KjentKategori.HAR_FRITAK_MELDEPLIKT
+        }
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 
