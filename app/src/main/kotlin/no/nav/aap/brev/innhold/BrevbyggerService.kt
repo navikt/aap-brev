@@ -7,6 +7,7 @@ import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
 import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
+import no.nav.aap.brev.distribusjon.DistribusjonService
 import no.nav.aap.brev.innhold.KjentKategori.HAR_FRADRAG_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON
@@ -24,6 +25,7 @@ import no.nav.aap.brev.kontrakt.Faktagrunnlag.YrkesskadeISøknadIkkeIRegister
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
+import org.slf4j.LoggerFactory
 import java.math.BigDecimal
 import kotlin.collections.filterIsInstance
 import kotlin.collections.joinToString
@@ -33,6 +35,8 @@ class BrevbyggerService(
     val faktagrunnlagService: FaktagrunnlagService,
     val tabellerService: TabellerService
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
         const val ARBEIDSEVNE_OG_BEHOV_DELMAL_ID = "48949e10-c13c-45d1-9c77-7994302b8885"
@@ -71,9 +75,14 @@ class BrevbyggerService(
     private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype): List<Brevdata.Delmal> {
         if (Miljø.erDev()) {
             val alleValgteDelmaler = mutableSetOf<String>()
-
-            brevmal.delmaler.filter { it.obligatorisk }
-                .forEach { alleValgteDelmaler.add(it.delmal._id) }
+            logger.info("Valgte delmaler $alleValgteDelmaler")
+            brevmal.delmaler
+                .filter { it.obligatorisk }
+                .forEach { delmalValg ->
+                    val delmalId = delmalValg.delmal._id
+                    alleValgteDelmaler.add(delmalId)
+                    logger.info("Legger til obligatorisk delmalId={}", delmalId)
+                }
 
             when (brevtype) {
                 Brevtype.INNVILGELSE -> {
@@ -84,6 +93,8 @@ class BrevbyggerService(
 
                 else -> {}
             }
+            logger.info("Brevtype er $brevtype")
+            logger.info("Alle valgte delmaler $alleValgteDelmaler")
             return alleValgteDelmaler.map { Brevdata.Delmal(it) }
         } else {
             return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
