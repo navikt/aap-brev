@@ -50,10 +50,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(
-            brevmal,
-            brevtype = bestilling.brevtype
-        )
+        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
