@@ -196,10 +196,14 @@ class FaktagrunnlagService(
                     }
 
                     is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
-                        if (Miljø.erDev()) {
+                        if (faktagrunnlag.fritakMeldepliktGrunnlag.any { it.harFritak }) {
                             put(
-                                KjentFaktagrunnlag.FRITAK_MELDEPLIKT,
-                                fritakMeldepliktTekst(faktagrunnlag.fritakMeldepliktGrunnlag, språk)
+                                KjentFaktagrunnlag.FRITAK_MELDEPLIKT_PERIODER,
+                                perioderForMeldepliktFritak(faktagrunnlag, språk)
+                            )
+                            put(
+                                KjentFaktagrunnlag.FRITAK_MELDEPLIKT, //TODO FJERN
+                                perioderForMeldepliktFritak(faktagrunnlag, språk)
                             )
                         }
                     }
@@ -216,6 +220,18 @@ class FaktagrunnlagService(
             }
         }
     }
+
+    private fun perioderForMeldepliktFritak(
+        faktagrunnlag: Faktagrunnlag.FritakMeldepliktGrunnlag,
+        språk: Språk
+    ): String = faktagrunnlag.fritakMeldepliktGrunnlag.filter { it.harFritak }
+        .joinToString(separator = "\n") {
+            if (it.tilDato != null) {
+                "${it.fraDato.formaterFullLengde(språk)} til ${it.tilDato!!.formaterFullLengde(språk)}"
+            } else {
+                "${it.fraDato.formaterFullLengde(språk)}"
+            }
+        }
 
     private fun MutableMap<KjentFaktagrunnlag, String>.putHvisIkkeTom(
         key: KjentFaktagrunnlag, verdier: List<String>

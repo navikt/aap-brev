@@ -157,14 +157,21 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
+                    buildSet {
+                        add(if (faktagrunnlag.fritakMeldepliktGrunnlag.any{ it.harFritak}){
+                            KjentKategori.HAR_FRITAK_MELDEPLIKT
+                        } else {
+                            KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT
+                        })
+                    }
+                }
+
                 else -> emptySet()
             }
         }.toSet()
         if (Miljø.erDev()) {
             kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG
-        }
-        if (Miljø.erDev()) {
-            kategorier = kategorier + KjentKategori.HAR_FRITAK_MELDEPLIKT
         }
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
