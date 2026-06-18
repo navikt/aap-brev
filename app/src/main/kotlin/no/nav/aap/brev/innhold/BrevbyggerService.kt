@@ -35,7 +35,7 @@ class BrevbyggerService(
 ) {
 
     companion object {
-        const val ARBEIDSEVNE_OG_BEHOV_DELMAL_ID = "arbeidsevne-og-behov-for-bistand-id"
+        const val ARBEIDSEVNE_OG_BEHOV_DELMAL_ID = "48949e10-c13c-45d1-9c77-7994302b8885"
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
