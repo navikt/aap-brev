@@ -14,6 +14,7 @@ import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SYKESTIPEND
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Faktagrunnlag.ForholdTilAndreYtelser
 import no.nav.aap.brev.kontrakt.Faktagrunnlag.GrunnlagBeregning
@@ -34,6 +35,7 @@ class BrevbyggerService(
 ) {
 
     companion object {
+        const val ARBEIDSEVNE_OG_BEHOV_DELMAL_ID = "48949e10-c13c-45d1-9c77-7994302b8885"
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -48,7 +50,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal)
+        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
@@ -66,8 +68,26 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal): List<Brevdata.Delmal> {
-        return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype): List<Brevdata.Delmal> {
+        if (Miljø.erDev()) {
+            val alleValgteDelmaler = mutableSetOf<String>()
+
+            brevmal.delmaler.filter { it.obligatorisk }
+                .forEach { alleValgteDelmaler.add(it.delmal._id) }
+
+            when (brevtype) {
+                Brevtype.INNVILGELSE -> {
+                    brevmal.delmaler
+                        .find { it.delmal._id == ARBEIDSEVNE_OG_BEHOV_DELMAL_ID }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+
+                else -> {}
+            }
+            return alleValgteDelmaler.map { Brevdata.Delmal(it) }
+        } else {
+            return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
+        }
     }
 
     private fun utledFaktagrunnlagMedVerdi(
@@ -125,11 +145,16 @@ class BrevbyggerService(
                         leggTilHvis(KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT) { faktagrunnlag.verdi }
                     }
                 }
+
                 else -> emptySet()
             }
         }.toSet()
-        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG}
-        if (Miljø.erDev()) { kategorier = kategorier + KjentKategori.HAR_FRITAK_MELDEPLIKT}
+        if (Miljø.erDev()) {
+            kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG
+        }
+        if (Miljø.erDev()) {
+            kategorier = kategorier + KjentKategori.HAR_FRITAK_MELDEPLIKT
+        }
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 
@@ -316,4 +341,6 @@ class BrevbyggerService(
         return block.children.filterIsInstance<BlockChildren.Faktagrunnlag>()
             .map { it.tekniskNavn }
     }
+
+
 }
