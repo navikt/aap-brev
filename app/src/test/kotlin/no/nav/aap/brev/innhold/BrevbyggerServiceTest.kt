@@ -565,7 +565,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 delmal { obligatorisk = true }
                 delmal {
                     obligatorisk = false
-                    _id = BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID
+                    _id = DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id
                 }
             })
 
@@ -574,7 +574,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
             assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(2)
             assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
-                .contains(BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID)
+                .contains(DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id)
         }
     }
 
@@ -592,7 +592,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 delmal { obligatorisk = true }
                 delmal {
                     obligatorisk = false
-                    _id = BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID
+                    _id = DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id
                 }
             })
 
@@ -601,7 +601,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
             assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(1)  // Only obligatorisk
             assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
-                .doesNotContain(BrevbyggerService.ARBEIDSEVNE_OG_BEHOV_DELMAL_ID)
+                .doesNotContain(DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id)
         }
     }
 }

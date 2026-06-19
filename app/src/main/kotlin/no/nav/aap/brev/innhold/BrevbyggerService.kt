@@ -7,7 +7,6 @@ import no.nav.aap.brev.feil.valider
 import no.nav.aap.brev.bestilling.Brevmal
 import no.nav.aap.brev.bestilling.Brevmal.BlockChildren
 import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
-import no.nav.aap.brev.distribusjon.DistribusjonService
 import no.nav.aap.brev.innhold.KjentKategori.HAR_FRADRAG_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON
@@ -39,7 +38,6 @@ class BrevbyggerService(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
-        const val ARBEIDSEVNE_OG_BEHOV_DELMAL_ID = "48949e10-c13c-45d1-9c77-7994302b8885"
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -75,26 +73,22 @@ class BrevbyggerService(
     private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype): List<Brevdata.Delmal> {
         if (Miljø.erDev()) {
             val alleValgteDelmaler = mutableSetOf<String>()
-            logger.info("Valgte delmaler $alleValgteDelmaler")
             brevmal.delmaler
                 .filter { it.obligatorisk }
                 .forEach { delmalValg ->
                     val delmalId = delmalValg.delmal._id
                     alleValgteDelmaler.add(delmalId)
-                    logger.info("Legger til obligatorisk delmalId={}", delmalId)
                 }
 
             when (brevtype) {
                 Brevtype.INNVILGELSE -> {
                     brevmal.delmaler
-                        .find { it.delmal._id == ARBEIDSEVNE_OG_BEHOV_DELMAL_ID }
+                        .find { it.delmal._id == DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }
 
                 else -> {}
             }
-            logger.info("Brevtype er $brevtype")
-            logger.info("Alle valgte delmaler $alleValgteDelmaler")
             return alleValgteDelmaler.map { Brevdata.Delmal(it) }
         } else {
             return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
