@@ -71,34 +71,30 @@ class BrevbyggerService(
     }
 
     private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>): List<Brevdata.Delmal> {
-        if (Miljø.erDev()) {
-            val alleValgteDelmaler = mutableSetOf<String>()
-            brevmal.delmaler
-                .filter { it.obligatorisk }
-                .forEach { delmalValg ->
-                    val delmalId = delmalValg.delmal._id
-                    alleValgteDelmaler.add(delmalId)
-                }
-
-            when (brevtype) {
-                Brevtype.INNVILGELSE -> {
-                    brevmal.delmaler
-                        .find { it.delmal._id == DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id }
-                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
-
-                    if (kategorier.any { it == KjentKategori.HAR_FRITAK_MELDEPLIKT || it == KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT }) {
-                        brevmal.delmaler
-                            .find { it.delmal._id == DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id }
-                            ?.let { alleValgteDelmaler.add(it.delmal._id) }
-                    }
-                }
-
-                else -> {}
+        val alleValgteDelmaler = mutableSetOf<String>()
+        brevmal.delmaler
+            .filter { it.obligatorisk }
+            .forEach { delmalValg ->
+                val delmalId = delmalValg.delmal._id
+                alleValgteDelmaler.add(delmalId)
             }
-            return alleValgteDelmaler.map { Brevdata.Delmal(it) }
-        } else {
-            return brevmal.delmaler.filter { it.obligatorisk }.map { Brevdata.Delmal(it.delmal._id) }
+
+        when (brevtype) {
+            Brevtype.INNVILGELSE -> {
+                brevmal.delmaler
+                    .find { it.delmal._id == DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id }
+                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
+
+                if (kategorier.any { it == KjentKategori.HAR_FRITAK_MELDEPLIKT || it == KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT }) {
+                    brevmal.delmaler
+                        .find { it.delmal._id == DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+            }
+
+            else -> {}
         }
+        return alleValgteDelmaler.map { Brevdata.Delmal(it) }
     }
 
     private fun utledFaktagrunnlagMedVerdi(
