@@ -169,6 +169,7 @@ class BrevbyggerService(
         if (Miljø.erDev()) {
             kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG
         }
+        kategorier = setOf(KjentKategori.ARBEIDSEVNE_OG_BEHOV_FOR_BISTAND)
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
 
