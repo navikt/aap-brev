@@ -52,7 +52,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype)
+        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype, kategorier)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
@@ -70,7 +70,7 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>): List<Brevdata.Delmal> {
         if (Miljø.erDev()) {
             val alleValgteDelmaler = mutableSetOf<String>()
             brevmal.delmaler
@@ -85,6 +85,12 @@ class BrevbyggerService(
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
+
+                    if (kategorier.any { it == KjentKategori.HAR_FRITAK_MELDEPLIKT || it == KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT }) {
+                        brevmal.delmaler
+                            .find { it.delmal._id == DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id }
+                            ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                    }
                 }
 
                 else -> {}
