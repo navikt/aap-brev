@@ -552,7 +552,6 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    @Disabled //Enables når feature toggle er av
     fun `lagreInitiellBrevdata velger arbeidsevne-delmalen automatisk ved INNVILGELSE`() {
         dataSource.transaction { connection ->
             val bestilling = opprettBrevbestilling(
@@ -579,8 +578,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    @Disabled //Enables når feature toggle er av
-    fun `lagreInitiellBrevdata velger arbeidsevne-delmalen automatisk ved INNVILGELSE når det er fritak`() {
+    fun `lagreInitiellBrevdata velger fritak-delmalen automatisk ved INNVILGELSE når det er fritak`() {
         dataSource.transaction { connection ->
             val bestilling = opprettBrevbestilling(
                 brukV3 = true,
