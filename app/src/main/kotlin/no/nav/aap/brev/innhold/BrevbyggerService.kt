@@ -165,9 +165,7 @@ class BrevbyggerService(
 
                 is Faktagrunnlag.BarnUtenBarnetillegg -> {
                     buildSet {
-                        if (Miljø.erDev()) {
-                            add(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
-                        }
+                        add(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
                     }
                 }
 
