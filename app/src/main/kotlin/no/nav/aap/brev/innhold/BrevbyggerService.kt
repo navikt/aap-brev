@@ -163,12 +163,16 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.BarnUtenBarnetillegg -> {
+                    buildSet {
+                        add(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
+                    }
+                }
+
                 else -> emptySet()
             }
         }.toSet()
-        if (Miljø.erDev()) {
-            kategorier = kategorier + KjentKategori.HAR_BARN_UTEN_BARNETILLEGG
-        }
+
         kategorier = kategorier + KjentKategori.ARBEIDSEVNE_OG_BEHOV_FOR_BISTAND
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
     }
