@@ -579,6 +579,37 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
+    @Disabled //Enables når feature toggle er av
+    fun `lagreInitiellBrevdata velger arbeidsevne-delmalen automatisk ved INNVILGELSE når det er fritak`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.INNVILGELSE
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id
+                }
+            })
+
+            lagreInitiellBrevdata(bestilling.referanse, setOf(Faktagrunnlag.FritakMeldepliktGrunnlag(
+                listOf(Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldepliktVurdering(
+                    true,
+                    LocalDate.now(), null
+                )))))
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(2)
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .contains(DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id)
+        }
+    }
+
+    @Test
     fun `lagreInitiellBrevdata velger IKKE arbeidsevne-delmalen ved AVSLAG`() {
         dataSource.transaction { connection ->
             val bestilling = opprettBrevbestilling(
@@ -602,6 +633,33 @@ class BrevbyggerServiceTest : IntegrationTest() {
             assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(1)  // Only obligatorisk
             assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
                 .doesNotContain(DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id)
+        }
+    }
+
+    @Test
+    fun `lagreInitiellBrevdata velger IKKE fritak-meldeplikt-delmalen ved AVSLAG`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.AVSLAG
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id
+                }
+            })
+
+            lagreInitiellBrevdata(bestilling.referanse, emptySet())
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(1)  // Only obligatorisk
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .doesNotContain(DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id)
         }
     }
 }
