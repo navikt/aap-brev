@@ -164,9 +164,8 @@ class BrevbyggerService(
                 }
 
                 is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                    buildSet {
-                        add(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
-                    }
+                    logger.info("Barn uten barnetillegg: {}", faktagrunnlag)
+                    emptySet()
                 }
 
                 else -> emptySet()
