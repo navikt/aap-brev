@@ -165,7 +165,11 @@ class BrevbyggerService(
 
                 is Faktagrunnlag.BarnUtenBarnetillegg -> {
                     logger.info("Barn uten barnetillegg: {}", faktagrunnlag)
-                    emptySet()
+                    if (faktagrunnlag.barn.isNotEmpty()) {
+                        setOf(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
+                    } else {
+                        emptySet()
+                    }
                 }
 
                 else -> emptySet()
