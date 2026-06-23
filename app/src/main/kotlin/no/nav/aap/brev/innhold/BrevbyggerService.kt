@@ -90,6 +90,12 @@ class BrevbyggerService(
                         .find { it.delmal._id == DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }
+
+                if (kategorier.any { it == KjentKategori.HAR_BARNETILLEGG || it == KjentKategori.HAR_BARN_UTEN_BARNETILLEGG }) {
+                    brevmal.delmaler
+                        .find { it.delmal._id == DelmalSpesifikasjon.BARNETILLEGG.id }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
             }
 
             else -> {}
