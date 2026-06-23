@@ -188,11 +188,9 @@ class FaktagrunnlagService(
                     }
 
                     is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                        if (Miljø.erDev()) {
-                            put(
-                                KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
-                            )
-                        }
+                        put(
+                            KjentFaktagrunnlag.ANTALL_BARN_UTEN_BARNETILLEGG, faktagrunnlag.barn.size.toString()
+                        )
                     }
 
                     is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
