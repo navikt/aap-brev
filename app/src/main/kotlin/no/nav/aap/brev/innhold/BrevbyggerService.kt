@@ -178,11 +178,6 @@ class BrevbyggerService(
                     }
                 }
 
-                is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                    emptyList()
-                }
-
-
                 else -> emptySet()
             }
         }.toSet()
