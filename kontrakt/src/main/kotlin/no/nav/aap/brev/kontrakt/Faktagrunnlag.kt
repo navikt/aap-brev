@@ -181,7 +181,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val andelAvNedsettelseSomSkyldesYrkesskade: Int?,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_BEREGNING) {
         data class Yrkesskade(
-            val yrkesskadedato: LocalDate,
+            val yrkesskadedato: LocalDate?,
             val arbeidsinntektPaaSkadetidspunktet: BigDecimal?,
             val relevantForArbeidsevne: Boolean,
             val diagnose: String?,
