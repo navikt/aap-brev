@@ -227,10 +227,10 @@ class TabellerService {
         yrkesskade: Faktagrunnlag.YrkesskadeBeregning.Yrkesskade,
         språk: Språk,
     ): List<Brevdata.Tabell.Rad.Celle> = listOfNotNull<Brevdata.Tabell.Rad.Celle>(
-        Brevdata.Tabell.Rad.Celle(
+        yrkesskade.yrkesskadedato?.let {  Brevdata.Tabell.Rad.Celle(
             kolonne = "YRKESSKADEDATO",
-            verdi = yrkesskade.yrkesskadedato.formaterFullLengde(språk)
-        ),
+            verdi = it.formaterFullLengde(språk)
+        )},
         yrkesskade.arbeidsinntektPaaSkadetidspunktet?.let {
             Brevdata.Tabell.Rad.Celle(
                 kolonne = "ARBEIDSINNTEKT",
