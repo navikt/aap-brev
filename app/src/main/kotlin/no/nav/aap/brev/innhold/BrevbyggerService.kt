@@ -70,7 +70,11 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(
+        brevmal: Brevmal,
+        brevtype: Brevtype,
+        kategorier: Set<KjentKategori>
+    ): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
             .filter { it.obligatorisk }
@@ -161,11 +165,13 @@ class BrevbyggerService(
 
                 is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
                     buildSet {
-                        add(if (faktagrunnlag.fritakMeldepliktGrunnlag.any{ it.harFritak}){
-                            KjentKategori.HAR_FRITAK_MELDEPLIKT
-                        } else {
-                            KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT
-                        })
+                        add(
+                            if (faktagrunnlag.fritakMeldepliktGrunnlag.any { it.harFritak }) {
+                                KjentKategori.HAR_FRITAK_MELDEPLIKT
+                            } else {
+                                KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT
+                            }
+                        )
                     }
                 }
 
@@ -176,6 +182,10 @@ class BrevbyggerService(
                     } else {
                         emptySet()
                     }
+                }
+
+                is Faktagrunnlag.LovvalgMedlemskapVurdering -> {
+                    emptySet()
                 }
 
                 else -> emptySet()

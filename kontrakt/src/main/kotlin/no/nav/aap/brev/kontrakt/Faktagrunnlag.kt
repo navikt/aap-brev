@@ -3,6 +3,7 @@ package no.nav.aap.brev.kontrakt
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
+import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_LOVVALG_MEDLEMSKAP_VURDERING
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.Year
@@ -23,6 +24,7 @@ const val FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT: String = "FRITAK_MELDEPLIKT"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
 const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
 const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD : String = "INNVILGET_UFORETRYGD"
+const val FAKTAGRUNNLAG_TYPE_LOVVALG_MEDLEMSKAP_VURDERING : String = "LOVVALG_MEDLEMSKAP_VURDERING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -39,7 +41,8 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     BARN_UTEN_BARNETILLEGG(FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG),
     YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
     FRITAK_MELDEPLIKT(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT),
-    INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD)
+    INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD),
+    LOVVALG_MEDLEMSKAP_VURDERING(FAKTAGRUNNLAG_TYPE_LOVVALG_MEDLEMSKAP_VURDERING)
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -209,4 +212,8 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
 
+    @JsonTypeName("AVSLAG_ÅRSAK")
+    data class LovvalgMedlemskapVurdering(
+        val begrunnelse: String
+    ) : Faktagrunnlag(FaktagrunnlagType.LOVVALG_MEDLEMSKAP_VURDERING)
 }
