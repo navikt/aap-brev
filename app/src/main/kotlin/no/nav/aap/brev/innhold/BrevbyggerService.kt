@@ -101,7 +101,7 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                if (Miljø.erDev()  && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak == "AVSLAG_11_5"}) {
+                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak == AvslagAarsak.AVSLAG_11_5.name}) {
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_15.id}
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
