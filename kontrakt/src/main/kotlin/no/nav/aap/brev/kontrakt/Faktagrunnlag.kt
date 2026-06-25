@@ -3,7 +3,6 @@ package no.nav.aap.brev.kontrakt
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
-import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_LOVVALG_MEDLEMSKAP_VURDERING
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.Year
@@ -114,6 +113,11 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val begrunnelse: String,
     ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
 
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_LOVVALG_MEDLEMSKAP_VURDERING)
+    data class LovvalgMedlemskapVurdering(
+        val begrunnelse: String
+    ) : Faktagrunnlag(FaktagrunnlagType.LOVVALG_MEDLEMSKAP_VURDERING)
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER)
     data class ForholdTilAndreYtelser(
         val fradragAndreYtelser: List<FradragYtelse>,
@@ -212,8 +216,5 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
 
-    @JsonTypeName("AVSLAG_ÅRSAK")
-    data class LovvalgMedlemskapVurdering(
-        val begrunnelse: String
-    ) : Faktagrunnlag(FaktagrunnlagType.LOVVALG_MEDLEMSKAP_VURDERING)
+
 }

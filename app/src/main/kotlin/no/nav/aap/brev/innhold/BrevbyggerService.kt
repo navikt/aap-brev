@@ -184,10 +184,6 @@ class BrevbyggerService(
                     }
                 }
 
-                is Faktagrunnlag.LovvalgMedlemskapVurdering -> {
-                    emptySet()
-                }
-
                 else -> emptySet()
             }
         }.toSet()

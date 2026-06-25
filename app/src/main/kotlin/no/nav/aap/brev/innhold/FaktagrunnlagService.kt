@@ -171,6 +171,10 @@ class FaktagrunnlagService(
                         put(KjentFaktagrunnlag.SYKDOMSVURDERING, faktagrunnlag.begrunnelse)
                     }
 
+                    is Faktagrunnlag.LovvalgMedlemskapVurdering -> {
+                        put(KjentFaktagrunnlag.LOVVALGOGMEDLEMSSKAPVURDERING, faktagrunnlag.begrunnelse)
+                    }
+
                     is Faktagrunnlag.ForholdTilAndreYtelser -> {
                         faktagrunnlag.refusjonskravTjenestepensjon?.let {
                             put(
