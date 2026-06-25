@@ -52,7 +52,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype, kategorier)
+        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype, kategorier, faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
@@ -70,7 +70,7 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
             .filter { it.obligatorisk }
@@ -101,7 +101,7 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                if (Miljø.erDev() &&  (kategorier.any { it == KjentKategori.AVSLAG_11_15})) {
+                if (Miljø.erDev()  && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak == "AVSLAG_11_5"}) {
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_15.id}
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
