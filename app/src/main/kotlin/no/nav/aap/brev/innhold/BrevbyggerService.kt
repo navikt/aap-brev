@@ -101,7 +101,7 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                if (kategorier.any { it == KjentKategori.AVSLAG_11_15}) {
+                if (Miljø.erDev() &&  (kategorier.any { it == KjentKategori.AVSLAG_11_15})) {
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_15.id}
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
