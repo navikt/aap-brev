@@ -96,8 +96,17 @@ class BrevbyggerService(
                         .find { it.delmal._id == DelmalSpesifikasjon.BARNETILLEGG.id }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }
+
             }
 
+            Brevtype.AVSLAG ->
+            {
+                if (kategorier.any { it == KjentKategori.AVSLAG_11_15}) {
+                    brevmal.delmaler
+                        .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_15.id}
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+            }
             else -> {}
         }
         return alleValgteDelmaler.map { Brevdata.Delmal(it) }
