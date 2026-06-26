@@ -151,7 +151,7 @@ class TabellerService {
         ),
         Brevdata.Tabell.Rad.Celle(
             kolonne = "UFØREGRAD",
-            verdi = "${samordningUføre.uføregradProsent}%"
+            verdi = "${samordningUføre.uføregradProsent}"
         )
     )
 
@@ -205,7 +205,7 @@ class TabellerService {
         ),
         Brevdata.Tabell.Rad.Celle(
             kolonne = "GRADERING",
-            verdi = "${samordningYtelse.gradering}%"
+            verdi = "${samordningYtelse.gradering}"
         )
     )
 

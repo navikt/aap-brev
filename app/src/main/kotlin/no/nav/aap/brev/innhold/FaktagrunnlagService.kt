@@ -182,7 +182,7 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.YrkesskadeBeregning -> {
                         faktagrunnlag.andelAvNedsettelseSomSkyldesYrkesskade?.let { andel ->
-                            put(KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN, "$andel%")
+                            put(KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN, "$andel")
                         }
 
                     }

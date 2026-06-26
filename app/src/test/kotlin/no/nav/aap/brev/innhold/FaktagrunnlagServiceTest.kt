@@ -22,7 +22,7 @@ class FaktagrunnlagServiceTest {
 
         val resultat = service.faktagrunnlagTilTekst(faktagrunnlag, Språk.NB)
 
-        assertThat(resultat[KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN]).isEqualTo("70%")
+        assertThat(resultat[KjentFaktagrunnlag.YRKESSKADE_ANDEL_AV_NEDSETTELSEN]).isEqualTo("70")
     }
 
     @Test
