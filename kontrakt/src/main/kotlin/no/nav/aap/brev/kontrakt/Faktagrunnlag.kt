@@ -212,7 +212,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName("AVSLAG_AARSAK")
     data class AvslagAarsak(
-        val aarsak: String,
+        val aarsak: AvslagsÅrsak?,
     ) : Faktagrunnlag(FaktagrunnlagType.AVSLAG_AARSAK)
 
 }

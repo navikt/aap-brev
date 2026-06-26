@@ -14,6 +14,7 @@ import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SYKESTIPEND
+import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Faktagrunnlag.ForholdTilAndreYtelser
@@ -38,6 +39,13 @@ class BrevbyggerService(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
+
+        val regel11_5Årsaker = setOf(
+            AvslagsÅrsak.IKKE_SYKDOM_AV_VISS_VARIGHET,
+            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE,
+            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE_VESENTLIGDEL
+        )
+
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -101,7 +109,7 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak == AvslagAarsak.AVSLAG_11_5.name}) {
+                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak in regel11_5Årsaker}) {
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_5.id}
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }

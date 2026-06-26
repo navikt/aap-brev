@@ -215,7 +215,7 @@ class FaktagrunnlagService(
                     }
 
                     is Faktagrunnlag.AvslagAarsak -> {
-                        put(KjentFaktagrunnlag.AVSLAG_AARSAK, faktagrunnlag.aarsak)
+                        put(KjentFaktagrunnlag.AVSLAG_AARSAK, faktagrunnlag.aarsak?.name!!)
                     }
 
                     else -> {}
