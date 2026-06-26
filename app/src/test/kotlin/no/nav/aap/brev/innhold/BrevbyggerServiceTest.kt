@@ -8,6 +8,7 @@ import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.bestilling.Brevmal
+import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -17,6 +18,7 @@ import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -657,6 +659,41 @@ class BrevbyggerServiceTest : IntegrationTest() {
             assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(1)  // Only obligatorisk
             assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
                 .doesNotContain(DelmalSpesifikasjon.FRITAK_MELDEPLIKT.id)
+        }
+    }
+
+    @Test
+    @Disabled // Enable when in production
+    fun `lagreInitiellBrevdata velger regel 11_5-delmalen ved AVSLAG når ett av flere faktagrunnlag matcher`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.AVSLAG
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = DelmalSpesifikasjon.REGEL_11_5.id
+                }
+            })
+
+            lagreInitiellBrevdata(
+                bestilling.referanse,
+                setOf(
+                    Faktagrunnlag.AapFomDato(LocalDate.now()),
+                    Faktagrunnlag.AvslagAarsak(
+                        aarsak = AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE
+                    )
+                )
+            )
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .contains(DelmalSpesifikasjon.REGEL_11_5.id)
         }
     }
 }

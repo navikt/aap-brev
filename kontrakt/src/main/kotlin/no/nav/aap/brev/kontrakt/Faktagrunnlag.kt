@@ -210,7 +210,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
 
-    @JsonTypeName("AVSLAG_AARSAK")
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK)
     data class AvslagAarsak(
         val aarsak: AvslagsÅrsak?,
     ) : Faktagrunnlag(FaktagrunnlagType.AVSLAG_AARSAK)
