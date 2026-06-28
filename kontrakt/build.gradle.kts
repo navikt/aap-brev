@@ -9,14 +9,6 @@ plugins {
 
 group = "no.nav.aap.brev"
 
-kotlin {
-    jvmToolchain(21)
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0)
-    }
-}
-
 java {
     withSourcesJar()
 }
