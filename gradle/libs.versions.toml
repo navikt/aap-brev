@@ -2,7 +2,7 @@
 ktor = "3.4.3"
 komponenter = "2.0.80"
 tilgang = "1.0.226"
-junit = "6.0.3"
+junit = "6.1.0"
 testcontainers = "2.0.5"
 jackson = "2.22.0"
 
@@ -34,15 +34,15 @@ tilgangPluginKontrakt = { module = "no.nav.aap.tilgang:plugin-kontrakt", version
 jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
-hikariCp = { module = "com.zaxxer:HikariCP", version = "7.0.2" }
+hikariCp = { module = "com.zaxxer:HikariCP", version = "7.1.0" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.11" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.5.0" }
+flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.9.0" }
 
-joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9" }
+joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
-logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.32" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.36" }
 logstashLogbackEncoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "9.0" }
-micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.16.5" }
+micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.17.0" }
 
 junitApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junitJupiterEngine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
@@ -50,7 +50,7 @@ junitJupiterParams = { module = "org.junit.jupiter:junit-jupiter-params", versio
 
 assertJ = { module = "org.assertj:assertj-core", version = "3.27.7" }
 testcontainersPostgres = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
-mockk = { module = "io.mockk:mockk", version = "1.14.9" }
+mockk = { module = "io.mockk:mockk", version = "1.14.11" }
 
 ktorOpenApiGenerator = { module = "no.nav.aap.kelvin:ktor-openapi-generator", version.ref = "komponenter" }
 
