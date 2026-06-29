@@ -214,6 +214,12 @@ class FaktagrunnlagService(
                         )
                     }
 
+                    is Faktagrunnlag.AvslagAarsak -> {
+                        faktagrunnlag.aarsak?.let{
+                            put(KjentFaktagrunnlag.AVSLAG_AARSAK, it.name)
+                        }
+                    }
+
                     else -> {}
                 }
             }

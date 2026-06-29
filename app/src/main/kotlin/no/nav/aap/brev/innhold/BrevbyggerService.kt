@@ -14,6 +14,7 @@ import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SYKESTIPEND
+import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Faktagrunnlag.ForholdTilAndreYtelser
@@ -38,6 +39,13 @@ class BrevbyggerService(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
+
+        val regel11_5Årsaker = setOf(
+            AvslagsÅrsak.IKKE_SYKDOM_AV_VISS_VARIGHET,
+            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE,
+            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE_VESENTLIGDEL
+        )
+
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -52,7 +60,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal, brevtype = bestilling.brevtype, kategorier)
+        val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
@@ -70,7 +78,7 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
             .filter { it.obligatorisk }
@@ -96,8 +104,17 @@ class BrevbyggerService(
                         .find { it.delmal._id == DelmalSpesifikasjon.BARNETILLEGG.id }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }
+
             }
 
+            Brevtype.AVSLAG ->
+            {
+                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak in regel11_5Årsaker}) {
+                    brevmal.delmaler
+                        .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_5.id}
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+            }
             else -> {}
         }
         return alleValgteDelmaler.map { Brevdata.Delmal(it) }
