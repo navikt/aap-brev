@@ -40,7 +40,7 @@ flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql",
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
-logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.36" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.37" }
 logstashLogbackEncoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "9.0" }
 micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.17.0" }
 
