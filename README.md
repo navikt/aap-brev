@@ -17,7 +17,7 @@ Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på Git
 
 ## For NAV-ansatte
 
-Interne henvendelser kan sendes via Slack i kanalen `#po-aap-team-aap`.
+Interne henvendelser kan sendes via Slack i kanalen `#ytelse-aap-værsågod`.
 
 ## Lokalt utviklingsmiljø
 
