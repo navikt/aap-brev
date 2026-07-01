@@ -87,11 +87,6 @@ class BrevbyggerService(
                 alleValgteDelmaler.add(delmalId)
             }
 
-        logger.info(
-            "Brevtype for innsending: {}",
-            brevtype.toString()
-        )
-
         when (brevtype) {
             Brevtype.INNVILGELSE -> {
                 brevmal.delmaler
@@ -114,16 +109,8 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                val avslagAarsaker = faktagrunnlag
-                    .filterIsInstance<Faktagrunnlag.AvslagAarsak>()
-                    .mapNotNull { it.aarsak }
-
-                logger.info(
-                    "Avslagårsaker i faktagrunnlag: {}",
-                    avslagAarsaker.joinToString(", ") { it.name }
-                )
-
                 if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak in regel11_5Årsaker}) {
+                    logger.info("Avslagsårsak er i 11_5")
                     brevmal.delmaler
                         .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_5.id}
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
