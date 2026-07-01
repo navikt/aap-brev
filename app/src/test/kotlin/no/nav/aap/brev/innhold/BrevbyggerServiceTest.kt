@@ -696,4 +696,40 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 .contains(DelmalSpesifikasjon.REGEL_11_5.id)
         }
     }
+
+    @Test
+    @Disabled
+    // Enable when in production
+    fun `lagreInitiellBrevdata velger ikke regel 11_5-delmalen ved AVSLAG når det ikke matcher sykdomsavslag`() {
+        dataSource.transaction { connection ->
+            val bestilling = opprettBrevbestilling(
+                brukV3 = true,
+                ferdigstillAutomatisk = false,
+                brevtype = Brevtype.AVSLAG
+            ).brevbestilling
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+
+            oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
+                delmal { obligatorisk = true }
+                delmal {
+                    obligatorisk = false
+                    _id = DelmalSpesifikasjon.ARBEIDSEVNE_OG_BEHOV.id
+                }
+            })
+
+            lagreInitiellBrevdata(
+                bestilling.referanse,
+                setOf(
+                    Faktagrunnlag.AapFomDato(LocalDate.now()),
+                    Faktagrunnlag.AvslagAarsak(
+                        aarsak = AvslagsÅrsak.BRUKER_OVER_67
+                    )
+                )
+            )
+
+            val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
+            assertThat(oppdatertBestilling.brevdata?.delmaler?.map { it.id })
+                .doesNotContain(DelmalSpesifikasjon.REGEL_11_5.id)
+        }
+    }
 }
