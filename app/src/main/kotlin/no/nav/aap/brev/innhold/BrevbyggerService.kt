@@ -39,13 +39,7 @@ class BrevbyggerService(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     companion object {
-
-        val regel11_5Årsaker = setOf(
-            AvslagsÅrsak.IKKE_SYKDOM_AV_VISS_VARIGHET,
-            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE,
-            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE_VESENTLIGDEL
-        )
-
+        
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -109,12 +103,7 @@ class BrevbyggerService(
 
             Brevtype.AVSLAG ->
             {
-                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak in regel11_5Årsaker}) {
-                    logger.info("Avslagsårsak er i 11_5")
-                    brevmal.delmaler
-                        .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_5.id}
-                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
-                }
+
             }
             else -> {}
         }
