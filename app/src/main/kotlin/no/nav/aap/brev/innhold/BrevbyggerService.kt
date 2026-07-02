@@ -40,12 +40,6 @@ class BrevbyggerService(
 
     companion object {
 
-        val regel11_5Årsaker = setOf(
-            AvslagsÅrsak.IKKE_SYKDOM_AV_VISS_VARIGHET,
-            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE,
-            AvslagsÅrsak.IKKE_SYKDOM_SKADE_LYTE_VESENTLIGDEL
-        )
-
         fun konstruer(connection: DBConnection): BrevbyggerService {
             return BrevbyggerService(
                 BrevbestillingRepository.konstruer(connection),
@@ -78,7 +72,8 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>): List<Brevdata.Delmal> {
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
+    ): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
             .filter { it.obligatorisk }
@@ -107,15 +102,10 @@ class BrevbyggerService(
 
             }
 
-            Brevtype.AVSLAG ->
-            {
-                if (Miljø.erDev() && faktagrunnlag.any { it is Faktagrunnlag.AvslagAarsak && it.aarsak in regel11_5Årsaker}) {
-                    logger.info("Avslagsårsak er i 11_5")
-                    brevmal.delmaler
-                        .find { it.delmal._id == DelmalSpesifikasjon.REGEL_11_5.id}
-                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
-                }
+            Brevtype.AVSLAG -> {
+
             }
+
             else -> {}
         }
         return alleValgteDelmaler.map { Brevdata.Delmal(it) }
@@ -179,11 +169,13 @@ class BrevbyggerService(
 
                 is Faktagrunnlag.FritakMeldepliktGrunnlag -> {
                     buildSet {
-                        add(if (faktagrunnlag.fritakMeldepliktGrunnlag.any{ it.harFritak}){
-                            KjentKategori.HAR_FRITAK_MELDEPLIKT
-                        } else {
-                            KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT
-                        })
+                        add(
+                            if (faktagrunnlag.fritakMeldepliktGrunnlag.any { it.harFritak }) {
+                                KjentKategori.HAR_FRITAK_MELDEPLIKT
+                            } else {
+                                KjentKategori.HAR_IKKE_FRITAK_MELDEPLIKT
+                            }
+                        )
                     }
                 }
 
