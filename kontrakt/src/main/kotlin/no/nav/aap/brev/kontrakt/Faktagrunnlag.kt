@@ -40,7 +40,6 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
     FRITAK_MELDEPLIKT(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT),
     INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD),
-    AVSLAG_AARSAK(verdi = FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -209,10 +208,5 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class InnvilgetUføretrygd(
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
-
-    @JsonTypeName(FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK)
-    data class AvslagAarsak(
-        val aarsak: AvslagsÅrsak?,
-    ) : Faktagrunnlag(FaktagrunnlagType.AVSLAG_AARSAK)
 
 }

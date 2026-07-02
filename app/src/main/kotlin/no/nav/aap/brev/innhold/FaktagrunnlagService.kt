@@ -213,13 +213,7 @@ class FaktagrunnlagService(
                             faktagrunnlag.virkningsTidspunkt.formaterFullLengde(språk)
                         )
                     }
-
-                    is Faktagrunnlag.AvslagAarsak -> {
-                        faktagrunnlag.aarsak?.let{
-                            put(KjentFaktagrunnlag.AVSLAG_AARSAK, it.name)
-                        }
-                    }
-
+                    
                     else -> {}
                 }
             }
