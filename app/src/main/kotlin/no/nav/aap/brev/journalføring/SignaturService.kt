@@ -78,6 +78,8 @@ class SignaturService(
             Brevtype.BARNETILLEGG_SATS_REGULERING,
             Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.AVSLAG,
+            Brevtype.AVSLAG_11_15,
+            Brevtype.AVSLAG_UNDER_17_AAR_9_MAANEDER,
             Brevtype.INNVILGELSE,
             Brevtype.KLAGE_AVVIST,
             Brevtype.KLAGE_OPPRETTHOLDELSE,
