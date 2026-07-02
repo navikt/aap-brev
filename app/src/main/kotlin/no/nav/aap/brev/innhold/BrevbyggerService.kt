@@ -54,12 +54,7 @@ class BrevbyggerService(
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(
-            brevmal = brevmal,
-            brevtype = bestilling.brevtype,
-            kategorier = kategorier,
-            faktagrunnlag = faktagrunnlag
-        )
+        val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
@@ -77,11 +72,7 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(
-        brevmal: Brevmal,
-        brevtype: Brevtype,
-        kategorier: Set<KjentKategori>,
-        faktagrunnlag: Set<Faktagrunnlag>
+    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
     ): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
