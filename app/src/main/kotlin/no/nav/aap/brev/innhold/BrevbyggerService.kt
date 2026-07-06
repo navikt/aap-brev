@@ -53,7 +53,7 @@ class BrevbyggerService(
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         logger.info("Her benyttes brevtypen" + bestilling.brevtype.name)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
-
+       
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
