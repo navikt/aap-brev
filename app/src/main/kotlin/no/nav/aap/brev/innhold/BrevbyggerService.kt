@@ -51,8 +51,9 @@ class BrevbyggerService(
 
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        logger.info("Her benyttes brevtypen" + bestilling.brevtype.name)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
-
+       
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
@@ -81,7 +82,6 @@ class BrevbyggerService(
                 val delmalId = delmalValg.delmal._id
                 alleValgteDelmaler.add(delmalId)
             }
-        logger.info("Brevtypen som benyttes er" + brevtype.name)
         when (brevtype) {
             Brevtype.INNVILGELSE -> {
                 brevmal.delmaler
