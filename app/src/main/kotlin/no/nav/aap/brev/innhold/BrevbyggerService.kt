@@ -81,7 +81,7 @@ class BrevbyggerService(
                 val delmalId = delmalValg.delmal._id
                 alleValgteDelmaler.add(delmalId)
             }
-
+        logger.info("Brevtypen som benyttes er" + brevtype.name)
         when (brevtype) {
             Brevtype.INNVILGELSE -> {
                 brevmal.delmaler
