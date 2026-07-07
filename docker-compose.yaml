@@ -7,3 +7,11 @@ services:
       - '5440:5432'
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
+  pdfgen:
+    image: ghcr.io/navikt/aap-saksbehandling-pdfgen:latest
+    platform: linux/amd64
+    ports:
+      - "8020:8080"
+    environment:
+      DISABLE_PDF_GET: "false"
+      ENABLE_HTML_ENDPOINT: "true"

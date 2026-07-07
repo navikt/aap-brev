@@ -9,22 +9,19 @@ import no.nav.aap.komponenter.config.configForKey
 import java.util.concurrent.TimeUnit
 
 fun main() {
-    var jdbcUrl = configForKey("JDBC_URL")
-
-    if (jdbcUrl == null) {
+    val jdbcUrl = configForKey("NAIS_DATABASE_BREV_BREV_JDBC_URL") ?: run {
         val postgres = postgreSQLContainer()
         println("Bruk følgende konfigurasjon for å koble til databasen:")
         println("jdbcUrl: ${postgres.jdbcUrl}. Password: ${postgres.password}. Username: ${postgres.username}.")
-        jdbcUrl = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
+
+        "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
     }
 
     nomDataForAlleIdenter()
 
     Fakes.start(texasPort = 8083)
 
-    val dbConfig = DbConfig(
-        jdbcUrl = jdbcUrl,
-    )
+    val dbConfig = DbConfig(jdbcUrl)
 
     // Starter server
     embeddedServer(Netty, configure = {

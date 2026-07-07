@@ -107,6 +107,13 @@ fun Application.brevSanityProxyFake() {
                     erFullstendig = true
                 )
 
+                Brevtype.FORVALTNINGSMELDING -> brev(
+                    medFaktagrunnlag = emptyList(),
+                    kanRedigeres = false,
+                    erFullstendig = true,
+                    kanSendesAutomatisk = true,
+                )
+
                 Brevtype.INNVILGELSE,
                 Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,
                 Brevtype.VEDTAK_11_17,
@@ -119,7 +126,6 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_ENDRING,
                 Brevtype.BARNETILLEGG_SATS_REGULERING,
                 Brevtype.KLAGE_MOTTATT,
-                Brevtype.FORVALTNINGSMELDING,
                 Brevtype.VEDTAK_11_7,
                 Brevtype.VEDTAK_11_9,
                 Brevtype.VEDTAK_11_23_SJETTE_LEDD,
