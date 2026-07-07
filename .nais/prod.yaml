@@ -32,7 +32,7 @@ spec:
         tier: db-custom-1-3840
         diskAutoresize: true
         highAvailability: true
-        pointInTimeRecovery:
+        pointInTimeRecovery: true
         databases:
           - name: brev
   liveness:
