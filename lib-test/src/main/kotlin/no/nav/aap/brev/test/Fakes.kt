@@ -57,13 +57,14 @@ object Fakes : AutoCloseable {
         )
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
         // Texas
-        System.setProperty("nais.token.endpoint", "http://localhost:${texas.port()}/token")
-        System.setProperty("nais.token.introspection.endpoint", "http://localhost:${texas.port()}/introspect")
+        System.setProperty("NAIS_TOKEN_ENDPOINT", "http://localhost:${texas.port()}/token")
+        System.setProperty("NAIS_TOKEN_EXCHANGE_ENDPOINT", "http://localhost:${texas.port()}/token/exchange")
+        System.setProperty("NAIS_TOKEN_INTROSPECTION_ENDPOINT", "http://localhost:${texas.port()}/introspect")
 
         // Tilgang
-        System.setProperty("integrasjon.tilgang.url", "http://localhost:${tilgang.port()}")
-        System.setProperty("integrasjon.tilgang.scope", "scope")
-        System.setProperty("integrasjon.tilgang.azp", "azp")
+        System.setProperty("INTEGRASJON_TILGANG_URL", "http://localhost:${tilgang.port()}")
+        System.setProperty("INTEGRASJON_TILGANG_SCOPE", "scope")
+        System.setProperty("INTEGRASJON_TILGANG_AZP", "azp")
 
         // Brev sanity proxy
         System.setProperty("integrasjon.brev_sanity_proxy.url", "http://localhost:${brevSanityProxy.port()}")

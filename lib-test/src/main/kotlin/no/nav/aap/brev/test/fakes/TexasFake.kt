@@ -13,6 +13,10 @@ fun Application.texasFake() {
             val token = AzureTokenGen("brev", "brev").generate()
             call.respond(TestToken(access_token = token))
         }
+        post("/token/exchange") {
+            val token = AzureTokenGen("brev", "brev").generate()
+            call.respond(TestToken(access_token = token))
+        }
         post("/introspect") {
             call.respond(mapOf("active" to true))
         }
