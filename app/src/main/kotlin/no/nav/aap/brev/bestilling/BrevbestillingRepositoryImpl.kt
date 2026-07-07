@@ -101,6 +101,28 @@ internal class BrevbestillingRepositoryImpl(private val connection: DBConnection
         }
     }
 
+    override fun hentAlleForSak(saksnummer: String): List<Brevbestilling> {
+        return connection.queryList(
+            "SELECT * FROM BREVBESTILLING WHERE SAKSNUMMER = ?"
+        ) {
+            setParams {
+                setString(1, saksnummer)
+            }
+            setRowMapper { row -> mapBestilling(row) }
+        }
+    }
+
+    override fun hentAlleForBehandling(behandlingReferanse: UUID): List<Brevbestilling> {
+        return connection.queryList(
+            "SELECT * FROM BREVBESTILLING WHERE BEHANDLING_REFERANSE = ?"
+        ) {
+            setParams {
+                setUUID(1, behandlingReferanse)
+            }
+            setRowMapper { row -> mapBestilling(row) }
+        }
+    }
+
     private fun mapBestilling(row: Row): Brevbestilling {
         val id = BrevbestillingId(row.getLong("ID"))
 

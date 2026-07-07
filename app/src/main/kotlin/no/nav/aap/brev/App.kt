@@ -18,6 +18,7 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.brev.api.bestillingApi
 import no.nav.aap.brev.api.distribusjonApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
+import no.nav.aap.brev.api.driftApi
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
@@ -78,6 +79,7 @@ internal fun Application.server(dbConfig: DbConfig) {
                 dokumentinnhentingApi()
                 distribusjonApi(dataSource)
                 motorApi(dataSource)
+                driftApi(dataSource)
             }
         }
         actuator(prometheus, motor)

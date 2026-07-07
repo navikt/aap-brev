@@ -9,6 +9,7 @@ import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import java.util.UUID
 
 interface BrevbestillingRepository {
     fun opprettBestilling(
@@ -26,6 +27,10 @@ interface BrevbestillingRepository {
     fun hent(unikReferanse: UnikReferanse): Brevbestilling?
 
     fun hentForOppdatering(referanse: BrevbestillingReferanse): Brevbestilling
+
+    fun hentAlleForSak(saksnummer: String): List<Brevbestilling>
+
+    fun hentAlleForBehandling(behandlingReferanse: UUID): List<Brevbestilling>
 
     fun oppdaterBrev(
         referanse: BrevbestillingReferanse,
