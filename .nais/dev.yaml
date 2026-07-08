@@ -34,7 +34,7 @@ spec:
         tier: db-custom-1-3840
         diskAutoresize: true
         highAvailability: true
-        pointInTimeRecovery:
+        pointInTimeRecovery: false
         databases:
           - name: brev
   liveness:
@@ -54,6 +54,10 @@ spec:
     application:
       enabled: true
       allowAllUsers: true
+      claims:
+        extra:
+          - "NAVident"
+          - "azp_name"
   accessPolicy:
     inbound:
       rules:
