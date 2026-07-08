@@ -14,7 +14,6 @@ import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SYKESTIPEND
-import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
 import no.nav.aap.brev.kontrakt.Faktagrunnlag.ForholdTilAndreYtelser
@@ -52,25 +51,12 @@ class BrevbyggerService(
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
 
-        logger.info(
-            "Faktagrunnlag typer: {}",
-            faktagrunnlag.joinToString(", ") { it::class.simpleName ?: "ukjent" }
-        )
-        
-        logger.info("Her benyttes brevtypen" + bestilling.brevtype.name)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
        
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
-        logger.info(
-            "Brevdata faktagrunnlag nøkler: {}",
-            faktagrunnlagMedVerdi.joinToString(", ") { it.tekniskNavn }
-        )
-        logger.info(
-            "Har SYKDOMSVURDERING i brevdata: {}",
-            faktagrunnlagMedVerdi.any { it.tekniskNavn == "SYKDOMSVURDERING" }
-        )
+
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
@@ -194,7 +180,6 @@ class BrevbyggerService(
                 }
 
                 is Faktagrunnlag.BarnUtenBarnetillegg -> {
-                    logger.info("Barn uten barnetillegg: {}", faktagrunnlag)
                     if (faktagrunnlag.barn.isNotEmpty()) {
                         setOf(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
                     } else {
