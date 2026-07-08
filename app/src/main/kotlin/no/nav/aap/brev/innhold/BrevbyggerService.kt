@@ -51,6 +51,18 @@ class BrevbyggerService(
 
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
+        logger.info(
+            "Bygger brevdata for referanse={} brevtype={} faktagrunnlagAntall={}",
+            bestilling.referanse.referanse,
+            bestilling.brevtype.name,
+            faktagrunnlag.size
+        )
+
+        logger.info(
+            "Faktagrunnlag typer: {}",
+            faktagrunnlag.joinToString(", ") { it::class.simpleName ?: "ukjent" }
+        )
+        
         logger.info("Her benyttes brevtypen" + bestilling.brevtype.name)
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
        
