@@ -51,12 +51,6 @@ class BrevbyggerService(
 
     fun lagreInitiellBrevdata(brevbestillingReferanse: BrevbestillingReferanse, faktagrunnlag: Set<Faktagrunnlag>) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
-        logger.info(
-            "Bygger brevdata for referanse={} brevtype={} faktagrunnlagAntall={}",
-            bestilling.referanse.referanse,
-            bestilling.brevtype.name,
-            faktagrunnlag.size
-        )
 
         logger.info(
             "Faktagrunnlag typer: {}",
@@ -69,6 +63,14 @@ class BrevbyggerService(
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
+        logger.info(
+            "Brevdata faktagrunnlag nøkler: {}",
+            faktagrunnlagMedVerdi.joinToString(", ") { it.tekniskNavn }
+        )
+        logger.info(
+            "Har SYKDOMSVURDERING i brevdata: {}",
+            faktagrunnlagMedVerdi.any { it.tekniskNavn == "SYKDOMSVURDERING" }
+        )
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
         val valg = utledValg(brevmal, kategorier)
         val betingetTekst = utledBetingetTekst(brevmal, kategorier)
