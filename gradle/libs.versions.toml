@@ -4,7 +4,7 @@ komponenter = "2.0.94"
 tilgang = "1.0.231"
 junit = "6.1.1"
 testcontainers = "2.0.5"
-jackson = "2.22.0"
+jackson = "2.22.1"
 
 [libraries]
 ktorServerContentNegotation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -36,11 +36,11 @@ jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datat
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.1.0" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.13" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.10.0" }
+flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.11.0" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
-logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.37" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.38" }
 logstashLogbackEncoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "9.0" }
 micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.17.0" }
 
