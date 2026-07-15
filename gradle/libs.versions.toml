@@ -2,7 +2,7 @@
 ktor = "3.5.1"
 komponenter = "2.0.97"
 tilgang = "1.0.232"
-junit = "6.1.1"
+junit = "6.1.2"
 testcontainers = "2.0.5"
 jackson = "2.22.1"
 
