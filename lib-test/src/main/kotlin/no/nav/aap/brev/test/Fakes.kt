@@ -60,6 +60,7 @@ object Fakes : AutoCloseable {
         System.setProperty("NAIS_TOKEN_ENDPOINT", "http://localhost:${texas.port()}/token")
         System.setProperty("NAIS_TOKEN_EXCHANGE_ENDPOINT", "http://localhost:${texas.port()}/token/exchange")
         System.setProperty("NAIS_TOKEN_INTROSPECTION_ENDPOINT", "http://localhost:${texas.port()}/introspect")
+        System.setProperty("NAIS_TEAM_AAP", "nais-team-aap")
 
         // Tilgang
         System.setProperty("INTEGRASJON_TILGANG_URL", "http://localhost:${tilgang.port()}")

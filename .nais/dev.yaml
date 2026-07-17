@@ -58,6 +58,8 @@ spec:
         extra:
           - "NAVident"
           - "azp_name"
+        groups:
+          - id: ee2a0374-97a6-462e-9a05-3cb7be3d8fc5 #NAIS_TEAM_AAP
   accessPolicy:
     inbound:
       rules:
@@ -164,3 +166,5 @@ spec:
       value: https://dokdistkanal.dev-fss-pub.nais.io/rest/v1
     - name: INTEGRASJON_DOKDISTKANAL_SCOPE
       value: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
+    - name: NAIS_TEAM_AAP
+      value: ee2a0374-97a6-462e-9a05-3cb7be3d8fc5
