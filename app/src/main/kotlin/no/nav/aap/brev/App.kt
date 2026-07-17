@@ -28,6 +28,7 @@ import no.nav.aap.motor.Motor
 import no.nav.aap.motor.api.motorApi
 import no.nav.aap.motor.mdc.NoExtraLogInfoProvider
 import no.nav.aap.motor.retry.RetryService
+import no.nav.aap.tilgang.TeamAap
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -78,7 +79,7 @@ internal fun Application.server(dbConfig: DbConfig) {
                 bestillingApi(dataSource)
                 dokumentinnhentingApi()
                 distribusjonApi(dataSource)
-                motorApi(dataSource)
+                motorApi(dataSource, listOf(TeamAap.id))
                 driftApi(dataSource)
             }
         }
