@@ -152,3 +152,5 @@ spec:
       value: https://dokdistkanal.prod-fss-pub.nais.io/rest/v1
     - name: INTEGRASJON_DOKDISTKANAL_SCOPE
       value: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
+    - name: NAIS_TEAM_AAP
+      value: ee2a0374-97a6-462e-9a05-3cb7be3d8fc5
