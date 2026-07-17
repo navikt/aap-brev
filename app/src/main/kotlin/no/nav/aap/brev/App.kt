@@ -22,6 +22,7 @@ import no.nav.aap.brev.api.driftApi
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
+import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.komponenter.server.auth.IdentityProvider
 import no.nav.aap.komponenter.server.commonKtorModule
 import no.nav.aap.motor.Motor
@@ -72,14 +73,15 @@ internal fun Application.server(dbConfig: DbConfig) {
     Migrering.migrate(dataSource)
 
     val motor = module(dataSource)
-
+    val påkrevdeRollerMotor = if (Miljø.erProd()) listOf(TeamAap.id) else emptyList()
+    
     routing {
         authenticate(IdentityProvider.ENTRA_ID.value) {
             apiRouting {
                 bestillingApi(dataSource)
                 dokumentinnhentingApi()
                 distribusjonApi(dataSource)
-                motorApi(dataSource, listOf(TeamAap.id))
+                motorApi(dataSource, påkrevdeRollerMotor)
                 driftApi(dataSource)
             }
         }
