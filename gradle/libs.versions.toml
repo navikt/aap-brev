@@ -1,6 +1,6 @@
 [versions]
 ktor = "3.5.1"
-komponenter = "2.0.100"
+komponenter = "2.0.104"
 tilgang = "1.0.233"
 junit = "6.1.2"
 testcontainers = "2.0.5"
