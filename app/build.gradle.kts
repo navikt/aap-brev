@@ -30,9 +30,6 @@ tasks.register<JavaExec>("genererOpenApi") {
 }
 
 dependencies {
-    implementation(libs.ktorServerCors)
-    implementation(libs.ktorServerStatusPages)
-
     implementation(libs.jacksonDatatypeJsr310)
     implementation(libs.micrometerRegistryPrometheus)
     implementation(libs.logbackClassic)
@@ -56,8 +53,6 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation(libs.hikariCp)
-    implementation(libs.flywayDatabasePostgresql)
-    implementation(libs.postgresql)
 
     testImplementation(libs.dbtest)
     testRuntimeOnly(libs.junitJupiterEngine)

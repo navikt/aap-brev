@@ -7,16 +7,6 @@ testcontainers = "2.0.5"
 jackson = "2.22.1"
 
 [libraries]
-ktorServerContentNegotation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
-ktorServerNetty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
-ktorServerStatusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
-ktorSerializationJackson = { module = "io.ktor:ktor-serialization-jackson", version.ref = "ktor" }
-ktorServerCors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
-ktorServerAuth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
-ktorServerAuthJwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
-ktorServerCallLogging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
-ktorServerMetricsMicrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
-
 # Komponenter
 json = { module = "no.nav.aap.kelvin:json", version.ref = "komponenter" }
 dbconnect = { module = "no.nav.aap.kelvin:dbconnect", version.ref = "komponenter" }
@@ -35,8 +25,6 @@ jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", vers
 jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.1.0" }
-postgresql = { module = "org.postgresql:postgresql", version = "42.7.13" }
-flywayDatabasePostgresql = { module = "org.flywaydb:flyway-database-postgresql", version = "12.11.0" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
