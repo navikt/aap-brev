@@ -25,7 +25,6 @@ jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", vers
 jacksonDatatypeJsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
 
 hikariCp = { module = "com.zaxxer:HikariCP", version = "7.1.0" }
-postgresql = { module = "org.postgresql:postgresql", version = "42.7.13" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 

@@ -53,7 +53,6 @@ dependencies {
     implementation(project(":kontrakt"))
 
     implementation(libs.hikariCp)
-    implementation(libs.postgresql)
 
     testImplementation(libs.dbtest)
     testRuntimeOnly(libs.junitJupiterEngine)
