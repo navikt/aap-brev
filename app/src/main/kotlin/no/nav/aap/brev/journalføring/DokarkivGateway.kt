@@ -30,7 +30,7 @@ class DokarkivGateway : JournalføringGateway {
     private val log = LoggerFactory.getLogger(DokarkivGateway::class.java)
 
     private val baseUri = URI.create(requiredConfigForKey("integrasjon.dokarkiv.url"))
-    val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
+    private val config = ClientConfig(scope = requiredConfigForKey("integrasjon.dokarkiv.scope"))
     private val client = RestClient(
         config = config,
         tokenProvider = AzureM2MTokenProvider,

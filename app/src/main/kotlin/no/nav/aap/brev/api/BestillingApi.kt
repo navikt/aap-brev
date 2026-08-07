@@ -10,6 +10,7 @@ import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
 import no.nav.aap.brev.bestilling.PdfService
+import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.bestilling.UnikReferanse
 import no.nav.aap.brev.bestilling.Vedlegg
@@ -29,7 +30,6 @@ import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
-import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import javax.sql.DataSource
 
-fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
+fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource, personinfoGateway: PersoninfoGateway) {
     val logger = LoggerFactory.getLogger(this::class.java)
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
@@ -240,7 +240,6 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource) {
         }
         route("/forhandsvis-signaturer") {
             authorizedPost<Unit, HentSignaturerResponse, HentSignaturerRequest>(authorizationBodyPathConfig) { _, request ->
-                val personinfoGateway = PdlGateway()
                 val personinfo = personinfoGateway.hentPersoninfo(request.brukerIdent)
                 val signaturService = SignaturService.konstruer()
                 val signaturer = signaturService.signaturer(
