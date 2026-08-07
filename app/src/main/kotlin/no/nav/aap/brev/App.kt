@@ -19,6 +19,10 @@ import no.nav.aap.brev.api.bestillingApi
 import no.nav.aap.brev.api.distribusjonApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.api.driftApi
+import no.nav.aap.brev.arkivoppslag.SafGateway
+import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
+import no.nav.aap.brev.journalføring.DokarkivGateway
+import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
@@ -74,12 +78,17 @@ internal fun Application.server(dbConfig: DbConfig) {
 
     val motor = module(dataSource)
     val påkrevdeRollerMotor = if (Miljø.erProd()) listOf(TeamAap.id) else emptyList()
-    
+
+    val personinfoGateway = PdlGateway()
+    val pdfGateway = SaksbehandlingPdfGenGateway()
+    val arkivGateway = DokarkivGateway()
+    val safGateway = SafGateway()
+
     routing {
         authenticate(IdentityProvider.ENTRA_ID.value) {
             apiRouting {
-                bestillingApi(dataSource)
-                dokumentinnhentingApi()
+                bestillingApi(dataSource, personinfoGateway)
+                dokumentinnhentingApi(pdfGateway, arkivGateway, safGateway)
                 distribusjonApi(dataSource)
                 motorApi(dataSource, påkrevdeRollerMotor)
                 driftApi(dataSource)
