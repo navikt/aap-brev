@@ -6,6 +6,18 @@ on:
     paths-ignore:
       - '.github/pr.yaml'
       - '*.md'
+      - '.run/*'
+      - 'docker-compose.yaml'
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: Cluster
+        required: true
+        default: dev-gcp
+        type: choice
+        options:
+          - dev-gcp
+          - prod-gcp
 
 jobs:
   build:
@@ -19,10 +31,11 @@ jobs:
     with:
       jdk: 21
       app-navn: brev
-      publish-typescript: true
+      publish-typescript: ${{ github.ref == 'refs/heads/main' }}
       generate-openapi-command: gradle genererOpenApi
 
   publiser-kontrakt:
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: build
     concurrency:
       group: publiser-kontrakt
@@ -92,6 +105,7 @@ jobs:
       manifest: .nais/dev.yaml
 
   deploy-prod:
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [ build,publiser-kontrakt,deploy-dev ]
     permissions:
       contents: read
