@@ -23,6 +23,7 @@ import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.person.PdlGateway
+import no.nav.aap.brev.prosessering.BrevLogInfoProvider
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
@@ -103,7 +104,7 @@ private fun Application.module(dataSource: DataSource): Motor {
         Motor(
             dataSource = dataSource,
             antallKammer = 2,
-            logInfoProvider = NoExtraLogInfoProvider,
+            logInfoProvider = BrevLogInfoProvider,
             jobber = listOf(ProsesserBrevbestillingJobbUtfører),
             prometheus = prometheus,
         )

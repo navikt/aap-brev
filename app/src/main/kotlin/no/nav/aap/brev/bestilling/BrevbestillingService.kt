@@ -18,8 +18,8 @@ import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
-import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører.Companion.BESTILLING_REFERANSE_PARAMETER_NAVN
 import no.nav.aap.brev.prosessering.ProsesseringStatus
+import no.nav.aap.brev.prosessering.medBestillingsreferanse
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
@@ -362,7 +362,7 @@ class BrevbestillingService(
             JobbInput(ProsesserBrevbestillingJobbUtfører)
                 .medCallId()
                 .forSak(bestilling.id.id)
-                .medParameter(BESTILLING_REFERANSE_PARAMETER_NAVN, bestilling.referanse.referanse.toString())
+                .medBestillingsreferanse(bestilling.referanse)
 
         jobbRepository.leggTil(jobb)
     }
