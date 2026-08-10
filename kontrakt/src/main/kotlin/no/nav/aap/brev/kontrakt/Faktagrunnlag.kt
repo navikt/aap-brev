@@ -22,6 +22,7 @@ const val FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT: String = "FRITAK_MELDEPLIKT"
 const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
 const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
 const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD : String = "INNVILGET_UFORETRYGD"
+const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING : String = "TIDSPUNKT_VURDERING"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -39,6 +40,7 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER),
     FRITAK_MELDEPLIKT(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT),
     INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD),
+    TIDSPUNKT_VURDERING(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -208,4 +210,28 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
 
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING)
+    data class AarsakTidspunktVurdering(
+        val aarsakBeregningsTidspunktVurdering: AarsakBeregningstidspunkt? = null,
+        val aarsakYtterligereNedsattTidspunktVurdering: AarsakYtterligereNedsatt? = null,
+    ) : Faktagrunnlag(FaktagrunnlagType.TIDSPUNKT_VURDERING) {
+
+        enum class AarsakBeregningstidspunkt {
+            SYKEMELDINGSDATO,
+            KRAVDATO,
+            UFOERETIDSPUNKT,
+            DATO_PAA_LEGEERKLAERING,
+            HENVIST_TIL_BEHANDLING,
+            SEKSTEN_AAR_SOM_BEREGNINGSTIDSPUNKT,
+            ANNET,
+        }
+
+        enum class AarsakYtterligereNedsatt {
+            UFOERETIDSPUNKT,
+            YTTERLIGERE_NEDSATT,
+            OKT_UFOEREGRAD,
+            IKKE_BETYDNING_IKKE_RELEVANT,
+            ANNET,
+        }
+    }
 }
