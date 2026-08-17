@@ -28,7 +28,7 @@ hikariCp = { module = "com.zaxxer:HikariCP", version = "7.1.0" }
 
 joseJwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 
-logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.6.2" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.6.3" }
 logstashLogbackEncoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "9.0" }
 micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus", version = "1.17.0" }
 
