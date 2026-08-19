@@ -100,6 +100,12 @@ class BrevbyggerService(
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }
 
+                if (kategorier.any { it == KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT }) {
+                    brevmal.delmaler
+                        .find { it.delmal._id == DelmalSpesifikasjon.YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER.id }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+
             }
 
             Brevtype.AVSLAG -> {
