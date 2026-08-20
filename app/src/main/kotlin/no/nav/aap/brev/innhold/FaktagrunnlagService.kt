@@ -9,7 +9,6 @@ import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.util.NumberUtils.formater
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import kotlin.collections.joinToString
@@ -211,6 +210,17 @@ class FaktagrunnlagService(
                         put(
                             KjentFaktagrunnlag.INNVILGET_UFØRETRYGD_VIRKNINGSTIDSPUNKT,
                             faktagrunnlag.virkningsTidspunkt.formaterFullLengde(språk)
+                        )
+                    }
+
+                    is Faktagrunnlag.GrunnlagAndreYtelser -> {
+                        put(
+                            KjentFaktagrunnlag.SYKEPENGEGRUNNLAG,
+                            faktagrunnlag.belop.toString()
+                        )
+                        put(
+                            KjentFaktagrunnlag.YTELSETYPE,
+                            faktagrunnlag.ytelseType
                         )
                     }
                     
