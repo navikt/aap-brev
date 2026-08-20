@@ -41,4 +41,5 @@ enum class KjentFaktagrunnlag {
     AVSLAG_AARSAK,
     SYKEPENGEGRUNNLAG_OVER_2G,
     YTELSETYPE,
+    YTELSE_TOM,
 }
