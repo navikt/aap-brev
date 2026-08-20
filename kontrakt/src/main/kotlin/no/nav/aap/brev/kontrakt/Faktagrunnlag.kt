@@ -3,6 +3,7 @@ package no.nav.aap.brev.kontrakt
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
+import com.sun.jdi.LocalVariable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.Year
@@ -240,6 +241,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     data class GrunnlagAndreYtelser(
         val sykepengeGrunnlagOver2G: Boolean,
         val ytelseType: String,
+        val ytelseTom: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_ANDRE_YTELSER)
 
 }

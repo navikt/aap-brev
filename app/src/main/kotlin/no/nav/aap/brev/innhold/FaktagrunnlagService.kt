@@ -222,6 +222,10 @@ class FaktagrunnlagService(
                             KjentFaktagrunnlag.YTELSETYPE,
                             faktagrunnlag.ytelseType
                         )
+                        put(
+                            KjentFaktagrunnlag.YTELSE_TOM,
+                            faktagrunnlag.ytelseTom.formaterFullLengde(språk)
+                        )
                     }
 
                     else -> {}
