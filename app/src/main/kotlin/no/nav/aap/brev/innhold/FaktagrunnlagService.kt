@@ -213,6 +213,17 @@ class FaktagrunnlagService(
                         )
                     }
 
+                    is Faktagrunnlag.GrunnlagAndreYtelser -> {
+                        put(
+                            KjentFaktagrunnlag.SYKEPENGEGRUNNLAG,
+                            faktagrunnlag.belop.toString()
+                        )
+                        put(
+                            KjentFaktagrunnlag.YTELSETYPE,
+                            faktagrunnlag.ytelseType
+                        )
+                    }
+
                     else -> {}
                 }
             }
