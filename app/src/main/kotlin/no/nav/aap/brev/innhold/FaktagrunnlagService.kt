@@ -215,8 +215,8 @@ class FaktagrunnlagService(
 
                     is Faktagrunnlag.GrunnlagAndreYtelser -> {
                         put(
-                            KjentFaktagrunnlag.SYKEPENGEGRUNNLAG,
-                            faktagrunnlag.belop.toString()
+                            KjentFaktagrunnlag.SYKEPENGEGRUNNLAG_OVER_2G,
+                            if (faktagrunnlag.sykepengeGrunnlagOver2G) "Ja" else "Nei"
                         )
                         put(
                             KjentFaktagrunnlag.YTELSETYPE,

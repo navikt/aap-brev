@@ -212,7 +212,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
     data class GrunnlagAndreYtelser(
-        val belop: BigDecimal,
+        val sykepengeGrunnlagOver2G: Boolean,
         val ytelseType: String,
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_ANDRE_YTELSER)
 
