@@ -73,7 +73,7 @@ object Fakes : AutoCloseable {
         System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
 
         // PdfGen
-        if (System.getProperty("INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL").isNullOrEmpty()) {
+        if (System.getenv("INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL").isNullOrEmpty()) {
             System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
         }
         System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
