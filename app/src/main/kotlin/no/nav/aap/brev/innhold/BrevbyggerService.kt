@@ -55,7 +55,16 @@ class BrevbyggerService(
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
 
         val brevmal = checkNotNull(bestilling.brevmal?.tilBrevmal())
-       
+
+
+        if (Miljø.erDev()) {
+            logger.info(
+                "Init brevdata: faktagrunnlag count={}, typer={}",
+                faktagrunnlag.size,
+                faktagrunnlag.map { it::class.simpleName }
+            )
+        }
+
         val kategorier = utledKategorier(faktagrunnlag)
         val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
