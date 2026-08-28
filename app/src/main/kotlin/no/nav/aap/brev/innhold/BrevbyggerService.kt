@@ -219,8 +219,19 @@ class BrevbyggerService(
                             null -> {}
                         }
                     }
-
-                    årsak + nedsatt
+                    val beregningsgrunnlag = buildSet {
+                        when (faktagrunnlag.aarsakBeregningsTidspunktVurdering) {
+                            AarsakBeregningstidspunkt.SYKEMELDINGSDATO ->  add(KjentKategori.SYKEMELDINGSDATO)
+                            AarsakBeregningstidspunkt.KRAVDATO ->  add(KjentKategori.KRAVDATO)
+                            AarsakBeregningstidspunkt.SEKSTEN_AAR_SOM_BEREGNINGSTIDSPUNKT ->  add(KjentKategori.SEKSTEN_AAR_SOM_BEREGNINGSTIDSPUNKT)
+                            AarsakBeregningstidspunkt.ANNET ->  add(KjentKategori.ANNEN_DOKUMENTASJON)
+                            AarsakBeregningstidspunkt.UFOERETIDSPUNKT ->  add(KjentKategori.ANNEN_DOKUMENTASJON)
+                            AarsakBeregningstidspunkt.HENVIST_TIL_BEHANDLING ->  add(KjentKategori.ANNEN_DOKUMENTASJON)
+                            AarsakBeregningstidspunkt.DATO_PAA_LEGEERKLAERING ->  add(KjentKategori.ANNEN_DOKUMENTASJON)
+                            null -> Unit
+                        }
+                    }
+                    årsak + nedsatt + beregningsgrunnlag
                 }
 
                 else -> {
