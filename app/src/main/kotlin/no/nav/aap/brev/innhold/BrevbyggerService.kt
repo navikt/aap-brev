@@ -214,8 +214,7 @@ class BrevbyggerService(
                             AarsakBeregningstidspunkt.HENVIST_TIL_BEHANDLING -> add(KjentKategori.AARSAK_BEREGNINGSTIDSPUNKT_HENVIST_TIL_BEHANDLING)
                             AarsakBeregningstidspunkt.DATO_PAA_LEGEERKLAERING -> add(KjentKategori.AARSAK_BEREGNINGSTIDSPUNKT_DATO_PAA_LEGEERKLÆRING)
                             AarsakBeregningstidspunkt.KRAVDATO -> add(KjentKategori.AARSAK_BEREGNINGSTIDSPUNKT_KRAVDATO)
-                            AarsakBeregningstidspunkt.ANNET -> add(KjentKategori.AARSAK_BEREGNINGSTIDSPUNKT_ANNET)
-                            null -> {}
+                            AarsakBeregningstidspunkt.ANNET, null -> {}
                         }
                     }
                     val nedsatt = buildSet {
@@ -224,8 +223,7 @@ class BrevbyggerService(
                             AarsakYtterligereNedsatt.YTTERLIGERE_NEDSATT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_YTTERLIGERE_NEDSATT)
                             AarsakYtterligereNedsatt.OKT_UFOEREGRAD -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_OKT_UFOEREGRAD)
                             AarsakYtterligereNedsatt.IKKE_BETYDNING_IKKE_RELEVANT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_IKKE_BETYDNING_IKKE_RELEVANT)
-                            AarsakYtterligereNedsatt.ANNET -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_ANNET)
-                            null -> {}
+                            AarsakYtterligereNedsatt.ANNET, null -> {}
                         }
                     }
 
