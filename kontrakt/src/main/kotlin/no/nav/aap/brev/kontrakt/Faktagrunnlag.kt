@@ -3,6 +3,7 @@ package no.nav.aap.brev.kontrakt
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
+import com.sun.jdi.LocalVariable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.Year
@@ -23,6 +24,7 @@ const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKE
 const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
 const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD : String = "INNVILGET_UFORETRYGD"
 const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING : String = "TIDSPUNKT_VURDERING"
+const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER : String = "SYKEPENGEGRUNNLAG"
 
 enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -41,6 +43,7 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
     FRITAK_MELDEPLIKT(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT),
     INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD),
     TIDSPUNKT_VURDERING(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING),
+    GRUNNLAG_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -234,4 +237,11 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             ANNET,
         }
     }
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
+    data class GrunnlagAndreYtelser(
+        val sykepengeGrunnlagOver2G: Boolean,
+        val ytelseType: String,
+        val ytelseTom: LocalDate
+    ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_ANDRE_YTELSER)
+
 }

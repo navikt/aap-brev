@@ -213,6 +213,21 @@ class FaktagrunnlagService(
                         )
                     }
 
+                    is Faktagrunnlag.GrunnlagAndreYtelser -> {
+                        put(
+                            KjentFaktagrunnlag.SYKEPENGEGRUNNLAG_OVER_2G,
+                            if (faktagrunnlag.sykepengeGrunnlagOver2G) "Ja" else "Nei"
+                        )
+                        put(
+                            KjentFaktagrunnlag.YTELSETYPE,
+                            faktagrunnlag.ytelseType
+                        )
+                        put(
+                            KjentFaktagrunnlag.YTELSE_TOM,
+                            faktagrunnlag.ytelseTom.formaterFullLengde(språk)
+                        )
+                    }
+
                     else -> {}
                 }
             }
