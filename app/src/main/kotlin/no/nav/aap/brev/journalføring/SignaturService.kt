@@ -79,6 +79,7 @@ class SignaturService(
             Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.AVSLAG,
             Brevtype.AVSLAG_11_5,
+            Brevtype.AVSLAG_11_27,
             Brevtype.AVSLAG_UNDER_17_AAR_9_MAANEDER,
             Brevtype.INNVILGELSE,
             Brevtype.KLAGE_AVVIST,

@@ -122,6 +122,7 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.VEDTAK_11_18_OPPHØR_DELVIS_UFØR,
                 Brevtype.AVSLAG,
                 Brevtype.AVSLAG_11_5,
+                Brevtype.AVSLAG_11_27,
                 Brevtype.AVSLAG_UNDER_17_AAR_9_MAANEDER,
                 Brevtype.VEDTAK_ENDRING,
                 Brevtype.BARNETILLEGG_SATS_REGULERING,
