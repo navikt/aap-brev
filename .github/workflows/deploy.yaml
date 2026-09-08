@@ -31,8 +31,6 @@ jobs:
     with:
       jdk: 21
       app-navn: brev
-      publish-typescript: ${{ github.ref == 'refs/heads/main' }}
-      generate-openapi-command: gradle genererOpenApi
 
   publiser-kontrakt:
     if: ${{ github.ref == 'refs/heads/main' }}
