@@ -2,7 +2,7 @@ package no.nav.aap.brev.kontrakt
 
 import java.util.*
 
-data class BestillBrevV2Request(
+public data class BestillBrevV2Request(
     val saksnummer: String,
     val brukerIdent: String,
     val behandlingReferanse: UUID,
