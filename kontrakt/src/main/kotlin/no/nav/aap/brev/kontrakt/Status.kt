@@ -1,6 +1,6 @@
 package no.nav.aap.brev.kontrakt
 
-enum class Status {
+public enum class Status {
     /**
      * Initiell prosessering, som å hente data fra Sanity,
      * er utført, og brevet kan redigeres av saksbehandler.

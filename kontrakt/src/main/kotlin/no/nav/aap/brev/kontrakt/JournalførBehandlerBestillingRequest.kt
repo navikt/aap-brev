@@ -3,7 +3,7 @@ package no.nav.aap.brev.kontrakt
 import java.time.LocalDate
 import java.util.UUID
 
-data class JournalførBehandlerBestillingRequest(
+public data class JournalførBehandlerBestillingRequest(
     val brukerFnr: String,
     val saksnummer: String,
     val mottakerHprnr: String,

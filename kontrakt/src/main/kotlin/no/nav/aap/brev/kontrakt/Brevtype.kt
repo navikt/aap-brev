@@ -1,6 +1,6 @@
 package no.nav.aap.brev.kontrakt
 
-enum class Brevtype {
+public enum class Brevtype {
     INNVILGELSE,
     VEDTAK_UTVID_VEDTAKSLENGDE,
     VEDTAK_11_17,

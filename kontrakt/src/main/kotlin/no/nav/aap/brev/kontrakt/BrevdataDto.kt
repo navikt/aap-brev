@@ -1,28 +1,28 @@
 package no.nav.aap.brev.kontrakt
 
-data class BrevdataDto(
+public data class BrevdataDto(
     val delmaler: List<Delmal>,
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
     val fritekster: List<Fritekst>
 ) {
-    data class Delmal(val id: String)
+    public data class Delmal(public val id: String)
 
-    data class Faktagrunnlag(
-        val tekniskNavn: String,
-        val verdi: String
+    public data class Faktagrunnlag(
+        public val tekniskNavn: String,
+        public val verdi: String
     )
 
-    data class Valg(
-        val id: String,
-        val key: String,
+    public data class Valg(
+        public val id: String,
+        public val key: String,
     )
 
-    data class Fritekst(
-        val parentId: String,
-        val key: String,
-        val fritekst: String
+    public data class Fritekst(
+        public val parentId: String,
+        public val key: String,
+        public val fritekst: String
     )
 
-    data class BetingetTekst(val id: String)
+    public data class BetingetTekst(public val id: String)
 }

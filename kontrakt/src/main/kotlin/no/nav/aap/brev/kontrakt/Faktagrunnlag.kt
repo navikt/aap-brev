@@ -3,30 +3,29 @@ package no.nav.aap.brev.kontrakt
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
-import com.sun.jdi.LocalVariable
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.Year
 
-const val FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO: String = "AAP_FOM_DATO"
-const val FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD: String = "KRAVDATO_UFORETRYGD"
-const val FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE: String = "SISTE_DAG_MED_YTELSE"
-const val FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK: String = "DATO_AVKLART_FOR_JOBBSOK"
-const val FAKTAGRUNNLAG_TYPE_UTVIDET_AAP_FOM_DATO: String = "UTVIDET_AAP_FOM_DATO"
-const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
-const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
-const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
-const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
-const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
-const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNING"
-const val FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT: String = "FRITAK_MELDEPLIKT"
-const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
-const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG : String = "BARN_UTEN_BARNETILLEGG"
-const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD : String = "INNVILGET_UFORETRYGD"
-const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING : String = "TIDSPUNKT_VURDERING"
-const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER : String = "SYKEPENGEGRUNNLAG"
+public const val FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO: String = "AAP_FOM_DATO"
+public const val FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD: String = "KRAVDATO_UFORETRYGD"
+public const val FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE: String = "SISTE_DAG_MED_YTELSE"
+public const val FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK: String = "DATO_AVKLART_FOR_JOBBSOK"
+public const val FAKTAGRUNNLAG_TYPE_UTVIDET_AAP_FOM_DATO: String = "UTVIDET_AAP_FOM_DATO"
+public const val FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7: String = "FRIST_DATO_11_7"
+public const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING: String = "GRUNNLAG_BEREGNING"
+public const val FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE: String = "TILKJENT_YTELSE"
+public const val FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING: String = "SYKDOMSVURDERING"
+public const val FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER: String = "FORHOLD_TIL_ANDRE_YTELSER"
+public const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING: String = "YRKESSKADE_BEREGNING"
+public const val FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT: String = "FRITAK_MELDEPLIKT"
+public const val FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER: String = "YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER"
+public const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG: String = "BARN_UTEN_BARNETILLEGG"
+public const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD: String = "INNVILGET_UFORETRYGD"
+public const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING: String = "TIDSPUNKT_VURDERING"
+public const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER: String = "SYKEPENGEGRUNNLAG"
 
-enum class FaktagrunnlagType(@JsonValue val verdi: String) {
+public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
     KRAVDATO_UFORETRYGD(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD),
     SISTE_DAG_MED_YTELSE(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE),
@@ -47,39 +46,39 @@ enum class FaktagrunnlagType(@JsonValue val verdi: String) {
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
-sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
+public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO)
-    data class AapFomDato(
+    public data class AapFomDato(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.AAP_FOM_DATO)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_KRAVDATO_UFORETRYGD)
-    data class KravdatoUføretrygd(
+    public data class KravdatoUføretrygd(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.KRAVDATO_UFORETRYGD)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SISTE_DAG_MED_YTELSE)
-    data class SisteDagMedYtelse(
+    public data class SisteDagMedYtelse(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.SISTE_DAG_MED_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_DATO_AVKLART_FOR_JOBBSOK)
-    data class DatoAvklartForJobbsøk(
+    public data class DatoAvklartForJobbsøk(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.DATO_AVKLART_FOR_JOBBSOK)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_UTVIDET_AAP_FOM_DATO)
-    data class UtvidetAapFomDato(
+    public data class UtvidetAapFomDato(
         val dato: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.UTVIDET_AAP_FOM_DATO)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRIST_DATO_11_7)
-    data class FristDato11_7(
+    public data class FristDato11_7(
         val frist: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.FRIST_DATO_11_7)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_TILKJENT_YTELSE)
-    data class TilkjentYtelse(
+    public data class TilkjentYtelse(
         val dagsats: BigDecimal?,
         val gradertDagsats: BigDecimal?,
         val barnetilleggSats: BigDecimal?,
@@ -93,15 +92,15 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     ) : Faktagrunnlag(FaktagrunnlagType.TILKJENT_YTELSE)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_BEREGNING)
-    data class GrunnlagBeregning(
+    public data class GrunnlagBeregning(
         val beregningstidspunkt: LocalDate?,
         val beregningsgrunnlag: BigDecimal?,
         val inntekterPerÅr: List<InntektPerÅr>,
         val beregningsutfallKategori: BeregningsutfallKategori? = null,
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_BEREGNING) {
-        data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)
+        public data class InntektPerÅr(val år: Year, val inntekt: BigDecimal)
 
-        enum class BeregningsutfallKategori {
+        public enum class BeregningsutfallKategori {
             SISTE_AAR,
             GJENNOMSNITT,
             MINSTESATS_OVER_25,
@@ -111,12 +110,12 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_SYKDOMSVURDERING)
-    data class Sykdomsvurdering(
+    public data class Sykdomsvurdering(
         val begrunnelse: String,
     ) : Faktagrunnlag(FaktagrunnlagType.SYKDOMSVURDERING)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FORHOLD_TIL_ANDRE_YTELSER)
-    data class ForholdTilAndreYtelser(
+    public data class ForholdTilAndreYtelser(
         val fradragAndreYtelser: List<FradragYtelse>,
         val reduksjonArbeidsgiver: List<ReduksjonArbeidsgiver>,
         val refusjonskravTjenestepensjon: RefusjonskravTjenestepensjon?,
@@ -126,41 +125,41 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
         val sykestipend: List<Sykestipend>,
     ) : Faktagrunnlag(FaktagrunnlagType.FORHOLD_TIL_ANDRE_YTELSER) {
 
-        data class SamordningYtelse(
+        public data class SamordningYtelse(
             val ytelseNavn: String,
             val gradering: Int,
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
         )
 
-        data class SamordningUføre(
+        public data class SamordningUføre(
             val virkningstidspunkt: LocalDate,
             val uføregradProsent: Int,
         )
 
-        data class ReduksjonArbeidsgiver(
+        public data class ReduksjonArbeidsgiver(
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
         )
 
-        data class RefusjonskravTjenestepensjon(
+        public data class RefusjonskravTjenestepensjon(
             val skalEtterbetalingHoldesIgjen: Boolean,
             val fraOgMed: LocalDate?,
             val tilOgMed: LocalDate?,
         )
 
-        data class Sykestipend(
+        public data class Sykestipend(
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
         )
 
-        data class SamordningBarnepensjon(
+        public data class SamordningBarnepensjon(
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate?,
             val månedsats: BigDecimal,
         )
 
-        data class FradragYtelse(
+        public data class FradragYtelse(
             val ytelseNavn: String,
             val fraOgMed: LocalDate,
             val tilOgMed: LocalDate,
@@ -169,10 +168,10 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
 
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_FRITAK_MELDEPLIKT)
-    data class FritakMeldepliktGrunnlag(
+    public data class FritakMeldepliktGrunnlag(
         val fritakMeldepliktGrunnlag: List<FritakMeldepliktVurdering>
-    ): Faktagrunnlag(FaktagrunnlagType.FRITAK_MELDEPLIKT) {
-        data class FritakMeldepliktVurdering(
+    ) : Faktagrunnlag(FaktagrunnlagType.FRITAK_MELDEPLIKT) {
+        public data class FritakMeldepliktVurdering(
             val harFritak: Boolean,
             val fraDato: LocalDate,
             val tilDato: LocalDate?,
@@ -180,11 +179,11 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_BEREGNING)
-    data class YrkesskadeBeregning(
+    public data class YrkesskadeBeregning(
         val yrkesskader: List<Yrkesskade>,
         val andelAvNedsettelseSomSkyldesYrkesskade: Int?,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_BEREGNING) {
-        data class Yrkesskade(
+        public data class Yrkesskade(
             val yrkesskadedato: LocalDate?,
             val arbeidsinntektPaaSkadetidspunktet: BigDecimal?,
             val relevantForArbeidsevne: Boolean,
@@ -193,10 +192,10 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG)
-    data class BarnUtenBarnetillegg(
+    public data class BarnUtenBarnetillegg(
         val barn: List<Barn>
     ) : Faktagrunnlag(FaktagrunnlagType.BARN_UTEN_BARNETILLEGG) {
-        data class Barn(
+        public data class Barn(
             val harForeldreAnsvar: Boolean,
             val begrunnelse: String,
             val erFosterforelder: Boolean? = null,
@@ -204,22 +203,22 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
     }
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
-    data class YrkesskadeISøknadIkkeIRegister(
+    public data class YrkesskadeISøknadIkkeIRegister(
         val verdi: Boolean,
     ) : Faktagrunnlag(FaktagrunnlagType.YRKESSKADE_I_SOKNAD_IKKE_I_REGISTER)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD)
-    data class InnvilgetUføretrygd(
+    public data class InnvilgetUføretrygd(
         val virkningsTidspunkt: LocalDate,
     ) : Faktagrunnlag(FaktagrunnlagType.INNVILGET_UFORETRYGD)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING)
-    data class AarsakTidspunktVurdering(
+    public data class AarsakTidspunktVurdering(
         val aarsakBeregningsTidspunktVurdering: AarsakBeregningstidspunkt? = null,
         val aarsakYtterligereNedsattTidspunktVurdering: AarsakYtterligereNedsatt? = null,
     ) : Faktagrunnlag(FaktagrunnlagType.TIDSPUNKT_VURDERING) {
 
-        enum class AarsakBeregningstidspunkt {
+        public enum class AarsakBeregningstidspunkt {
             SYKEMELDINGSDATO,
             KRAVDATO,
             UFOERETIDSPUNKT,
@@ -229,7 +228,7 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             ANNET,
         }
 
-        enum class AarsakYtterligereNedsatt {
+        public enum class AarsakYtterligereNedsatt {
             UFOERETIDSPUNKT,
             YTTERLIGERE_NEDSATT,
             OKT_UFOEREGRAD,
@@ -237,8 +236,9 @@ sealed class Faktagrunnlag(val type: FaktagrunnlagType) {
             ANNET,
         }
     }
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
-    data class GrunnlagAndreYtelser(
+    public data class GrunnlagAndreYtelser(
         val sykepengeGrunnlagOver2G: Boolean,
         val ytelseType: String,
         val ytelseTom: LocalDate
