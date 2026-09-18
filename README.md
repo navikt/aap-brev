@@ -1,7 +1,9 @@
 # aap-brev
+
 [![release](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml/badge.svg)](https://github.com/navikt/aap-brev/actions/workflows/deploy.yaml)
 
-aap-brev håndterer bestilling, journalføring og distribusjon av brev. Se sysdoc for teknisk beskrivelse: https://aap-sysdoc.ansatt.nav.no/funksjonalitet/Brev/teknisk/
+aap-brev håndterer bestilling, journalføring og distribusjon av brev. Se sysdoc for teknisk
+beskrivelse: https://aap-sysdoc.ansatt.nav.no/funksjonalitet/Brev/teknisk/
 
 ## API-dokumentasjon
 
@@ -22,6 +24,7 @@ Interne henvendelser kan sendes via Slack i kanalen `#ytelse-aap-værsågod`.
 ## Lokalt utviklingsmiljø
 
 ### Laste ned private pakker
+
 For at Gradle skal finne private pakker på Github, legg dette i `$HOME/.gradle/gradle.properties`
 
 ```
@@ -31,12 +34,44 @@ githubPassword=<github-token>
 
 ### Kjøre lokalt
 
-Kjør`TestAppKt`. Appen vil da kjøre på localhost:8082. Alternativt, for å unngå å starte IntelliJ, gå i rotmappen og kjør:
+Kjør`TestAppKt`. Appen vil da kjøre på localhost:8082. Alternativt, for å unngå å starte IntelliJ, gå i rotmappen og
+kjør:
 
 ```./gradlew runTestApp ```
+(denne kjører med TestContainers)
+
+#### Lokal db, pdfgen og sanity
+
+For at lokal sanity skal fungere må du kjøre opp docker-compose med `docker-compose up -d`. Dette starter opp lokal
+pdfgen, database og sanity-proxy.
+
+Må også legge til env-variabel `SANITY_API_READ_TOKEN` med token for å lese fra sanity.
+
+Hent secret med nais cli:
+
+```shell
+nais secret get -t aap -e dev-gcp sanity-api-read-token --with-values
+```
+
+Lagre secret lokalt (MacOS):
+
+```shell
+security add-generic-password -a "$USER" -s "SANITY_API_READ_TOKEN" -w "<DITT_TOKEN_HER>"
+```
+
+Legg så til denne i `.zshrc`, `.zprofile`, `.bashrc`, e.l.:
+
+```
+export SANITY_API_READ_TOKEN=$(security find-generic-password -w -a "$USER" -s "SANITY_API_READ_TOKEN")
+```
 
 ### Kjøre lokalt mot dev-gcp
 
+**⚠️OBS:** Denne oppskriften fungerer ikke lenger etter endringer i Nais. Kjør appen lokalt i stedet. Om du har behov
+for dev-data kan du klone databasen. Se i oppskrift for db-dump her: [aap-cli](https://github.com/navikt/aap-cli#dump-gcp-dbsh)
+
+---
+#### Deprecated oppskrift
 Prosjektet inneholder en run config som kan kjøres av IntelliJ. Burde være synlig under "Run configurations" med navnet
 `dev-gcp.run.xml`.
 

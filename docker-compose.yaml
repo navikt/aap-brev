@@ -15,3 +15,15 @@ services:
     environment:
       DISABLE_PDF_GET: "false"
       ENABLE_HTML_ENDPOINT: "true"
+  sanity-proxy:
+    image: ghcr.io/navikt/aap-brev-sanity-proxy:latest
+    platform: linux/amd64
+    ports:
+      - "8787:8087"
+    environment:
+      SANITY_API_READ_TOKEN: ${SANITY_API_READ_TOKEN}
+      SANITY_PROJECT_ID: 948n95rd
+      SANITY_PERSPECTIVE: drafts
+      PDF_GEN_URL: http://pdfgen:8080
+      SANITY_DATASET: production
+      NODE_ENV: development
