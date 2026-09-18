@@ -2,6 +2,6 @@ package no.nav.aap.brev.kontrakt
 
 import java.util.UUID
 
-data class AvbrytBrevbestillingRequest(
+public data class AvbrytBrevbestillingRequest(
     val referanse: UUID,
 )

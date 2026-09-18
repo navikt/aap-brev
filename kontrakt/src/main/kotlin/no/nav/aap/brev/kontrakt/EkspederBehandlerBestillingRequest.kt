@@ -1,3 +1,3 @@
 package no.nav.aap.brev.kontrakt
 
-data class EkspederBehandlerBestillingRequest(val journalpostId: String)
+public data class EkspederBehandlerBestillingRequest(public val journalpostId: String)

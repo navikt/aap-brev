@@ -18,18 +18,18 @@ import java.time.LocalDateTime
 import java.util.UUID
 import javax.sql.DataSource
 
-data class SaksnummerParam(@PathParam("saksnummer") val saksnummer: String)
-data class BehandlingReferanseParam(@PathParam("referanse") val referanse: UUID)
+data class SaksnummerParam(@param:PathParam("saksnummer") val saksnummer: String)
+data class BehandlingReferanseParam(@param:PathParam("referanse") val referanse: UUID)
 
 fun NormalOpenAPIRoute.driftApi(dataSource: DataSource) {
     route("/api/drift") {
         route("/bestillinger/sak/{saksnummer}").authorizedGet<SaksnummerParam, List<BrevbestillingDriftsinfoDto>>(
             AuthorizationParamPathConfig(
                 sakPathParam = SakPathParam("saksnummer"),
-                operasjon = Operasjon.DRIFTE
+                operasjon = Operasjon.DRIFT_LES
             )
         ) { params ->
-            val bestillinger = dataSource.transaction { connection ->
+            val bestillinger = dataSource.transaction(readOnly = true) { connection ->
                 BrevbestillingRepository.konstruer(connection)
                     .hentAlleForSak(params.saksnummer)
                     .map(Brevbestilling::mapTilDriftsinfoDto)
@@ -41,10 +41,10 @@ fun NormalOpenAPIRoute.driftApi(dataSource: DataSource) {
         route("/bestillinger/behandling/{referanse}").authorizedGet<BehandlingReferanseParam, List<BrevbestillingDriftsinfoDto>>(
             AuthorizationParamPathConfig(
                 behandlingPathParam = BehandlingPathParam("referanse"),
-                operasjon = Operasjon.DRIFTE
+                operasjon = Operasjon.DRIFT_LES
             )
         ) { params ->
-            val bestillinger = dataSource.transaction { connection ->
+            val bestillinger = dataSource.transaction(readOnly = true) { connection ->
                 BrevbestillingRepository.konstruer(connection)
                     .hentAlleForBehandling(params.referanse)
                     .map(Brevbestilling::mapTilDriftsinfoDto)

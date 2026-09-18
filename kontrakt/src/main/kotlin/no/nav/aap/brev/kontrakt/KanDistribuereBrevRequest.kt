@@ -1,6 +1,6 @@
 package no.nav.aap.brev.kontrakt
 
-data class KanDistribuereBrevRequest (
+public data class KanDistribuereBrevRequest (
     val brukerIdent: String,
     val mottakerIdentListe: List<String> = emptyList(),
 )

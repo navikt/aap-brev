@@ -3,7 +3,7 @@ package no.nav.aap.brev.kontrakt
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class BrevbestillingResponse(
+public data class BrevbestillingResponse(
     val referanse: UUID,
     val brev: Brev?,
     val brevmal: String?,

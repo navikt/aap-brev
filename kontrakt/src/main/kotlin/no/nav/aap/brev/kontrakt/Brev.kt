@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonValue
 import java.util.UUID
 
-data class Brev(
+public data class Brev(
     val kanSendesAutomatisk: Boolean?,
     val overskrift: String?, // H1
     val kanOverstyreBrevtittel: Boolean?,
@@ -14,13 +14,13 @@ data class Brev(
     val tekstbolker: List<Tekstbolk>, // tekster med valgfri overskrift (H2)
 )
 
-data class Tekstbolk(
+public data class Tekstbolk(
     val id: UUID,
     val overskrift: String?, // H2
     val innhold: List<Innhold>, // tekster med valgfri overskrift (H3)
 )
 
-data class Innhold(
+public data class Innhold(
     val id: UUID,
     val overskrift: String?,  // H3
     val blokker: List<Blokk>, // avsnitt eller punktliste
@@ -28,42 +28,42 @@ data class Innhold(
     val erFullstendig: Boolean,
 )
 
-data class Blokk(
+public data class Blokk(
     val id: UUID,
     val innhold: List<BlokkInnhold>, // formattert tekst og faktagrunnlag
     val type: BlokkType,
 )
 
-enum class BlokkType {
+public enum class BlokkType {
     AVSNITT, LISTE
 }
 
-const val BLOKK_INNHOLD_TYPE_TEKST = "TEKST"
-const val BLOKK_INNHOLD_TYPE_FAKTAGRUNNLAG = "FAKTAGRUNNLAG"
+public const val BLOKK_INNHOLD_TYPE_TEKST: String = "TEKST"
+public const val BLOKK_INNHOLD_TYPE_FAKTAGRUNNLAG: String = "FAKTAGRUNNLAG"
 
-enum class BlokkInnholdType(@JsonValue val verdi: String) {
+public enum class BlokkInnholdType(@JsonValue public val verdi: String) {
 
     TEKST(BLOKK_INNHOLD_TYPE_TEKST), FAKTAGRUNNLAG(BLOKK_INNHOLD_TYPE_FAKTAGRUNNLAG)
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
-sealed class BlokkInnhold(val type: BlokkInnholdType) {
+public sealed class BlokkInnhold(public val type: BlokkInnholdType) {
 
     @JsonTypeName(BLOKK_INNHOLD_TYPE_TEKST)
-    data class FormattertTekst(
-        val id: UUID,
-        val tekst: String,
-        val formattering: List<Formattering>,
+    public data class FormattertTekst(
+        public val id: UUID,
+        public val tekst: String,
+        public val formattering: List<Formattering>,
     ) : BlokkInnhold(BlokkInnholdType.TEKST)
 
     @JsonTypeName(BLOKK_INNHOLD_TYPE_FAKTAGRUNNLAG)
-    data class Faktagrunnlag(
-        val id: UUID,
-        val visningsnavn: String,
-        val tekniskNavn: String,
+    public data class Faktagrunnlag(
+        public val id: UUID,
+        public val visningsnavn: String,
+        public val tekniskNavn: String,
     ) : BlokkInnhold(BlokkInnholdType.FAKTAGRUNNLAG)
 }
 
-enum class Formattering {
+public enum class Formattering {
     UNDERSTREK, KURSIV, FET
 }

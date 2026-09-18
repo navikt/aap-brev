@@ -1,17 +1,17 @@
 package no.nav.aap.brev.kontrakt
 
-data class MottakerDto(
+public data class MottakerDto(
     val ident: String? = null,
     val identType: IdentType? = null,
     val navnOgAdresse: NavnOgAdresse? = null,
 )
 
-data class NavnOgAdresse(
+public data class NavnOgAdresse(
     val navn: String,
     val adresse: Adresse,
 )
 
-data class Adresse(
+public data class Adresse(
     val landkode: String,
     val adresselinje1: String,
     val adresselinje2: String? = null,
@@ -29,6 +29,6 @@ data class Adresse(
     }
 }
 
-enum class IdentType {
+public enum class IdentType {
     FNR, HPRNR, ORGNR, UTL_ORG
 }
