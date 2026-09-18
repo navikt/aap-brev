@@ -27,6 +27,7 @@ class PdfService(
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
     private val pdfGateway: PdfGateway,
+    private val pdfgeneratorSaksbehandlingGateway: PdfgeneratorSaksbehandlingGateway,
     private val pdfGatewayV2: PdfGatewayV2,
     private val unleashGateway: UnleashGateway,
 ) {
@@ -39,6 +40,7 @@ class PdfService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 personinfoGateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
+                pdfgeneratorSaksbehandlingGateway = PdfgeneratorSaksbehandlingGateway(),
                 pdfGatewayV2 = BrevSanityProxyGateway(),
                 unleashGateway = UnleashGatewayImpl
             )
@@ -127,8 +129,8 @@ class PdfService(
                 signaturer = signaturer,
             )
 
-            if(unleashGateway.isEnabled(BrevFeature.BrevTest)) {
-               log.debug("BrevTest enabled")
+            if (unleashGateway.isEnabled(BrevFeature.BrevNyPdfgenerator)) {
+                return pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
             }
             return pdfGateway.genererPdf(pdfBrev)
         }

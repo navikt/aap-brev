@@ -20,11 +20,13 @@ import no.nav.aap.brev.api.distribusjonApi
 import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.api.driftApi
 import no.nav.aap.brev.arkivoppslag.SafGateway
+import no.nav.aap.brev.bestilling.PdfgeneratorSaksbehandlingGateway
 import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.prosessering.BrevLogInfoProvider
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
+import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbmigrering.Migrering
 import no.nav.aap.komponenter.miljo.Miljø
@@ -81,14 +83,22 @@ internal fun Application.server(dbConfig: DbConfig) {
 
     val personinfoGateway = PdlGateway()
     val pdfGateway = SaksbehandlingPdfGenGateway()
+    val pdfgeneratorSaksbehandlingGateway = PdfgeneratorSaksbehandlingGateway()
     val arkivGateway = DokarkivGateway()
     val safGateway = SafGateway()
+    val unleashGateway = UnleashGatewayImpl
 
     routing {
         authenticate(IdentityProvider.ENTRA_ID.value) {
             apiRouting {
                 bestillingApi(dataSource, personinfoGateway)
-                dokumentinnhentingApi(pdfGateway, arkivGateway, safGateway)
+                dokumentinnhentingApi(
+                    pdfGateway = pdfGateway,
+                    journalføringGateway = arkivGateway,
+                    arkivoppslagGateway = safGateway,
+                    pdfgeneratorSaksbehandlingGateway = pdfgeneratorSaksbehandlingGateway,
+                    unleashGateway = unleashGateway
+                )
                 distribusjonApi(dataSource)
                 motorApi(dataSource, påkrevdeRollerMotor)
                 driftApi(dataSource)
