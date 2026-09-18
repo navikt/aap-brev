@@ -29,6 +29,8 @@ spec:
       destinations:
         - id: elastic
         - id: loki
+  envFrom:
+    - secret: kelvin-unleash-api-token
   gcp:
     sqlInstances:
       - type: POSTGRES_16
@@ -86,6 +88,7 @@ spec:
               - "dokumentinnhenting-api"
     outbound:
       external:
+        - host: aap-unleash-api.nav.cloud.nais.io
         - host: dokarkiv-q2.dev-fss-pub.nais.io
         - host: dokdistfordeling.dev-fss-pub.nais.io
         - host: saf-q2.dev-fss-pub.nais.io

@@ -59,6 +59,8 @@ spec:
           - "azp_name"
         groups:
           - id: ee2a0374-97a6-462e-9a05-3cb7be3d8fc5 #NAIS_TEAM_AAP
+  envFrom:
+    - secret: kelvin-unleash-api-token
   accessPolicy:
     inbound:
       rules:
@@ -75,6 +77,7 @@ spec:
               - "dokumentinnhenting-api"
     outbound:
       external:
+        - host: aap-unleash-api.nav.cloud.nais.io
         - host: dokarkiv.prod-fss-pub.nais.io
         - host: dokdistfordeling.prod-fss-pub.nais.io
         - host: saf.prod-fss-pub.nais.io
