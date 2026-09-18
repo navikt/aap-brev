@@ -54,6 +54,9 @@ dependencies {
 
     implementation(libs.hikariCp)
 
+    api(libs.gateway)
+    implementation(libs.unleashClientJava)
+
     testImplementation(libs.dbtest)
     testRuntimeOnly(libs.junitJupiterEngine)
     testImplementation(libs.junitApi)

@@ -14,8 +14,12 @@ import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.person.PdlGateway
+import no.nav.aap.brev.unleash.BrevFeature
+import no.nav.aap.brev.unleash.UnleashGateway
+import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
 class PdfService(
@@ -24,7 +28,9 @@ class PdfService(
     private val personinfoGateway: PersoninfoGateway,
     private val pdfGateway: PdfGateway,
     private val pdfGatewayV2: PdfGatewayV2,
+    private val unleashGateway: UnleashGateway,
 ) {
+    private val log = LoggerFactory.getLogger(PdfService::class.java)
 
     companion object {
         fun konstruer(connection: DBConnection): PdfService {
@@ -33,7 +39,8 @@ class PdfService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 personinfoGateway = PdlGateway(),
                 pdfGateway = SaksbehandlingPdfGenGateway(),
-                pdfGatewayV2 = BrevSanityProxyGateway()
+                pdfGatewayV2 = BrevSanityProxyGateway(),
+                unleashGateway = UnleashGatewayImpl
             )
         }
     }
@@ -120,6 +127,9 @@ class PdfService(
                 signaturer = signaturer,
             )
 
+            if(unleashGateway.isEnabled(BrevFeature.BrevTest)) {
+               log.debug("BrevTest enabled")
+            }
             return pdfGateway.genererPdf(pdfBrev)
         }
     }

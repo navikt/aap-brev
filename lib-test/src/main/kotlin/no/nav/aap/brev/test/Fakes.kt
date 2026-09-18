@@ -15,6 +15,7 @@ import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.regoppslagFake
 import no.nav.aap.brev.test.fakes.safFake
 import no.nav.aap.brev.test.fakes.tilgangFake
+import no.nav.aap.brev.test.fakes.unleashFake
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicBoolean
@@ -42,6 +43,7 @@ object Fakes : AutoCloseable {
         val pdl = embeddedServer(Netty, port = 0, module = { pdlFake() }).apply { start() }
         val saf = embeddedServer(Netty, port = 0, module = { safFake() }).apply { start() }
         val norg = embeddedServer(Netty, port = 0, module = { norgFake() }).apply { start() }
+        val unleash = embeddedServer(Netty, port = 0, module = { unleashFake() }).apply { start() }
         servers.addAll(
             listOf(
                 texas,
@@ -53,6 +55,7 @@ object Fakes : AutoCloseable {
                 dokdistkanal,
                 dokdistfordeling,
                 saf,
+                unleash,
             )
         )
         Thread.currentThread().setUncaughtExceptionHandler { _, e -> log.error("Uhåndtert feil", e) }
@@ -108,6 +111,11 @@ object Fakes : AutoCloseable {
         // Saf
         System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}/graphql")
         System.setProperty("integrasjon.saf.scope", "scope")
+
+        // Unleash
+        System.setProperty("nais.app.name", "brev")
+        System.setProperty("unleash.server.api.url", "http://localhost:${unleash.port()}")
+        System.setProperty("unleash.server.api.token", "faketoken")
     }
 
 
