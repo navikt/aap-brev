@@ -118,6 +118,7 @@ class BrevbestillingService(
         faktagrunnlag: Set<Faktagrunnlag>,
         vedlegg: Set<Vedlegg>,
         ferdigstillAutomatisk: Boolean,
+        signaturer: List<SignaturGrunnlag> = emptyList(),
     ): OpprettBrevbestillingResultat {
         val resultat = opprettBestilling(
             saksnummer = saksnummer,
@@ -142,6 +143,7 @@ class BrevbestillingService(
 
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
+            validerAutomatiskSignaturer(brevtype, signaturer)
             log.info("Ferdigstiller brev automatisk")
             mottakerRepository.lagreMottakere(
                 bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
@@ -405,5 +407,23 @@ class BrevbestillingService(
                 )
             },
         )
+    }
+
+
+    private fun trengerSignaturForAutomatiskFerdigstilling(brevtype: Brevtype): Boolean =
+        when (brevtype) {
+            Brevtype.AVSLAG_11_5 -> true
+            else -> false
+        }
+
+    private fun validerAutomatiskSignaturer(
+        brevtype: Brevtype,
+        signaturer: List<SignaturGrunnlag>
+    ) {
+        if (trengerSignaturForAutomatiskFerdigstilling(brevtype)) {
+            require(signaturer.isNotEmpty()) {
+                "Må oppgi signaturer for automatisk ferdigstilling av brevtype $brevtype"
+            }
+        }
     }
 }

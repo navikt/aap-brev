@@ -2,6 +2,8 @@ package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.kontrakt.BlokkInnhold
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevtype
+import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 
 fun Brev.harFaktagrunnlag(): Boolean = alleFaktagrunnlag().isNotEmpty()
 
@@ -50,3 +52,5 @@ fun Brev.ikkeRedigerbartInnhold(): String {
         }
     ).toString()
 }
+
+
