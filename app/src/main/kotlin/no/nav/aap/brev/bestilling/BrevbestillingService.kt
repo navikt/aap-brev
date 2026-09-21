@@ -143,7 +143,7 @@ class BrevbestillingService(
 
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
-            validerAutomatiskSignaturer(brevtype, signaturer)
+            validerAutomatiskeBrevSignaturer(brevtype, signaturer)
             log.info("Ferdigstiller brev automatisk")
             mottakerRepository.lagreMottakere(
                 bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
@@ -416,7 +416,7 @@ class BrevbestillingService(
             else -> false
         }
 
-    private fun validerAutomatiskSignaturer(
+    private fun validerAutomatiskeBrevSignaturer(
         brevtype: Brevtype,
         signaturer: List<SignaturGrunnlag>
     ) {
