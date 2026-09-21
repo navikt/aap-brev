@@ -71,7 +71,9 @@ object Fakes : AutoCloseable {
         System.setProperty("INTEGRASJON_TILGANG_AZP", "azp")
 
         // Brev sanity proxy
-        System.setProperty("integrasjon.brev_sanity_proxy.url", "http://localhost:${brevSanityProxy.port()}")
+        if (System.getenv("INTEGRASJON_BREV_SANITY_PROXY_URL").isNullOrEmpty()) {
+            System.setProperty("integrasjon.brev_sanity_proxy.url", "http://localhost:${brevSanityProxy.port()}")
+        }
         System.setProperty("integrasjon.brev_sanity_proxy.scope", "scope")
         System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
 
