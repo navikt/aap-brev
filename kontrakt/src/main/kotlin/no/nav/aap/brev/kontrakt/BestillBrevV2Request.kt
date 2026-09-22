@@ -11,5 +11,6 @@ public data class BestillBrevV2Request(
     val sprak: Språk,
     val faktagrunnlag: Set<Faktagrunnlag>,
     val ferdigstillAutomatisk: Boolean,
+    val signaturer: List<SignaturGrunnlag> = emptyList(),
     val vedlegg: Set<Vedlegg> = emptySet(),
 )

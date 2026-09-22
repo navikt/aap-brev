@@ -112,6 +112,7 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource, personinfoGateway: 
                                         )
                                     }.toSet(),
                                     ferdigstillAutomatisk = request.ferdigstillAutomatisk,
+                                    signaturer = request.signaturer
                                 )
                             }
                             val httpStatusCode = if (bestillingResultat.alleredeOpprettet) {
