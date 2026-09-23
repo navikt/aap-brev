@@ -97,6 +97,7 @@ spec:
         - application: tilgang
         - application: brev-sanity-proxy
         - application: saksbehandling-pdfgen
+        - application: pdfgenerator-saksbehandling
         - application: nom-api
           namespace: nom
         - application: norg2
