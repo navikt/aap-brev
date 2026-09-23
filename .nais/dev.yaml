@@ -130,6 +130,11 @@ spec:
     - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE
       value: api://dev-gcp.aap.saksbehandling-pdfgen/.default
 
+    - name: INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_URL
+      value: http://pdfgenerator-saksbehandling
+    - name: INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_SCOPE
+      value: api://dev-gcp.aap.pdfgenerator-saksbehandling/.default
+
     - name: INTEGRASJON_DOKARKIV_URL
       value: https://dokarkiv-q2.dev-fss-pub.nais.io
     - name: INTEGRASJON_DOKARKIV_SCOPE

@@ -114,6 +114,12 @@ object Fakes : AutoCloseable {
         System.setProperty("integrasjon.saf.url.graphql", "http://localhost:${saf.port()}/graphql")
         System.setProperty("integrasjon.saf.scope", "scope")
 
+        //Pdfgenerator
+        if (System.getenv("INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_URL").isNullOrEmpty()) {
+            System.setProperty("integrasjon.pdfgenerator_saksbehandling.url", "http://localhost:${pdfGen.port()}")
+        }
+        System.setProperty("integrasjon.pdfgenerator_saksbehandling.scope", "scope")
+
         // Unleash
         System.setProperty("nais.app.name", "brev")
         System.setProperty("unleash.server.api.url", "http://localhost:${unleash.port()}")
