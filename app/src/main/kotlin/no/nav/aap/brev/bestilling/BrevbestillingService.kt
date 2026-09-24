@@ -141,6 +141,14 @@ class BrevbestillingService(
 
         brevbyggerService.lagreInitiellBrevdata(bestillingReferanse, faktagrunnlag)
 
+        if (signaturer.isNotEmpty()) {
+            log.info("Lagrer signaturer")
+            brevbestillingRepository.lagreSignaturer(bestillingId, signaturer)
+        } else {
+            log.info("Lagrer ikke signaturer")
+        }
+
+
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
