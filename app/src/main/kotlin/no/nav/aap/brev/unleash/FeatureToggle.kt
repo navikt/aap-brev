@@ -8,7 +8,6 @@ enum class BrevFeature : FeatureToggle {
     // Eksempel på feature toggle. Kan fjernes når det legges til nye.
     // Se: https://aap-unleash-web.iap.nav.cloud.nais.io/projects/default
     BrevTest,
-    BrevNyPdfgenerator,
     ;
 
     override fun key(): String = name
