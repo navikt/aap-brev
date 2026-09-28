@@ -58,6 +58,7 @@ fun NormalOpenAPIRoute.driftApi(dataSource: DataSource) {
 private data class BrevbestillingDriftsinfoDto(
     val id: Long,
     val bestillingReferanse: String,
+    val journalpostId: String?,
     val opprettet: LocalDateTime,
     val oppdatert: LocalDateTime,
     val behandlingReferanse: String,
@@ -70,6 +71,7 @@ private data class BrevbestillingDriftsinfoDto(
 private fun Brevbestilling.mapTilDriftsinfoDto() = BrevbestillingDriftsinfoDto(
     id = id.id,
     bestillingReferanse = referanse.referanse.toString(),
+    journalpostId = journalpostId?.id,
     opprettet = opprettet,
     oppdatert = oppdatert,
     behandlingReferanse = behandlingReferanse.referanse.toString(),
