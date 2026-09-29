@@ -8,7 +8,6 @@ import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.bestilling.Brevmal
-import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
@@ -18,7 +17,6 @@ import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -41,7 +39,12 @@ class BrevbyggerServiceTest : IntegrationTest() {
         val oppdatertBestilling = hentBestilling(bestilling.referanse)
 
         assertThat(oppdatertBestilling.brevdata?.delmaler)
-            .containsExactlyInAnyOrder(Brevdata.Delmal("49d9c7a7-29db-43c6-aece-45e97314a50a"))
+            .containsExactlyInAnyOrder(
+                Brevdata.Delmal(
+                    id = "49d9c7a7-29db-43c6-aece-45e97314a50a",
+                    automatiskValgt = true,
+                )
+            )
 
         assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
             Brevdata.Faktagrunnlag(
@@ -104,6 +107,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             Brevdata.Valg(
                 id = forventetValg.valg._id,
                 key = forventetValg.valg.alternativer[2]._key,
+                automatiskValgt = true,
             )
         )
         assertThat(oppdatertBestilling.brevdata?.betingetTekst).containsExactly(
@@ -595,11 +599,18 @@ class BrevbyggerServiceTest : IntegrationTest() {
                 }
             })
 
-            lagreInitiellBrevdata(bestilling.referanse, setOf(Faktagrunnlag.FritakMeldepliktGrunnlag(
-                listOf(Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldepliktVurdering(
-                    true,
-                    LocalDate.now(), null
-                )))))
+            lagreInitiellBrevdata(
+                bestilling.referanse, setOf(
+                    Faktagrunnlag.FritakMeldepliktGrunnlag(
+                        listOf(
+                            Faktagrunnlag.FritakMeldepliktGrunnlag.FritakMeldepliktVurdering(
+                                true,
+                                LocalDate.now(), null
+                            )
+                        )
+                    )
+                )
+            )
 
             val oppdatertBestilling = brevbestillingRepository.hent(bestilling.referanse)
             assertThat(oppdatertBestilling.brevdata?.delmaler).hasSize(2)

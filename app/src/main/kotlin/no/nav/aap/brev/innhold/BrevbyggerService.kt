@@ -126,7 +126,9 @@ class BrevbyggerService(
 
             else -> {}
         }
-        return alleValgteDelmaler.map { Brevdata.Delmal(it) }
+        return alleValgteDelmaler.map { delmalId ->
+            Brevdata.Delmal(id = delmalId, automatiskValgt = true)
+        }
     }
 
     private fun utledFaktagrunnlagMedVerdi(
@@ -255,7 +257,11 @@ class BrevbyggerService(
                             .find { valgAlternativ ->
                                 kategorier.map { it.name }.contains(valgAlternativ.kategori?.tekniskNavn)
                             } ?: return@mapNotNull null
-                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key)
+                    Brevdata.Valg(
+                        id = valg.valg._id,
+                        key = forhåndsvalgt._key,
+                        automatiskValgt = true
+                    )
                 }
         }
     }
