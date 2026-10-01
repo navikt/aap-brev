@@ -1,8 +1,10 @@
 package no.nav.aap.brev.kontrakt
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDateTime
 import java.util.UUID
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public data class BrevbestillingResponse(
     val referanse: UUID,
     val brev: Brev?,
