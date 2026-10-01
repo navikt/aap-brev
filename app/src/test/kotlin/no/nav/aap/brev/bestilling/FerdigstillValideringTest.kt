@@ -68,7 +68,8 @@ class FerdigstillValideringTest : IntegrationTest() {
                     ident = "123",
                     identType = identType,
                     navnOgAdresse = null,
-                    bestillingMottakerReferanse = "bestillingMottakerReferanse"
+                    bestillingMottakerReferanse = "bestillingMottakerReferanse",
+                    type = Mottaker.Type.HOVED
                 )
             ),
         )
@@ -95,7 +96,8 @@ class FerdigstillValideringTest : IntegrationTest() {
                         ident = "123",
                         identType = identType,
                         navnOgAdresse = null,
-                        bestillingMottakerReferanse = "bestillingMottakerReferanse"
+                        bestillingMottakerReferanse = "bestillingMottakerReferanse",
+                        type = Mottaker.Type.HOVED
                     )
                 ),
             )
@@ -127,7 +129,8 @@ class FerdigstillValideringTest : IntegrationTest() {
                 Mottaker(
                     ident = bestilling.brukerIdent,
                     identType = IdentType.FNR,
-                    bestillingMottakerReferanse = "ref"
+                    bestillingMottakerReferanse = "ref",
+                    type = Mottaker.Type.HOVED
                 )
             )
         )
@@ -148,7 +151,8 @@ class FerdigstillValideringTest : IntegrationTest() {
                 Mottaker(
                     ident = bestilling.brukerIdent,
                     identType = IdentType.FNR,
-                    bestillingMottakerReferanse = "ref"
+                    bestillingMottakerReferanse = "ref",
+                    type = Mottaker.Type.HOVED
                 )
             )
         )

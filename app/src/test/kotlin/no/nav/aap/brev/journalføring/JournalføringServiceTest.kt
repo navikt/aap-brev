@@ -51,7 +51,8 @@ class JournalføringServiceTest : IntegrationTest() {
             val mottaker1 = Mottaker(
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = bestillingMottakerReferanse1
+                bestillingMottakerReferanse = bestillingMottakerReferanse1,
+                type = Mottaker.Type.HOVED,
             )
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
@@ -64,7 +65,8 @@ class JournalføringServiceTest : IntegrationTest() {
                         poststed = "poststed",
                     )
                 ),
-                bestillingMottakerReferanse = bestillingMottakerReferanse2
+                bestillingMottakerReferanse = bestillingMottakerReferanse2,
+                type = Mottaker.Type.KOPI,
             )
 
             brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
@@ -164,6 +166,7 @@ class JournalføringServiceTest : IntegrationTest() {
                 ident = brevbestilling.brukerIdent,
                 identType = IdentType.FNR,
                 bestillingMottakerReferanse = bestillingMottakerReferanse,
+                type = Mottaker.Type.HOVED,
             )
         )
     }

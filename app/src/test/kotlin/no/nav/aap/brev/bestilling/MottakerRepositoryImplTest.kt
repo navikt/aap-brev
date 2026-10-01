@@ -46,7 +46,8 @@ class MottakerRepositoryImplTest {
             val mottaker1 = Mottaker(
                 ident = brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1",
+                type = Mottaker.Type.HOVED
             )
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
@@ -59,7 +60,8 @@ class MottakerRepositoryImplTest {
                         poststed = "poststed",
                     )
                 ),
-                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-2"
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-2",
+                type = Mottaker.Type.KOPI
             )
             mottakerRepository.lagreMottakere(
                 bestilling.id,
