@@ -91,7 +91,7 @@ internal fun Application.server(dbConfig: DbConfig) {
     routing {
         authenticate(IdentityProvider.ENTRA_ID.value) {
             apiRouting {
-                bestillingApi(dataSource, personinfoGateway)
+                bestillingApi(dataSource, personinfoGateway, unleashGateway)
                 dokumentinnhentingApi(
                     pdfGateway = pdfGateway,
                     journalføringGateway = arkivGateway,

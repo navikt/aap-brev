@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.api.tilMottaker
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.feil.ValideringsfeilException
@@ -14,18 +15,22 @@ import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
+import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.prosessering.medBestillingsreferanse
+import no.nav.aap.brev.unleash.BrevFeature
+import no.nav.aap.brev.unleash.UnleashGateway
+import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
-import kotlin.collections.ifEmpty
 
 class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
@@ -35,6 +40,7 @@ class BrevbestillingService(
     private val brevinnholdService: BrevinnholdService,
     private val faktagrunnlagService: FaktagrunnlagService,
     private val brevbyggerService: BrevbyggerService,
+    private val unleashGateway: UnleashGateway,
 ) {
 
     companion object {
@@ -47,6 +53,7 @@ class BrevbestillingService(
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
                 brevbyggerService = BrevbyggerService.konstruer(connection),
+                unleashGateway = UnleashGatewayImpl
             )
         }
     }
@@ -148,7 +155,6 @@ class BrevbestillingService(
             log.info("Lagrer ikke signaturer")
         }
 
-
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
@@ -160,6 +166,11 @@ class BrevbestillingService(
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
             leggTilJobb(resultat.brevbestilling)
         } else {
+            if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
+                mottakerRepository.lagreMottakere(
+                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+                )
+            }
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 
@@ -224,6 +235,29 @@ class BrevbestillingService(
         return brevbestillingRepository.hent(referanse)
     }
 
+    fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        return mottakerRepository.hentMottakere(bestilling.id)
+    }
+
+    fun oppdaterMottakere(
+        referanse: BrevbestillingReferanse,
+        mottakere: List<Mottaker>,
+    ) {
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
+
+        valider(bestilling.status == Status.UNDER_ARBEID) {
+            "Forsøkte å oppdatere mottakere i bestilling med status=${bestilling.status}"
+        }
+
+        validerMottakere(mottakere)
+
+        mottakerRepository.oppdaterMottakere(
+            bestilling.id,
+            mottakere,
+        )
+    }
+
     fun oppdaterBrev(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
         validerOppdatering(referanse, oppdatertBrev)
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
@@ -250,6 +284,10 @@ class BrevbestillingService(
         }
 
         validerFerdigstilling(bestilling)
+
+        if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
+            validerMottakere(mottakere)
+        }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
@@ -432,6 +470,28 @@ class BrevbestillingService(
         if (trengerSignaturForAutomatiskFerdigstilling(brevtype)) {
             require(signaturer.isNotEmpty()) {
                 "Må oppgi signaturer for automatisk ferdigstilling av brevtype $brevtype"
+            }
+        }
+    }
+
+    private fun validerMottakere(mottakere: List<Mottaker>) {
+        valider(mottakere.isNotEmpty()) {
+            "Mottakerliste kan ikke være tom"
+        }
+
+        mottakere.forEach { mottaker ->
+            val harIdent = mottaker.ident != null && mottaker.identType != null
+
+            val harNavnOgAdresse = mottaker.navnOgAdresse?.let {
+                it.navn.isNotBlank()
+                        && it.adresse.adresselinje1.isNotBlank()
+                        && !it.adresse.postnummer.isNullOrBlank()
+                        && !it.adresse.poststed.isNullOrBlank()
+                        && it.adresse.landkode.isNotBlank()
+            } ?: false
+
+            valider(harIdent || harNavnOgAdresse) {
+                "Mottaker må være oppgitt med enten ident og identType, eller navn og adresse."
             }
         }
     }

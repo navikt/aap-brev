@@ -31,7 +31,7 @@ fun Application.regoppslagFake() {
             if (brukerHarAdresse) {
                 call.respond(
                     HttpStatusCode.OK, HentPostadresseResponse(
-                        navn = "",
+                        navn = "Fornavn Etternavn",
                         adresse = RegoppslagAdresse(
                             adresseKilde = "BOSTEDSADRESSE",
                             type = "NORSKPOSTADRESSE",
@@ -40,7 +40,7 @@ fun Application.regoppslagFake() {
                             adresselinje3 = null,
                             postnummer = "1234",
                             poststed = "Testbyen",
-                            landkode = "NOR",
+                            landkode = "NO",
                             land = "Norge"
                         )
                     )

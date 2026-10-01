@@ -30,7 +30,17 @@ class DistribusjonService(
         }
     }
 
+    @Deprecated("Bruk kanBrevDistribueresTilMottaker med BrevbestillingReferanse i stedet")
     fun kanBrevDistribueresTilBruker(brukerId: String, mottakerId: String): Boolean {
+        return (hentDistribusjonskanal(brukerId, mottakerId) != Distribusjonskanal.PRINT) || (hentPostadresse(mottakerId)?.adresse != null)
+    }
+
+    fun kanBrevDistribueresTilMottaker(bestillingsreferanse: BrevbestillingReferanse, mottakerId: String): Boolean {
+        val brevbestilling = brevbestillingRepository.hent(bestillingsreferanse)
+        val brukerId = requireNotNull(brevbestilling.brukerIdent) {
+            "Brevbestilling med referanse $bestillingsreferanse har ikke brukerIdent"
+        }
+
         return (hentDistribusjonskanal(brukerId, mottakerId) != Distribusjonskanal.PRINT) || (hentPostadresse(mottakerId)?.adresse != null)
     }
 
@@ -74,7 +84,7 @@ class DistribusjonService(
             }
     }
 
-    fun kanDistribuere(brevbestilling: Brevbestilling, journalpost: OpprettetJournalpost): Boolean {
+    private fun kanDistribuere(brevbestilling: Brevbestilling, journalpost: OpprettetJournalpost): Boolean {
         val brukerIdent = brevbestilling.brukerIdent
         val mottaker = journalpost.mottaker
         val mottakerIdent = mottaker.ident
