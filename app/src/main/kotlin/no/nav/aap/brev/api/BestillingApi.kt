@@ -1,12 +1,10 @@
 package no.nav.aap.brev.api
 
-import no.nav.aap.brev.kontrakt.BrevdataDto
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.http.*
-import no.nav.aap.brev.api.tilMottakere
+import io.ktor.http.HttpStatusCode
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
@@ -26,6 +24,7 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
@@ -33,10 +32,8 @@ import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
 import no.nav.aap.brev.kontrakt.OppdaterMottakereRequest
-import no.nav.aap.brev.unleash.BrevFeature
 import no.nav.aap.brev.unleash.UnleashGateway
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.AuthorizationParamPathConfig
@@ -48,11 +45,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import javax.sql.DataSource
 
-fun NormalOpenAPIRoute.bestillingApi(
-    dataSource: DataSource,
-    personinfoGateway: PersoninfoGateway,
-    unleashGateway: UnleashGateway
-) {
+fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource, personinfoGateway: PersoninfoGateway) {
     val logger = LoggerFactory.getLogger(this::class.java)
     val authorizationBodyPathConfig = AuthorizationBodyPathConfig(
         operasjon = Operasjon.SAKSBEHANDLE,
@@ -191,10 +184,6 @@ fun NormalOpenAPIRoute.bestillingApi(
                     authorizedPut<BrevbestillingReferansePathParam, Unit, OppdaterMottakereRequest>(
                         authorizationBodyPathConfig
                     ) { referanse, request ->
-                        if (!unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-                            throw UgyldigForespørselException("Feature er ikke aktivert")
-                        }
-
                         MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
                             val mottakere =
                                 listOfNotNull(

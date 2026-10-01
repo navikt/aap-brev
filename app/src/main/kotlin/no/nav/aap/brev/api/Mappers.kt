@@ -101,9 +101,6 @@ internal fun Mottaker.tilMottakerDto() = MottakerDto(
     },
 )
 
-/**
- * Deler opp lagringslisten (rad per mottaker) i de to navngitte feltene som eksponeres i API-et.
- */
 internal fun List<Mottaker>.tilMottakerOgKopimottaker(): Pair<MottakerDto?, MottakerDto?> {
     val mottaker = singleOrNull { it.type == Mottaker.Type.HOVED }?.tilMottakerDto()
     val kopimottaker = singleOrNull { it.type == Mottaker.Type.KOPI }?.tilMottakerDto()

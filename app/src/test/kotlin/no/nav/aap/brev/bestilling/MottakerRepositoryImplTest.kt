@@ -72,4 +72,42 @@ class MottakerRepositoryImplTest {
                 .containsExactlyInAnyOrder(mottaker1, mottaker2)
         }
     }
+
+    @Test
+    fun `lagreMottakere er en no-op dersom mottakere allerede finnes`() {
+        dataSource.transaction { connection ->
+            val brevbestillingRepository = BrevbestillingRepositoryImpl(connection)
+            val mottakerRepository = MottakerRepositoryImpl(connection)
+
+            val bestilling = brevbestillingRepository.opprettBestilling(
+                saksnummer = randomSaksnummer(),
+                brukerIdent = randomBrukerIdent(),
+                behandlingReferanse = randomBehandlingReferanse(),
+                unikReferanse = randomUnikReferanse(),
+                brevtype = randomBrevtype(),
+                språk = randomSpråk(),
+                vedlegg = emptySet()
+            )
+
+            val opprinneligMottaker = Mottaker(
+                ident = randomBrukerIdent(),
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1",
+                type = Mottaker.Type.HOVED
+            )
+            mottakerRepository.lagreMottakere(bestilling.id, listOf(opprinneligMottaker))
+
+            val annenMottaker = Mottaker(
+                ident = randomBrukerIdent(),
+                identType = IdentType.FNR,
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-2",
+                type = Mottaker.Type.KOPI
+            )
+            // Forsøker å lagre en helt annen mottakerliste for samme bestilling.
+            mottakerRepository.lagreMottakere(bestilling.id, listOf(annenMottaker))
+
+            assertThat(mottakerRepository.hentMottakere(bestilling.id).map { it.copy(id = null) })
+                .containsExactly(opprinneligMottaker)
+        }
+    }
 }

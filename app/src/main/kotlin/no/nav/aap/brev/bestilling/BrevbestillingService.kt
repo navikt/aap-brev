@@ -1,6 +1,5 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.api.tilMottaker
 import no.nav.aap.brev.arkivoppslag.ArkivoppslagGateway
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.feil.ValideringsfeilException
@@ -15,7 +14,6 @@ import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Faktagrunnlag
-import no.nav.aap.brev.kontrakt.MottakerDto
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
@@ -44,7 +42,7 @@ class BrevbestillingService(
 ) {
 
     companion object {
-        fun konstruer(connection: DBConnection): BrevbestillingService {
+        fun konstruer(connection: DBConnection, unleashGateway: UnleashGateway = UnleashGatewayImpl): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 mottakerRepository = MottakerRepository.konstruer(connection),
@@ -53,7 +51,7 @@ class BrevbestillingService(
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
                 brevbyggerService = BrevbyggerService.konstruer(connection),
-                unleashGateway = UnleashGatewayImpl
+                unleashGateway = unleashGateway
             )
         }
     }
@@ -244,6 +242,10 @@ class BrevbestillingService(
         referanse: BrevbestillingReferanse,
         mottakere: List<Mottaker>,
     ) {
+        if (!unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
+            throw UgyldigForespørselException("Feature er ikke aktivert")
+        }
+
         val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
         valider(bestilling.status == Status.UNDER_ARBEID) {
@@ -285,8 +287,12 @@ class BrevbestillingService(
 
         validerFerdigstilling(bestilling)
 
-        if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-            validerMottakere(mottakere)
+        /*
+        * Hvis feature er aktivert og mottakerlisten er tom, valider mottakere vi har lagret i databasen.
+        */
+        if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger) && mottakere.isEmpty()) {
+            val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
+            validerMottakere(lagredeMottakere)
         }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
