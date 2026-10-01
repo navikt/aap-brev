@@ -1,5 +1,6 @@
 package no.nav.aap.brev.bestilling
 
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomBrevtype
 import no.nav.aap.brev.test.randomBrukerIdent
@@ -47,7 +48,8 @@ class JournalpostRepositoryImplTest {
             val mottaker1 = Mottaker(
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1"
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-1",
+                type = Mottaker.Type.HOVED
             )
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
@@ -60,7 +62,8 @@ class JournalpostRepositoryImplTest {
                         poststed = "poststed",
                     )
                 ),
-                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-2"
+                bestillingMottakerReferanse = "${bestilling.referanse.referanse}-2",
+                type = Mottaker.Type.KOPI
             )
             mottakerRepository.lagreMottakere(
                 bestilling.id,

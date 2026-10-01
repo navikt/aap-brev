@@ -15,13 +15,14 @@ interface MottakerRepository {
     }
 }
 
-internal class MottakerRepositoryImpl (private val connection: DBConnection) : MottakerRepository {
+internal class MottakerRepositoryImpl(private val connection: DBConnection) : MottakerRepository {
 
     override fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
         val eksisterendeMottakere = hentMottakere(brevbestillingId)
         if (eksisterendeMottakere.isNotEmpty()) return
         val query = """
-            INSERT INTO MOTTAKER(BREVBESTILLING_ID, IDENT, IDENT_TYPE, NAVN_OG_ADRESSE, BESTILLING_MOTTAKER_REFERANSE) VALUES (?, ?, ?, ?::jsonb, ?)
+            INSERT INTO MOTTAKER(BREVBESTILLING_ID, IDENT, IDENT_TYPE, NAVN_OG_ADRESSE, BESTILLING_MOTTAKER_REFERANSE, TYPE) 
+            VALUES (?, ?, ?, ?::jsonb, ?, ?)
         """.trimIndent()
         connection.executeBatch(query, mottakere) {
             setParams {
@@ -30,6 +31,7 @@ internal class MottakerRepositoryImpl (private val connection: DBConnection) : M
                 setEnumName(3, it.identType)
                 setString(4, it.navnOgAdresse?.let { n -> DefaultJsonMapper.toJson(n) })
                 setString(5, it.bestillingMottakerReferanse)
+                setEnumName(6, it.type)
             }
         }
     }
@@ -55,7 +57,8 @@ internal class MottakerRepositoryImpl (private val connection: DBConnection) : M
             ident = row.getStringOrNull("IDENT"),
             identType = row.getEnumOrNull("IDENT_TYPE"),
             navnOgAdresse = row.getStringOrNull("NAVN_OG_ADRESSE")?.let { DefaultJsonMapper.fromJson(it) },
-            bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE")
+            bestillingMottakerReferanse = row.getString("BESTILLING_MOTTAKER_REFERANSE"),
+            type = row.getEnumOrNull<Mottaker.Type>("TYPE") ?: Mottaker.Type.HOVED,
         )
     }
 }
@@ -66,7 +69,12 @@ data class Mottaker(
     val identType: IdentType? = null,
     val navnOgAdresse: NavnOgAdresse? = null,
     val bestillingMottakerReferanse: String,
+    val type: Type,
 ) {
+    enum class Type {
+        HOVED, KOPI
+    }
+
     init {
         require(navnOgAdresse != null || identType == IdentType.FNR || identType == IdentType.ORGNR) {
             "navnOgAdresse må være satt dersom identType ikke er FNR eller ORGNR."
@@ -79,7 +87,6 @@ data class Mottaker(
         }
     }
 }
-
 
 data class NavnOgAdresse(
     val navn: String,

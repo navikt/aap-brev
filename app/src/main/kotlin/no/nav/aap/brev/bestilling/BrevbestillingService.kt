@@ -293,7 +293,8 @@ class BrevbestillingService(
         return Mottaker(
             ident = brevbestilling.brukerIdent,
             identType = IdentType.FNR,
-            bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1"
+            bestillingMottakerReferanse = "${brevbestilling.referanse.referanse}-1",
+            type = Mottaker.Type.HOVED,
         )
     }
 

@@ -43,6 +43,7 @@ class DistribusjonServiceTest : IntegrationTest() {
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
                 bestillingMottakerReferanse = bestillingMottakerReferanse,
+                type = Mottaker.Type.HOVED,
             )
 
             brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker))
@@ -77,7 +78,8 @@ class DistribusjonServiceTest : IntegrationTest() {
             val mottaker1 = Mottaker(
                 ident = bestilling.brukerIdent,
                 identType = IdentType.FNR,
-                bestillingMottakerReferanse = bestillingMottakerReferanse1
+                bestillingMottakerReferanse = bestillingMottakerReferanse1,
+                type = Mottaker.Type.HOVED,
             )
             val mottaker2 = Mottaker(
                 navnOgAdresse = NavnOgAdresse(
@@ -90,7 +92,8 @@ class DistribusjonServiceTest : IntegrationTest() {
                         poststed = "poststed",
                     )
                 ),
-                bestillingMottakerReferanse = bestillingMottakerReferanse2
+                bestillingMottakerReferanse = bestillingMottakerReferanse2,
+                type = Mottaker.Type.KOPI,
             )
 
             val forventetJournalpostId1 = randomJournalpostId()
