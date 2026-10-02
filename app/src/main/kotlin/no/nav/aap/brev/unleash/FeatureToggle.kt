@@ -9,6 +9,7 @@ enum class BrevFeature : FeatureToggle {
     // Se: https://aap-unleash-web.iap.nav.cloud.nais.io/projects/default
     BrevTest,
     BrevNyPdfgenerator,
+    RedigerMottakerBrevbygger,
     ;
 
     override fun key(): String = name
