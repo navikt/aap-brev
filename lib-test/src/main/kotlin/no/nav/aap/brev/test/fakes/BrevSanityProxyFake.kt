@@ -125,6 +125,7 @@ fun Application.brevSanityProxyFake() {
                 Brevtype.AVSLAG_11_27,
                 Brevtype.AVSLAG_UNDER_17_AAR_9_MAANEDER,
                 Brevtype.VEDTAK_ENDRING,
+                Brevtype.VEDTAK_ENDRING_DODSFALL,
                 Brevtype.BARNETILLEGG_SATS_REGULERING,
                 Brevtype.KLAGE_MOTTATT,
                 Brevtype.VEDTAK_11_7,

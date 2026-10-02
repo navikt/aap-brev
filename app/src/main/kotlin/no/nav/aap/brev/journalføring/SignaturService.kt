@@ -75,6 +75,7 @@ class SignaturService(
             }
 
             Brevtype.VEDTAK_ENDRING,
+            Brevtype.VEDTAK_ENDRING_DODSFALL,
             Brevtype.BARNETILLEGG_SATS_REGULERING,
             Brevtype.VARSEL_OM_BESTILLING,
             Brevtype.AVSLAG,
