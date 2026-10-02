@@ -8,7 +8,9 @@ data class Brevdata(
     val tabeller: List<Tabell>? = emptyList(),
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
-    val fritekster: List<Fritekst>
+    val fritekster: List<Fritekst>,
+    val automatiskValgteDelmalIder: List<String> = emptyList(),
+    val automatiskValgteValg: List<Valg> = emptyList(),
 ) {
     data class Tabell(
         val tekniskNavn: String,
@@ -24,10 +26,7 @@ data class Brevdata(
         }
     }
 
-    data class Delmal(
-        val id: String,
-        val automatiskValgt: Boolean = false,
-    )
+    data class Delmal(val id: String)
 
     /** Utfylt inline tekst-verdi i brevet — resultat av [no.nav.aap.brev.innhold.FaktagrunnlagService]. Ikke det samme som tabeller, se [Tabell]. */
     data class Faktagrunnlag(
@@ -38,7 +37,6 @@ data class Brevdata(
     data class Valg(
         val id: String,
         val key: String,
-        val automatiskValgt: Boolean = false,
     )
 
     @JvmInline

@@ -79,7 +79,9 @@ class BrevbyggerService(
             tabeller = tabeller,
             valg = valg,
             betingetTekst = betingetTekst,
-            fritekster = emptyList()
+            fritekster = emptyList(),
+            automatiskValgteDelmalIder = delmaler.map { it.id },
+            automatiskValgteValg = valg,
         )
 
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
@@ -127,7 +129,7 @@ class BrevbyggerService(
             else -> {}
         }
         return alleValgteDelmaler.map { delmalId ->
-            Brevdata.Delmal(id = delmalId, automatiskValgt = true)
+            Brevdata.Delmal(id = delmalId)
         }
     }
 
@@ -260,7 +262,6 @@ class BrevbyggerService(
                     Brevdata.Valg(
                         id = valg.valg._id,
                         key = forhåndsvalgt._key,
-                        automatiskValgt = true
                     )
                 }
         }

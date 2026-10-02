@@ -4,7 +4,9 @@ public data class BrevdataDto(
     val delmaler: List<Delmal>,
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
-    val fritekster: List<Fritekst>
+    val fritekster: List<Fritekst>,
+    val automatiskValgteDelmalIder: List<String> = emptyList(),
+    val automatiskValgteValg: List<Valg> = emptyList(),
 ) {
     public data class Delmal(public val id: String)
 

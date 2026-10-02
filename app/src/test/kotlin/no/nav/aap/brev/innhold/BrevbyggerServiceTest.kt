@@ -42,9 +42,10 @@ class BrevbyggerServiceTest : IntegrationTest() {
             .containsExactlyInAnyOrder(
                 Brevdata.Delmal(
                     id = "49d9c7a7-29db-43c6-aece-45e97314a50a",
-                    automatiskValgt = true,
                 )
             )
+        assertThat(oppdatertBestilling.brevdata?.automatiskValgteDelmalIder)
+            .containsExactly("49d9c7a7-29db-43c6-aece-45e97314a50a")
 
         assertThat(oppdatertBestilling.brevdata?.faktagrunnlag).containsExactlyInAnyOrder(
             Brevdata.Faktagrunnlag(
@@ -107,9 +108,10 @@ class BrevbyggerServiceTest : IntegrationTest() {
             Brevdata.Valg(
                 id = forventetValg.valg._id,
                 key = forventetValg.valg.alternativer[2]._key,
-                automatiskValgt = true,
             )
         )
+        assertThat(oppdatertBestilling.brevdata?.automatiskValgteValg)
+            .isEqualTo(oppdatertBestilling.brevdata?.valg)
         assertThat(oppdatertBestilling.brevdata?.betingetTekst).containsExactly(
             Brevdata.BetingetTekst(forventetBetingetTekst.tekst._id)
         )
