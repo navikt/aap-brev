@@ -8,7 +8,9 @@ data class Brevdata(
     val tabeller: List<Tabell>? = emptyList(),
     val valg: List<Valg>,
     val betingetTekst: List<BetingetTekst>,
-    val fritekster: List<Fritekst>
+    val fritekster: List<Fritekst>,
+    val automatiskValgteDelmalIder: List<String> = emptyList(),
+    val automatiskValgteValg: List<Valg> = emptyList(),
 ) {
     data class Tabell(
         val tekniskNavn: String,

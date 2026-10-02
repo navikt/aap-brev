@@ -80,6 +80,10 @@ internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.ma
 
 fun Brevdata.tilBrevdataDto(): BrevdataDto {
     return BrevdataDto(
+        automatiskValgteDelmalIder = automatiskValgteDelmalIder,
+        automatiskValgteValg = automatiskValgteValg.map { valg ->
+            BrevdataDto.Valg(id = valg.id, key = valg.key)
+        },
         delmaler = delmaler.map { delmal -> BrevdataDto.Delmal(id = delmal.id) },
         valg = valg.map { valg ->
             BrevdataDto.Valg(
