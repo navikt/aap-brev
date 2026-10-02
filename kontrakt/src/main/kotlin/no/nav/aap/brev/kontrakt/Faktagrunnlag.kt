@@ -24,6 +24,7 @@ public const val FAKTAGRUNNLAG_TYPE_BARN_UTEN_BARNETILLEGG: String = "BARN_UTEN_
 public const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD: String = "INNVILGET_UFORETRYGD"
 public const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING: String = "TIDSPUNKT_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER: String = "SYKEPENGEGRUNNLAG"
+public const val FAKTAGRUNNLAG_TYPE_DODSFALL: String = "DODSFALL"
 
 public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -43,6 +44,7 @@ public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     INNVILGET_UFORETRYGD(FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD),
     TIDSPUNKT_VURDERING(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING),
     GRUNNLAG_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER),
+    DODSFALL(FAKTAGRUNNLAG_TYPE_DODSFALL),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -236,6 +238,11 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
             ANNET,
         }
     }
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_DODSFALL)
+    public data class Dødsfall(
+        val dødsdato: LocalDate,
+    ) : Faktagrunnlag(FaktagrunnlagType.DODSFALL)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
     public data class GrunnlagAndreYtelser(
