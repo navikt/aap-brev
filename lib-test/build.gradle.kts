@@ -11,8 +11,5 @@ dependencies {
     implementation(libs.json)
     implementation(libs.tilgangKontrakt)
 
-    implementation(libs.jacksonDatabind)
-    implementation(libs.jacksonDatatypeJsr310)
-
-    implementation(libs.joseJwt)
+    implementation(kelvinLibs.nimbus.jose.jwt)
 }
