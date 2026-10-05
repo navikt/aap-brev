@@ -79,7 +79,9 @@ class BrevbyggerService(
             tabeller = tabeller,
             valg = valg,
             betingetTekst = betingetTekst,
-            fritekster = emptyList()
+            fritekster = emptyList(),
+            automatiskValgteDelmalIder = delmaler.map { it.id },
+            automatiskValgteValg = valg,
         )
 
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
@@ -126,7 +128,9 @@ class BrevbyggerService(
 
             else -> {}
         }
-        return alleValgteDelmaler.map { Brevdata.Delmal(it) }
+        return alleValgteDelmaler.map { delmalId ->
+            Brevdata.Delmal(id = delmalId)
+        }
     }
 
     private fun utledFaktagrunnlagMedVerdi(
@@ -255,7 +259,10 @@ class BrevbyggerService(
                             .find { valgAlternativ ->
                                 kategorier.map { it.name }.contains(valgAlternativ.kategori?.tekniskNavn)
                             } ?: return@mapNotNull null
-                    Brevdata.Valg(id = valg.valg._id, forhåndsvalgt._key)
+                    Brevdata.Valg(
+                        id = valg.valg._id,
+                        key = forhåndsvalgt._key,
+                    )
                 }
         }
     }
