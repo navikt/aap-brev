@@ -9,6 +9,11 @@ include(
 
 dependencyResolutionManagement {
     // Felles for alle gradle prosjekter i repoet
+    versionCatalogs {
+        create("kelvinLibs") {
+            from("no.nav.aap.kelvin:version-catalog:2.0.172")
+        }
+    }
     @Suppress("UnstableApiUsage")
     repositories {
         maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
