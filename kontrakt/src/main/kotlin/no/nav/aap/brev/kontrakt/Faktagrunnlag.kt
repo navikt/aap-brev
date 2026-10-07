@@ -242,6 +242,7 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_DODSFALL)
     public data class Dødsfall(
         val dødsdato: LocalDate,
+        val navn: String
     ) : Faktagrunnlag(FaktagrunnlagType.DODSFALL)
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
