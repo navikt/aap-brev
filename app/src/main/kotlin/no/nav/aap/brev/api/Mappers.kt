@@ -43,7 +43,7 @@ fun utledStatus(status: Status?, prosesseringStatus: ProsesseringStatus?): Statu
         ProsesseringStatus.AVBRUTT -> Status.AVBRUTT
     }
 
-internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mottaker(
+internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, type: Mottaker.Type, index: Int) = Mottaker(
     ident = ident,
     identType = when (identType) {
         null -> null
@@ -62,18 +62,28 @@ internal fun MottakerDto.tilMottaker(bestillingReferanse: UUID, index: Int) = Mo
                 poststed = it.adresse.poststed
             )
         )
-    }
+    },
+    type = type,
 )
 
+/**
+ * Brukes for den eldre (v2) ferdigstill-flyten, der mottakere fortsatt sendes som liste
+ * uten eksplisitt rolle. Første element regnes som hovedperson, resten som kopi.
+ */
 internal fun List<MottakerDto>.tilMottakere(bestillingReferanse: UUID) = this.mapIndexed { index, mottaker ->
     mottaker.tilMottaker(
         bestillingReferanse = bestillingReferanse,
+        type = if (index == 0) Mottaker.Type.HOVED else Mottaker.Type.KOPI,
         index = index
     )
 }
 
 fun Brevdata.tilBrevdataDto(): BrevdataDto {
     return BrevdataDto(
+        automatiskValgteDelmalIder = automatiskValgteDelmalIder,
+        automatiskValgteValg = automatiskValgteValg.map { valg ->
+            BrevdataDto.Valg(id = valg.id, key = valg.key)
+        },
         delmaler = delmaler.map { delmal -> BrevdataDto.Delmal(id = delmal.id) },
         valg = valg.map { valg ->
             BrevdataDto.Valg(

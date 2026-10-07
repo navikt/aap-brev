@@ -70,7 +70,7 @@ class JournalføringService(
                 mottaker = mottaker,
                 personinfo = personinfo,
                 pdf = pdf,
-                tittelJournalpost = tittelJournalpost,
+                tittelJournalpost = if (mottaker.type == Mottaker.Type.KOPI) "$tittelJournalpost (kopi)" else tittelJournalpost,
                 tittelBrev = tittelBrev
             )
         }

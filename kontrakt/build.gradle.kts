@@ -39,10 +39,9 @@ publishing {
 }
 
 dependencies {
-    api(libs.jacksonDatatypeJsr310)
+    api(kelvinLibs.jackson.datatype.jsr310)
 
     testImplementation(project(":lib-test"))
     testImplementation(libs.json)
-    testImplementation(libs.assertJ)
-    testImplementation(libs.bundles.junit)
+    testImplementation(kelvinLibs.bundles.junit)
 }

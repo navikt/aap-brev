@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("aap.conventions")
-    alias(libs.plugins.ktor)
+    alias(kelvinLibs.plugins.ktor)
 }
 
 application {
@@ -30,10 +30,10 @@ tasks.register<JavaExec>("genererOpenApi") {
 }
 
 dependencies {
-    implementation(libs.jacksonDatatypeJsr310)
-    implementation(libs.micrometerRegistryPrometheus)
-    implementation(libs.logbackClassic)
-    implementation(libs.logstashLogbackEncoder)
+    implementation(kelvinLibs.jackson.datatype.jsr310)
+    implementation(kelvinLibs.micrometer.prometheus)
+    implementation(kelvinLibs.logback.classic)
+    implementation(kelvinLibs.logstash.logback.encoder)
 
     implementation(libs.dbconnect)
     implementation(libs.dbmigrering)
@@ -52,18 +52,16 @@ dependencies {
     implementation(project(":dbflyway"))
     implementation(project(":kontrakt"))
 
-    implementation(libs.hikariCp)
+    implementation(kelvinLibs.hikaricp)
 
     api(libs.gateway)
-    implementation(libs.unleashClientJava)
+    implementation(kelvinLibs.unleash.client.java)
 
     testImplementation(libs.dbtest)
-    testRuntimeOnly(libs.junitJupiterEngine)
-    testImplementation(libs.junitApi)
-    testImplementation(libs.junitJupiterParams)
-    testImplementation(libs.assertJ)
-    testImplementation(libs.testcontainersPostgres)
+    testImplementation(kelvinLibs.bundles.junit)
+    testImplementation(kelvinLibs.assertj.core)
+    testImplementation(kelvinLibs.testcontainers.postgresql)
 
     testImplementation(project(":lib-test"))
-    testImplementation(libs.mockk)
+    testImplementation(kelvinLibs.mockk)
 }

@@ -129,6 +129,7 @@ internal class BrevbestillingRepositoryImpl(private val connection: DBConnection
         return Brevbestilling(
             id = id,
             saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
+            journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
             referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
             brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
             brevmal = row.getStringOrNull("BREVMAL")?.let { DefaultJsonMapper.fromJson<BrevmalJson>(it) },
