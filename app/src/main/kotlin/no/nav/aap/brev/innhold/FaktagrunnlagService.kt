@@ -177,6 +177,12 @@ class FaktagrunnlagService(
                                 refusjonskravTjenestepensjonTekst(it, språk)
                             )
                         }
+                        faktagrunnlag.refusjonskravSosialkontor?.let {
+                            put(
+                                KjentFaktagrunnlag.REFUSJONSKRAV_SOSIALKONTOR,
+                                refusjonskravSosialkontorTekst(it, språk)
+                            )
+                        }
                     }
 
                     is Faktagrunnlag.YrkesskadeBeregning -> {
@@ -274,6 +280,18 @@ class FaktagrunnlagService(
             refusjonskravTjenestepensjon.tilOgMed,
             språk
         )
+    }
+
+    private fun refusjonskravSosialkontorTekst(
+        refusjonskravSosialkontor: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravSosialkontor,
+        språk: Språk
+    ): String {
+        return "Skal etterbetaling holdes igjen: ${if (refusjonskravSosialkontor.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " +
+                periodeTilTekst(
+                    refusjonskravSosialkontor.fraOgMed,
+                    refusjonskravSosialkontor.tilOgMed,
+                    språk
+                )
     }
 
     private fun fritakMeldepliktTekst(
