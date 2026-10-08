@@ -121,7 +121,7 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val fradragAndreYtelser: List<FradragYtelse>,
         val reduksjonArbeidsgiver: List<ReduksjonArbeidsgiver>,
         val refusjonskravTjenestepensjon: RefusjonskravTjenestepensjon?,
-        val refusjonskravSosialkontor: RefusjonskravSosialkontor?,
+        val refusjonskravNavkontor: RefusjonskravNavkontor?,
         val samordningAndreYtelser: List<SamordningYtelse>,
         val samordningBarnepensjon: List<SamordningBarnepensjon>,
         val samordningUføre: List<SamordningUføre>,
@@ -151,8 +151,7 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
             val tilOgMed: LocalDate?,
         )
 
-        public data class RefusjonskravSosialkontor(
-            val skalEtterbetalingHoldesIgjen: Boolean,
+        public data class RefusjonskravNavkontor(
             val fraOgMed: LocalDate?,
             val tilOgMed: LocalDate?,
         )

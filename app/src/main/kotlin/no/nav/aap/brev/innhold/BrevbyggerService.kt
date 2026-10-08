@@ -30,7 +30,6 @@ import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
 import java.math.BigDecimal
-import java.time.LocalDate
 import kotlin.collections.filterIsInstance
 import kotlin.collections.joinToString
 
@@ -165,7 +164,7 @@ class BrevbyggerService(
                         leggTilHvis(HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
                         leggTilHvis(HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
-                        leggTilHvis(HAR_REFUSJONSKRAV_SOSIALKONTOR) { faktagrunnlag.refusjonskravSosialkontor != null }
+                        leggTilHvis(HAR_REFUSJONSKRAV_SOSIALKONTOR) { faktagrunnlag.refusjonskravNavkontor != null }
                         leggTilHvis(HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
