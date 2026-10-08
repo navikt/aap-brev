@@ -219,6 +219,17 @@ class FaktagrunnlagService(
                         )
                     }
 
+                    is Faktagrunnlag.Dødsfall -> {
+                        put(
+                            KjentFaktagrunnlag.DODSFALL_DODSDATO,
+                            faktagrunnlag.dødsdato.formaterFullLengde(språk)
+                        )
+                        put(
+                            KjentFaktagrunnlag.DODSFALL_NAVN,
+                            faktagrunnlag.navn
+                        )
+                    }
+
                     is Faktagrunnlag.GrunnlagAndreYtelser -> {
                         put(
                             KjentFaktagrunnlag.SYKEPENGEGRUNNLAG_OVER_2G,
