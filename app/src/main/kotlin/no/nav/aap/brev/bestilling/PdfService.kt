@@ -14,9 +14,6 @@ import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.person.PdlGateway
-import no.nav.aap.brev.unleash.BrevFeature
-import no.nav.aap.brev.unleash.UnleashGateway
-import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import org.slf4j.LoggerFactory
@@ -26,10 +23,8 @@ class PdfService(
     private val signaturService: SignaturService,
     private val brevbestillingRepository: BrevbestillingRepository,
     private val personinfoGateway: PersoninfoGateway,
-    private val pdfGateway: PdfGateway,
     private val pdfgeneratorSaksbehandlingGateway: PdfgeneratorSaksbehandlingGateway,
     private val pdfGatewayV2: PdfGatewayV2,
-    private val unleashGateway: UnleashGateway,
 ) {
     private val log = LoggerFactory.getLogger(PdfService::class.java)
 
@@ -39,10 +34,8 @@ class PdfService(
                 signaturService = SignaturService.konstruer(),
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 personinfoGateway = PdlGateway(),
-                pdfGateway = SaksbehandlingPdfGenGateway(),
                 pdfgeneratorSaksbehandlingGateway = PdfgeneratorSaksbehandlingGateway(),
                 pdfGatewayV2 = BrevSanityProxyGateway(),
-                unleashGateway = UnleashGatewayImpl
             )
         }
     }
@@ -129,10 +122,7 @@ class PdfService(
                 signaturer = signaturer,
             )
 
-            if (unleashGateway.isEnabled(BrevFeature.BrevNyPdfgenerator)) {
-                return pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
-            }
-            return pdfGateway.genererPdf(pdfBrev)
+            return pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
         }
     }
 
