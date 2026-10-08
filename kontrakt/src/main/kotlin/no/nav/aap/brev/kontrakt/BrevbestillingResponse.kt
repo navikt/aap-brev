@@ -14,4 +14,6 @@ public data class BrevbestillingResponse(
     val brevtype: Brevtype,
     val språk: Språk,
     val status: Status,
+    val mottaker: MottakerDto? = null,
+    val kopimottaker: MottakerDto? = null,
 )
