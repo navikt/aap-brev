@@ -43,4 +43,6 @@ enum class KjentFaktagrunnlag {
     SYKEPENGEGRUNNLAG_OVER_2G,
     YTELSETYPE,
     YTELSE_TOM,
+    DODSFALL_DODSDATO,
+    DODSFALL_NAVN
 }
