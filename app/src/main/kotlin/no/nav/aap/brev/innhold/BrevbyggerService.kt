@@ -10,7 +10,7 @@ import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.innhold.KjentKategori.HAR_FRADRAG_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON
-import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_SOSIALKONTOR
+import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_NAVKONTOR
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
@@ -164,7 +164,7 @@ class BrevbyggerService(
                         leggTilHvis(HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
                         leggTilHvis(HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
-                        leggTilHvis(HAR_REFUSJONSKRAV_SOSIALKONTOR) { faktagrunnlag.refusjonskravNavkontor != null }
+                        leggTilHvis(HAR_REFUSJONSKRAV_NAVKONTOR) { faktagrunnlag.refusjonskravNavkontor != null }
                         leggTilHvis(HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
