@@ -222,7 +222,7 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.Dødsfall -> {
                         put(
                             KjentFaktagrunnlag.DODSFALL_DODSDATO,
-                            faktagrunnlag.dødsdato.formaterFullLengde(språk)
+                            faktagrunnlag.dødsdato.plusDays(1).formaterFullLengde(språk)
                         )
                         put(
                             KjentFaktagrunnlag.DODSFALL_NAVN,
