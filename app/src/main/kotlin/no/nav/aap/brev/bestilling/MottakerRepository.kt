@@ -6,6 +6,7 @@ import no.nav.aap.komponenter.json.DefaultJsonMapper
 
 interface MottakerRepository {
     fun lagreMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>)
+    fun oppdaterMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>)
     fun hentMottakere(brevbestillingId: BrevbestillingId): List<Mottaker>
 
     companion object {
@@ -34,6 +35,16 @@ internal class MottakerRepositoryImpl(private val connection: DBConnection) : Mo
                 setEnumName(6, it.type)
             }
         }
+    }
+
+    override fun oppdaterMottakere(brevbestillingId: BrevbestillingId, mottakere: List<Mottaker>) {
+        connection.execute("DELETE FROM MOTTAKER WHERE BREVBESTILLING_ID = ?") {
+            setParams {
+                setLong(1, brevbestillingId.id)
+            }
+        }
+
+        lagreMottakere(brevbestillingId, mottakere)
     }
 
     override fun hentMottakere(brevbestillingId: BrevbestillingId): List<Mottaker> {

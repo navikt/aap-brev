@@ -8,8 +8,10 @@ import io.ktor.http.HttpStatusCode
 import no.nav.aap.brev.distribusjon.DistribusjonService
 import no.nav.aap.brev.kontrakt.KanDistribuereBrevReponse
 import no.nav.aap.brev.kontrakt.KanDistribuereBrevRequest
+import no.nav.aap.brev.kontrakt.KanDistribuereBrevV2Request
 import no.nav.aap.brev.kontrakt.MottakerDistStatus
 import no.nav.aap.komponenter.dbconnect.transaction
+import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
 import no.nav.aap.tilgang.Operasjon
 import no.nav.aap.tilgang.authorizedPost
@@ -43,4 +45,24 @@ fun NormalOpenAPIRoute.distribusjonApi(dataSource: DataSource) {
             respond(KanDistribuereBrevReponse(mottakereDistStatus), HttpStatusCode.OK)
         }
     }
+
+    route("api/{referanse}/v2/kan-distribuere-brev") {
+        authorizedPost<BrevbestillingReferansePathParam, Boolean, KanDistribuereBrevV2Request>(
+            authorizationBodyPathConfig
+        ) { params, request ->
+            if (request.mottakerId.isBlank()) {
+                throw UgyldigForespørselException("MottakerId må være satt for å sjekke om brev kan distribueres")
+            }
+
+            val kanDistribuereBrev = dataSource.transaction { connection ->
+                DistribusjonService.konstruer(connection)
+                    .kanBrevDistribueresTilMottaker(
+                        bestillingsreferanse = params.brevbestillingReferanse,
+                        mottakerId = request.mottakerId
+                    )
+            }
+            respond(kanDistribuereBrev, HttpStatusCode.OK)
+        }
+    }
+
 }

@@ -1,14 +1,14 @@
 package no.nav.aap.brev.api
 
-import no.nav.aap.brev.kontrakt.BrevdataDto
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.response.respondWithStatus
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode
 import no.nav.aap.brev.bestilling.BehandlingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingService
+import no.nav.aap.brev.bestilling.Mottaker
 import no.nav.aap.brev.bestilling.PdfService
 import no.nav.aap.brev.bestilling.PersoninfoGateway
 import no.nav.aap.brev.bestilling.Saksnummer
@@ -24,12 +24,15 @@ import no.nav.aap.brev.kontrakt.BestillBrevResponse
 import no.nav.aap.brev.kontrakt.BestillBrevV2Request
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.BrevbestillingResponse
+import no.nav.aap.brev.kontrakt.BrevdataDto
 import no.nav.aap.brev.kontrakt.FerdigstillBrevRequest
 import no.nav.aap.brev.kontrakt.ForhandsvisBrevRequest
 import no.nav.aap.brev.kontrakt.GjenopptaBrevbestillingRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerRequest
 import no.nav.aap.brev.kontrakt.HentSignaturerResponse
 import no.nav.aap.brev.kontrakt.OppdaterBrevmalRequest
+import no.nav.aap.brev.kontrakt.OppdaterMottakereRequest
+import no.nav.aap.brev.unleash.UnleashGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.miljo.Miljø
 import no.nav.aap.tilgang.AuthorizationBodyPathConfig
@@ -142,12 +145,17 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource, personinfoGateway: 
                         MDCNøkler.BESTILLING_REFERANSE.key,
                         brevbestillingReferanse.brevbestillingReferanse.referanse.toString()
                     ).use {
+                        val brevbestillingResponse = dataSource.transaction { connection ->
+                            val service = BrevbestillingService.konstruer(connection)
+                            val bestilling = service.hent(brevbestillingReferanse.brevbestillingReferanse)
 
-                        val brevbestilling = dataSource.transaction { connection ->
-                            BrevbestillingService.konstruer(connection)
-                                .hent(brevbestillingReferanse.brevbestillingReferanse)
+                            val mottakere = service.hentMottakere(brevbestillingReferanse.brevbestillingReferanse)
+                            val (mottaker, kopimottaker) = mottakere.tilMottakerOgKopimottaker()
+
+                            bestilling.tilResponse(mottaker, kopimottaker)
                         }
-                        respond(brevbestilling.tilResponse())
+
+                        respond(brevbestillingResponse)
                     }
                 }
                 route("/oppdater") {
@@ -167,6 +175,25 @@ fun NormalOpenAPIRoute.bestillingApi(dataSource: DataSource, personinfoGateway: 
                             dataSource.transaction { connection ->
                                 BrevbestillingService.konstruer(connection)
                                     .oppdaterBrevdata(referanse.brevbestillingReferanse, brevdata)
+                            }
+                            respondWithStatus(HttpStatusCode.NoContent)
+                        }
+                    }
+                }
+                route("/oppdater-mottakere") {
+                    authorizedPut<BrevbestillingReferansePathParam, Unit, OppdaterMottakereRequest>(
+                        authorizationBodyPathConfig
+                    ) { referanse, request ->
+                        MDC.putCloseable(MDCNøkler.BESTILLING_REFERANSE.key, referanse.referanse.toString()).use {
+                            val mottakere =
+                                listOfNotNull(
+                                    request.mottaker.tilMottaker(referanse.referanse, Mottaker.Type.HOVED, 0),
+                                    request.kopimottaker?.tilMottaker(referanse.referanse, Mottaker.Type.KOPI, 1)
+                                )
+
+                            dataSource.transaction { connection ->
+                                BrevbestillingService.konstruer(connection)
+                                    .oppdaterMottakere(referanse.brevbestillingReferanse, mottakere)
                             }
                             respondWithStatus(HttpStatusCode.NoContent)
                         }
