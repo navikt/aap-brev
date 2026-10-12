@@ -161,7 +161,6 @@ class BrevbestillingRepositoryImplTest {
                 bestilling.signaturer
             )
 
-            brevbestillingRepository.lagreJournalpost(bestilling.id, journalpostId, journalpostFerdigstilt = false)
             bestilling = brevbestillingRepository.hent(bestilling.referanse)
 
             assertEquals(bestilling, brevbestillingRepository.hent(unikReferanse))
