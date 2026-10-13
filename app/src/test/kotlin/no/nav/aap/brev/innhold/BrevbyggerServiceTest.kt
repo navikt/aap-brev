@@ -254,7 +254,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             validerFerdigstilling(bestilling.referanse)
         }
         assertThat(exception.message).isEqualTo(
-            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet: Mangler obligatoriske delmaler med id ${manglendeDelmal?.delmal?._id}."
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet: Mangler obligatoriske delmaler med id ${manglendeDelmal.delmal._id}."
         )
     }
 
@@ -277,7 +277,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
             validerFerdigstilling(bestilling.referanse)
         }
         assertThat(exception.message).isEqualTo(
-            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet: Mangler fritekst(er) med key ${manglendeFritekst?._key} for delmal med id ${delmalMedMangler?.delmal?._id}."
+            "Kan ikke ferdigstille brevbestilling med referanse=${bestilling.referanse.referanse}. Validering av brevinnhold feilet: Mangler fritekst(er) med key ${manglendeFritekst._key} for delmal med id ${delmalMedMangler.delmal?._id}."
         )
     }
 
