@@ -6,6 +6,7 @@ import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
+import no.nav.aap.brev.bestilling.JournalpostRepository
 import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.dbconnect.transaction
@@ -32,7 +33,13 @@ fun NormalOpenAPIRoute.driftApi(dataSource: DataSource) {
             val bestillinger = dataSource.transaction(readOnly = true) { connection ->
                 BrevbestillingRepository.konstruer(connection)
                     .hentAlleForSak(params.saksnummer)
-                    .map(Brevbestilling::mapTilDriftsinfoDto)
+                    .map {
+                        val journalpostIder = JournalpostRepository.konstruer(connection)
+                            .hentAlleFor(it.referanse)
+                            .map { journalpost -> journalpost.journalpostId.id }
+
+                        it.mapTilDriftsinfoDto(journalpostIder)
+                    }
             }
 
             respond(bestillinger)
@@ -47,7 +54,13 @@ fun NormalOpenAPIRoute.driftApi(dataSource: DataSource) {
             val bestillinger = dataSource.transaction(readOnly = true) { connection ->
                 BrevbestillingRepository.konstruer(connection)
                     .hentAlleForBehandling(params.referanse)
-                    .map(Brevbestilling::mapTilDriftsinfoDto)
+                    .map {
+                        val journalpostIder = JournalpostRepository.konstruer(connection)
+                            .hentAlleFor(it.referanse)
+                            .map { journalpost -> journalpost.journalpostId.id }
+
+                        it.mapTilDriftsinfoDto(journalpostIder)
+                    }
             }
 
             respond(bestillinger)
@@ -68,10 +81,10 @@ private data class BrevbestillingDriftsinfoDto(
     val prosesseringStatus: ProsesseringStatus?,
 )
 
-private fun Brevbestilling.mapTilDriftsinfoDto() = BrevbestillingDriftsinfoDto(
+private fun Brevbestilling.mapTilDriftsinfoDto(journalpostIder: List<String>) = BrevbestillingDriftsinfoDto(
     id = id.id,
     bestillingReferanse = referanse.referanse.toString(),
-    journalpostId = journalpostId?.id,
+    journalpostId = journalpostIder.joinToString(),
     opprettet = opprettet,
     oppdatert = oppdatert,
     behandlingReferanse = behandlingReferanse.referanse.toString(),

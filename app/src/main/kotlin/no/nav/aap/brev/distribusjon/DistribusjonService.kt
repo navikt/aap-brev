@@ -73,10 +73,6 @@ class DistribusjonService(
                         brevbestilling.brevtype,
                         journalpost.mottaker
                     )
-                    // TODO Midlertidig for bakoverkompabilitet
-                    if (journalpost.mottaker.ident == brevbestilling.brukerIdent) {
-                        brevbestillingRepository.lagreDistribusjonBestilling(brevbestilling.id, distribusjonBestillingId)
-                    }
                     journalpostRepository.lagreDistribusjonBestilling(journalpost.journalpostId, distribusjonBestillingId)
                 } else {
                     log.info("Kan ikke distribuere brev til bruker pga. manglende adresseinformasjon. Fortsetter uten distribusjon.")

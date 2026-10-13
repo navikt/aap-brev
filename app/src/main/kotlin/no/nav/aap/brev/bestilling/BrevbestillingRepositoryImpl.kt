@@ -1,15 +1,14 @@
 package no.nav.aap.brev.bestilling
 
-import no.nav.aap.brev.distribusjon.DistribusjonBestillingId
 import no.nav.aap.brev.feil.ValideringsfeilException
-import no.nav.aap.brev.kontrakt.Brevtype
-import no.nav.aap.brev.kontrakt.Språk
-import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.journalføring.DokumentInfoId
 import no.nav.aap.brev.journalføring.JournalpostId
 import no.nav.aap.brev.kontrakt.Brev
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
+import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Status
+import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.komponenter.dbconnect.DBConnection
 import no.nav.aap.komponenter.dbconnect.Row
 import no.nav.aap.komponenter.json.DefaultJsonMapper
@@ -129,7 +128,6 @@ internal class BrevbestillingRepositoryImpl(private val connection: DBConnection
         return Brevbestilling(
             id = id,
             saksnummer = Saksnummer(row.getString("SAKSNUMMER")),
-            journalpostId = row.getStringOrNull("JOURNALPOST_ID")?.let { JournalpostId(it) },
             referanse = BrevbestillingReferanse(row.getUUID("REFERANSE")),
             brev = row.getStringOrNull("BREV")?.let { DefaultJsonMapper.fromJson<Brev>(it) },
             brevmal = row.getStringOrNull("BREVMAL")?.let { DefaultJsonMapper.fromJson<BrevmalJson>(it) },
@@ -299,59 +297,6 @@ internal class BrevbestillingRepositoryImpl(private val connection: DBConnection
         ) {
             setParams {
                 setEnumName(1, status)
-                setLocalDateTime(2, LocalDateTime.now())
-                setLong(3, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreJournalpost(
-        id: BrevbestillingId,
-        journalpostId: JournalpostId,
-        journalpostFerdigstilt: Boolean
-    ) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_ID = ?, JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setString(1, journalpostId.id)
-                setBoolean(2, journalpostFerdigstilt)
-                setLocalDateTime(3, LocalDateTime.now())
-                setLong(4, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreJournalpostFerdigstilt(id: BrevbestillingId, journalpostFerdigstilt: Boolean) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET JOURNALPOST_FERDIGSTILT = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setBoolean(1, journalpostFerdigstilt)
-                setLocalDateTime(2, LocalDateTime.now())
-                setLong(3, id.id)
-            }
-            setResultValidator {
-                require(1 == it)
-            }
-        }
-    }
-
-    override fun lagreDistribusjonBestilling(
-        id: BrevbestillingId,
-        distribusjonBestillingId: DistribusjonBestillingId
-    ) {
-        connection.execute(
-            "UPDATE BREVBESTILLING SET DISTRIBUSJON_BESTILLING_ID = ?, OPPDATERT_TID = ? WHERE ID = ?"
-        ) {
-            setParams {
-                setString(1, distribusjonBestillingId.id)
                 setLocalDateTime(2, LocalDateTime.now())
                 setLong(3, id.id)
             }
