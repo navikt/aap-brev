@@ -20,7 +20,6 @@ object BrevLogInfoProvider : JobbLogInfoProvider {
                     buildMap {
                         row.getStringOrNull("referanse")?.let { put("referanse", it) }
                         row.getStringOrNull("saksnummer")?.let { put("saksnummer", it) }
-                        row.getStringOrNull("journalpost_id")?.let { put("journalpostId", it) }
                     }
                 )
             }
