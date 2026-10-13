@@ -67,7 +67,12 @@ class BrevbyggerService(
         }
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
+        val delmaler = utledValgteDelmaler(
+            brevmal = brevmal,
+            brevtype = bestilling.brevtype,
+            kategorier = kategorier,
+            faktagrunnlag = faktagrunnlag
+        )
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
 
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
@@ -88,7 +93,8 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
+    private fun utledValgteDelmaler(
+        brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
     ): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
@@ -124,7 +130,9 @@ class BrevbyggerService(
             }
 
             Brevtype.AVSLAG -> {
-
+                brevmal.delmaler
+                    .find { it.delmal._id == DelmalSpesifikasjon.AVSLAGSHJEMLER.id }
+                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
             }
 
             else -> {}
@@ -151,6 +159,7 @@ class BrevbyggerService(
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
         var kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
+
                 is TilkjentYtelse -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_BARNETILLEGG) {
@@ -224,7 +233,7 @@ class BrevbyggerService(
                         }
                     }
                     val nedsatt = buildSet {
-                        when(faktagrunnlag.aarsakYtterligereNedsattTidspunktVurdering){
+                        when (faktagrunnlag.aarsakYtterligereNedsattTidspunktVurdering) {
                             AarsakYtterligereNedsatt.UFOERETIDSPUNKT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_UFOERETIDSPUNKT)
                             AarsakYtterligereNedsatt.YTTERLIGERE_NEDSATT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_YTTERLIGERE_NEDSATT)
                             AarsakYtterligereNedsatt.OKT_UFOEREGRAD -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_OKT_UFOEREGRAD)
@@ -236,11 +245,19 @@ class BrevbyggerService(
                     årsak + nedsatt
                 }
 
+                is Faktagrunnlag.AvslagAarsak -> when (faktagrunnlag.aarsak) {
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_2 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_2)
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_3 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_3)
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_4 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_4)
+                }
+
+
                 else -> {
                     emptySet()
                 }
             }
         }.toSet()
+
 
         kategorier = kategorier + KjentKategori.ARBEIDSEVNE_OG_BEHOV_FOR_BISTAND
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier

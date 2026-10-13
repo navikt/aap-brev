@@ -25,6 +25,7 @@ public const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD: String = "INNVILGET_UF
 public const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING: String = "TIDSPUNKT_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER: String = "SYKEPENGEGRUNNLAG"
 public const val FAKTAGRUNNLAG_TYPE_DODSFALL: String = "DODSFALL"
+public const val FAKTAGRUNNLAG_AVSLAG_AARSAK: String = "AVSLAG_AARSAK"
 
 public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     AAP_FOM_DATO(FAKTAGRUNNLAG_TYPE_AAP_FOM_DATO),
@@ -45,6 +46,7 @@ public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     TIDSPUNKT_VURDERING(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING),
     GRUNNLAG_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER),
     DODSFALL(FAKTAGRUNNLAG_TYPE_DODSFALL),
+    AVSLAG_AARSAK(FAKTAGRUNNLAG_AVSLAG_AARSAK),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -251,6 +253,11 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val navn: String
     ) : Faktagrunnlag(FaktagrunnlagType.DODSFALL)
 
+    @JsonTypeName(FAKTAGRUNNLAG_AVSLAG_AARSAK)
+    public data class AvslagAarsak(
+        val aarsak: AvslagsHjemmel
+    ) : Faktagrunnlag(FaktagrunnlagType.AVSLAG_AARSAK)
+
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER)
     public data class GrunnlagAndreYtelser(
         val sykepengeGrunnlagOver2G: Boolean,
@@ -258,4 +265,9 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val ytelseTom: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_ANDRE_YTELSER)
 
+    public enum class AvslagsHjemmel {
+        AVSLAG_11_2,
+        AVSLAG_11_3,
+        AVSLAG_11_4,
+    }
 }
