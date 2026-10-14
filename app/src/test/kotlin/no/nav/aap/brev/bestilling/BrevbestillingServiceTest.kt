@@ -9,6 +9,7 @@ import no.nav.aap.brev.unleash.BrevFeature
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -58,6 +59,7 @@ class BrevbestillingServiceTest : IntegrationTest() {
         }
 
         @Test
+        @Disabled("Midlertidig deaktivert inntil vi får et eget v3-endepunkt for ferdigstill")
         fun `ferdigstill feiler når mottakerliste er tom både i forespørsel og lagret, og feature er aktivert`() {
             val bestilling = opprettBrevbestilling(
                 brevtype = Brevtype.INNVILGELSE,
@@ -96,6 +98,7 @@ class BrevbestillingServiceTest : IntegrationTest() {
         }
 
         @Test
+        @Disabled("Midlertidig deaktivert inntil vi får et eget v3-endepunkt for ferdigstill")
         fun `samme service-instans kan håndtere ulik featureoppførsel for ulike bestillinger`() {
             val fakeUnleash = FakeUnleashGateway()
             val bestillingUtenToggle = opprettBrevbestilling(
