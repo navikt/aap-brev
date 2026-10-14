@@ -292,7 +292,10 @@ class BrevbestillingService(
         */
         if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger) && mottakere.isEmpty()) {
             val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
-            validerMottakere(lagredeMottakere)
+            // Midlertidig løsning siden ferdigstilling uten mottakere skjer enkelte steder i løsningen.
+            // Burde skille ut i to ulike endepunkter (v1 og v3, tilsvarende bestill).
+            runCatching { validerMottakere(lagredeMottakere) }
+                .onFailure { log.warn("Validering av lagrede mottakere feilet - defaulter til bruker som mottaker", it) }
         }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
