@@ -1,6 +1,6 @@
 [versions]
-komponenter = "2.0.177"
-tilgang = "1.0.240"
+komponenter = "2.0.186"
+tilgang = "1.0.244"
 
 [libraries]
 # Komponenter
