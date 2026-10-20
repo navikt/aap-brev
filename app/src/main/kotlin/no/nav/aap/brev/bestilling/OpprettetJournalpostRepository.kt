@@ -107,7 +107,7 @@ internal class JournalpostRepositoryImpl(private val connection: DBConnection) :
                 setLong(3, mottakerId)
             }
             setResultValidator {
-                require(1 == it) { "Kunne ikke lagre journalpost for mottaker med ID ${mottakerId}" }
+                require(1 == it) { "Kunne ikke lagre journalpost for mottaker med ID $mottakerId" }
             }
         }
     }
@@ -116,12 +116,16 @@ internal class JournalpostRepositoryImpl(private val connection: DBConnection) :
         journalpostId: JournalpostId,
         distribusjonBestillingId: DistribusjonBestillingId
     ) {
-        connection.execute(
-            "UPDATE OPPRETTET_JOURNALPOST SET DISTRIBUSJON_BESTILLING_ID = ? WHERE JOURNALPOST_ID = ?"
+        connection.execute("""
+            UPDATE OPPRETTET_JOURNALPOST
+            SET DISTRIBUSJON_BESTILLING_ID = ?, OPPDATERT_TID = ?
+            WHERE JOURNALPOST_ID = ?
+        """.trimIndent()
         ) {
             setParams {
                 setString(1, distribusjonBestillingId.id)
-                setString(2, journalpostId.id)
+                setLocalDateTime(2, LocalDateTime.now())
+                setString(3, journalpostId.id)
             }
             setResultValidator {
                 require(1 == it) { "Kunne ikke oppdatere distribusjon bestilling for journalpost med id ${journalpostId.id}" }
