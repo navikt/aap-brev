@@ -76,7 +76,7 @@ internal class JournalpostRepositoryImpl(private val connection: DBConnection) :
     ) {
         val query = """
             UPDATE OPPRETTET_JOURNALPOST
-            SET FERDIGSTILT = ?, OPPDATERT_TID = ?
+            SET FERDIGSTILT = ?, JOURNALFORT_TID = ?
             WHERE JOURNALPOST_ID = ?
         """.trimIndent()
         connection.executeReturnKey(query) {
@@ -118,7 +118,7 @@ internal class JournalpostRepositoryImpl(private val connection: DBConnection) :
     ) {
         connection.execute("""
             UPDATE OPPRETTET_JOURNALPOST
-            SET DISTRIBUSJON_BESTILLING_ID = ?, OPPDATERT_TID = ?
+            SET DISTRIBUSJON_BESTILLING_ID = ?, DISTRIBUERT_TID = ?
             WHERE JOURNALPOST_ID = ?
         """.trimIndent()
         ) {

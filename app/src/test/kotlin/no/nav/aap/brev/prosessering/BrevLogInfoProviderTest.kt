@@ -2,6 +2,7 @@ package no.nav.aap.brev.prosessering
 
 import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
+import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.motor.JobbInput
 import org.assertj.core.api.Assertions.assertThat
@@ -33,7 +34,7 @@ class BrevLogInfoProviderTest : IntegrationTest() {
 
     @Test
     fun `returnerer logginformasjon med referanse og saksnummer`() {
-        val bestilling = opprettBrevbestilling()
+        val bestilling = opprettBrevbestilling(brevtype = Brevtype.VARSEL_OM_BESTILLING)
         val jobbInput = JobbInput(ProsesserBrevbestillingJobbUtfører)
             .medBestillingsreferanse(bestilling.brevbestilling.referanse)
 
