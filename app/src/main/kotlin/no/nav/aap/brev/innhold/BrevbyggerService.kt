@@ -327,7 +327,7 @@ class BrevbyggerService(
         valider(brevmal.kanSendesAutomatisk) {
             "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
         }
-        
+
         val valgteDelmalIder = brevdata.delmaler.map { it.id }.toSet()
         val manglendeObligatoriskeDelmaler = brevmal.delmaler
             .filter { it.obligatorisk && it.delmal._id !in valgteDelmalIder }
