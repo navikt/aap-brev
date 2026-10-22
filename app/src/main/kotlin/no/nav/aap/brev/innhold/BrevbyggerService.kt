@@ -135,6 +135,17 @@ class BrevbyggerService(
                     ?.let { alleValgteDelmaler.add(it.delmal._id) }
             }
 
+            Brevtype.AVSLAG_11_5 -> {
+                if (KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT in kategorier) {
+                    brevmal.delmaler
+                        .find {
+                            it.delmal._id ==
+                                    DelmalSpesifikasjon.YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER.id
+                        }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
+            }
+
             else -> {}
         }
         return alleValgteDelmaler.map { delmalId ->
@@ -305,21 +316,34 @@ class BrevbyggerService(
     fun validerAutomatiskFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brevmal = checkNotNull(bestilling.brevmal).tilBrevmal()
-        val brevdata = bestilling.brevdata
+
         val feilmelding =
             "Kan ikke automatisk ferdigstille brevbestilling"
+
+        val brevdata = checkNotNull(bestilling.brevdata) {
+            "$feilmelding: Mangler brevdata."
+        }
 
         valider(brevmal.kanSendesAutomatisk) {
             "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
         }
+        
+        val valgteDelmalIder = brevdata.delmaler.map { it.id }.toSet()
+        val manglendeObligatoriskeDelmaler = brevmal.delmaler
+            .filter { it.obligatorisk && it.delmal._id !in valgteDelmalIder }
 
-        valider(brevmal.delmaler.all { it.obligatorisk }) {
-            "$feilmelding: Det er delmaler som ikke er obligatorisk."
+        valider(manglendeObligatoriskeDelmaler.isEmpty()) {
+            "$feilmelding: Mangler obligatoriske delmaler med id ${
+                manglendeObligatoriskeDelmaler.joinToString { it.delmal._id }
+            }."
         }
 
-        validerFaktagrunnlag(brevmal.delmaler, brevdata, feilmelding)
+        val valgteDelmaler = brevmal.delmaler
+            .filter { it.delmal._id in valgteDelmalIder }
 
-        val alleTeksteditorElementer = brevmal.delmaler.flatMap { it.delmal.teksteditor }
+        validerFaktagrunnlag(valgteDelmaler, brevdata, feilmelding)
+
+        val alleTeksteditorElementer = valgteDelmaler.flatMap { it.delmal.teksteditor }
 
         valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Valg>().isEmpty()) {
             "$feilmelding: Det er delmaler som inneholder valg."
@@ -332,6 +356,7 @@ class BrevbyggerService(
         valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
             "$feilmelding: Det er delmaler som inneholder betinget tekst."
         }
+
     }
 
     fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
