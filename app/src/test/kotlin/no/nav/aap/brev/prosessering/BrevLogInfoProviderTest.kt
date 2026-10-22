@@ -34,7 +34,7 @@ class BrevLogInfoProviderTest : IntegrationTest() {
 
     @Test
     fun `returnerer logginformasjon med referanse og saksnummer`() {
-        val bestilling = opprettBrevbestilling(brevtype = Brevtype.VARSEL_OM_BESTILLING)
+        val bestilling = opprettBrevbestilling(brevtype = Brevtype.VARSEL_OM_BESTILLING, ferdigstillAutomatisk = false)
         val jobbInput = JobbInput(ProsesserBrevbestillingJobbUtfører)
             .medBestillingsreferanse(bestilling.brevbestilling.referanse)
 
