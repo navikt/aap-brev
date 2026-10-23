@@ -286,7 +286,7 @@ class FaktagrunnlagService(
     private fun refusjonskravTjenestepensjonTekst(
         refusjonskravTjenestepensjon: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravTjenestepensjon, språk: Språk
     ): String {
-        return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " + periodeTilTekst(
+        return periodeTilTekst(
             refusjonskravTjenestepensjon.fraOgMed,
             refusjonskravTjenestepensjon.tilOgMed,
             språk
