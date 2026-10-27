@@ -411,7 +411,7 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    fun `validerAutomatiskFerdigstilling feiler dersom brevet har delmaler som ikke er obligatorisk`() {
+    fun `validerAutomatiskFerdigstilling feiler ikke dersom brevet har delmaler som ikke er obligatorisk`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
