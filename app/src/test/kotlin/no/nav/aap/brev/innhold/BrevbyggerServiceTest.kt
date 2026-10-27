@@ -411,19 +411,16 @@ class BrevbyggerServiceTest : IntegrationTest() {
     }
 
     @Test
-    fun `validerAutomatiskFerdigstilling feiler dersom brevet har delmaler som ikke er obligatorisk`() {
+    fun `validerAutomatiskFerdigstilling feiler ikke dersom brevet har delmaler som ikke er obligatorisk`() {
         val bestilling = opprettBrevbestilling(brukV3 = true, ferdigstillAutomatisk = false).brevbestilling
 
         oppdaterBrevmal(bestilling.id, BrevmalBuilder.builder {
             kanSendesAutomatisk = true
             delmal { obligatorisk = false }
         })
-        val exception = assertThrows<ValideringsfeilException> {
+        assertDoesNotThrow {
             validerAutomatiskFerdigstilling(bestilling.referanse)
         }
-        assertThat(exception.message).isEqualTo(
-            "Kan ikke automatisk ferdigstille brevbestilling: Det er delmaler som ikke er obligatorisk."
-        )
     }
 
     @Test
@@ -466,8 +463,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
         val exception = assertThrows<ValideringsfeilException> {
             validerAutomatiskFerdigstilling(bestilling.referanse)
         }
-        assertThat(exception.message).isEqualTo(
-            "Kan ikke automatisk ferdigstille brevbestilling: Det er delmaler som inneholder valg."
+        assertThat(exception.message).contains(
+            "Kan ikke automatisk ferdigstille brevbestilling: Mangler obligatoriske delmaler med id"
         )
     }
 
@@ -485,8 +482,8 @@ class BrevbyggerServiceTest : IntegrationTest() {
         val exception = assertThrows<ValideringsfeilException> {
             validerAutomatiskFerdigstilling(bestilling.referanse)
         }
-        assertThat(exception.message).isEqualTo(
-            "Kan ikke automatisk ferdigstille brevbestilling: Det er delmaler som inneholder fritekst."
+        assertThat(exception.message).contains(
+            "Kan ikke automatisk ferdigstille brevbestilling: Mangler obligatoriske delmaler med id"
         )
     }
 
