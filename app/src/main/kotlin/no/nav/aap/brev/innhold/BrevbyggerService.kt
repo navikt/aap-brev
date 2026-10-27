@@ -140,7 +140,7 @@ class BrevbyggerService(
                     brevmal.delmaler
                         .find {
                             it.delmal._id ==
-                                    DelmalSpesifikasjon.YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER.id
+                                    DelmalSpesifikasjon.AVSLAG_YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER.id
                         }
                         ?.let { alleValgteDelmaler.add(it.delmal._id) }
                 }

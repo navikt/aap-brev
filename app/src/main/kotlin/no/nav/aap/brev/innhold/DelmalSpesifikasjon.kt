@@ -6,4 +6,5 @@ enum class DelmalSpesifikasjon(val id: String) {
     BARNETILLEGG("fc784e2b-83d7-44b2-9a6b-6e724fe61330"),
     YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER("ba648e68-f4da-4e63-8329-1aba38d159bf"),
     AVSLAGSHJEMLER("dfe4ac72-888f-46dd-bd40-24e7c8a9109f"),
+    AVSLAG_YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER(" 8f8340b2-a2e9-4f0c-95fa-dc2a180d6c7d d"),
 }
