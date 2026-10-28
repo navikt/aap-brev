@@ -19,6 +19,8 @@ import no.nav.aap.brev.unleash.UnleashGateway
 import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.dbconnect.DBConnection
+import no.nav.aap.komponenter.json.DefaultJsonMapper
+import no.nav.aap.komponenter.miljo.Miljø
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
@@ -32,7 +34,6 @@ class PdfService(
     private val unleashGateway: UnleashGateway,
 ) {
     private val log = LoggerFactory.getLogger(PdfService::class.java)
-
     companion object {
         fun konstruer(connection: DBConnection): PdfService {
             return PdfService(
@@ -131,6 +132,9 @@ class PdfService(
 
             if (unleashGateway.isEnabled(BrevFeature.BrevNyPdfgenerator)) {
                 return pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
+            }
+            if(Miljø.erDev()){
+                log.info("pdfBrev: {}", DefaultJsonMapper.toJson(pdfBrev))
             }
             return pdfGateway.genererPdf(pdfBrev)
         }
