@@ -9,6 +9,7 @@ import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
 import no.nav.aap.brev.innhold.BrevSanityProxyGateway
 import no.nav.aap.brev.journalføring.SignaturService
 import no.nav.aap.brev.kontrakt.BlokkInnhold
+import no.nav.aap.brev.kontrakt.BlokkType
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Signatur
 import no.nav.aap.brev.kontrakt.SignaturGrunnlag
@@ -231,26 +232,34 @@ class PdfService(
                     innhold = it.innhold.map {
                         Innhold(
                             overskrift = it.overskrift,
-                            blokker = it.blokker.map {
-                                Blokk(
-                                    innhold = it.innhold.mapNotNull {
-                                        when (it) {
-                                            is BlokkInnhold.FormattertTekst -> FormattertTekst(
-                                                tekst = it.tekst,
-                                                formattering = it.formattering
-                                            )
+                            blokker = it.blokker
+                                .filter { blokk -> if(blokk.type == BlokkType.AVSNITT) blokk.innhold.erIkkeTomTekst() else true }
+                                .map {
+                                    Blokk(
+                                        innhold = it.innhold
+                                            .mapNotNull {
+                                                when (it) {
+                                                    is BlokkInnhold.FormattertTekst -> FormattertTekst(
+                                                        tekst = it.tekst,
+                                                        formattering = it.formattering
+                                                    )
 
-                                            is BlokkInnhold.Faktagrunnlag -> {
-                                                throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
-                                            }
-                                        }
-                                    },
-                                    type = it.type
-                                )
-                            })
+                                                    is BlokkInnhold.Faktagrunnlag -> {
+                                                        throw IllegalStateException("Kan ikke lage PDF av brev med manglende faktagrunnlag ${it.tekniskNavn}.")
+                                                    }
+                                                }
+                                            },
+                                        type = it.type
+                                    )
+                                })
                     })
             },
             signaturer = signaturer
         )
     }
+    private fun List<BlokkInnhold>.erIkkeTomTekst(): Boolean =
+        isNotEmpty() && any { innhold ->
+            innhold !is BlokkInnhold.FormattertTekst ||
+                    innhold.tekst.isNotBlank()
+        }
 }
