@@ -4,7 +4,7 @@
       <env name="NAIS_CLUSTER_NAME" value="LOCAL" />
       <env name="NAIS_DATABASE_BREV_BREV_JDBC_URL" value="jdbc:postgresql://localhost:5440/postgres?user=postgres" />
       <env name="HTTP_PORT" value="8090" />
-      <env name="INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL" value="http://localhost:8020" />
+      <env name="INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_URL" value="http://localhost:8020" />
       <env name="INTEGRASJON_BREV_SANITY_PROXY_URL" value="http://localhost:8787" />
       <env name="INTEGRASJON_BREV_SANITY_PROXY_SCOPE" value="api://dev-gcp.aap.brev-sanity-proxy/.default" />
     </envs>
