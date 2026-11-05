@@ -70,10 +70,16 @@ class FaktagrunnlagService(
                         faktagrunnlag.dato.formaterFullLengde(språk)
                     )
 
-                    is Faktagrunnlag.KravdatoUføretrygd -> put(
-                        KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
-                        faktagrunnlag.dato.formaterFullLengde(språk)
-                    )
+                    is Faktagrunnlag.KravdatoUføretrygd -> {
+                        put(
+                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
+                            faktagrunnlag.dato.formaterFullLengde(språk)
+                        )
+                        put(
+                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD_PLUS_8_MND,
+                            faktagrunnlag.dato.plusMonths(8).formaterFullLengde(språk)
+                        )
+                    }
 
                     is Faktagrunnlag.SisteDagMedYtelse -> put(
                         KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
