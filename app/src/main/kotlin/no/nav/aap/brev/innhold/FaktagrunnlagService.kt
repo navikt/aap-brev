@@ -76,8 +76,8 @@ class FaktagrunnlagService(
                             faktagrunnlag.dato.formaterFullLengde(språk)
                         )
                         put(
-                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD_PLUS_8_MND,
-                            faktagrunnlag.dato.plusMonths(8).formaterFullLengde(språk)
+                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD_PLUSS_8_MND_MINUS_EN_DAG,
+                            faktagrunnlag.dato.plusMonths(8).minusDays(1).formaterFullLengde(språk)
                         )
                     }
 
