@@ -79,6 +79,10 @@ class FaktagrunnlagService(
                             KjentFaktagrunnlag.KRAVDATO_UFORETRYGD_PLUSS_8_MND_MINUS_EN_DAG,
                             faktagrunnlag.dato.plusMonths(8).minusDays(1).formaterFullLengde(språk)
                         )
+                        put(
+                            KjentFaktagrunnlag.AAP_TOM_DATO,
+                            faktagrunnlag.dato.minusDays(1).formaterFullLengde(språk)
+                        )
                     }
 
                     is Faktagrunnlag.SisteDagMedYtelse -> put(

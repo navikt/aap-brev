@@ -2,6 +2,7 @@ package no.nav.aap.brev.innhold
 
 enum class KjentFaktagrunnlag {
     AAP_FOM_DATO,
+    AAP_TOM_DATO,
     DAGSATS,
     BEREGNINGSTIDSPUNKT,
     BEREGNINGSGRUNNLAG,
