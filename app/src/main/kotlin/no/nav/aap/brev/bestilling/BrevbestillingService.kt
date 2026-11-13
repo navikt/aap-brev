@@ -42,7 +42,10 @@ class BrevbestillingService(
 ) {
 
     companion object {
-        fun konstruer(connection: DBConnection, unleashGateway: UnleashGateway = UnleashGatewayImpl): BrevbestillingService {
+        fun konstruer(
+            connection: DBConnection,
+            unleashGateway: UnleashGateway = UnleashGatewayImpl
+        ): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 mottakerRepository = MottakerRepository.konstruer(connection),
@@ -153,22 +156,17 @@ class BrevbestillingService(
             log.info("Lagrer ikke signaturer")
         }
 
+        mottakerRepository.lagreMottakere(
+            bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+        )
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
             log.info("Ferdigstiller brev automatisk")
-            mottakerRepository.lagreMottakere(
-                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-            )
 
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
             leggTilJobb(resultat.brevbestilling)
         } else {
-            if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-                mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-                )
-            }
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 
@@ -242,10 +240,6 @@ class BrevbestillingService(
         referanse: BrevbestillingReferanse,
         mottakere: List<Mottaker>,
     ) {
-        if (!unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-            throw UgyldigForespørselException("Feature er ikke aktivert")
-        }
-
         val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
         valider(bestilling.status == Status.UNDER_ARBEID) {
@@ -290,12 +284,17 @@ class BrevbestillingService(
         /*
         * Hvis feature er aktivert og mottakerlisten er tom, valider mottakere vi har lagret i databasen.
         */
-        if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger) && mottakere.isEmpty()) {
+        if (mottakere.isEmpty()) {
             val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
             // Midlertidig løsning siden ferdigstilling uten mottakere skjer enkelte steder i løsningen.
             // Burde skille ut i to ulike endepunkter (v1 og v3, tilsvarende bestill).
             runCatching { validerMottakere(lagredeMottakere) }
-                .onFailure { log.warn("Validering av lagrede mottakere feilet - defaulter til bruker som mottaker", it) }
+                .onFailure {
+                    log.warn(
+                        "Validering av lagrede mottakere feilet - defaulter til bruker som mottaker",
+                        it
+                    )
+                }
         }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
