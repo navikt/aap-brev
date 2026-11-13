@@ -4,10 +4,7 @@ import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
-import no.nav.aap.brev.test.fakes.FakeUnleashGateway
-import no.nav.aap.brev.unleash.BrevFeature
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
@@ -19,18 +16,15 @@ class BrevbestillingServiceTest : IntegrationTest() {
     inner class MottakerTest {
         @Test
         fun `ferdigstill bruker mottakere lagret via oppdaterMottakere når feature er aktivert selv om ferdigstill-forespørselen har tom mottakerliste`() {
-            val fakeUnleash = FakeUnleashGateway(BrevFeature.RedigerMottakerBrevbygger)
-
             val bestilling = opprettBrevbestilling(
                 brukV3 = true,
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,
-                unleashGateway = fakeUnleash,
             ).brevbestilling
             val referanse = bestilling.referanse
 
             dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, fakeUnleash)
+                val service = BrevbestillingService.konstruer(connection)
                 val mottakerRepository = MottakerRepositoryImpl(connection)
 
                 // Bruker i saken skal bli hovedmottaker
@@ -70,7 +64,6 @@ class BrevbestillingServiceTest : IntegrationTest() {
             dataSource.transaction { connection ->
                 val service = BrevbestillingService.konstruer(
                     connection,
-                    FakeUnleashGateway(BrevFeature.RedigerMottakerBrevbygger),
                 )
 
                 assertThrows<ValideringsfeilException> {
@@ -100,7 +93,6 @@ class BrevbestillingServiceTest : IntegrationTest() {
         @Test
         @Disabled("Midlertidig deaktivert inntil vi får et eget v3-endepunkt for ferdigstill")
         fun `samme service-instans kan håndtere ulik featureoppførsel for ulike bestillinger`() {
-            val fakeUnleash = FakeUnleashGateway()
             val bestillingUtenToggle = opprettBrevbestilling(
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,
@@ -111,7 +103,7 @@ class BrevbestillingServiceTest : IntegrationTest() {
             ).brevbestilling
 
             dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, fakeUnleash)
+                val service = BrevbestillingService.konstruer(connection)
 
                 // Feature av: ferdigstill krever ikke mottakerliste.
                 service.ferdigstill(bestillingUtenToggle.referanse, null, emptyList())
@@ -120,7 +112,6 @@ class BrevbestillingServiceTest : IntegrationTest() {
                 ).isEqualTo(Status.FERDIGSTILT)
 
                 // Samme instans, feature på: ferdigstill krever mottakerliste.
-                fakeUnleash.enable(BrevFeature.RedigerMottakerBrevbygger)
                 assertThrows<ValideringsfeilException> {
                     service.ferdigstill(bestillingMedToggle.referanse, null, emptyList())
                 }
@@ -128,36 +119,12 @@ class BrevbestillingServiceTest : IntegrationTest() {
         }
 
         @Test
-        fun `oppdaterMottakere feiler når feature er deaktivert`() {
+        fun `oppdaterMottakere lagrer hovedmottaker og kopimottaker`() {
             val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
             val referanse = bestilling.referanse
 
             dataSource.transaction { connection ->
                 val service = BrevbestillingService.konstruer(connection)
-
-                assertThrows<UgyldigForespørselException> {
-                    service.oppdaterMottakere(
-                        referanse, listOf(
-                            Mottaker(
-                                ident = bestilling.brukerIdent,
-                                identType = IdentType.FNR,
-                                bestillingMottakerReferanse = "${referanse.referanse}-1",
-                                type = Mottaker.Type.HOVED,
-                            )
-                        )
-                    )
-                }
-            }
-        }
-
-        @Test
-        fun `oppdaterMottakere lagrer hovedmottaker og kopimottaker`() {
-            val unleash = FakeUnleashGateway(BrevFeature.RedigerMottakerBrevbygger)
-            val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false, unleashGateway = unleash).brevbestilling
-            val referanse = bestilling.referanse
-
-            dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, unleash)
                 val mottakerRepository = MottakerRepositoryImpl(connection)
 
                 val hovedmottaker = Mottaker(
@@ -189,12 +156,11 @@ class BrevbestillingServiceTest : IntegrationTest() {
 
         @Test
         fun `oppdaterMottakere feiler med tom mottakerliste`() {
-            val unleash = FakeUnleashGateway(BrevFeature.RedigerMottakerBrevbygger)
-            val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false, unleashGateway = unleash).brevbestilling
+            val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
             val referanse = bestilling.referanse
 
             dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, unleash)
+                val service = BrevbestillingService.konstruer(connection)
 
                 assertThrows<ValideringsfeilException> {
                     service.oppdaterMottakere(referanse, emptyList())
@@ -204,12 +170,11 @@ class BrevbestillingServiceTest : IntegrationTest() {
 
         @Test
         fun `oppdaterMottakere feiler når bestilling ikke har status under arbeid`() {
-            val unleash = FakeUnleashGateway(BrevFeature.RedigerMottakerBrevbygger)
-            val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false, unleashGateway = unleash).brevbestilling
+            val bestilling = opprettBrevbestilling(ferdigstillAutomatisk = false).brevbestilling
             val referanse = bestilling.referanse
 
             dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, unleash)
+                val service = BrevbestillingService.konstruer(connection)
                 BrevbestillingRepositoryImpl(connection).oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
                 assertThrows<ValideringsfeilException> {

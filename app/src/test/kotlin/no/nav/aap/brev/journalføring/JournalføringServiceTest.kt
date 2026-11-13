@@ -4,7 +4,6 @@ import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.bestilling.Adresse
 import no.nav.aap.brev.bestilling.Brevbestilling
 import no.nav.aap.brev.bestilling.BrevbestillingService
-import no.nav.aap.brev.bestilling.Brevdata
 import no.nav.aap.brev.bestilling.IdentType
 import no.nav.aap.brev.bestilling.JournalpostRepositoryImpl
 import no.nav.aap.brev.bestilling.Mottaker
@@ -15,13 +14,11 @@ import no.nav.aap.brev.test.fakes.journalpostForBestilling
 import no.nav.aap.brev.test.randomBehandlingReferanse
 import no.nav.aap.brev.test.randomJournalpostId
 import no.nav.aap.komponenter.dbconnect.transaction
-import no.nav.aap.komponenter.json.DefaultJsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import kotlin.booleanArrayOf
 
 class JournalføringServiceTest : IntegrationTest() {
 
@@ -69,7 +66,9 @@ class JournalføringServiceTest : IntegrationTest() {
                 type = Mottaker.Type.KOPI,
             )
 
-            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), listOf(mottaker1, mottaker2))
+            val mottakerListe = listOf(mottaker1, mottaker2)
+            brevbestillingService.oppdaterMottakere(bestilling.referanse, mottakerListe)
+            brevbestillingService.ferdigstill(bestilling.referanse, emptyList(), mottakerListe)
 
             journalføringService.journalførBrevbestilling(bestilling.referanse)
             val journalposter = journalpostRepository.hentAlleFor(bestilling.referanse)

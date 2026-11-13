@@ -23,8 +23,6 @@ import no.nav.aap.brev.test.randomBrukerIdent
 import no.nav.aap.brev.test.randomSaksnummer
 import no.nav.aap.brev.test.randomSpråk
 import no.nav.aap.brev.test.randomUnikReferanse
-import no.nav.aap.brev.unleash.UnleashGateway
-import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.komponenter.dbconnect.transaction
 import no.nav.aap.komponenter.dbtest.TestDataSource
 import org.assertj.core.api.Assertions.assertThat
@@ -64,10 +62,9 @@ abstract class IntegrationTest {
         faktagrunnlag: Set<Faktagrunnlag> = emptySet(),
         vedlegg: Set<Vedlegg> = emptySet(),
         ferdigstillAutomatisk: Boolean = Random.nextBoolean(),
-        unleashGateway: UnleashGateway = UnleashGatewayImpl,
     ): OpprettBrevbestillingResultat {
         return dataSource.transaction { connection ->
-            val brevbestillingService = BrevbestillingService.konstruer(connection, unleashGateway)
+            val brevbestillingService = BrevbestillingService.konstruer(connection)
             if (brukV3) {
                 brevbestillingService.opprettBestillingV3(
                     saksnummer = saksnummer,
