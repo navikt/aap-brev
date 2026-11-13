@@ -4,7 +4,6 @@ import no.nav.aap.brev.IntegrationTest
 import no.nav.aap.brev.feil.ValideringsfeilException
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Status
-import no.nav.aap.brev.test.fakes.FakeUnleashGateway
 import no.nav.aap.komponenter.dbconnect.transaction
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
@@ -94,7 +93,6 @@ class BrevbestillingServiceTest : IntegrationTest() {
         @Test
         @Disabled("Midlertidig deaktivert inntil vi får et eget v3-endepunkt for ferdigstill")
         fun `samme service-instans kan håndtere ulik featureoppførsel for ulike bestillinger`() {
-            val fakeUnleash = FakeUnleashGateway()
             val bestillingUtenToggle = opprettBrevbestilling(
                 brevtype = Brevtype.INNVILGELSE,
                 ferdigstillAutomatisk = false,
@@ -105,7 +103,7 @@ class BrevbestillingServiceTest : IntegrationTest() {
             ).brevbestilling
 
             dataSource.transaction { connection ->
-                val service = BrevbestillingService.konstruer(connection, fakeUnleash)
+                val service = BrevbestillingService.konstruer(connection)
 
                 // Feature av: ferdigstill krever ikke mottakerliste.
                 service.ferdigstill(bestillingUtenToggle.referanse, null, emptyList())

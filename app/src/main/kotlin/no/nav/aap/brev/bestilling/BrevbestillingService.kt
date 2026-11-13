@@ -20,11 +20,7 @@ import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.prosessering.medBestillingsreferanse
-import no.nav.aap.brev.unleash.BrevFeature
-import no.nav.aap.brev.unleash.UnleashGateway
-import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
@@ -38,13 +34,11 @@ class BrevbestillingService(
     private val brevinnholdService: BrevinnholdService,
     private val faktagrunnlagService: FaktagrunnlagService,
     private val brevbyggerService: BrevbyggerService,
-    private val unleashGateway: UnleashGateway,
 ) {
 
     companion object {
         fun konstruer(
             connection: DBConnection,
-            unleashGateway: UnleashGateway = UnleashGatewayImpl
         ): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
@@ -54,7 +48,6 @@ class BrevbestillingService(
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
                 brevbyggerService = BrevbyggerService.konstruer(connection),
-                unleashGateway = unleashGateway
             )
         }
     }
@@ -159,6 +152,7 @@ class BrevbestillingService(
         mottakerRepository.lagreMottakere(
             bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
         )
+
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
@@ -281,9 +275,6 @@ class BrevbestillingService(
 
         validerFerdigstilling(bestilling)
 
-        /*
-        * Hvis feature er aktivert og mottakerlisten er tom, valider mottakere vi har lagret i databasen.
-        */
         if (mottakere.isEmpty()) {
             val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
             // Midlertidig løsning siden ferdigstilling uten mottakere skjer enkelte steder i løsningen.
