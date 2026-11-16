@@ -20,11 +20,7 @@ import no.nav.aap.brev.kontrakt.Status
 import no.nav.aap.brev.prosessering.ProsesserBrevbestillingJobbUtfører
 import no.nav.aap.brev.prosessering.ProsesseringStatus
 import no.nav.aap.brev.prosessering.medBestillingsreferanse
-import no.nav.aap.brev.unleash.BrevFeature
-import no.nav.aap.brev.unleash.UnleashGateway
-import no.nav.aap.brev.unleash.UnleashGatewayImpl
 import no.nav.aap.komponenter.dbconnect.DBConnection
-import no.nav.aap.komponenter.httpklient.exception.UgyldigForespørselException
 import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
@@ -38,11 +34,12 @@ class BrevbestillingService(
     private val brevinnholdService: BrevinnholdService,
     private val faktagrunnlagService: FaktagrunnlagService,
     private val brevbyggerService: BrevbyggerService,
-    private val unleashGateway: UnleashGateway,
 ) {
 
     companion object {
-        fun konstruer(connection: DBConnection, unleashGateway: UnleashGateway = UnleashGatewayImpl): BrevbestillingService {
+        fun konstruer(
+            connection: DBConnection,
+        ): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 mottakerRepository = MottakerRepository.konstruer(connection),
@@ -51,7 +48,6 @@ class BrevbestillingService(
                 brevinnholdService = BrevinnholdService.konstruer(connection),
                 faktagrunnlagService = FaktagrunnlagService.konstruer(connection),
                 brevbyggerService = BrevbyggerService.konstruer(connection),
-                unleashGateway = unleashGateway
             )
         }
     }
@@ -164,11 +160,9 @@ class BrevbestillingService(
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
             leggTilJobb(resultat.brevbestilling)
         } else {
-            if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-                mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-                )
-            }
+            mottakerRepository.lagreMottakere(
+                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+            )
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 
@@ -242,10 +236,6 @@ class BrevbestillingService(
         referanse: BrevbestillingReferanse,
         mottakere: List<Mottaker>,
     ) {
-        if (!unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger)) {
-            throw UgyldigForespørselException("Feature er ikke aktivert")
-        }
-
         val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
 
         valider(bestilling.status == Status.UNDER_ARBEID) {
@@ -287,15 +277,17 @@ class BrevbestillingService(
 
         validerFerdigstilling(bestilling)
 
-        /*
-        * Hvis feature er aktivert og mottakerlisten er tom, valider mottakere vi har lagret i databasen.
-        */
-        if (unleashGateway.isEnabled(BrevFeature.RedigerMottakerBrevbygger) && mottakere.isEmpty()) {
+        if (mottakere.isEmpty()) {
             val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
             // Midlertidig løsning siden ferdigstilling uten mottakere skjer enkelte steder i løsningen.
             // Burde skille ut i to ulike endepunkter (v1 og v3, tilsvarende bestill).
             runCatching { validerMottakere(lagredeMottakere) }
-                .onFailure { log.warn("Validering av lagrede mottakere feilet - defaulter til bruker som mottaker", it) }
+                .onFailure {
+                    log.warn(
+                        "Validering av lagrede mottakere feilet - defaulter til bruker som mottaker",
+                        it
+                    )
+                }
         }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
