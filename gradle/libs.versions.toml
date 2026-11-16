@@ -1,5 +1,5 @@
 [versions]
-komponenter = "2.0.198"
+komponenter = "3.0.3"
 tilgang = "1.0.244"
 
 [libraries]
