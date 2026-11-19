@@ -231,6 +231,22 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.NavKontorKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotEmpty()) {
+                       setOf(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING)
+                    } else {
+                        emptySet()
+                    }
+                }
+
+                is Faktagrunnlag.NayKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotEmpty()) {
+                        setOf(KjentKategori.HAR_NAY_KLAGE_VURDERING)
+                    } else {
+                        emptySet()
+                    }
+                }
+
                 is AarsakTidspunktVurdering -> {
                     val årsak = buildSet {
                         when (faktagrunnlag.aarsakBeregningsTidspunktVurdering) {
