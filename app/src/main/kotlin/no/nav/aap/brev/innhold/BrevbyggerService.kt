@@ -135,6 +135,12 @@ class BrevbyggerService(
                     ?.let { alleValgteDelmaler.add(it.delmal._id) }
             }
 
+            Brevtype.KLAGE_OPPRETTHOLDELSE -> {
+                brevmal.delmaler
+                    .find { it.delmal._id == DelmalSpesifikasjon.KLAGE_VIDERESENDT.id }
+                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
+            }
+
             Brevtype.AVSLAG_11_5 -> {
                 if (KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT in kategorier) {
                     brevmal.delmaler
@@ -226,6 +232,22 @@ class BrevbyggerService(
                 is Faktagrunnlag.BarnUtenBarnetillegg -> {
                     if (faktagrunnlag.barn.isNotEmpty()) {
                         setOf(KjentKategori.HAR_BARN_UTEN_BARNETILLEGG)
+                    } else {
+                        emptySet()
+                    }
+                }
+
+                is Faktagrunnlag.NavKontorKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
+                       setOf(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING)
+                    } else {
+                        emptySet()
+                    }
+                }
+
+                is Faktagrunnlag.NayKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
+                        setOf(KjentKategori.HAR_NAY_KLAGE_VURDERING)
                     } else {
                         emptySet()
                     }

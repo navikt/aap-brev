@@ -240,6 +240,20 @@ class FaktagrunnlagService(
                         )
                     }
 
+                    is Faktagrunnlag.NavKontorKlagevurdering -> {
+                        put(
+                            KjentFaktagrunnlag.NAV_KONTOR_KLAGE_VURDERING,
+                            faktagrunnlag.begrunnelse
+                        )
+                    }
+
+                    is Faktagrunnlag.NayKlagevurdering -> {
+                        put(
+                            KjentFaktagrunnlag.NAY_KLAGE_VURDERING,
+                            faktagrunnlag.begrunnelse
+                        )
+                    }
+
                     is Faktagrunnlag.GrunnlagAndreYtelser -> {
                         put(
                             KjentFaktagrunnlag.SYKEPENGEGRUNNLAG_OVER_2G,
