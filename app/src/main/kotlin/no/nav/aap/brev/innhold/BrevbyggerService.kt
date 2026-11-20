@@ -10,6 +10,7 @@ import no.nav.aap.brev.bestilling.Brevmal.DelmalValg
 import no.nav.aap.brev.innhold.KjentKategori.HAR_FRADRAG_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REDUKSJON_ARBEIDSGIVER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_TJENESTEPENSJON
+import no.nav.aap.brev.innhold.KjentKategori.HAR_REFUSJONSKRAV_NAVKONTOR
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_ANDRE_YTELSER
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_BARNEPENSJON
 import no.nav.aap.brev.innhold.KjentKategori.HAR_SAMORDNING_UFØRE
@@ -66,7 +67,12 @@ class BrevbyggerService(
         }
 
         val kategorier = utledKategorier(faktagrunnlag)
-        val delmaler = utledValgteDelmaler(brevmal = brevmal, brevtype = bestilling.brevtype, kategorier = kategorier, faktagrunnlag = faktagrunnlag)
+        val delmaler = utledValgteDelmaler(
+            brevmal = brevmal,
+            brevtype = bestilling.brevtype,
+            kategorier = kategorier,
+            faktagrunnlag = faktagrunnlag
+        )
         val faktagrunnlagMedVerdi = utledFaktagrunnlagMedVerdi(faktagrunnlag, bestilling.språk)
 
         val tabeller = tabellerService.faktagrunnlagTilTabeller(faktagrunnlag, bestilling.språk)
@@ -87,7 +93,8 @@ class BrevbyggerService(
         brevbestillingRepository.oppdaterBrevdata(bestilling.id, brevdata)
     }
 
-    private fun utledValgteDelmaler(brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
+    private fun utledValgteDelmaler(
+        brevmal: Brevmal, brevtype: Brevtype, kategorier: Set<KjentKategori>, faktagrunnlag: Set<Faktagrunnlag>
     ): List<Brevdata.Delmal> {
         val alleValgteDelmaler = mutableSetOf<String>()
         brevmal.delmaler
@@ -123,7 +130,26 @@ class BrevbyggerService(
             }
 
             Brevtype.AVSLAG -> {
+                brevmal.delmaler
+                    .find { it.delmal._id == DelmalSpesifikasjon.AVSLAGSHJEMLER.id }
+                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
+            }
 
+            Brevtype.KLAGE_OPPRETTHOLDELSE -> {
+                brevmal.delmaler
+                    .find { it.delmal._id == DelmalSpesifikasjon.KLAGE_VIDERESENDT.id }
+                    ?.let { alleValgteDelmaler.add(it.delmal._id) }
+            }
+
+            Brevtype.AVSLAG_11_5 -> {
+                if (KjentKategori.HAR_OPPGITT_YRKESSKADE_MEN_INGEN_REGISTRERT in kategorier) {
+                    brevmal.delmaler
+                        .find {
+                            it.delmal._id ==
+                                    DelmalSpesifikasjon.AVSLAG_YRKESSKADE_FRA_SOKNAD_MEN_IKKE_I_REGISTER.id
+                        }
+                        ?.let { alleValgteDelmaler.add(it.delmal._id) }
+                }
             }
 
             else -> {}
@@ -150,6 +176,7 @@ class BrevbyggerService(
     private fun utledKategorier(faktagrunnlag: Set<Faktagrunnlag>): Set<KjentKategori> {
         var kategorier = faktagrunnlag.flatMap { faktagrunnlag ->
             when (faktagrunnlag) {
+
                 is TilkjentYtelse -> {
                     buildSet {
                         leggTilHvis(KjentKategori.HAR_BARNETILLEGG) {
@@ -163,6 +190,7 @@ class BrevbyggerService(
                         leggTilHvis(HAR_FRADRAG_ANDRE_YTELSER) { faktagrunnlag.fradragAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_REDUKSJON_ARBEIDSGIVER) { faktagrunnlag.reduksjonArbeidsgiver.isNotEmpty() }
                         leggTilHvis(HAR_REFUSJONSKRAV_TJENESTEPENSJON) { faktagrunnlag.refusjonskravTjenestepensjon != null }
+                        leggTilHvis(HAR_REFUSJONSKRAV_NAVKONTOR) { faktagrunnlag.refusjonskravNavkontor != null }
                         leggTilHvis(HAR_SAMORDNING_ANDRE_YTELSER) { faktagrunnlag.samordningAndreYtelser.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_BARNEPENSJON) { faktagrunnlag.samordningBarnepensjon.isNotEmpty() }
                         leggTilHvis(HAR_SAMORDNING_UFØRE) { faktagrunnlag.samordningUføre.isNotEmpty() }
@@ -209,6 +237,22 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.NavKontorKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
+                       setOf(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING)
+                    } else {
+                        emptySet()
+                    }
+                }
+
+                is Faktagrunnlag.NayKlagevurdering -> {
+                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
+                        setOf(KjentKategori.HAR_NAY_KLAGE_VURDERING)
+                    } else {
+                        emptySet()
+                    }
+                }
+
                 is AarsakTidspunktVurdering -> {
                     val årsak = buildSet {
                         when (faktagrunnlag.aarsakBeregningsTidspunktVurdering) {
@@ -222,7 +266,7 @@ class BrevbyggerService(
                         }
                     }
                     val nedsatt = buildSet {
-                        when(faktagrunnlag.aarsakYtterligereNedsattTidspunktVurdering){
+                        when (faktagrunnlag.aarsakYtterligereNedsattTidspunktVurdering) {
                             AarsakYtterligereNedsatt.UFOERETIDSPUNKT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_UFOERETIDSPUNKT)
                             AarsakYtterligereNedsatt.YTTERLIGERE_NEDSATT -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_YTTERLIGERE_NEDSATT)
                             AarsakYtterligereNedsatt.OKT_UFOEREGRAD -> add(KjentKategori.AARSAK_YTTERLIGERE_NEDSATT_OKT_UFOEREGRAD)
@@ -234,11 +278,19 @@ class BrevbyggerService(
                     årsak + nedsatt
                 }
 
+                is Faktagrunnlag.AvslagAarsak -> when (faktagrunnlag.aarsak) {
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_2 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_2)
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_3 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_3)
+                    Faktagrunnlag.AvslagsHjemmel.AVSLAG_11_4 -> setOf(KjentKategori.AVSLAGSHJEMMEL_11_4)
+                }
+
+
                 else -> {
                     emptySet()
                 }
             }
         }.toSet()
+
 
         kategorier = kategorier + KjentKategori.ARBEIDSEVNE_OG_BEHOV_FOR_BISTAND
         return if (Miljø.erDev()) kategorier + KjentKategori.HAR_YRKESSKADE else kategorier
@@ -286,21 +338,34 @@ class BrevbyggerService(
     fun validerAutomatiskFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
         val bestilling = brevbestillingRepository.hent(brevbestillingReferanse)
         val brevmal = checkNotNull(bestilling.brevmal).tilBrevmal()
-        val brevdata = bestilling.brevdata
+
         val feilmelding =
             "Kan ikke automatisk ferdigstille brevbestilling"
+
+        val brevdata = checkNotNull(bestilling.brevdata) {
+            "$feilmelding: Mangler brevdata."
+        }
 
         valider(brevmal.kanSendesAutomatisk) {
             "$feilmelding: Brevmal er ikke konfigurert til at brevet kan sendes automatisk."
         }
 
-        valider(brevmal.delmaler.all { it.obligatorisk }) {
-            "$feilmelding: Det er delmaler som ikke er obligatorisk."
+        val valgteDelmalIder = brevdata.delmaler.map { it.id }.toSet()
+        val manglendeObligatoriskeDelmaler = brevmal.delmaler
+            .filter { it.obligatorisk && it.delmal._id !in valgteDelmalIder }
+
+        valider(manglendeObligatoriskeDelmaler.isEmpty()) {
+            "$feilmelding: Mangler obligatoriske delmaler med id ${
+                manglendeObligatoriskeDelmaler.joinToString { it.delmal._id }
+            }."
         }
 
-        validerFaktagrunnlag(brevmal.delmaler, brevdata, feilmelding)
+        val valgteDelmaler = brevmal.delmaler
+            .filter { it.delmal._id in valgteDelmalIder }
 
-        val alleTeksteditorElementer = brevmal.delmaler.flatMap { it.delmal.teksteditor }
+        validerFaktagrunnlag(valgteDelmaler, brevdata, feilmelding)
+
+        val alleTeksteditorElementer = valgteDelmaler.flatMap { it.delmal.teksteditor }
 
         valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.Valg>().isEmpty()) {
             "$feilmelding: Det er delmaler som inneholder valg."
@@ -313,6 +378,7 @@ class BrevbyggerService(
         valider(alleTeksteditorElementer.filterIsInstance<Brevmal.TeksteditorElement.BetingetTekst>().isEmpty()) {
             "$feilmelding: Det er delmaler som inneholder betinget tekst."
         }
+
     }
 
     fun validerFerdigstilling(brevbestillingReferanse: BrevbestillingReferanse) {
@@ -430,6 +496,5 @@ class BrevbyggerService(
         return block.children.filterIsInstance<BlockChildren.Faktagrunnlag>()
             .map { it.tekniskNavn }
     }
-
 
 }

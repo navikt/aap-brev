@@ -10,5 +10,6 @@ public data class FerdigstillBrevRequest(
      * Hvis listen er tom, vil brevet bli sendt til bruker,
      * ellers til de som er oppgitt i listen.
      */
+    @Deprecated("Skal fjernes når vi er helt over på den nye brevbyggeren (v3)")
     val mottakere: List<MottakerDto> = emptyList()
 )

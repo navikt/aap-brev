@@ -21,6 +21,7 @@ import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.api.driftApi
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.bestilling.PdfgeneratorSaksbehandlingGateway
+import no.nav.aap.brev.drift.DriftService
 import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.person.PdlGateway
 import no.nav.aap.brev.prosessering.BrevLogInfoProvider
@@ -97,7 +98,7 @@ internal fun Application.server(dbConfig: DbConfig) {
                 )
                 distribusjonApi(dataSource)
                 motorApi(dataSource, påkrevdeRollerMotor)
-                driftApi(dataSource)
+                driftApi(DriftService(dataSource))
             }
         }
         actuator(prometheus, motor)

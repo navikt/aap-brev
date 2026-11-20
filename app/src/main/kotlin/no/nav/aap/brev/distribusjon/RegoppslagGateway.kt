@@ -46,7 +46,7 @@ data class RegoppslagAdresse(
     val adresselinje3: String?,
     val postnummer: String?,
     val poststed: String?,
-    val landkode: String,
+    val landkode: String, // ISO 3166-1 alpha-2 (to bokstaver)
     val land: String
 )
 

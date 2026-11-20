@@ -25,7 +25,6 @@ import no.nav.aap.komponenter.json.DefaultJsonMapper
 import no.nav.aap.motor.FlytJobbRepository
 import no.nav.aap.motor.JobbInput
 import org.slf4j.LoggerFactory
-import kotlin.collections.ifEmpty
 
 class BrevbestillingService(
     private val brevbestillingRepository: BrevbestillingRepository,
@@ -38,7 +37,9 @@ class BrevbestillingService(
 ) {
 
     companion object {
-        fun konstruer(connection: DBConnection): BrevbestillingService {
+        fun konstruer(
+            connection: DBConnection,
+        ): BrevbestillingService {
             return BrevbestillingService(
                 brevbestillingRepository = BrevbestillingRepository.konstruer(connection),
                 mottakerRepository = MottakerRepository.konstruer(connection),
@@ -85,14 +86,14 @@ class BrevbestillingService(
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
+        mottakerRepository.lagreMottakere(
+            bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+        )
+
         if (ferdigstillAutomatisk) {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
-                log.info("Ferdigstiller brev automatisk")
-                mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-                )
-
+                log.info("Ferdigstiller brev automatisk (brevtype=$brevtype)")
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
@@ -148,14 +149,14 @@ class BrevbestillingService(
             log.info("Lagrer ikke signaturer")
         }
 
+        mottakerRepository.lagreMottakere(
+            bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+        )
 
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
             log.info("Ferdigstiller brev automatisk")
-            mottakerRepository.lagreMottakere(
-                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-            )
 
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
             leggTilJobb(resultat.brevbestilling)
@@ -224,6 +225,29 @@ class BrevbestillingService(
         return brevbestillingRepository.hent(referanse)
     }
 
+    fun hentMottakere(referanse: BrevbestillingReferanse): List<Mottaker> {
+        val bestilling = brevbestillingRepository.hent(referanse)
+        return mottakerRepository.hentMottakere(bestilling.id)
+    }
+
+    fun oppdaterMottakere(
+        referanse: BrevbestillingReferanse,
+        mottakere: List<Mottaker>,
+    ) {
+        val bestilling = brevbestillingRepository.hentForOppdatering(referanse)
+
+        valider(bestilling.status == Status.UNDER_ARBEID) {
+            "Forsøkte å oppdatere mottakere i bestilling med status=${bestilling.status}"
+        }
+
+        validerMottakere(mottakere)
+
+        mottakerRepository.oppdaterMottakere(
+            bestilling.id,
+            mottakere,
+        )
+    }
+
     fun oppdaterBrev(referanse: BrevbestillingReferanse, oppdatertBrev: Brev) {
         validerOppdatering(referanse, oppdatertBrev)
         brevbestillingRepository.oppdaterBrev(referanse, oppdatertBrev)
@@ -250,6 +274,19 @@ class BrevbestillingService(
         }
 
         validerFerdigstilling(bestilling)
+
+        if (mottakere.isEmpty()) {
+            val lagredeMottakere = mottakerRepository.hentMottakere(bestilling.id)
+            // Midlertidig løsning siden ferdigstilling uten mottakere skjer enkelte steder i løsningen.
+            // Burde skille ut i to ulike endepunkter (v1 og v3, tilsvarende bestill).
+            runCatching { validerMottakere(lagredeMottakere) }
+                .onFailure {
+                    log.warn(
+                        "Validering av lagrede mottakere feilet - defaulter til bruker som mottaker",
+                        it
+                    )
+                }
+        }
 
         brevbestillingRepository.oppdaterStatus(bestilling.id, Status.FERDIGSTILT)
 
@@ -432,6 +469,28 @@ class BrevbestillingService(
         if (trengerSignaturForAutomatiskFerdigstilling(brevtype)) {
             require(signaturer.isNotEmpty()) {
                 "Må oppgi signaturer for automatisk ferdigstilling av brevtype $brevtype"
+            }
+        }
+    }
+
+    private fun validerMottakere(mottakere: List<Mottaker>) {
+        valider(mottakere.isNotEmpty()) {
+            "Mottakerliste kan ikke være tom"
+        }
+
+        mottakere.forEach { mottaker ->
+            val harIdent = mottaker.ident != null && mottaker.identType != null
+
+            val harNavnOgAdresse = mottaker.navnOgAdresse?.let {
+                it.navn.isNotBlank()
+                        && it.adresse.adresselinje1.isNotBlank()
+                        && !it.adresse.postnummer.isNullOrBlank()
+                        && !it.adresse.poststed.isNullOrBlank()
+                        && it.adresse.landkode.isNotBlank()
+            } ?: false
+
+            valider(harIdent || harNavnOgAdresse) {
+                "Mottaker må være oppgitt med enten ident og identType, eller navn og adresse."
             }
         }
     }

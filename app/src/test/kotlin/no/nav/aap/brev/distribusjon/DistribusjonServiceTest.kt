@@ -106,6 +106,8 @@ class DistribusjonServiceTest : IntegrationTest() {
             distribusjonBestillingIdForJournalpost(forventetJournalpostId1, forventetDistribusjonBestillingId1)
             distribusjonBestillingIdForJournalpost(forventetJournalpostId2, forventetDistribusjonBestillingId2)
 
+            brevbestillingService.oppdaterMottakere(referanse, listOf(mottaker1, mottaker2))
+
             brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker1, mottaker2))
             journalføringService.journalførBrevbestilling(referanse)
             brukerForRegoppslag(mottaker1.ident, true)
@@ -121,6 +123,66 @@ class DistribusjonServiceTest : IntegrationTest() {
                 assertThat(opprettetJournalpost.journalpostId).isEqualTo(forventetJournalpostId2)
                 assertThat(opprettetJournalpost.distribusjonBestillingId).isEqualTo(forventetDistribusjonBestillingId2)
             }
+        }
+    }
+
+    @Test
+    fun `kanBrevDistribueresTilMottaker er false for FNR-mottaker uten postadresse og print som distribusjonskanal`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
+        dataSource.transaction { connection ->
+            val distribusjonService = DistribusjonService.konstruer(connection)
+
+            val brukerIdent = requireNotNull(bestilling.brukerIdent)
+            brukerForRegoppslag(brukerIdent, false)
+            brukerForDistkanal(brukerIdent, Distribusjonskanal.PRINT)
+
+            assertThat(distribusjonService.kanBrevDistribueresTilMottaker(referanse, brukerIdent)).isFalse()
+        }
+    }
+
+    @Test
+    fun `kanBrevDistribueresTilMottaker er true for FNR-mottaker med postadresse og print som distribusjonskanal`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
+        dataSource.transaction { connection ->
+            val distribusjonService = DistribusjonService.konstruer(connection)
+
+            val brukerIdent = requireNotNull(bestilling.brukerIdent)
+            brukerForRegoppslag(brukerIdent, true)
+            brukerForDistkanal(brukerIdent, Distribusjonskanal.PRINT)
+
+            assertThat(distribusjonService.kanBrevDistribueresTilMottaker(referanse, brukerIdent)).isTrue()
+        }
+    }
+
+    @Test
+    fun `kanBrevDistribueresTilMottaker er true når distribusjonskanal ikke er print, selv uten postadresse`() {
+        val behandlingReferanse = randomBehandlingReferanse()
+        val bestilling = opprettBrevbestilling(
+            behandlingReferanse = behandlingReferanse,
+            brevtype = Brevtype.INNVILGELSE,
+            ferdigstillAutomatisk = false,
+        ).brevbestilling
+        val referanse = bestilling.referanse
+        dataSource.transaction { connection ->
+            val distribusjonService = DistribusjonService.konstruer(connection)
+
+            val brukerIdent = requireNotNull(bestilling.brukerIdent)
+            brukerForRegoppslag(brukerIdent, false)
+            brukerForDistkanal(brukerIdent, Distribusjonskanal.DITT_NAV)
+
+            assertThat(distribusjonService.kanBrevDistribueresTilMottaker(referanse, brukerIdent)).isTrue()
         }
     }
 

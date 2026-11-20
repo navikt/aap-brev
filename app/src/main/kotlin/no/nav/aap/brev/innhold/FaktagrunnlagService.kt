@@ -70,10 +70,20 @@ class FaktagrunnlagService(
                         faktagrunnlag.dato.formaterFullLengde(språk)
                     )
 
-                    is Faktagrunnlag.KravdatoUføretrygd -> put(
-                        KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
-                        faktagrunnlag.dato.formaterFullLengde(språk)
-                    )
+                    is Faktagrunnlag.KravdatoUføretrygd -> {
+                        put(
+                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD,
+                            faktagrunnlag.dato.formaterFullLengde(språk)
+                        )
+                        put(
+                            KjentFaktagrunnlag.KRAVDATO_UFORETRYGD_PLUSS_8_MND_MINUS_EN_DAG,
+                            faktagrunnlag.dato.plusMonths(8).minusDays(1).formaterFullLengde(språk)
+                        )
+                        put(
+                            KjentFaktagrunnlag.AAP_TOM_DATO,
+                            faktagrunnlag.dato.minusDays(1).formaterFullLengde(språk)
+                        )
+                    }
 
                     is Faktagrunnlag.SisteDagMedYtelse -> put(
                         KjentFaktagrunnlag.SISTE_DAG_MED_YTELSE,
@@ -177,6 +187,12 @@ class FaktagrunnlagService(
                                 refusjonskravTjenestepensjonTekst(it, språk)
                             )
                         }
+                        faktagrunnlag.refusjonskravNavkontor?.let {
+                            put(
+                                KjentFaktagrunnlag.REFUSJONSKRAV_NAVKONTOR,
+                                refusjonskravNavkontorTekst(it, språk)
+                            )
+                        }
                     }
 
                     is Faktagrunnlag.YrkesskadeBeregning -> {
@@ -210,6 +226,31 @@ class FaktagrunnlagService(
                         put(
                             KjentFaktagrunnlag.INNVILGET_UFØRETRYGD_VIRKNINGSTIDSPUNKT,
                             faktagrunnlag.virkningsTidspunkt.formaterFullLengde(språk)
+                        )
+                    }
+
+                    is Faktagrunnlag.Dødsfall -> {
+                        put(
+                            KjentFaktagrunnlag.DODSFALL_DODSDATO,
+                            faktagrunnlag.dødsdato.plusDays(1).formaterFullLengde(språk)
+                        )
+                        put(
+                            KjentFaktagrunnlag.DODSFALL_NAVN,
+                            faktagrunnlag.navn
+                        )
+                    }
+
+                    is Faktagrunnlag.NavKontorKlagevurdering -> {
+                        put(
+                            KjentFaktagrunnlag.NAV_KONTOR_KLAGE_VURDERING,
+                            faktagrunnlag.begrunnelse
+                        )
+                    }
+
+                    is Faktagrunnlag.NayKlagevurdering -> {
+                        put(
+                            KjentFaktagrunnlag.NAY_KLAGE_VURDERING,
+                            faktagrunnlag.begrunnelse
                         )
                     }
 
@@ -269,9 +310,20 @@ class FaktagrunnlagService(
     private fun refusjonskravTjenestepensjonTekst(
         refusjonskravTjenestepensjon: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravTjenestepensjon, språk: Språk
     ): String {
-        return "Skal etterbetaling holdes igjen: ${if (refusjonskravTjenestepensjon.skalEtterbetalingHoldesIgjen) "Ja" else "Nei"}, " + periodeTilTekst(
+        return periodeTilTekst(
             refusjonskravTjenestepensjon.fraOgMed,
             refusjonskravTjenestepensjon.tilOgMed,
+            språk
+        )
+    }
+
+    private fun refusjonskravNavkontorTekst(
+        refusjonskravNavkontor: Faktagrunnlag.ForholdTilAndreYtelser.RefusjonskravNavkontor,
+        språk: Språk
+    ): String {
+        return periodeTilTekst(
+            refusjonskravNavkontor.fraOgMed,
+            refusjonskravNavkontor.tilOgMed,
             språk
         )
     }

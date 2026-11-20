@@ -7,14 +7,11 @@ services:
       - '5440:5432'
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
-  pdfgen:
-    image: ghcr.io/navikt/aap-saksbehandling-pdfgen:latest
+  pdfgenerator:
+    image: ghcr.io/navikt/aap-pdfgenerator-saksbehandling:latest
     platform: linux/amd64
     ports:
       - "8020:8080"
-    environment:
-      DISABLE_PDF_GET: "false"
-      ENABLE_HTML_ENDPOINT: "true"
   sanity-proxy:
     image: ghcr.io/navikt/aap-brev-sanity-proxy:latest
     platform: linux/amd64
@@ -24,6 +21,6 @@ services:
       SANITY_API_READ_TOKEN: ${SANITY_API_READ_TOKEN}
       SANITY_PROJECT_ID: 948n95rd
       SANITY_PERSPECTIVE: drafts
-      PDF_GEN_URL: http://pdfgen:8080
+      PDFGENERATOR_SAKSBEHANDLING_URL: http://pdfgenerator:8020
       SANITY_DATASET: production
       NODE_ENV: development
