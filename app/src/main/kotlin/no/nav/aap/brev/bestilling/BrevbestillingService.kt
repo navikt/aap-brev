@@ -86,14 +86,14 @@ class BrevbestillingService(
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
+        mottakerRepository.lagreMottakere(
+            bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+        )
+
         if (ferdigstillAutomatisk) {
             val oppdatertBrev = checkNotNull(brevbestillingRepository.hent(bestillingReferanse).brev)
             if (oppdatertBrev.kanFerdigstillesAutomatisk()) {
-                log.info("Ferdigstiller brev automatisk")
-                mottakerRepository.lagreMottakere(
-                    bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-                )
-
+                log.info("Ferdigstiller brev automatisk (brevtype=$brevtype)")
                 brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
                 leggTilJobb(resultat.brevbestilling)
             } else {
@@ -149,20 +149,18 @@ class BrevbestillingService(
             log.info("Lagrer ikke signaturer")
         }
 
+        mottakerRepository.lagreMottakere(
+            bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
+        )
+
         if (ferdigstillAutomatisk) {
             brevbyggerService.validerAutomatiskFerdigstilling(bestillingReferanse)
             validerAutomatiskeBrevSignaturer(brevtype, signaturer)
             log.info("Ferdigstiller brev automatisk")
-            mottakerRepository.lagreMottakere(
-                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-            )
 
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.FERDIGSTILT)
             leggTilJobb(resultat.brevbestilling)
         } else {
-            mottakerRepository.lagreMottakere(
-                bestillingId, listOf(brukerTilMottaker(resultat.brevbestilling))
-            )
             brevbestillingRepository.oppdaterStatus(bestillingId, Status.UNDER_ARBEID)
         }
 

@@ -106,6 +106,8 @@ class DistribusjonServiceTest : IntegrationTest() {
             distribusjonBestillingIdForJournalpost(forventetJournalpostId1, forventetDistribusjonBestillingId1)
             distribusjonBestillingIdForJournalpost(forventetJournalpostId2, forventetDistribusjonBestillingId2)
 
+            brevbestillingService.oppdaterMottakere(referanse, listOf(mottaker1, mottaker2))
+
             brevbestillingService.ferdigstill(referanse, emptyList(), listOf(mottaker1, mottaker2))
             journalføringService.journalførBrevbestilling(referanse)
             brukerForRegoppslag(mottaker1.ident, true)
