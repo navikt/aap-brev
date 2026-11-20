@@ -253,6 +253,15 @@ class BrevbyggerService(
                     }
                 }
 
+                is Faktagrunnlag.Klage -> buildSet {
+                    leggTilHvis(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING) {
+                        faktagrunnlag.navKontorVurdering?.isNotBlank() == true
+                    }
+                    leggTilHvis(KjentKategori.HAR_NAY_KLAGE_VURDERING) {
+                        faktagrunnlag.nayVurdering?.isNotBlank() == true
+                    }
+                }
+
                 is AarsakTidspunktVurdering -> {
                     val årsak = buildSet {
                         when (faktagrunnlag.aarsakBeregningsTidspunktVurdering) {
