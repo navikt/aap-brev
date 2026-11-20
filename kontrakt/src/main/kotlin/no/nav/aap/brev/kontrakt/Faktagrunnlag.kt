@@ -25,8 +25,9 @@ public const val FAKTAGRUNNLAG_TYPE_INNVILGET_UFORETRYGD: String = "INNVILGET_UF
 public const val FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING: String = "TIDSPUNKT_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER: String = "SYKEPENGEGRUNNLAG"
 public const val FAKTAGRUNNLAG_TYPE_DODSFALL: String = "DODSFALL"
-public const val FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK: String = "AVSLAG_AARSAK"
-public const val FAKTAGRUNNLAG_TYPE_KLAGE: String = "KLAGE"
+public const val FAKTAGRUNNLAG_AVSLAG_AARSAK: String = "AVSLAG_AARSAK"
+public const val FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING: String = "NAV_KONTOR_KLAGE_VURDERING"
+public const val FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING: String = "NAY_KLAGE_VURDERING"
 
 
 public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
@@ -48,8 +49,9 @@ public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     TIDSPUNKT_VURDERING(FAKTAGRUNNLAG_TYPE_TIDSPUNKT_VURDERING),
     GRUNNLAG_ANDRE_YTELSER(FAKTAGRUNNLAG_TYPE_GRUNNLAG_ANDRE_YTELSER),
     DODSFALL(FAKTAGRUNNLAG_TYPE_DODSFALL),
-    AVSLAG_AARSAK(FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK),
-    KLAGE(FAKTAGRUNNLAG_TYPE_KLAGE)
+    AVSLAG_AARSAK(FAKTAGRUNNLAG_AVSLAG_AARSAK),
+    NAV_KONTOR_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING),
+    NAY_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -256,7 +258,7 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val navn: String
     ) : Faktagrunnlag(FaktagrunnlagType.DODSFALL)
 
-    @JsonTypeName(FAKTAGRUNNLAG_TYPE_AVSLAG_AARSAK)
+    @JsonTypeName(FAKTAGRUNNLAG_AVSLAG_AARSAK)
     public data class AvslagAarsak(
         val aarsak: AvslagsHjemmel
     ) : Faktagrunnlag(FaktagrunnlagType.AVSLAG_AARSAK)
@@ -268,13 +270,15 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val ytelseTom: LocalDate
     ) : Faktagrunnlag(FaktagrunnlagType.GRUNNLAG_ANDRE_YTELSER)
 
-    @JsonTypeName(FAKTAGRUNNLAG_TYPE_KLAGE)
-    public data class Klage(
-        val påklagetVedtaksdato: LocalDate,
-        val klagedato: LocalDate,
-        val nayVurdering: String? = null,
-        val navKontorVurdering: String? = null,
-    ) : Faktagrunnlag(FaktagrunnlagType.KLAGE)
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING)
+    public data class NavKontorKlagevurdering(
+        val begrunnelse: String,
+    ) : Faktagrunnlag(FaktagrunnlagType.NAV_KONTOR_KLAGE_VURDERING)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING)
+    public data class NayKlagevurdering(
+        val begrunnelse: String,
+    ) : Faktagrunnlag(FaktagrunnlagType.NAY_KLAGE_VURDERING)
 
     public enum class AvslagsHjemmel {
         AVSLAG_11_2,
