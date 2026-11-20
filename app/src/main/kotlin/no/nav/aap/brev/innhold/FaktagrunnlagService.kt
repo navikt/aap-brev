@@ -240,18 +240,22 @@ class FaktagrunnlagService(
                         )
                     }
 
-                    is Faktagrunnlag.NavKontorKlagevurdering -> {
+                    is Faktagrunnlag.Klage -> {
                         put(
-                            KjentFaktagrunnlag.NAV_KONTOR_KLAGE_VURDERING,
-                            faktagrunnlag.begrunnelse
+                            KjentFaktagrunnlag.PAKLAGET_VEDTAKSDATO,
+                            faktagrunnlag.påklagetVedtaksdato.formaterFullLengde(språk)
                         )
-                    }
+                        put(
+                            KjentFaktagrunnlag.KLAGEDATO,
+                            faktagrunnlag.klagedato.formaterFullLengde(språk)
+                        )
+                        faktagrunnlag.navKontorVurdering
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { put(KjentFaktagrunnlag.NAV_KONTOR_KLAGE_VURDERING, it) }
 
-                    is Faktagrunnlag.NayKlagevurdering -> {
-                        put(
-                            KjentFaktagrunnlag.NAY_KLAGE_VURDERING,
-                            faktagrunnlag.begrunnelse
-                        )
+                        faktagrunnlag.nayVurdering
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { put(KjentFaktagrunnlag.NAY_KLAGE_VURDERING, it) }
                     }
 
                     is Faktagrunnlag.GrunnlagAndreYtelser -> {
