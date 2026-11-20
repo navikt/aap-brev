@@ -21,7 +21,6 @@ import no.nav.aap.brev.api.dokumentinnhentingApi
 import no.nav.aap.brev.api.driftApi
 import no.nav.aap.brev.arkivoppslag.SafGateway
 import no.nav.aap.brev.bestilling.PdfgeneratorSaksbehandlingGateway
-import no.nav.aap.brev.bestilling.SaksbehandlingPdfGenGateway
 import no.nav.aap.brev.drift.DriftService
 import no.nav.aap.brev.journalføring.DokarkivGateway
 import no.nav.aap.brev.person.PdlGateway
@@ -83,7 +82,6 @@ internal fun Application.server(dbConfig: DbConfig) {
     val påkrevdeRollerMotor = if (Miljø.erProd()) listOf(TeamAap.id) else emptyList()
 
     val personinfoGateway = PdlGateway()
-    val pdfGateway = SaksbehandlingPdfGenGateway()
     val pdfgeneratorSaksbehandlingGateway = PdfgeneratorSaksbehandlingGateway()
     val arkivGateway = DokarkivGateway()
     val safGateway = SafGateway()
@@ -94,11 +92,9 @@ internal fun Application.server(dbConfig: DbConfig) {
             apiRouting {
                 bestillingApi(dataSource, personinfoGateway)
                 dokumentinnhentingApi(
-                    pdfGateway = pdfGateway,
                     journalføringGateway = arkivGateway,
                     arkivoppslagGateway = safGateway,
                     pdfgeneratorSaksbehandlingGateway = pdfgeneratorSaksbehandlingGateway,
-                    unleashGateway = unleashGateway
                 )
                 distribusjonApi(dataSource)
                 motorApi(dataSource, påkrevdeRollerMotor)

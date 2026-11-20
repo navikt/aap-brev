@@ -13,7 +13,6 @@ import no.nav.aap.brev.bestilling.PdfBrev.Innhold
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker
 import no.nav.aap.brev.bestilling.PdfBrev.Mottaker.IdentType
 import no.nav.aap.brev.bestilling.PdfBrev.Tekstbolk
-import no.nav.aap.brev.bestilling.PdfGateway
 import no.nav.aap.brev.bestilling.PdfgeneratorSaksbehandlingGateway
 import no.nav.aap.brev.bestilling.Saksnummer
 import no.nav.aap.brev.journalføring.JournalføringData
@@ -32,8 +31,6 @@ import no.nav.aap.brev.organisasjon.AnsattInfoGateway
 import no.nav.aap.brev.organisasjon.NomInfoGateway
 import no.nav.aap.brev.organisasjon.NorgGateway
 import no.nav.aap.brev.person.PdlGateway
-import no.nav.aap.brev.unleash.BrevFeature
-import no.nav.aap.brev.unleash.UnleashGateway
 import no.nav.aap.brev.util.TimeUtils.formaterFullLengde
 import no.nav.aap.komponenter.httpklient.httpclient.error.BadRequestHttpResponsException
 import no.nav.aap.komponenter.miljo.Miljø
@@ -44,11 +41,9 @@ import no.nav.aap.tilgang.authorizedPost
 import org.slf4j.LoggerFactory
 
 fun NormalOpenAPIRoute.dokumentinnhentingApi(
-    pdfGateway: PdfGateway,
     journalføringGateway: JournalføringGateway,
     arkivoppslagGateway: ArkivoppslagGateway,
     pdfgeneratorSaksbehandlingGateway: PdfgeneratorSaksbehandlingGateway,
-    unleashGateway: UnleashGateway,
 ) {
 
     val log = LoggerFactory.getLogger(this::class.java)
@@ -68,11 +63,7 @@ fun NormalOpenAPIRoute.dokumentinnhentingApi(
                 val signatur = utledSignatur(brukerFnr = request.brukerFnr, navIdent = request.bestillerNavIdent)
 
                 val pdfBrev = mapPdfBrev(request, signatur?.let { listOf(it) } ?: emptyList())
-                val pdf = if (unleashGateway.isEnabled(BrevFeature.BrevNyPdfgenerator)) {
-                    pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
-                } else {
-                    pdfGateway.genererPdf(pdfBrev)
-                }
+                val pdf = pdfgeneratorSaksbehandlingGateway.genererPdf(pdfBrev)
                 val journalpostResponse = journalføringGateway.journalførBrev(
                     journalføringData = JournalføringData(
                         brukerFnr = request.brukerFnr,

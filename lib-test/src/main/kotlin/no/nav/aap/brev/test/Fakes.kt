@@ -11,6 +11,7 @@ import no.nav.aap.brev.test.fakes.dokdistkanalFake
 import no.nav.aap.brev.test.fakes.nomFake
 import no.nav.aap.brev.test.fakes.norgFake
 import no.nav.aap.brev.test.fakes.pdfGenFake
+import no.nav.aap.brev.test.fakes.pdfGeneratorFake
 import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.regoppslagFake
 import no.nav.aap.brev.test.fakes.safFake
@@ -35,6 +36,7 @@ object Fakes : AutoCloseable {
         val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
         val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
         val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
+        val pdfGeneratorFake = embeddedServer(Netty, port = 0, module = { pdfGeneratorFake() }).apply { start() }
         val regoppslag = embeddedServer(Netty, port = 0, module = { regoppslagFake() }).apply { start() }
         val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
         val dokdistkanal = embeddedServer(Netty, port = 0, module = { dokdistkanalFake() }).apply { start() }
@@ -50,6 +52,7 @@ object Fakes : AutoCloseable {
                 tilgang,
                 brevSanityProxy,
                 pdfGen,
+                pdfGeneratorFake,
                 regoppslag,
                 dokarkiv,
                 dokdistkanal,
@@ -116,7 +119,7 @@ object Fakes : AutoCloseable {
 
         //Pdfgenerator
         if (System.getenv("INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_URL").isNullOrEmpty()) {
-            System.setProperty("integrasjon.pdfgenerator_saksbehandling.url", "http://localhost:${pdfGen.port()}")
+            System.setProperty("integrasjon.pdfgenerator_saksbehandling.url", "http://localhost:${pdfGeneratorFake.port()}")
         }
         System.setProperty("integrasjon.pdfgenerator_saksbehandling.scope", "scope")
 
