@@ -237,21 +237,15 @@ class BrevbyggerService(
                     }
                 }
 
-                is Faktagrunnlag.NavKontorKlagevurdering -> {
-                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
-                       setOf(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING)
-                    } else {
-                        emptySet()
+                is Faktagrunnlag.Klage -> buildSet {
+                    leggTilHvis(KjentKategori.HAR_NAV_KONTOR_KLAGE_VURDERING) {
+                        faktagrunnlag.navKontorVurdering?.isNotBlank() == true
+                    }
+                    leggTilHvis(KjentKategori.HAR_NAY_KLAGE_VURDERING) {
+                        faktagrunnlag.nayVurdering?.isNotBlank() == true
                     }
                 }
 
-                is Faktagrunnlag.NayKlagevurdering -> {
-                    if (faktagrunnlag.begrunnelse.isNotBlank()) {
-                        setOf(KjentKategori.HAR_NAY_KLAGE_VURDERING)
-                    } else {
-                        emptySet()
-                    }
-                }
 
                 is AarsakTidspunktVurdering -> {
                     val årsak = buildSet {
