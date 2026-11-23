@@ -243,7 +243,7 @@ class FaktagrunnlagService(
                     is Faktagrunnlag.Klage -> {
                         put(
                             KjentFaktagrunnlag.PAKLAGET_VEDTAKSDATO,
-                            faktagrunnlag.påklagetVedtaksdato.formaterFullLengde(språk)
+                            faktagrunnlag.påklagetVedtaksdato?.formaterFullLengde(språk) ?: "Ukjent dato"
                         )
                         put(
                             KjentFaktagrunnlag.KLAGEDATO,
