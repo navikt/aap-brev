@@ -78,6 +78,7 @@ class DokdistfordelingGateway : DistribusjonGateway {
 
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
             Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
+            Brevtype.FORVALTNINGSMELDING_KANT_I_KANT,
             Brevtype.FORVALTNINGSMELDING,
                 -> Distribusjonstype.VIKTIG
 
