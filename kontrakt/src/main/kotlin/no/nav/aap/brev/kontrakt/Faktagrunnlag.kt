@@ -284,7 +284,7 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
 
     @JsonTypeName(FAKTAGRUNNLAG_TYPE_KLAGE)
     public data class Klage(
-        val påklagetVedtaksdato: LocalDate,
+        val påklagetVedtaksdato: LocalDate?,
         val klagedato: LocalDate,
         val nayVurdering: String? = null,
         val navKontorVurdering: String? = null,
