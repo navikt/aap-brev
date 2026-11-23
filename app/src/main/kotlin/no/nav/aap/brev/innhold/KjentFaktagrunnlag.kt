@@ -49,4 +49,7 @@ enum class KjentFaktagrunnlag {
     DODSFALL_NAVN,
     NAY_KLAGE_VURDERING,
     NAV_KONTOR_KLAGE_VURDERING,
+
+    PAKLAGET_VEDTAKSDATO,
+    KLAGEDATO,
 }
