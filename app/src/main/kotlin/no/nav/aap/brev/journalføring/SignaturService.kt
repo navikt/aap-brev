@@ -66,6 +66,7 @@ class SignaturService(
         return when (brevtype) {
             Brevtype.FORHÅNDSVARSEL_BRUDD_AKTIVITETSPLIKT,
             Brevtype.FORVALTNINGSMELDING,
+            Brevtype.FORVALTNINGSMELDING_KANT_I_KANT,
             Brevtype.KLAGE_MOTTATT,
             Brevtype.FORHÅNDSVARSEL_KLAGE_FORMKRAV,
             Brevtype.VEDTAK_11_18_OPPHØR_FULL_UFØR,
