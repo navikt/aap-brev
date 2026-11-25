@@ -28,6 +28,7 @@ public const val FAKTAGRUNNLAG_TYPE_DODSFALL: String = "DODSFALL"
 public const val FAKTAGRUNNLAG_AVSLAG_AARSAK: String = "AVSLAG_AARSAK"
 public const val FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING: String = "NAV_KONTOR_KLAGE_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING: String = "NAY_KLAGE_VURDERING"
+public const val FAKTAGRUNNLAG_TYPE_KLAGE: String = "KLAGE"
 
 
 public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
@@ -52,6 +53,7 @@ public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     AVSLAG_AARSAK(FAKTAGRUNNLAG_AVSLAG_AARSAK),
     NAV_KONTOR_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING),
     NAY_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING),
+    KLAGE(FAKTAGRUNNLAG_TYPE_KLAGE),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -279,6 +281,15 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
     public data class NayKlagevurdering(
         val begrunnelse: String,
     ) : Faktagrunnlag(FaktagrunnlagType.NAY_KLAGE_VURDERING)
+
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_KLAGE)
+    public data class Klage(
+        val påklagetVedtaksdato: LocalDate?,
+        val klagedato: LocalDate,
+        val nayVurdering: String? = null,
+        val navKontorVurdering: String? = null,
+    ) : Faktagrunnlag(FaktagrunnlagType.KLAGE)
+
 
     public enum class AvslagsHjemmel {
         AVSLAG_11_2,

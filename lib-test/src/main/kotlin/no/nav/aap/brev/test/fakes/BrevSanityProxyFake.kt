@@ -113,6 +113,12 @@ fun Application.brevSanityProxyFake() {
                     erFullstendig = true,
                     kanSendesAutomatisk = true,
                 )
+                Brevtype.FORVALTNINGSMELDING_KANT_I_KANT -> brev(
+                    medFaktagrunnlag = emptyList(),
+                    kanRedigeres = false,
+                    erFullstendig = true,
+                    kanSendesAutomatisk = true,
+                )
 
                 Brevtype.INNVILGELSE,
                 Brevtype.VEDTAK_UTVID_VEDTAKSLENGDE,

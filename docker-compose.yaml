@@ -21,6 +21,7 @@ services:
       SANITY_API_READ_TOKEN: ${SANITY_API_READ_TOKEN}
       SANITY_PROJECT_ID: 948n95rd
       SANITY_PERSPECTIVE: drafts
+      PDF_GEN_URL: http://pdfgenerator:8020
       PDFGENERATOR_SAKSBEHANDLING_URL: http://pdfgenerator:8020
       SANITY_DATASET: production
       NODE_ENV: development
