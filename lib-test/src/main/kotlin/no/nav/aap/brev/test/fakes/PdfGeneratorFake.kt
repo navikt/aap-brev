@@ -6,7 +6,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 
 fun Application.pdfGeneratorFake() {
-    applicationFakeFelles("brev-sanity-proxy")
+    applicationFakeFelles("pdfgenerator-saksbehandling")
     routing {
         post("/api/v1/genpdf/saksbehandling/brev") {
             call.respond(ByteArray(0))
