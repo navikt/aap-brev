@@ -2,6 +2,7 @@ package no.nav.aap.brev.innhold
 
 import no.nav.aap.brev.bestilling.BrevbestillingReferanse
 import no.nav.aap.brev.bestilling.BrevbestillingRepository
+import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.komponenter.dbconnect.DBConnection
 
 class BrevinnholdService(
@@ -17,9 +18,9 @@ class BrevinnholdService(
         }
     }
 
-    fun hentOgLagreBrev(referanse: BrevbestillingReferanse) {
+    fun hentOgLagreBrev(referanse: BrevbestillingReferanse, avslagsårsaker: Set<AvslagsÅrsak> = emptySet()) {
         val bestilling = brevbestillingRepository.hent(referanse)
-        val brev = brevinnholdGateway.hentBrev(bestilling.brevtype, bestilling.språk)
+        val brev = brevinnholdGateway.hentBrev(bestilling.brevtype, bestilling.språk, avslagsårsaker)
 
         brevbestillingRepository.oppdaterBrev(bestilling.referanse, brev)
     }

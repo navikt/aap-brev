@@ -82,7 +82,11 @@ class BrevbestillingService(
         val bestillingId = resultat.brevbestilling.id
         val bestillingReferanse = resultat.brevbestilling.referanse
 
-        brevinnholdService.hentOgLagreBrev(bestillingReferanse)
+        val vedtakslengdeAvslagsårsaker = faktagrunnlag
+            .filterIsInstance<Faktagrunnlag.Forlengelsesårsaker>()
+            .flatMap { it.årsaker }
+            .toSet()
+        brevinnholdService.hentOgLagreBrev(bestillingReferanse, vedtakslengdeAvslagsårsaker)
 
         faktagrunnlagService.fyllInnFaktagrunnlag(bestillingReferanse, faktagrunnlag)
 
