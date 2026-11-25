@@ -29,6 +29,7 @@ public const val FAKTAGRUNNLAG_AVSLAG_AARSAK: String = "AVSLAG_AARSAK"
 public const val FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING: String = "NAV_KONTOR_KLAGE_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING: String = "NAY_KLAGE_VURDERING"
 public const val FAKTAGRUNNLAG_TYPE_KLAGE: String = "KLAGE"
+public const val FAKTAGRUNNLAG_TYPE_FORLENGELSESÅRSAKER: String = "VEDTAKSLENGDE_FORLENGELSESÅRSAKER"
 
 
 public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
@@ -54,6 +55,7 @@ public enum class FaktagrunnlagType(@JsonValue public val verdi: String) {
     NAV_KONTOR_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAV_KONTOR_KLAGE_VURDERING),
     NAY_KLAGE_VURDERING(FAKTAGRUNNLAG_TYPE_NAY_KLAGE_VURDERING),
     KLAGE(FAKTAGRUNNLAG_TYPE_KLAGE),
+    VEDTAKSLENGDE_FORLENGELSESÅRSAKER(FAKTAGRUNNLAG_TYPE_FORLENGELSESÅRSAKER),
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
@@ -290,6 +292,10 @@ public sealed class Faktagrunnlag(public val type: FaktagrunnlagType) {
         val navKontorVurdering: String? = null,
     ) : Faktagrunnlag(FaktagrunnlagType.KLAGE)
 
+    @JsonTypeName(FAKTAGRUNNLAG_TYPE_FORLENGELSESÅRSAKER)
+    public data class Forlengelsesårsaker(
+        val årsaker: Set<AvslagsÅrsak>
+    ) : Faktagrunnlag(FaktagrunnlagType.VEDTAKSLENGDE_FORLENGELSESÅRSAKER)
 
     public enum class AvslagsHjemmel {
         AVSLAG_11_2,

@@ -1,9 +1,12 @@
 package no.nav.aap.brev.innhold
 
+import io.ktor.http.URLBuilder
+import io.ktor.http.toURI
 import no.nav.aap.brev.bestilling.BrevmalJson
 import no.nav.aap.brev.bestilling.GenererPdfRequest
 import no.nav.aap.brev.bestilling.Pdf
 import no.nav.aap.brev.bestilling.PdfGatewayV2
+import no.nav.aap.brev.kontrakt.AvslagsÅrsak
 import no.nav.aap.brev.kontrakt.Brev
 import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Språk
@@ -30,9 +33,17 @@ class BrevSanityProxyGateway : BrevinnholdGateway, PdfGatewayV2 {
 
     override fun hentBrev(
         brevtype: Brevtype,
-        språk: Språk
+        språk: Språk,
+        avslagsårsaker: Set<AvslagsÅrsak>
     ): Brev {
-        val uri = baseUri.resolve("/api/mal?brevtype=$brevtype&sprak=$språk")
+        val uri = URLBuilder(baseUri.resolve("/api/mal").toString()).apply {
+            parameters.append("brevtype", brevtype.name)
+            parameters.append("sprak", språk.name)
+            parameters.appendAll(
+                "avslagsarsaker",
+                avslagsårsaker.map { it.name }.sorted()
+            )
+        }.build().toURI()
         val httpRequest = GetRequest(
             additionalHeaders = listOf(
                 Header("Accept", "application/json")
