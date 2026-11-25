@@ -3,18 +3,17 @@ package no.nav.aap.brev.no.nav.aap.brev.test
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.runBlocking
-import no.nav.aap.brev.test.fakes.texasFake
 import no.nav.aap.brev.test.fakes.brevSanityProxyFake
 import no.nav.aap.brev.test.fakes.dokarkivFake
 import no.nav.aap.brev.test.fakes.dokdistfordelingFake
 import no.nav.aap.brev.test.fakes.dokdistkanalFake
 import no.nav.aap.brev.test.fakes.nomFake
 import no.nav.aap.brev.test.fakes.norgFake
-import no.nav.aap.brev.test.fakes.pdfGenFake
 import no.nav.aap.brev.test.fakes.pdfGeneratorFake
 import no.nav.aap.brev.test.fakes.pdlFake
 import no.nav.aap.brev.test.fakes.regoppslagFake
 import no.nav.aap.brev.test.fakes.safFake
+import no.nav.aap.brev.test.fakes.texasFake
 import no.nav.aap.brev.test.fakes.tilgangFake
 import no.nav.aap.brev.test.fakes.unleashFake
 import org.slf4j.Logger
@@ -35,7 +34,6 @@ object Fakes : AutoCloseable {
         val texas = embeddedServer(Netty, port = texasPort, module = { texasFake() }).start()
         val tilgang = embeddedServer(Netty, port = 0, module = { tilgangFake() }).apply { start() }
         val brevSanityProxy = embeddedServer(Netty, port = 0, module = { brevSanityProxyFake() }).apply { start() }
-        val pdfGen = embeddedServer(Netty, port = 0, module = { pdfGenFake() }).apply { start() }
         val pdfGeneratorFake = embeddedServer(Netty, port = 0, module = { pdfGeneratorFake() }).apply { start() }
         val regoppslag = embeddedServer(Netty, port = 0, module = { regoppslagFake() }).apply { start() }
         val dokarkiv = embeddedServer(Netty, port = 0, module = { dokarkivFake() }).apply { start() }
@@ -51,7 +49,6 @@ object Fakes : AutoCloseable {
                 texas,
                 tilgang,
                 brevSanityProxy,
-                pdfGen,
                 pdfGeneratorFake,
                 regoppslag,
                 dokarkiv,
@@ -79,12 +76,6 @@ object Fakes : AutoCloseable {
         }
         System.setProperty("integrasjon.brev_sanity_proxy.scope", "scope")
         System.setProperty("integrasjon.brev_sanity_proxy.azp", "azp")
-
-        // PdfGen
-        if (System.getenv("INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL").isNullOrEmpty()) {
-            System.setProperty("integrasjon.saksbehandling_pdfgen.url", "http://localhost:${pdfGen.port()}")
-        }
-        System.setProperty("integrasjon.saksbehandling_pdfgen.scope", "scope")
 
         // Regoppslag
         System.setProperty("integrasjon.regoppslag.url", "http://localhost:${regoppslag.port()}")
@@ -128,7 +119,6 @@ object Fakes : AutoCloseable {
         System.setProperty("unleash.server.api.url", "http://localhost:${unleash.port()}")
         System.setProperty("unleash.server.api.token", "faketoken")
     }
-
 
     override fun close() {
         servers.forEach { it.stop(0L, 0L) }

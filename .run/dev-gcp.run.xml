@@ -13,8 +13,6 @@
       <env name="INTEGRASJON_BEHANDLINGSFLYT_SCOPE" value="api://dev-gcp.aap.behandlingsflyt/.default" />
       <env name="INTEGRASJON_BREV_SANITY_PROXY_URL" value="https://aap-brev-sanity-proxy.intern.dev.nav.no" />
       <env name="INTEGRASJON_BREV_SANITY_PROXY_SCOPE" value="api://dev-gcp.aap.brev-sanity-proxy/.default" />
-      <env name="INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL" value="https://aap-saksbehandling-pdfgen.intern.dev.nav.no" />
-      <env name="INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE" value="api://dev-gcp.aap.saksbehandling-pdfgen/.default" />
       <env name="INTEGRASJON_DOKARKIV_URL" value="https://dokarkiv-q2.dev-fss-pub.nais.io" />
       <env name="INTEGRASJON_DOKARKIV_SCOPE" value="api://dev-fss.teamdokumenthandtering.dokarkiv/.default" />
       <env name="INTEGRASJON_DOKDISTFORDELING_URL" value="https://dokdistfordeling.dev-fss-pub.nais.io" />

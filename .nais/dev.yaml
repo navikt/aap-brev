@@ -96,7 +96,6 @@ spec:
       rules:
         - application: tilgang
         - application: brev-sanity-proxy
-        - application: saksbehandling-pdfgen
         - application: pdfgenerator-saksbehandling
         - application: nom-api
           namespace: nom
@@ -125,11 +124,6 @@ spec:
       value: http://brev-sanity-proxy
     - name: INTEGRASJON_BREV_SANITY_PROXY_SCOPE
       value: api://dev-gcp.aap.brev-sanity-proxy/.default
-
-    - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_URL
-      value: http://saksbehandling-pdfgen
-    - name: INTEGRASJON_SAKSBEHANDLING_PDFGEN_SCOPE
-      value: api://dev-gcp.aap.saksbehandling-pdfgen/.default
 
     - name: INTEGRASJON_PDFGENERATOR_SAKSBEHANDLING_URL
       value: http://pdfgenerator-saksbehandling
