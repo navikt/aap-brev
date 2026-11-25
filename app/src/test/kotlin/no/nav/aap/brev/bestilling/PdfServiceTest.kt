@@ -12,7 +12,6 @@ import no.nav.aap.brev.kontrakt.Brevtype
 import no.nav.aap.brev.kontrakt.Innhold
 import no.nav.aap.brev.kontrakt.Språk
 import no.nav.aap.brev.kontrakt.Tekstbolk
-import no.nav.aap.brev.test.fakes.FakeUnleashGateway
 import no.nav.aap.brev.test.randomBrukerIdent
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -22,17 +21,15 @@ import java.util.UUID
 
 class PdfServiceTest {
 
-    private val pdfGateway = mockk<PdfGateway>()
+    private val pdfGateway = mockk<PdfgeneratorSaksbehandlingGateway>()
     private val pdfBrevSlot = slot<PdfBrev>()
 
     private val pdfService = PdfService(
         signaturService = SignaturService(mockk(), mockk()),
         brevbestillingRepository = mockk(),
         personinfoGateway = mockk(),
-        pdfGateway = pdfGateway,
-        pdfgeneratorSaksbehandlingGateway = mockk(),
+        pdfgeneratorSaksbehandlingGateway = pdfGateway,
         pdfGatewayV2 = mockk(),
-        unleashGateway = FakeUnleashGateway(),
     )
 
     private val personinfo = Personinfo(
